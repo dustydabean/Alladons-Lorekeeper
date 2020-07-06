@@ -24,9 +24,9 @@ class PageController extends Controller
             'pages' => SitePage::orderBy('title')->paginate(20)
         ]);
     }
-    
+
     /**
-     * Shows the create page page. 
+     * Shows the create page page.
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
@@ -36,7 +36,7 @@ class PageController extends Controller
             'page' => new SitePage
         ]);
     }
-    
+
     /**
      * Shows the edit page page.
      *
@@ -64,7 +64,7 @@ class PageController extends Controller
     {
         $id ? $request->validate(SitePage::$updateRules) : $request->validate(SitePage::$createRules);
         $data = $request->only([
-            'key', 'title', 'text', 'is_visible'
+            'key', 'title', 'text', 'is_visible', 'admin_only'
         ]);
         if($id && $service->updatePage(SitePage::find($id), $data, Auth::user())) {
             flash('Page updated successfully.')->success();
@@ -78,7 +78,7 @@ class PageController extends Controller
         }
         return redirect()->back();
     }
-    
+
     /**
      * Gets the page deletion modal.
      *

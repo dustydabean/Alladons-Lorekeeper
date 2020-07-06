@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Auth;
+use Closure;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -29,8 +30,14 @@ class PageController extends Controller
     public function getPage($key)
     {
         $page = SitePage::where('key', $key)->where('is_visible', 1)->first();
+
         if(!$page) abort(404);
+
+        if ($page->admin_only && (auth()->user() == null || !auth()->user()->isAdmin)) {
+            flash('You do not have the permission to access this page.')->error();
+            return redirect('/');
+        }
         return view('pages.page', ['page' => $page]);
     }
-    
+
 }

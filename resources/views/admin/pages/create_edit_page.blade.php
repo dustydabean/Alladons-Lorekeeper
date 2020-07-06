@@ -41,6 +41,11 @@
     {!! Form::label('is_visible', 'Is Viewable', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If this is turned off, users will not be able to view the page even if they have the link to it.') !!}
 </div>
 
+<div class="form-group">
+    {!! Form::checkbox('admin_only', 1, $page->id ? $page->admin_only : 0, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
+    {!! Form::label('admin_only', 'Admin Only', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If this is turned on, only admins can view it.') !!}
+</div>
+
 <div class="text-right">
     {!! Form::submit($page->id ? 'Edit' : 'Create', ['class' => 'btn btn-primary']) !!}
 </div>
@@ -52,12 +57,12 @@
 @section('scripts')
 @parent
 <script>
-$( document ).ready(function() {    
+$( document ).ready(function() {
     $('.delete-page-button').on('click', function(e) {
         e.preventDefault();
         loadModal("{{ url('admin/pages/delete') }}/{{ $page->id }}", 'Delete Page');
     });
 });
-    
+
 </script>
 @endsection
