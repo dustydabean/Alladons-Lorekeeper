@@ -33,7 +33,7 @@ class PageController extends Controller
 
         if(!$page) abort(404);
 
-        if ($page->admin_only && (auth()->user() == null || !auth()->user()->isAdmin)) {
+        if ($page->admin_only && (auth()->user() == null || !auth()->user()->isStaff)) {
             flash('You do not have the permission to access this page.')->error();
             return redirect('/');
         }
