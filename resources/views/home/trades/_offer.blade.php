@@ -30,7 +30,7 @@
             @endif
         @endif
 ">
-    @if($data['user_items'])
+    @if(isset($data) && $data['user_items'])
         <div class="card-header">
             Items
         </div>
@@ -55,7 +55,7 @@
             </div>
         </div>
     @endif
-    @if($data['characters'])
+    @if(isset($data) && $data['characters'])
         <div class="card-header border-top">
             Characters
         </div>
@@ -76,7 +76,7 @@
             </div>
         </div>
     @endif
-    @if($data['currencies'])
+    @if(isset($data) && $data['currencies'])
         <div class="card-header border-top border-bottom-0">
             Currencies
         </div>
@@ -88,7 +88,7 @@
             @endforeach
         </ul>
     @endif
-    @if(!$data['user_items'] && !$data['currencies'] && !$data['characters'])
+    @if(!isset($data) || [!$data['user_items'] && !$data['currencies'] && !$data['characters']])
         <div class="card-body">{!! $user->displayName !!} has not added anything to their offer.</div>
     @endif
 </div>

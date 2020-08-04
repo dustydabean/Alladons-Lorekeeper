@@ -19,7 +19,7 @@ class Trade extends Model
     protected $fillable = [
         'sender_id', 'recipient_id', 'comments',
         'status', 'is_sender_confirmed', 'is_recipient_confirmed', 'is_sender_trade_confirmed', 'is_recipient_trade_confirmed',
-        'is_approved', 'reason', 'data'
+        'is_approved', 'reason', 'data', 'terms_link'
     ];
 
     /**

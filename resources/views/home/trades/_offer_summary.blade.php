@@ -1,4 +1,4 @@
-@if($data['user_items'])
+@if(isset($data) && $data['user_items'])
     <div class="row">
         @foreach($data['user_items'] as $item)
             <div class="col-sm-3 col-4 mb-3" title="{{ $item['asset']->item->name }}" data-toggle="tooltip">
@@ -11,7 +11,7 @@
         @endforeach
     </div>
 @endif
-@if($data['characters'])
+@if(isset($data) && $data['characters'])
     <div class="row">
         @foreach($data['characters'] as $character)
             <div class="col-sm-3 col-4 mb-3">
@@ -24,7 +24,7 @@
         @endforeach
     </div>
 @endif
-@if($data['currencies'])
+@if(isset($data) && $data['currencies'])
     <div>
         @foreach($data['currencies'] as $currency)
             <div>

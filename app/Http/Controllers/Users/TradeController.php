@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Users;
 
 use Auth;
+use Settings;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 use App\Models\Trade;
+use App\Models\TradeListing;
 use App\Models\Item\ItemCategory;
 use App\Models\Item\Item;
 use App\Models\User\User;
@@ -125,7 +127,7 @@ class TradeController extends Controller
      */
     public function postCreateTrade(Request $request, TradeManager $service)
     {
-        if($trade = $service->createTrade($request->only(['recipient_id', 'comments', 'stack_id', 'currency_id', 'currency_quantity', 'character_id']), Auth::user())) {
+        if($trade = $service->createTrade($request->only(['recipient_id', 'comments', 'stack_id', 'currency_id', 'currency_quantity', 'character_id', 'terms_link']), Auth::user())) {
             flash('Trade created successfully.')->success();
             return redirect()->to($trade->url);
         }
@@ -260,6 +262,20 @@ class TradeController extends Controller
             foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
         }
         return redirect()->back();
+    }
+
+    /**
+     * Shows the trade listing index.
+     *
+     * @param  string  $type
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getListingIndex(Request $request)
+    {
+        return view('home.trades.listings.index', [
+            'listings' => TradeListing::active()->orderBy('id', 'DESC')->paginate(20),
+            'listingDuration' => Settings::get('trade_listing_duration'),
+        ]);
     }
 }
 
