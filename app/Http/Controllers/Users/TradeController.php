@@ -306,6 +306,20 @@ class TradeController extends Controller
     }
 
     /**
+     * Shows the user's expired trade listings.
+     *
+     * @param  string  $type
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getExpiredListings(Request $request)
+    {
+        return view('home.trades.listings.expired', [
+            'listings' => TradeListing::expired()->where('user_id', Auth::user()->id)->orderBy('id', 'DESC')->paginate(20),
+            'listingDuration' => Settings::get('trade_listing_duration'),
+        ]);
+    }
+
+    /**
      * Shows a trade.
      *
      * @param  integer  $id
@@ -318,6 +332,9 @@ class TradeController extends Controller
 
         return view('home.trades.listings.view_listing', [
             'listing' => $listing,
+            'seekingData' => isset($listing->data['seeking']) ? parseAssetData($listing->data['seeking']) : null,
+            'offeringData' => isset($listing->data['offering']) ? parseAssetData($listing->data['offering']) : null,
+            'items' => Item::all()->keyBy('id')
         ]);
     }
 
@@ -329,9 +346,12 @@ class TradeController extends Controller
      */
     public function getCreateListing(Request $request)
     {
-        $inventory = UserItem::with('item')->whereNull('deleted_at')->where('user_id', Auth::user()->id)->whereNull('holding_id')->get()->filter(function($userItem){
+        $inventory = UserItem::with('item')->whereNull('deleted_at')->where('count', '>', '0')->where('user_id', Auth::user()->id)
+        ->get()
+        ->filter(function($userItem){
             return $userItem->isTransferrable == true;
-        });
+        })
+        ->sortBy('item.name');;
         $currencies = Currency::where('is_user_owned', 1)->where('allow_user_to_user', 1)->orderBy('sort_user', 'DESC')->get();
 
         return view('home.trades.listings.create_listing', [
@@ -341,6 +361,8 @@ class TradeController extends Controller
             'inventory' => $inventory,
             'characters' => Auth::user()->allCharacters()->visible()->tradable()->with('designUpdate')->get(),
             'characterCategories' => CharacterCategory::orderBy('sort', 'DESC')->get(),
+            'page' => 'listing',
+            'listingDuration' => Settings::get('trade_listing_duration')
         ]);
     }
 
@@ -362,19 +384,22 @@ class TradeController extends Controller
         }
         return redirect()->back();
     }
-    
+
     /**
-     * Edits a trade.
+     * Manually marks a trade listing as expired.
      *
      * @param  \Illuminate\Http\Request          $request
      * @param  App\Services\TradeListingManager  $service
      * @param  integer  $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postEditListing(Request $request, TradeListingManager $service, $id)
+    public function postExpireListing(Request $request, TradeListingManager $service, $id)
     {
-        if($listing = $service->editTradeListing($request->only(['comments', 'contact', 'item_ids', 'quantities', 'stack_id', 'stack_quantity', 'offer_currency_ids', 'seeking_currency_ids', 'character_id', 'offering_etc', 'seeking_etc']) + ['id' => $id], Auth::user())) {
-            flash('Trade listing edited successfully.')->success();
+        $listing = TradeListing::find($id);
+        if(!$listing) abort(404);
+        
+        if($service->markExpired(['id' => $id], Auth::user())) {
+            flash('Listing expired successfully.')->success();
         }
         else {
             foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();

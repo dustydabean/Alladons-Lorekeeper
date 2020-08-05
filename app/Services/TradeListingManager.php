@@ -8,6 +8,7 @@ use DB;
 use Config;
 use Image;
 use Notifications;
+use Auth;
 use Settings;
 
 use App\Models\User\User;
@@ -73,31 +74,25 @@ class TradeListingManager extends Service
     }
 
     /**
-     * Edits a trade listing.
+     * Marks a trade listing as expired.
      *
      * @param  array                        $data
      * @param  \App\Models\User\User        $user
      * @return bool|\App\Models\TradeListing
      */
-    public function editTradeListing($data, $user)
+    public function markExpired($data, $user)
     {
         DB::beginTransaction();
         try {
+            $listing = TradeListing::find($data['id']);
             if(!$listing) throw new \Exception("Invalid trade listing.");
-            if(!$listing->isActive) throw new \Exception("Cannot edit an expired listing.");
-            if(!isset($data['contact'])) throw new \Exception("Please enter your preferred method(s) of contact.");
+            if(!$listing->isActive) throw new \Exception("This listing is already expired.");
+            if(!$listing->user->id == Auth::user()->id && !Auth::user()->hasPower('manage_submissions')) throw new \Exception("You can't edit this listing.");
 
-            if($assetData = $this->handleTradeAssets($trade, $data, $user)) {
-                $listing->data = json_encode([
-                    'seeking' => getDataReadyAssets($assetData['seeking']),
-                    'seeking_etc' => $data['seeking_etc'],
-                    'offering' => getDataReadyAssets($assetData['offering']),
-                    'offering_etc' => $data['offering_etc']
-                ]);
-                $listing->save();
-            }
+            $listing->expires_at = Carbon::now();
+            $listing->save();
             
-            return $this->commitReturn($trade);
+            return $this->commitReturn($listing);
         } catch(\Exception $e) { 
             $this->setError('error', $e->getMessage());
         }
@@ -127,24 +122,14 @@ class TradeListingManager extends Service
             
             // Attach items. They are not even held, merely recorded for display on the listing.
             if(isset($data['stack_id'])) {
-                // Base Lorekeeper
-                foreach($data['stack_id'] as $stackId) {
-                    $stack = UserItem::with('item')->where('id', $stackId)->whereNull('holding_type')->first();
+                foreach($data['stack_id'] as $key=>$stackId) {
+                    $stack = UserItem::with('item')->find($stackId);
                     if(!$stack || $stack->user_id != $user->id) throw new \Exception("Invalid item selected.");
                     if(!$stack->item->allow_transfer || isset($stack->data['disallow_transfer'])) throw new \Exception("One or more of the selected items cannot be transferred.");
 
-                    addAsset($userAssets, $stack, 1);
+                    addAsset($userAssets, $stack, $data['stack_quantity'][$key]);
                     $assetCount++;
                 }
-                // Inv Stacks
-                //     foreach($data['stack_id'] as $key=>$stackId) {
-                //         $stack = UserItem::with('item')->find($stackId);
-                //         if(!$stack || $stack->user_id != $user->id) throw new \Exception("Invalid item selected.");
-                //         if(!$stack->item->allow_transfer || isset($stack->data['disallow_transfer'])) throw new \Exception("One or more of the selected items cannot be transferred.");
-
-                //         addAsset($userAssets, $stack, $data['stack_quantity'][$key]);
-                //         $assetCount++;
-                //     }
             }
             
             if($assetCount > $assetLimit) throw new \Exception("You may only include a maximum of {$assetLimit} things in a listing.");

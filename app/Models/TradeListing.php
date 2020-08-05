@@ -97,6 +97,22 @@ class TradeListing extends Model
     {
         return $query->where(function($query) {
                 $query->where('expires_at', '>', Carbon::now())->orWhere(function($query) {
+                    $query->where('expires_at', '>=', Carbon::now());
+                });
+        });
+        
+    }
+
+    /**
+     * Scope a query to only include active trade listings.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeExpired($query)
+    {
+        return $query->where(function($query) {
+                $query->where('expires_at', '<', Carbon::now())->orWhere(function($query) {
                     $query->where('expires_at', '<=', Carbon::now());
                 });
         });

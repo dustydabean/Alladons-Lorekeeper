@@ -10,7 +10,15 @@
 </h1>
 
 <p>
-    Create a new trade listing. You can modify the listing attachments after its creation - this only sets up the trade, so you don't have to worry about having everything in place at the start, though it is recommended. Note that you may only add up to <strong>{{ Config::get('lorekeeper.settings.trade_asset_limit') }}</strong> things to one listing - if necessary, please create a new listing to add more. <strong>Note that this does not interact automatically with the trade system;</strong> while trade listings should <strong>not</strong> be tentative, including an item or character you own within a listing will not inherently do anything with the item/character(s), and you will need to add them to trade(s) on your own. Traded items/characters are also not automatically removed from a listing until it is next edited.
+    Create a new trade listing. 
+    <strong>Some notes:</strong>
+    <ul>
+        <li>You can't modify the listing attachments after its creation, so make sure everything is in order!</li> 
+        <li>Note that you may only add up to <strong>{{ Config::get('lorekeeper.settings.trade_asset_limit') }}</strong> things to one listing-- if necessary, please create a new listing to add more.</li> 
+        <li><strong>Note that this does not interact automatically with the trade system;</strong> while trade listings should <strong>not</strong> be tentative, including an item or character you own within a listing will not inherently do anything with the item/character(s), and you will need to add them to trade(s) on your own.</li> 
+        <ul><li>Traded items/characters are not automatically removed from a listing.</li></ul>
+        <li>Listings expire after {{ $listingDuration }} days. You will also be able to manually mark a listing as expired before that point.</li>
+    </ul>
 </p>
 
 {!! Form::open(['url' => 'trades/listings/create']) !!}
@@ -61,7 +69,7 @@
     <h2>Offering <a class="small inventory-collapse-toggle collapse-toggle" href="#userOffering" data-toggle="collapse">Show</a></h2>
     <div class="mb-3 collapse" id="userOffering">
     <p>Select the items, characters, currencies, and/or other goods or services you're offering.</p>
-        @include('widgets._inventory_select', ['user' => Auth::user(), 'inventory' => $inventory, 'categories' => $categories, 'selected' => null])
+        @include('widgets._inventory_select', ['user' => Auth::user(), 'inventory' => $inventory, 'categories' => $categories, 'selected' => [], 'page' => $page])
         @include('widgets._my_character_select', ['readOnly' => true, 'categories' => $characterCategories])
         @if(isset($currencies) && $currencies)
         <h4>Currencies</h4>
