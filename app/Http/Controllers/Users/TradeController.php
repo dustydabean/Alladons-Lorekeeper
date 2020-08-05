@@ -154,7 +154,7 @@ class TradeController extends Controller
      */
     public function postCreateTrade(Request $request, TradeManager $service)
     {
-        if($trade = $service->createTrade($request->only(['recipient_id', 'comments', 'stack_id', 'currency_id', 'currency_quantity', 'character_id', 'terms_link']), Auth::user())) {
+        if($trade = $service->createTrade($request->only(['recipient_id', 'comments', 'stack_id', 'stack_quantity', 'currency_id', 'currency_quantity', 'character_id', 'terms_link']), Auth::user())) {
             flash('Trade created successfully.')->success();
             return redirect()->to($trade->url);
         }
