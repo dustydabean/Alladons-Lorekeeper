@@ -14,7 +14,7 @@
     <strong>Some notes:</strong>
     <ul>
         <li>You can't modify the listing after its creation, so make sure everything is in order!</li> 
-        <li>Note that you may only add up to <strong>{{ Config::get('lorekeeper.settings.trade_asset_limit') }}</strong> things to one listing-- if necessary, please create a new listing to add more.</li> 
+        <li>Note that you may only add up to <strong>{{ Config::get('lorekeeper.settings.trade_asset_limit') }}</strong> things to each side (seeking/offering) of a listing-- if necessary, please create a new listing to add more.</li> 
         <li><strong>Note that this does not interact automatically with the trade system;</strong> while trade listings should <strong>not</strong> be tentative, including an item or character you own within a listing will not inherently do anything with the item/character(s), and you will need to add them to trade(s) on your own.</li> 
         <ul><li>Traded items/characters are not automatically removed from a listing.</li></ul>
         <li>Listings expire after {{ $listingDuration }} days. You will also be able to manually mark a listing as expired before that point.</li>

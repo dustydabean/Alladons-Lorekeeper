@@ -53,17 +53,33 @@ class TradeListingManager extends Service
             ]);
 
             if($assetData = $this->handleListingAssets($listing, $data, $user)) {
-                $listing->data = json_encode([
-                    'seeking' => getDataReadyAssets($assetData['seeking']),
-                    'seeking_etc' => $data['seeking_etc'],
-                    'offering' => getDataReadyAssets($assetData['offering']),
-                    'offering_etc' => $data['offering_etc']
-                ]);
+                $listingData = $listing->data;
+                $listingData['offering_etc'] = $data['offering_etc'];
+                $listingData['offering'] = getDataReadyAssets($assetData['offering']);
+                $listing->data = json_encode($listingData);
+                $listing->save();
+            }
+
+            if($assetData = $this->handleSeekingAssets($listing, $data, $user)) {
+                $listingData = $listing->data;
+                $listingData['seeking'] = getDataReadyAssets($assetData['seeking']);
+                $listing->data = json_encode($listingData);
+                $listing->save();
+            }
+
+            {
+                $listingData = $listing->data;
+                $listingData['offering_etc'] = $data['offering_etc'];
+                $listingData['seeking_etc'] = $data['seeking_etc'];
+                $listing->data = json_encode($listingData);
+                $listing->save();
             }
 
             $duration = Settings::get('trade_listing_duration');
             $listing->expires_at = Carbon::now()->addDays($duration);
             $listing->save();
+
+            dd($listing->data);
 
             return $this->commitReturn($listing);
 
@@ -100,71 +116,21 @@ class TradeListingManager extends Service
     }
 
     /**
-     * Handles recording of assets on the user's side of a trade listing, as well as initial validation.
+     * Handles recording of assets on the seeking side of a trade listing, as well as initial validation.
      *
      * @param  \App\Models\TradeListing $listing 
      * @param  array                    $data
-     * @param  \App\Models\User\User    $user
      * @return bool|array
      */
-    private function handleListingAssets($listing, $data, $user)
+    private function handleSeekingAssets($listing, $data, $user)
     {
         DB::beginTransaction();
         try {
-            // Also return any currency attached to the trade
-            // This is stored in the data attribute
-            $currencyManager = new CurrencyManager;
             $listingData = $listing->data;
 
-            $userAssets = createAssetsArray();
+            $seekingAssets = createAssetsArray();
             $assetCount = 0;
             $assetLimit = Config::get('lorekeeper.settings.trade_asset_limit');
-            
-            // Attach items. They are not even held, merely recorded for display on the listing.
-            if(isset($data['stack_id'])) {
-                foreach($data['stack_id'] as $key=>$stackId) {
-                    $stack = UserItem::with('item')->find($stackId);
-                    if(!$stack || $stack->user_id != $user->id) throw new \Exception("Invalid item selected.");
-                    if(!$stack->item->allow_transfer || isset($stack->data['disallow_transfer'])) throw new \Exception("One or more of the selected items cannot be transferred.");
-
-                    addAsset($userAssets, $stack, $data['stack_quantity'][$key]);
-                    $assetCount++;
-                }
-            }
-            
-            if($assetCount > $assetLimit) throw new \Exception("You may only include a maximum of {$assetLimit} things in a listing.");
-
-            // Attach currencies. Character currencies cannot be attached to trades, so we're just checking the user's bank.
-            if(isset($data['offer_currency_ids'])) {
-                foreach($data['offer_currency_ids'] as $key=>$currencyId) {
-                    $currency = Currency::where('allow_user_to_user', 1)->where('id', $currencyId)->first();
-                    if(!$currency) throw new \Exception("Invalid currency selected.");
-
-                    addAsset($userAssets, $currency, 1);
-                    $assetCount++;
-                }
-            }
-            if($assetCount > $assetLimit) throw new \Exception("You may only include a maximum of {$assetLimit} things in a listing.");
-
-            // Attach characters.
-            if(isset($data['character_id'])) {
-                foreach($data['character_id'] as $characterId) {
-                    $character = Character::where('id', $characterId)->where('user_id', $user->id)->first();
-                    if(!$character) throw new \Exception("Invalid character selected.");
-                    if(!$character->is_sellable && !$character->is_tradeable && !$character->is_giftable) throw new \Exception("One or more of the selected characters cannot be transferred.");
-                    if(CharacterTransfer::active()->where('character_id', $character->id)->exists()) throw new \Exception("One or more of the selected characters is already pending a character transfer.");
-                    if($character->trade_id) throw new \Exception("One or more of the selected characters is already in a trade.");
-                    if($character->designUpdate()->active()->exists()) throw new \Exception("One or more of the selected characters has an active design update. Please wait for it to be processed, or delete it.");
-                    if($character->transferrable_at && $character->transferrable_at->isFuture()) throw new \Exception("One or more of the selected characters is still on transfer cooldown and cannot be transferred.");
-
-                    addAsset($userAssets, $character, 1);
-                    $assetCount++;
-                }
-
-            }
-            if($assetCount > $assetLimit) throw new \Exception("You may only include a maximum of {$assetLimit} things in a listing.");
-
-            $seekingAssets = createAssetsArray();
 
             if(isset($data['item_ids'])) {
                 $keyed_quantities = [];
@@ -200,8 +166,76 @@ class TradeListingManager extends Service
                 }
             }
             if($assetCount > $assetLimit) throw new \Exception("You may only include a maximum of {$assetLimit} things in a listing.");
+
+            return $this->commitReturn(['seeking' => $seekingAssets]);
+        } catch(\Exception $e) { 
+            $this->setError('error', $e->getMessage());
+        }
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Handles recording of assets on the user's side of a trade listing, as well as initial validation.
+     *
+     * @param  \App\Models\TradeListing $listing 
+     * @param  array                    $data
+     * @param  \App\Models\User\User    $user
+     * @return bool|array
+     */
+    private function handleListingAssets($listing, $data, $user)
+    {
+        DB::beginTransaction();
+        try {
+            $listingData = $listing->data;
+
+            $userAssets = createAssetsArray();
+            $assetCount = 0;
+            $assetLimit = Config::get('lorekeeper.settings.trade_asset_limit');
             
-            return $this->commitReturn(['offering' => $userAssets, 'seeking' => $seekingAssets]);
+            // Attach items. They are not even held, merely recorded for display on the listing.
+            if(isset($data['stack_id'])) {
+                foreach($data['stack_id'] as $key=>$stackId) {
+                    $stack = UserItem::with('item')->find($stackId);
+                    if(!$stack || $stack->user_id != $user->id) throw new \Exception("Invalid item selected.");
+                    if(!$stack->item->allow_transfer || isset($stack->data['disallow_transfer'])) throw new \Exception("One or more of the selected items cannot be transferred.");
+
+                    addAsset($userAssets, $stack, $data['stack_quantity'][$key]);
+                    $assetCount++;
+                }
+            }
+            if($assetCount > $assetLimit) throw new \Exception("You may only include a maximum of {$assetLimit} things in a listing.");
+
+            // Attach currencies. Character currencies cannot be attached to trades, so we're just checking the user's bank.
+            if(isset($data['offer_currency_ids'])) {
+                foreach($data['offer_currency_ids'] as $key=>$currencyId) {
+                    $currency = Currency::where('allow_user_to_user', 1)->where('id', $currencyId)->first();
+                    if(!$currency) throw new \Exception("Invalid currency selected.");
+
+                    addAsset($userAssets, $currency, 1);
+                    $assetCount++;
+                }
+            }
+            if($assetCount > $assetLimit) throw new \Exception("You may only include a maximum of {$assetLimit} things in a listing.");
+
+            // Attach characters.
+            if(isset($data['character_id'])) {
+                foreach($data['character_id'] as $characterId) {
+                    $character = Character::where('id', $characterId)->where('user_id', $user->id)->first();
+                    if(!$character) throw new \Exception("Invalid character selected.");
+                    if(!$character->is_sellable && !$character->is_tradeable && !$character->is_giftable) throw new \Exception("One or more of the selected characters cannot be transferred.");
+                    if(CharacterTransfer::active()->where('character_id', $character->id)->exists()) throw new \Exception("One or more of the selected characters is already pending a character transfer.");
+                    if($character->trade_id) throw new \Exception("One or more of the selected characters is already in a trade.");
+                    if($character->designUpdate()->active()->exists()) throw new \Exception("One or more of the selected characters has an active design update. Please wait for it to be processed, or delete it.");
+                    if($character->transferrable_at && $character->transferrable_at->isFuture()) throw new \Exception("One or more of the selected characters is still on transfer cooldown and cannot be transferred.");
+
+                    addAsset($userAssets, $character, 1);
+                    $assetCount++;
+                }
+
+            }
+            if($assetCount > $assetLimit) throw new \Exception("You may only include a maximum of {$assetLimit} things in a listing.");
+
+            return $this->commitReturn(['offering' => $userAssets]);
         } catch(\Exception $e) { 
             $this->setError('error', $e->getMessage());
         }
