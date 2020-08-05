@@ -79,8 +79,6 @@ class TradeListingManager extends Service
             $listing->expires_at = Carbon::now()->addDays($duration);
             $listing->save();
 
-            dd($listing->data);
-
             return $this->commitReturn($listing);
 
         } catch(\Exception $e) { 
