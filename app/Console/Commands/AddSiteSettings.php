@@ -175,6 +175,19 @@ class AddSiteSettings extends Command
         }
         else $this->line("Skipped: blacklist_key");
 
+        if(!DB::table('site_settings')->where('key', 'trade_listing_duration')->exists()) {
+            DB::table('site_settings')->insert([
+                [
+                    'key' => 'trade_listing_duration',
+                    'value' => 14,
+                    'description' => 'Number of days a trade listing is displayed for.'
+                ]
+
+            ]);
+            $this->info("Added:   trade_listing_duration / Default: 14");
+        }
+        else $this->line("Skipped: trade_listing_duration");
+
         $this->line("\nSite settings up to date!");
         
     }

@@ -18,6 +18,7 @@ use App\Models\Currency\Currency;
 use App\Models\Character\CharacterCategory;
 
 use App\Services\TradeManager;
+use App\Services\TradeListingManager;
 
 class TradeController extends Controller
 {
@@ -276,6 +277,83 @@ class TradeController extends Controller
             'listings' => TradeListing::active()->orderBy('id', 'DESC')->paginate(20),
             'listingDuration' => Settings::get('trade_listing_duration'),
         ]);
+    }
+
+    /**
+     * Shows a trade.
+     *
+     * @param  integer  $id
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getListing($id)
+    {
+        $listing = TradeListing::find($id);
+        if(!$listing) abort(404);
+
+        return view('home.trades.listings.view_listing', [
+            'listing' => $listing,
+        ]);
+    }
+
+    /**
+     * Shows the create trade listing page.
+     *
+     * @param  string  $type
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCreateListing(Request $request)
+    {
+        $inventory = UserItem::with('item')->whereNull('deleted_at')->where('user_id', Auth::user()->id)->whereNull('holding_id')->get()->filter(function($userItem){
+            return $userItem->isTransferrable == true;
+        });
+        $currencies = Currency::where('is_user_owned', 1)->where('allow_user_to_user', 1)->orderBy('sort_user', 'DESC')->get();
+
+        return view('home.trades.listings.create_listing', [
+            'items' => Item::orderBy('name')->where('allow_transfer', 1)->pluck('name', 'id'),
+            'currencies' => $currencies,
+            'categories' => ItemCategory::orderBy('sort', 'DESC')->get(),
+            'inventory' => $inventory,
+            'characters' => Auth::user()->allCharacters()->visible()->tradable()->with('designUpdate')->get(),
+            'characterCategories' => CharacterCategory::orderBy('sort', 'DESC')->get(),
+        ]);
+    }
+
+    /**
+     * Creates a new trade listing.
+     *
+     * @param  \Illuminate\Http\Request          $request
+     * @param  App\Services\TradeListingManager  $service
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postCreateListing(Request $request, TradeListingManager $service)
+    {
+        if($listing = $service->createTradeListing($request->only(['comments', 'contact', 'item_ids', 'quantities', 'stack_id', 'stack_quantity', 'offer_currency_ids', 'seeking_currency_ids', 'character_id', 'offering_etc', 'seeking_etc']), Auth::user())) {
+            flash('Trade listing created successfully.')->success();
+            return redirect()->to($listing->url);
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back();
+    }
+    
+    /**
+     * Edits a trade.
+     *
+     * @param  \Illuminate\Http\Request          $request
+     * @param  App\Services\TradeListingManager  $service
+     * @param  integer  $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postEditListing(Request $request, TradeListingManager $service, $id)
+    {
+        if($listing = $service->editTradeListing($request->only(['comments', 'contact', 'item_ids', 'quantities', 'stack_id', 'stack_quantity', 'offer_currency_ids', 'seeking_currency_ids', 'character_id', 'offering_etc', 'seeking_etc']) + ['id' => $id], Auth::user())) {
+            flash('Trade listing edited successfully.')->success();
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back();
     }
 }
 

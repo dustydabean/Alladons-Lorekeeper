@@ -59,6 +59,11 @@ Route::group(['prefix' => 'bank', 'namespace' => 'Users'], function() {
 });
 
 Route::group(['prefix' => 'trades', 'namespace' => 'Users'], function() {
+    Route::get('listings', 'TradeController@getListingIndex');
+    Route::get('listings/create', 'TradeController@getCreateListing');
+    Route::post('listings/create', 'TradeController@postCreateListing');
+    Route::get('listings/{id}', 'TradeController@getListing')->where('id', '[0-9]+');
+    
     Route::get('{status}', 'TradeController@getIndex')->where('status', 'open|pending|completed|rejected|canceled');
     Route::get('create', 'TradeController@getCreateTrade');
     Route::get('{id}/edit', 'TradeController@getEditTrade')->where('id', '[0-9]+');
