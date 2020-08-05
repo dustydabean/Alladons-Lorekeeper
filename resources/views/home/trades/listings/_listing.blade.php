@@ -12,7 +12,7 @@
         @if($listing->comments)
             <div class="mb-2">{!! nl2br(htmlentities($listing->comments)) !!}</div>
         @endif
-            <p><strong>Contact Info:</strong> {!! nl2br(htmlentities($listing->contact)) !!}
+            <p><strong>Contact Via:</strong> {!! nl2br(htmlentities($listing->contact)) !!}
             <hr />
         <div class="row">
             <div class="col-md-6">

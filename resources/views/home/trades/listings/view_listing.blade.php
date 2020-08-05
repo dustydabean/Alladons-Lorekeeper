@@ -6,7 +6,7 @@
 {!! breadcrumbs(['Trades' => 'trades/open', 'Listings' => 'trades/listings', 'Listing (#' . $listing->id . ')' => 'trades/listings/'.$listing->id]) !!}
 
 <h1>
-    Trade Listing
+    Trade Listing (#{{ $listing->id }})
 
     <span class="float-right badge badge-{{ $listing->isActive ? 'success' : 'secondary' }}">{{ $listing->isActive ? 'Active' : 'Expired' }}</span>
 </h1>

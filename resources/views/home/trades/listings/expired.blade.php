@@ -9,7 +9,7 @@
     My Expired Trade Listings
 </h1>
 
-<p>Here are all of your expired trade listings. Listings are active for {{ $listingDuration }} days before they expire, after which they can only be viewed via their permalink.</p>
+<p>Here are all of your expired trade listings. Listings are active for {{ $listingDuration }} days before they expire, after which they can be viewed via their permalink.</p>
 
 {!! $listings->render() !!}
 @foreach($listings as $listing)
