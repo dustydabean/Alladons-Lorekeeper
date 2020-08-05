@@ -56,7 +56,7 @@
             @foreach($currencies as $currency)
                 <div class="form-group">
                     {!! Form::checkbox('seeking_currency_ids[]', $currency->id, 0, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
-                    {!! Form::label('seeking_currency_ids[]', $currency->name, ['class' => 'form-check-label ml-3']) !!} {!! add_help('If this is on, the recipient(s) will not be able to transfer this item to other users. Items that disallow transfers by default will still not be transferrable.') !!}
+                    {!! Form::label('seeking_currency_ids[]', $currency->name, ['class' => 'form-check-label ml-3']) !!} {!! add_help('Toggle this on to mark this currency as being sought.') !!}
                 </div>
             @endforeach
         @endif
@@ -76,7 +76,7 @@
             @foreach($currencies as $currency)
                 <div class="form-group">
                     {!! Form::checkbox('offer_currency_ids[]', $currency->id, 0, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
-                    {!! Form::label('offer_currency_ids[]', $currency->name, ['class' => 'form-check-label ml-3']) !!} {!! add_help('If this is on, the recipient(s) will not be able to transfer this item to other users. Items that disallow transfers by default will still not be transferrable.') !!}
+                    {!! Form::label('offer_currency_ids[]', $currency->name, ['class' => 'form-check-label ml-3']) !!} {!! add_help('Toggle this on to mark this currency as offered.') !!}
                 </div>
             @endforeach
         @endif
