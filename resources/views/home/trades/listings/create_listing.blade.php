@@ -35,6 +35,7 @@
     <h2>Seeking <a class="small inventory-collapse-toggle collapse-toggle" href="#userSeeking" data-toggle="collapse">Show</a></h2>
     <div class="mb-3 collapse" id="userSeeking">
     <p>Select the items, currencies, and/or other goods or services you're seeking.</p>
+        <h3>Items</h3>
         <div class="form-group">
             {!! Form::label('Item(s)') !!} {!! add_help('The quantity of any selected items must be at least 1.') !!}
             <div id="itemList">
@@ -60,6 +61,7 @@
                 </div>
             @endforeach
         @endif
+        <h3>Other</h3>
         <div class="form-group">
             {!! Form::label('seeking_etc', 'Other Goods or Services') !!} 
             {!! add_help('Enter in any goods/services you are seeking that are not handled by the site-- for example, art. This should be brief!') !!} 
@@ -72,7 +74,7 @@
         @include('widgets._inventory_select', ['user' => Auth::user(), 'inventory' => $inventory, 'categories' => $categories, 'selected' => [], 'page' => $page])
         @include('widgets._my_character_select', ['readOnly' => true, 'categories' => $characterCategories])
         @if(isset($currencies) && $currencies)
-        <h4>Currencies</h4>
+        <h3>Currencies</h3>
             @foreach($currencies as $currency)
                 <div class="form-group">
                     {!! Form::checkbox('offer_currency_ids[]', $currency->id, 0, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
@@ -80,6 +82,7 @@
                 </div>
             @endforeach
         @endif
+        <h3>Other</h3>
         <div class="form-group">
             {!! Form::label('offering_etc', 'Other Goods or Services') !!} 
             {!! add_help('Enter in any goods/services you are offerering that are not handled by the site-- for example, art. This should be brief!') !!} 
