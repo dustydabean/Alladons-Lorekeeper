@@ -45,14 +45,14 @@
             </div>
         </div>
     @endif
-    @if(isset($listing->data['offering_etc']) && $listing->data['offering_etc'])
-        <div class="row">
-        <div class="col-sm-2">
-            <strong>Other:</strong>
+@endif
+@if(isset($etc) && $etc)
+    <div class="row">
+    <div class="col-sm-2">
+        <strong>Other:</strong>
+    </div>
+        <div class="col-md">
+            {!! nl2br(htmlentities($etc)) !!}
         </div>
-            <div class="col-md">
-                {!! nl2br(htmlentities($listing->data['offering_etc'])) !!}
-            </div>
-        </div>
-    @endif
+    </div>
 @endif

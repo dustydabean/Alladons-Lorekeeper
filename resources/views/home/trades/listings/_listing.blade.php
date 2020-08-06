@@ -19,13 +19,13 @@
                 <h3 class="card-heading">
                     Seeking:
                 </h3>
-                @include('home.trades.listings._seeking_summary', ['user' => $listing->user, 'data' => isset($listing->data['seeking']) ? parseAssetData($listing->data['seeking']) : null, 'listing' => $listing])
+                @include('home.trades.listings._seeking_summary', ['user' => $listing->user, 'data' => isset($listing->data['seeking']) ? parseAssetData($listing->data['seeking']) : null, 'listing' => $listing, 'etc' => $listing->data['seeking_etc']])
             </div>
             <div class="col-md-6">
                 <h3 class="card-heading">
                     Offering:
                 </h3>
-                @include('home.trades.listings._offer_summary', ['user' => $listing->user, 'data' => isset($listing->data['offering']) ? parseAssetData($listing->data['offering']) : null, 'listing' => $listing])
+                @include('home.trades.listings._offer_summary', ['user' => $listing->user, 'data' => isset($listing->data['offering']) ? parseAssetData($listing->data['offering']) : null, 'listing' => $listing, 'etc' => $listing->data['offering_etc']])
             </div>
         </div>
         <hr />
