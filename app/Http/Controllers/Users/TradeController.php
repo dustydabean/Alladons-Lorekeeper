@@ -300,7 +300,7 @@ class TradeController extends Controller
     public function getListingIndex(Request $request)
     {
         return view('home.trades.listings.index', [
-            'listings' => TradeListing::active()->orderBy('id', 'DESC')->paginate(20),
+            'listings' => TradeListing::active()->orderBy('id', 'DESC')->paginate(10),
             'listingDuration' => Settings::get('trade_listing_duration'),
         ]);
     }
@@ -314,7 +314,7 @@ class TradeController extends Controller
     public function getExpiredListings(Request $request)
     {
         return view('home.trades.listings.expired', [
-            'listings' => TradeListing::expired()->where('user_id', Auth::user()->id)->orderBy('id', 'DESC')->paginate(20),
+            'listings' => TradeListing::expired()->where('user_id', Auth::user()->id)->orderBy('id', 'DESC')->paginate(10),
             'listingDuration' => Settings::get('trade_listing_duration'),
         ]);
     }

@@ -54,26 +54,30 @@ class TradeListingManager extends Service
 
             if($assetData = $this->handleListingAssets($listing, $data, $user)) {
                 $listingData = $listing->data;
-                $listingData['offering_etc'] = $data['offering_etc'];
                 $listingData['offering'] = getDataReadyAssets($assetData['offering']);
-                $listing->data = json_encode($listingData);
+                $listingData['offering'] <> null ? $listing->data = json_encode($listingData) : null;
                 $listing->save();
             }
 
             if($assetData = $this->handleSeekingAssets($listing, $data, $user)) {
                 $listingData = $listing->data;
                 $listingData['seeking'] = getDataReadyAssets($assetData['seeking']);
-                $listing->data = json_encode($listingData);
+                $listingData['seeking'] <> null ? $listing->data = json_encode($listingData) : null;
                 $listing->save();
             }
 
-            {
+            if($data['offering_etc'] || $data['seeking_etc']) {
                 $listingData = $listing->data;
                 $listingData['offering_etc'] = $data['offering_etc'];
                 $listingData['seeking_etc'] = $data['seeking_etc'];
                 $listing->data = json_encode($listingData);
                 $listing->save();
             }
+            
+            // These checks are performed here, since it's faster and easier to check for the asset arrays (vs the separate inputs)
+            if(!$listing->data) throw new \Exception("Please enter what you're seeking and offering.");
+            if(!isset($listing->data['seeking']) && !isset($listing->data['seeking_etc'])) throw new \Exception("Please enter what you're seeking.");
+            if(!isset($listing->data['offering']) && !isset($listing->data['offering_etc'])) throw new \Exception("Please enter what you're offering.");
 
             $duration = Settings::get('trade_listing_duration');
             $listing->expires_at = Carbon::now()->addDays($duration);
@@ -124,8 +128,6 @@ class TradeListingManager extends Service
     {
         DB::beginTransaction();
         try {
-            $listingData = $listing->data;
-
             $seekingAssets = createAssetsArray();
             $assetCount = 0;
             $assetLimit = Config::get('lorekeeper.settings.trade_asset_limit');
@@ -138,8 +140,14 @@ class TradeListingManager extends Service
                     }
                 });
 
+                // Elaborate validation to account for the nature of the item select form.
+                foreach($data['item_ids'] as $id) {
+                    if($id != null) {
+                    $item = Item::find($id);
+                    if(!$item) throw new \Exception("One or more of the selected items is invalid.");
+                    }
+                }
                 $items = Item::find($data['item_ids']);
-                if(!count($items)) throw new \Exception("No valid items found.");
 
                 foreach($items as $item) {
                     if(!$item) throw new \Exception("Invalid item selected.");
@@ -184,8 +192,6 @@ class TradeListingManager extends Service
     {
         DB::beginTransaction();
         try {
-            $listingData = $listing->data;
-
             $userAssets = createAssetsArray();
             $assetCount = 0;
             $assetLimit = Config::get('lorekeeper.settings.trade_asset_limit');
@@ -229,7 +235,6 @@ class TradeListingManager extends Service
                     addAsset($userAssets, $character, 1);
                     $assetCount++;
                 }
-
             }
             if($assetCount > $assetLimit) throw new \Exception("You may only include a maximum of {$assetLimit} things in a listing.");
 
