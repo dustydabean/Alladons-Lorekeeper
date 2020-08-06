@@ -37,11 +37,13 @@
             <strong>Currencies:</strong>
         </div>
             <div class="col-md">
-            @foreach($data['currencies'] as $currency)
-                <div>
-                    {!! $currency['asset']->display('') !!}
+                <div class="row">
+                    @foreach($data['currencies'] as $currency)
+                        <div class="col-sm-3">
+                            {!! $currency['asset']->display('') !!}
+                        </div>
+                    @endforeach
                 </div>
-            @endforeach
             </div>
         </div>
     @endif
