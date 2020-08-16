@@ -66,7 +66,7 @@ class TradeListingManager extends Service
                 $listing->save();
             }
 
-            {
+            if($data['offering_etc'] || $data['seeking_etc']) {
                 $listingData = $listing->data;
                 $listingData['offering_etc'] = $data['offering_etc'];
                 $listingData['seeking_etc'] = $data['seeking_etc'];
