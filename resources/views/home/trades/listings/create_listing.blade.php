@@ -99,7 +99,8 @@
     @include('widgets._my_character_select_js', ['readOnly' => true])
     <script>
         $(document).ready(function() {
-            $('.default.item-select').selectize();
+            $('.default.item-select-row').selectize();
+
             $('#add-item').on('click', function(e) {
                 e.preventDefault();
                 addItemRow();
@@ -107,7 +108,8 @@
             $('.remove-item').on('click', function(e) {
                 e.preventDefault();
                 removeItemRow($(this));
-            })
+            });
+
             function addItemRow() {
                 var $rows = $("#itemList > div")
                 if($rows.length === 1) {
@@ -121,7 +123,7 @@
                     e.preventDefault();
                     removeItemRow($(this));
                 })
-                $clone.find('.item-select').selectize();
+                $clone.find('.item-select-row').selectize();
             }
             function removeItemRow($trigger) {
                 $trigger.parent().remove();
