@@ -105,6 +105,7 @@ class TradeController extends Controller
         ->sortBy('item.name');;
         return view('home.trades.create_trade', [
             'categories' => ItemCategory::orderBy('sort', 'DESC')->get(),
+            'item_filter' => Item::orderBy('name')->get()->keyBy('id'),
             'inventory' => $inventory,
             'userOptions' => User::visible()->where('id', '!=', Auth::user()->id)->orderBy('name')->pluck('name', 'id')->toArray(),
             'characters' => Auth::user()->allCharacters()->visible()->tradable()->with('designUpdate')->get(),
@@ -137,6 +138,7 @@ class TradeController extends Controller
             'trade' => $trade,
             'partner' => (Auth::user()->id == $trade->sender_id) ? $trade->recipient : $trade->sender,
             'categories' => ItemCategory::orderBy('sort', 'DESC')->get(),
+            'item_filter' => Item::orderBy('name')->get()->keyBy('id'),
             'inventory' => $inventory,
             'userOptions' => User::visible()->orderBy('name')->pluck('name', 'id')->toArray(),
             'characters' => Auth::user()->allCharacters()->visible()->with('designUpdate')->get(),
