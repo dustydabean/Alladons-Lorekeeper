@@ -293,6 +293,12 @@ class TradeController extends Controller
         return redirect()->back();
     }
 
+    /**********************************************************************************************
+    
+        TRADE LISTINGS
+
+    **********************************************************************************************/
+
     /**
      * Shows the trade listing index.
      *
@@ -360,6 +366,7 @@ class TradeController extends Controller
             'items' => Item::orderBy('name')->where('allow_transfer', 1)->pluck('name', 'id'),
             'currencies' => $currencies,
             'categories' => ItemCategory::orderBy('sort', 'DESC')->get(),
+            'item_filter' => Item::orderBy('name')->get()->keyBy('id'),
             'inventory' => $inventory,
             'characters' => Auth::user()->allCharacters()->visible()->tradable()->with('designUpdate')->get(),
             'characterCategories' => CharacterCategory::orderBy('sort', 'DESC')->get(),
