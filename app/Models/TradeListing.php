@@ -126,6 +126,16 @@ class TradeListing extends Model
     **********************************************************************************************/
 
     /**
+     * Gets the Display Name of the trade listing.
+     *
+     * @return string
+     */
+    public function getDisplayNameAttribute()
+    {
+        return $this->user->displayName .'\'s <a href="'. $this->url. '">Trade Listing</a> (#' . $this->id .')';
+    }
+    
+    /**
      * Check if the trade listing is active.
      *
      * @return bool
