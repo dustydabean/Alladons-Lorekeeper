@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use DB;
 use Auth;
 use Settings;
+use Carbon\Carbon;
 use App\Models\User\User;
 use App\Models\Character\Character;
 use App\Models\Item\Item;
@@ -119,9 +120,25 @@ class SubmissionController extends Controller
         $prompt = Prompt::active()->where('id', $id)->first();
         if(!$prompt) return response(404);
 
+        $all = Submission::where('prompt_id', $id)->where('status', '!=', 'Rejected')->where('user_id', Auth::user()->id);
+        $date = Carbon::now();
+        $count['all'] = $all->count();
+        $count['Hour'] = $all->where('created_at', '>=', $date->startOfHour())->count();
+        $count['Day'] = $all->where('created_at', '>=', $date->startOfDay())->count();
+        $count['Week'] = $all->where('created_at', '>=', $date->startOfWeek())->count();
+        $count['Month'] = $all->where('created_at', '>=', $date->startOfMonth())->count();
+        $count['Year'] = $all->where('created_at', '>=', $date->startOfYear())->count();
+
+        if($prompt->limit_character) {
+            $limit = $prompt->limit * Character::visible()->where('is_myo_slot', 0)->where('user_id', Auth::user()->id)->count();
+        } else {
+            $limit = $prompt->limit;
+        }
+
         return view('home._prompt', [
             'prompt' => $prompt,
-            'count' => Submission::where('prompt_id', $id)->where('status', 'Approved')->where('user_id', Auth::user()->id)->count()
+            'count' => $count,
+            'limit' => $limit
         ]);
     }
     

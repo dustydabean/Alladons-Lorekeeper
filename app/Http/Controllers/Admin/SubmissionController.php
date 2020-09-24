@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use Auth;
 use Config;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 use App\Models\Prompt\PromptCategory;
@@ -11,6 +12,8 @@ use App\Models\Submission\Submission;
 use App\Models\Item\Item;
 use App\Models\Currency\Currency;
 use App\Models\Loot\LootTable;
+use App\Models\Prompt\Prompt;
+use App\Models\Character\Character;
 
 use App\Services\SubmissionManager;
 
@@ -47,7 +50,24 @@ class SubmissionController extends Controller
     public function getSubmission($id)
     {
         $submission = Submission::whereNotNull('prompt_id')->where('id', $id)->first();
+        $prompt = Prompt::where('id', $submission->prompt_id)->first();
         if(!$submission) abort(404);
+
+        $all = Submission::where('prompt_id', $prompt->id)->where('status', '!=', 'Rejected')->where('user_id', $submission->user_id);
+        $date = Carbon::now();
+        $count['all'] = $all->count();
+        $count['Hour'] = $all->where('created_at', '>=', $date->startOfHour())->count();
+        $count['Day'] = $all->where('created_at', '>=', $date->startOfDay())->count();
+        $count['Week'] = $all->where('created_at', '>=', $date->startOfWeek())->count();
+        $count['Month'] = $all->where('created_at', '>=', $date->startOfMonth())->count();
+        $count['Year'] = $all->where('created_at', '>=', $date->startOfYear())->count();
+
+        if($prompt->limit_character) {
+            $limit = $prompt->limit * Character::visible()->where('is_myo_slot', 0)->where('user_id', $submission->user_id)->count();
+        } else {
+            $limit = $prompt->limit;
+        }
+
         return view('admin.submissions.submission', [
             'submission' => $submission,
         ] + ($submission->status == 'Pending' ? [
@@ -55,7 +75,9 @@ class SubmissionController extends Controller
             'items' => Item::orderBy('name')->pluck('name', 'id'),
             'currencies' => Currency::where('is_user_owned', 1)->orderBy('name')->pluck('name', 'id'),
             'tables' => LootTable::orderBy('name')->pluck('name', 'id'),
-            'count' => Submission::where('prompt_id', $submission->prompt_id)->where('status', 'Approved')->where('user_id', $submission->user_id)->count()
+            'count' => $count,
+            'prompt' => $prompt,
+            'limit' => $limit
         ] : []));
     }    
     
