@@ -56,17 +56,14 @@ class SubmissionManager extends Service
                 //check that the prompt limit hasn't been hit
                 if($prompt->limit) {
                     //check that the user hasn't hit the prompt submission limit
-                    //first grab all prior user submissions
-                    $all = Submission::where('prompt_id', $prompt->id)->where('status', '!=', 'Rejected')->where('user_id', $user->id);
-                    //then check the current date
-                    $date = Carbon::now();
                     //filter the submissions by hour/day/week/etc and count
-                    $count['all'] = $all->count();
-                    $count['Hour'] = $all->where('created_at', '>=', $date->startOfHour())->count();
-                    $count['Day'] = $all->where('created_at', '>=', $date->startOfDay())->count();
-                    $count['Week'] = $all->where('created_at', '>=', $date->startOfWeek())->count();
-                    $count['Month'] = $all->where('created_at', '>=', $date->startOfMonth())->count();
-                    $count['Year'] = $all->where('created_at', '>=', $date->startOfYear())->count();
+                    $count['all'] = Submission::submitted($prompt->id, $submission->user_id)->count();
+                    $count['Hour'] = Submission::submitted($prompt->id, $submission->user_id)->where('created_at', '>=', now()->startOfHour())->count();
+                    $count['Day'] = Submission::submitted($prompt->id, $submission->user_id)->where('created_at', '>=', now()->startOfDay())->count();
+                    $count['Week'] = Submission::submitted($prompt->id, $submission->user_id)->where('created_at', '>=', now()->startOfWeek())->count();
+                    $count['Month'] = Submission::submitted($prompt->id, $submission->user_id)->where('created_at', '>=', now()->startOfMonth())->count();
+                    $count['Year'] = Submission::submitted($prompt->id, $submission->user_id)->where('created_at', '>=', now()->startOfYear())->count();
+
                     //if limit by character is on... multiply by # of chars. otherwise, don't
                     if($prompt->limit_character) {
                         $limit = $prompt->limit * Character::visible()->where('is_myo_slot', 0)->where('user_id', $user->id)->count();
