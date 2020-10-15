@@ -134,6 +134,17 @@ class Submission extends Model
     }
 
     /**
+     * Scope a query to sort submissions by newest first.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSortNewest($query)
+    {
+        return $query->orderBy('id', 'DESC');
+    }
+
+    /**
      * Scope a query to only include user's submissions.
      *
      * @param  \Illuminate\Database\Eloquent\Builder  $query
