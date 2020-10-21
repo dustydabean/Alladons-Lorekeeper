@@ -30,7 +30,7 @@
         </div>
         <hr />
         <div class="text-right">
-            <a href="{{ $listing->url }}" class="btn btn-outline-primary">View Details</a>
+            <a href="{{ $listing->url }}" class="btn btn-outline-primary"><i class="fas fa-comment"></i> {{ App\Models\Comment::where('commentable_type', 'App\Models\TradeListing')->where('commentable_id', $listing->id)->count() }} Comment{{ App\Models\Comment::where('commentable_type', 'App\Models\TradeListing')->where('commentable_id', $listing->id)->count() != 1 ? 's' : ''}} ・ View Details</a>
         </div>
     </div>
 </div>

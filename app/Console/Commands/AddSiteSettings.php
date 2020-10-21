@@ -187,6 +187,19 @@ class AddSiteSettings extends Command
             $this->info("Added:   trade_listing_duration / Default: 14");
         }
         else $this->line("Skipped: trade_listing_duration");
+        
+        if(!DB::table('site_settings')->where('key', 'admin_user')->exists()) {
+            DB::table('site_settings')->insert([
+                [
+                    'key' => 'admin_user',
+                    'value' => 1,
+                    'description' => 'ID of the site\'s admin user.'
+                ]
+
+            ]);
+            $this->info("Added:   admin_user / Default: 1");
+        }
+        else $this->line("Skipped: admin_user");
 
         $this->line("\nSite settings up to date!");
         

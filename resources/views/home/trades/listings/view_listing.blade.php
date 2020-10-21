@@ -63,6 +63,10 @@
 
 </div>
 
+@comments(['model' => $listing,
+        'perPage' => 5
+    ])
+
 <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">

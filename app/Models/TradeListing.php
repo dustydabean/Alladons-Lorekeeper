@@ -8,11 +8,14 @@ use Carbon\Carbon;
 use Settings;
 
 use App\Models\Character\Character;
+use App\Traits\Commentable;
 
 use App\Models\Model;
 
 class TradeListing extends Model
 {
+    use Commentable;
+
     /**
      * The attributes that are mass assignable.
      *
