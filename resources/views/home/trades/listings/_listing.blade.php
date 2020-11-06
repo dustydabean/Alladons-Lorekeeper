@@ -1,7 +1,7 @@
 <div class="card mb-3">
     <div class="card-header">
         <h2 class="mb-0"><a href="{{$listing->url}} ">Listing (#{{ $listing->id }})</a> : Posted by {!! $listing->user->displayName !!}
-            <a class="float-right" href="{{ url('reports/new?url=') . $listing->url }}"><i class="fas fa-exclamation-triangle" data-toggle="tooltip" title="Click here to report this trade listing." style="opacity: 50%;"></i></a>
+            <a class="float-right" href="{{ url('reports/new?url=') . $listing->url }}"><i class="fas fa-exclamation-triangle" data-toggle="tooltip" title="Click here to report this trade listing." style="font-size:75%; opacity: 50%;"></i></a>
         </h2>
     </div>
     <div class="card-body">
