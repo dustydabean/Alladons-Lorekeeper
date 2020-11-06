@@ -28,7 +28,10 @@
         @if($listing->isActive && (Auth::user()->id == $listing->user->id || Auth::user()->hasPower('manage_submissions')))
             {!! Form::open(['url' => url()->current(), 'id' => 'expireForm']) !!}
             <a href="#" id="expireButton" class="float-right btn btn-outline-info btn-sm"> Mark Expired</a>
+            <a class="float-right mr-2" href="{{ url('reports/new?url=') . $listing->url }}"><i class="fas fa-exclamation-triangle" data-toggle="tooltip" title="Click here to report this trade listing." style="opacity: 50%;"></i></a>
             {!! Form::close() !!}
+        @else
+            <a class="float-right" href="{{ url('reports/new?url=') . $listing->url }}"><i class="fas fa-exclamation-triangle" data-toggle="tooltip" title="Click here to report this trade listing." style="opacity: 50%;"></i></a>
         @endif
     </h3>
     <div>
