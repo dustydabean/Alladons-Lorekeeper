@@ -251,4 +251,24 @@ return [
         'message' => 'A character you have bookmarked (<a href="{character_url}">{character_name}</a>) has had its Gift Writing Allowed status changed. (<a href="{url}">View Bookmarks</a>)',
         'url' => 'account/bookmarks'
     ],
+    // PET_REMOVAL
+    40 => [
+        'message' => '{pet_name} (×{pet_quantity}) was removed from your inventory by <a href="{sender_url}">{sender_name}</a>. (<a href="{url}">View Inventory</a>)',
+        'url' => 'inventory'
+    ],
+    // PET_TRANSFER
+    41 => [
+        'message' => 'You have received {pet_name} (×{pet_quantity}) from <a href="{sender_url}">{sender_name}</a>. (<a href="{url}">View Inventory</a>)',
+        'url' => 'inventory'
+    ],
+    // FORCED_PET_TRANSFER
+    42 => [
+        'message' => '{pet_name} (×{pet_quantity}) was transferred out of your inventory by <a href="{sender_url}">{sender_name}</a>. (<a href="{url}">View Inventory</a>)',
+        'url' => 'inventory'
+    ],
+    // PET_GRANT
+    43 => [
+        'message' => 'You have received a staff grant of {pet_name} (×{pet_quantity}) from <a href="{sender_url}">{sender_name}</a>. (<a href="{url}">View Inventory</a>)',
+        'url' => 'inventory'
+    ],
 ];

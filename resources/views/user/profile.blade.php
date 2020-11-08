@@ -70,6 +70,26 @@
     </div>
 </div>
 
+<div class="card mb-3">
+    <div class="card-body text-center">
+        <h5 class="card-title">Pets</h5>
+        <div class="card-body">
+            @if(count($pets))
+                <div class="row">
+                    @foreach($pets as $pet)
+                        <div class="col-md-3 col-6 profile-inventory-item">
+                            <img src="{{ $pet->imageUrl }}" data-toggle="tooltip" title="{{ $pet->name }}" />
+                        </div>
+                    @endforeach
+                </div>
+            @else 
+                <div>No pets owned.</div>
+            @endif
+        </div>
+        <div class="text-right"><a href="{{ $user->url.'/inventory' }}">View all...</a></div>
+    </div>
+</div>
+
 <h2>Characters</h2>
 @foreach($user->characters()->visible()->take(4)->get()->chunk(4) as $chunk)
 <div class="row">

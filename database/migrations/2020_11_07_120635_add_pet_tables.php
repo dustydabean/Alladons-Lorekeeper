@@ -58,7 +58,6 @@ class AddPetTables extends Migration
             $table->increments('id');
             $table->integer('pet_id')->unsigned();
             $table->integer('quantity')->unsigned()->default(1);
-            $table->integer('stack_id')->unsigned();
 
             $table->integer('sender_id')->unsigned()->nullable();
             $table->integer('recipient_id')->unsigned()->nullable();
@@ -89,3 +88,4 @@ class AddPetTables extends Migration
         Schema::dropIfExists('user_pets');
         Schema::dropIfExists('user_pets_log');
     }
+}

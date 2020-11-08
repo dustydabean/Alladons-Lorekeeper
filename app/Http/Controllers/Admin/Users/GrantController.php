@@ -7,10 +7,12 @@ use Config;
 use Illuminate\Http\Request;
 
 use App\Models\Item\Item;
+use App\Models\Pet\Pet;
 use App\Models\Currency\Currency;
 
 use App\Services\CurrencyManager;
 use App\Services\InventoryManager;
+use App\Services\PetManager;
 
 use App\Http\Controllers\Controller;
 
@@ -71,6 +73,37 @@ class GrantController extends Controller
         $data = $request->only(['names', 'item_id', 'quantity', 'data', 'disallow_transfer', 'notes']);
         if($service->grantItems($data, Auth::user())) {
             flash('Items granted successfully.')->success();
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back();
+    }
+
+    /**
+     * Show the pet grant page.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getPets()
+    {
+        return view('admin.grants.pets', [
+            'pets' => Pet::orderBy('name')->pluck('name', 'id')
+        ]);
+    }
+
+    /**
+     * Grants or removes pets from multiple users.
+     *
+     * @param  \Illuminate\Http\Request        $request
+     * @param  App\Services\InvenntoryManager  $service
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postPets(Request $request, PetManager $service)
+    {
+        $data = $request->only(['names', 'pet_id', 'quantity', 'data', 'disallow_transfer', 'notes']);
+        if($service->grantPets($data, Auth::user())) {
+            flash('Pets granted successfully.')->success();
         }
         else {
             foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();

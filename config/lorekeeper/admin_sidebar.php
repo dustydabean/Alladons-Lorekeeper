@@ -73,6 +73,10 @@ return [
                 'name' => 'Item Grants',
                 'url' => 'admin/grants/items'
             ],
+            [
+                'name' => 'Pet Grants',
+                'url' => 'admin/grants/pets'
+            ],
         ]
     ],
     'Masterlist' => [
@@ -146,6 +150,10 @@ return [
             [
                 'name' => 'Items',
                 'url' => 'admin/data/items'
+            ],
+            [
+                'name' => 'Pets',
+                'url' => 'admin/data/pets'
             ],
         ]
     ],

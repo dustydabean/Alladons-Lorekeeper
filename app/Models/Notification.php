@@ -142,4 +142,8 @@ class Notification extends Model
     const BOOKMARK_IMAGE                  = 37;
     const CHARACTER_TRANSFER_ACCEPTABLE   = 38;
     const BOOKMARK_GIFT_WRITING           = 39;
+    const PET_REMOVAL                     = 40;
+    const PET_TRANSFER                    = 41;
+    const FORCED_PET_TRANSFER             = 42;
+    const PET_GRANT                       = 43;
 }
