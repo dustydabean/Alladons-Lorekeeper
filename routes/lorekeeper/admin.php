@@ -149,6 +149,7 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('shops/stock/{id}', 'ShopController@postEditShopStock');
     Route::post('shops/delete/{id}', 'ShopController@postDeleteShop');
     Route::post('shops/sort', 'ShopController@postSortShop');
+    Route::post('shops/restrictions/{id}', 'ShopController@postRestrictShop');
 
     # FEATURES (TRAITS)
     Route::get('trait-categories', 'FeatureController@getIndex');

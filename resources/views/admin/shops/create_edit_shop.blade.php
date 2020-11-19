@@ -44,7 +44,7 @@
 </div>
 
 <div class="form-group">
-    {!! Form::checkbox('is_staff', 0, $shop->id ? $shop->is_staff : 0, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
+    {!! Form::checkbox('is_staff', 1, $shop->id ? $shop->is_staff : 0, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
     {!! Form::label('is_staff', 'For staff?', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If turned on, the shop will not be visible to regular users, only staff.') !!}
 </div>
 
@@ -55,6 +55,20 @@
 {!! Form::close() !!}
 
 @if($shop->id)
+{!! Form::open(['url' => 'admin/data/shops/restrictions/'.$shop->id]) !!}
+    <h3>Restrict Shop</h3>
+        <div class="form-group">
+            {!! Form::checkbox('is_restricted', 0, $shop->is_restricted, ['class' => 'is-restricted-class form-check-input', 'data-toggle' => 'toggle']) !!}
+            {!! Form::label('is_restricted', 'Should this shop require an item to enter?', ['class' => 'is-restricted-label form-check-label ml-3']) !!} {!! add_help('If turned on, the shop will not be visible to regular users, only staff.') !!}
+        </div>
+
+    <div class="br-form-group" style="display: none">
+        <div><a href="#" class="btn btn-primary mb-3" id="add-feature">Add Item Requirement</a></div>
+
+            <div id="featureList" class="form-group">
+        </div>
+    </div>
+
     <h3>Shop Stock</h3>
     {!! Form::open(['url' => 'admin/data/shops/stock/'.$shop->id]) !!}
         <div class="text-right mb-3">
@@ -74,6 +88,13 @@
     </div>
 @endif
 
+<div class="feature-row mb-2 hide">
+    {!! Form::label('item_id', 'Item', ['class' => 'col-form-label']) !!}
+        <div class="col-4">
+            {!! Form::select('item_id[]', $items, null, ['class' => 'form-control', 'placeholder' => 'Enter Cost']) !!}
+        </div>
+        <a href="#" class="remove-feature btn btn-danger">Remove</a>
+</div>
 @endsection
 
 @section('scripts')
@@ -125,6 +146,36 @@ $( document ).ready(function() {
                 $(this).attr('name', $(this).data('name') + '[' + key + ']');
             });
         });
+    }
+
+    $('.is-restricted-class').change(function(e){
+            console.log(this.checked)
+            $('.br-form-group').css('display',this.checked ? 'block' : 'none')
+                })
+            $('.br-form-group').css('display',$('.is-restricted-class').prop('checked') ? 'block' : 'none')
+        });
+
+    $('#add-feature').on('click', function(e) {
+        e.preventDefault();
+        addFeatureRow();
+    });
+    $('.remove-feature').on('click', function(e) {
+        e.preventDefault();
+        removeFeatureRow($(this));
+    })
+    function addFeatureRow() {
+        var $clone = $('.feature-row').clone();
+        $('#featureList').append($clone);
+        $clone.removeClass('hide feature-row');
+        $clone.addClass('d-flex');
+        $clone.find('.remove-feature').on('click', function(e) {
+            e.preventDefault();
+            removeFeatureRow($(this));
+        })
+        $clone.find('.feature-select').selectize();
+    }
+    function removeFeatureRow($trigger) {
+        $trigger.parent().remove();
     }
 });
     

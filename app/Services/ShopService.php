@@ -217,4 +217,23 @@ class ShopService extends Service
         }
         return $this->rollbackReturn(false);
     }
+
+    public function restrictShop($data, $id) 
+    {
+        DB::beginTransaction();
+
+        try {
+
+            $shop = Shop::find($id);
+            $shop->is_restricted = $data['is_restricted'];
+            $shop->save();
+
+            
+            return $this->commitReturn(true);
+        } catch(\Exception $e) { 
+            $this->setError('error', $e->getMessage());
+        }
+        return $this->rollbackReturn(false);
+    }
+    }
 }
