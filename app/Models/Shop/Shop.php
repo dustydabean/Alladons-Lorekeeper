@@ -67,6 +67,11 @@ class Shop extends Model
         return $this->belongsToMany('App\Models\Item\Item', 'shop_stock')->withPivot('item_id', 'currency_id', 'cost', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'purchase_limit', 'id');
     }
 
+    public function limits()
+    {
+        return $this->hasMany('App\Models\Shop\ShopLimit', 'shop_id');
+    }
+
     /**********************************************************************************************
     
         ACCESSORS

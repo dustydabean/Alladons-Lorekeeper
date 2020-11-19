@@ -6,6 +6,7 @@ use DB;
 use Config;
 
 use App\Models\Shop\Shop;
+use App\Models\Shop\ShopLimit;
 use App\Models\Shop\ShopStock;
 
 class ShopService extends Service
@@ -228,12 +229,23 @@ class ShopService extends Service
             $shop->is_restricted = $data['is_restricted'];
             $shop->save();
 
-            
+            $shop->limits()->delete();
+
+            if(isset($data['item_id'])) {
+                foreach($data['item_id'] as $key => $type)
+                {
+                    ShopLimit::create([
+                        'shop_id'       => $shop->id,
+                        'item_id' => $type,
+                    ]);
+                }
+            }
+
+
             return $this->commitReturn(true);
         } catch(\Exception $e) { 
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);
-    }
     }
 }

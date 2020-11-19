@@ -173,6 +173,7 @@ class ShopController extends Controller
         $data = $request->only([
             'item_id', 'is_restricted'
         ]);
+
         if($service->restrictShop($data, $id)) {
             flash('Shop limits updated successfully.')->success();
         }

@@ -58,8 +58,20 @@
 {!! Form::open(['url' => 'admin/data/shops/restrictions/'.$shop->id]) !!}
     <h3>Restrict Shop</h3>
         <div class="form-group">
-            {!! Form::checkbox('is_restricted', 0, $shop->is_restricted, ['class' => 'is-restricted-class form-check-input', 'data-toggle' => 'toggle']) !!}
+            {!! Form::checkbox('is_restricted', 1, $shop->is_restricted, ['class' => 'is-restricted-class form-check-label', 'data-toggle' => 'toggle']) !!}
             {!! Form::label('is_restricted', 'Should this shop require an item to enter?', ['class' => 'is-restricted-label form-check-label ml-3']) !!} {!! add_help('If turned on, the shop will not be visible to regular users, only staff.') !!}
+        </div>
+
+        <div class="form-group">
+            <div class="row">
+                @foreach($shop->limits as $limit)
+                    {!! Form::label('item_id', 'Item', ['class' => 'col-form-label']) !!}
+                        <div class="col-4">
+                            {!! Form::select('item_id[]', $items, $limit->item_id, ['class' => 'form-control', 'placeholder' => 'Select Item']) !!}
+                        </div>
+                    <a href="#" class="remove-feature btn btn-danger">Remove</a>
+                @endforeach
+            </div>
         </div>
 
     <div class="br-form-group" style="display: none">
@@ -68,6 +80,11 @@
             <div id="featureList" class="form-group">
         </div>
     </div>
+    <div class="text-right">
+        {!! Form::submit('Edit', ['class' => 'btn btn-primary']) !!}
+    </div>
+
+    {!! Form::close() !!}
 
     <h3>Shop Stock</h3>
     {!! Form::open(['url' => 'admin/data/shops/stock/'.$shop->id]) !!}
@@ -91,7 +108,7 @@
 <div class="feature-row mb-2 hide">
     {!! Form::label('item_id', 'Item', ['class' => 'col-form-label']) !!}
         <div class="col-4">
-            {!! Form::select('item_id[]', $items, null, ['class' => 'form-control', 'placeholder' => 'Enter Cost']) !!}
+            {!! Form::select('item_id[]', $items, null, ['class' => 'form-control', 'placeholder' => 'Select Item']) !!}
         </div>
         <a href="#" class="remove-feature btn btn-danger">Remove</a>
 </div>
@@ -148,13 +165,6 @@ $( document ).ready(function() {
         });
     }
 
-    $('.is-restricted-class').change(function(e){
-            console.log(this.checked)
-            $('.br-form-group').css('display',this.checked ? 'block' : 'none')
-                })
-            $('.br-form-group').css('display',$('.is-restricted-class').prop('checked') ? 'block' : 'none')
-        });
-
     $('#add-feature').on('click', function(e) {
         e.preventDefault();
         addFeatureRow();
@@ -162,7 +172,8 @@ $( document ).ready(function() {
     $('.remove-feature').on('click', function(e) {
         e.preventDefault();
         removeFeatureRow($(this));
-    })
+    });
+
     function addFeatureRow() {
         var $clone = $('.feature-row').clone();
         $('#featureList').append($clone);
@@ -177,6 +188,12 @@ $( document ).ready(function() {
     function removeFeatureRow($trigger) {
         $trigger.parent().remove();
     }
+
+    $('.is-restricted-class').change(function(e){
+            console.log(this.checked)
+            $('.br-form-group').css('display',this.checked ? 'block' : 'none')
+                })
+            $('.br-form-group').css('display',$('.is-restricted-class').prop('checked') ? 'block' : 'none')
 });
     
 </script>
