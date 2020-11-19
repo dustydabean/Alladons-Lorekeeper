@@ -49,6 +49,10 @@ class ShopController extends Controller
     {
         $categories = ItemCategory::orderBy('sort', 'DESC')->get();
         $shop = Shop::where('id', $id)->where('is_active', 1)->first();
+        if($shop->is_staff) {
+            if(!Auth::check()) abort(404);
+            if(!Auth::user()->isStaff) abort(404);
+        }
         if(!$shop) abort(404);
         $items = count($categories) ? $shop->displayStock()->orderByRaw('FIELD(item_category_id,'.implode(',', $categories->pluck('id')->toArray()).')')->orderBy('name')->get()->groupBy('item_category_id') : $shop->displayStock()->orderBy('name')->get()->groupBy('item_category_id');
         return view('shops.shop', [
