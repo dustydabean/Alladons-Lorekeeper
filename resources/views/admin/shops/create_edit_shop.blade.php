@@ -62,21 +62,20 @@
             {!! Form::label('is_restricted', 'Should this shop require an item to enter?', ['class' => 'is-restricted-label form-check-label ml-3']) !!} {!! add_help('If turned on, the shop will not be visible to regular users, only staff.') !!}
         </div>
 
+    <div class="br-form-group" style="display: none">
+        <div><a href="#" class="btn btn-primary mb-3" id="add-feature">Add Item Requirement</a></div>
+
         <div class="form-group">
-            <div class="row">
                 @foreach($shop->limits as $limit)
+                <div class="row mb-2">
                     {!! Form::label('item_id', 'Item', ['class' => 'col-form-label']) !!}
                         <div class="col-4">
                             {!! Form::select('item_id[]', $items, $limit->item_id, ['class' => 'form-control', 'placeholder' => 'Select Item']) !!}
                         </div>
                     <a href="#" class="remove-feature btn btn-danger">Remove</a>
+                </div>
                 @endforeach
-            </div>
         </div>
-
-    <div class="br-form-group" style="display: none">
-        <div><a href="#" class="btn btn-primary mb-3" id="add-feature">Add Item Requirement</a></div>
-
             <div id="featureList" class="form-group">
         </div>
     </div>

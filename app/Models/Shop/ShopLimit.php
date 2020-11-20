@@ -22,4 +22,16 @@ class ShopLimit extends Model
      * @var string
      */
     protected $table = 'shop_limits';
+
+    /**********************************************************************************************
+    
+        RELATIONS
+
+    **********************************************************************************************/
+
+    public function item()
+    {
+        return $this->belongsTo('App\Models\Item\Item', 'item_id');
+    }
+
 }

@@ -18,7 +18,7 @@
                     <a href="{{ $shop->url }}"><img src="{{ $shop->shopImageUrl }}" /></a>
                 </div>
                 <div class="shop-name mt-1">
-                    <i class="fas fa-crown mr-1"></i><a href="{{ $shop->url }}" class="h5 mb-0">{{ $shop->name }}</a>
+                    <a href="{{ $shop->url }}" class="h5 mb-0"><i class="fas fa-crown mr-1"></i>{{ $shop->name }}</a>
                 </div>
             </div>
             @endif

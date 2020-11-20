@@ -10,11 +10,13 @@ use App\Http\Controllers\Controller;
 use App\Services\ShopManager;
 
 use App\Models\Shop\Shop;
+use App\Models\Shop\ShopLimit;
 use App\Models\Shop\ShopStock;
 use App\Models\Shop\ShopLog;
 use App\Models\Item\Item;
 use App\Models\Currency\Currency;
 use App\Models\Item\ItemCategory;
+use App\Models\User\UserItem;
 
 class ShopController extends Controller
 {
@@ -49,9 +51,23 @@ class ShopController extends Controller
     {
         $categories = ItemCategory::orderBy('sort', 'DESC')->get();
         $shop = Shop::where('id', $id)->where('is_active', 1)->first();
+
         if($shop->is_staff) {
             if(!Auth::check()) abort(404);
             if(!Auth::user()->isStaff) abort(404);
+        }
+
+        if($shop->is_restricted) {
+            foreach($shop->limits as $limit)
+            {
+                $item = $limit->item_id;
+                $check = UserItem::where('item_id', $item)->where('user_id', auth::user()->id)->where('count', '>', 0)->first();
+
+                if(!$check) {
+                flash('You require a ' . $limit->item->name . ' to enter this store.')->error();
+                return redirect()->to('/shops');
+                }
+            }
         }
         if(!$shop) abort(404);
         $items = count($categories) ? $shop->displayStock()->orderByRaw('FIELD(item_category_id,'.implode(',', $categories->pluck('id')->toArray()).')')->orderBy('name')->get()->groupBy('item_category_id') : $shop->displayStock()->orderBy('name')->get()->groupBy('item_category_id');
