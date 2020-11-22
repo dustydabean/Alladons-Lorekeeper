@@ -61,7 +61,10 @@ class ShopManager extends Service
                 
                 $tag = $item->tags()->where('tag', 'Coupon')->first();
                 $coupon = $tag->data;
-                $total_cost = ($coupon['discount'] / 100) * ($shopStock->cost * $quantity);
+                $minus = ($coupon['discount'] / 100) * ($shopStock->cost * $quantity);
+                $base = ($shopStock->cost * $quantity);
+                $new = $base - $minus;
+                $total_cost =  round($new);
             }
             else {
                 $total_cost = $shopStock->cost * $quantity;
