@@ -46,7 +46,8 @@ class ShopController extends Controller
     public function getCreateShop()
     {
         return view('admin.shops.create_edit_shop', [
-            'shop' => new Shop
+            'shop' => new Shop,
+            'items' => Item::orderBy('name')->pluck('name', 'id')
         ]);
     }
     
@@ -79,7 +80,7 @@ class ShopController extends Controller
     {
         $id ? $request->validate(Shop::$updateRules) : $request->validate(Shop::$createRules);
         $data = $request->only([
-            'name', 'description', 'image', 'remove_image', 'is_active', 'is_staff'
+            'name', 'description', 'image', 'remove_image', 'is_active', 'is_staff', 'use_coupons'
         ]);
         if($id && $service->updateShop(Shop::find($id), $data, Auth::user())) {
             flash('Shop updated successfully.')->success();

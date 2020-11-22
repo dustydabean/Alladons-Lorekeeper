@@ -1,9 +1,9 @@
 <h3>Coupon</h3>
 
-<p>Select the shops this coupon should allowed to be used in.</p>
+<h4>Discount</h4>
+<p>Input discount percent. You can select what coupons can be used in each shop on the shop edit page.</p>
 
-<h3>Shops</h3>
     <div class="form-group">
-        {!! Form::label('Name') !!} {!! add_help('Enter a descriptive name for the type of character this slot can create, e.g. Rare MYO Slot. This will be listed on the MYO slot masterlist.') !!}
-        {!! Form::select('name', $tag->getData(), null, ['shop'], ['class' => 'form-control', 'placeholder' => 'Select Shop']) !!}
+        {!! Form::label('discount', 'Discount') !!}
+        {!! Form::number('discount', null, ['class' => 'form-control', 'placeholder' => 'Input Discount Percent', 'min' => 1, 'max' => 100 ]) !!} 
     </div>

@@ -48,6 +48,11 @@
     {!! Form::label('is_staff', 'For staff?', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If turned on, the shop will not be visible to regular users, only staff.') !!}
 </div>
 
+<div class="form-group">
+    {!! Form::checkbox('use_coupons', 1, $shop->id ? $shop->use_coupons : 0, ['class' => 'form-check-label', 'data-toggle' => 'toggle']) !!}
+    {!! Form::label('use_coupons', 'Allow coupons?', ['class' => 'form-check-label ml-3']) !!} {!! add_help('Note that ALL coupons will be allowed to be used.') !!}
+</div>
+
 <div class="text-right">
     {!! Form::submit($shop->id ? 'Edit' : 'Create', ['class' => 'btn btn-primary']) !!}
 </div>
@@ -59,7 +64,7 @@
     <h3>Restrict Shop</h3>
         <div class="form-group">
             {!! Form::checkbox('is_restricted', 1, $shop->is_restricted, ['class' => 'is-restricted-class form-check-label', 'data-toggle' => 'toggle']) !!}
-            {!! Form::label('is_restricted', 'Should this shop require an item to enter?', ['class' => 'is-restricted-label form-check-label ml-3']) !!} {!! add_help('If turned on, the shop will not be visible to regular users, only staff.') !!}
+            {!! Form::label('is_restricted', 'Should this shop require an item to enter?', ['class' => 'is-restricted-label form-check-label ml-3']) !!} {!! add_help('If turned on, the shop will cannot be entered unless the user currently owns all required items.') !!}
         </div>
 
     <div class="br-form-group" style="display: none">

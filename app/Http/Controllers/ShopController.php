@@ -14,6 +14,7 @@ use App\Models\Shop\ShopLimit;
 use App\Models\Shop\ShopStock;
 use App\Models\Shop\ShopLog;
 use App\Models\Item\Item;
+use App\Models\Item\ItemTag;
 use App\Models\Currency\Currency;
 use App\Models\Item\ItemCategory;
 use App\Models\User\UserItem;
@@ -101,10 +102,20 @@ class ShopController extends Controller
             $purchaseLimitReached = $service->checkPurchaseLimitReached($stock, Auth::user());
         }
 
+        if($shop->use_coupons) {
+            $couponId = ItemTag::where('tag', 'coupon')->get();
+            foreach($couponId as $ids) {
+            $coupons = Item::find($ids->item_id);
+            $check = UserItem::where('item_id', $ids->item_id)->where('user_id', auth::user()->id)->where('count', '>', 0)->first();
+            }
+        }
+
         if(!$shop) abort(404);
         return view('shops._stock_modal', [
             'shop' => $shop,
             'stock' => $stock,
+            'coupons' => $coupons,
+            'userCoupons' => $check,
             'quantityLimit' => $quantityLimit,
             'userPurchaseCount' => $userPurchaseCount,
             'purchaseLimitReached' => $purchaseLimitReached

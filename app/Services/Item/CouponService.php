@@ -23,7 +23,7 @@ class CouponService extends Service
     public function getEditData()
     {
         return [
-            'shops' => ['0' => 'Select Shop'] + Shop::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'shops' => Shop::orderBy('name')->pluck('name', 'id'),
         ];
     }
 
@@ -35,13 +35,34 @@ class CouponService extends Service
      */
     public function getTagData($tag)
     {
-        //fetch data from DB, if there is no data then set to NULL instead
         $couponData = [];
-        $couponData['shops']
+        $couponData['discount'] = isset($tag->data['discount']) ? $tag->data['discount'] : null;
+        $coupondData['shops'] = isset($tag->data['shops']) ? $tag->data['shops'] : null;
 
         return $couponData;
+
     }
 
+    /**
+     * Processes the data attribute of the tag and returns it in the preferred format.
+     *
+     * @param  string  $tag
+     * @param  array   $data
+     * @return bool
+     */
+    public function updateData($tag, $data)
+    {
+        DB::beginTransaction();
 
+        try {
 
+            $coupon['discount'] = $data['discount'];
+            $tag->update(['data' => json_encode($coupon)]);
+
+            return $this->commitReturn(true);
+        } catch(\Exception $e) { 
+            $this->setError('error', $e->getMessage());
+        }
+        return $this->rollbackReturn(false);
+    }
 }

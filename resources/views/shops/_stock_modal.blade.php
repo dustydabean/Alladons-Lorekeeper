@@ -20,6 +20,10 @@
         </div>
     @endif
 
+    @if($stock->shop->use_coupons)
+        <div class="alert alert-success">You can use coupons in this store!</div>
+    @endif
+
     @if(Auth::check())
         <h5>Purchase</h5>
         @if($stock->is_limited_stock && $stock->quantity == 0)
@@ -63,6 +67,17 @@
                         {!! Form::text('slug', null, ['class' => 'form-control']) !!}
                     </div>
                 @endif
+                @if($stock->shop->use_coupons && $userCoupons !== Null)
+                <div class="form-group">
+                    {!! Form::checkbox('use_coupon', 1,  0, ['class' => 'is-coupon-class form-check-label', 'data-toggle' => 'toggle']) !!}
+                    {!! Form::label('use_coupon', 'Do you want to use a coupon?', ['class' => 'form-check-label  ml-3 mb-2']) !!}
+                </div>
+                <div class="br-form-group" style="display: none">
+                    {!! Form::select('coupon', $userCoupons, null, ['class' => 'form-check-label', 'placeholder' => 'Select Coupon']) !!}
+                </div>
+                @elseif($stock->shop->use_coupons && $userCoupons == Null)
+                <div class="alert alert-danger">You do not own any coupons.</div>
+                @endif
                 <div class="text-right">
                     {!! Form::submit('Purchase', ['class' => 'btn btn-primary']) !!}
                 </div>
@@ -81,6 +96,14 @@
                 $useCharacterBank.removeClass('hide');
             else 
                 $useCharacterBank.addClass('hide');
+        });
+
+    $( document ).ready(function() {
+        $('.is-coupon-class').change(function(e){
+            console.log(this.checked)
+            $('.br-form-group').css('display',this.checked ? 'block' : 'none')
+                })
+            $('.br-form-group').css('display',$('.is-restricted-class').prop('checked') ? 'block' : 'none')
         });
 
     </script>
