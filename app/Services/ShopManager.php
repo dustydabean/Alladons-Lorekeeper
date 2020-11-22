@@ -63,6 +63,9 @@ class ShopManager extends Service
                 $coupon = $tag->data;
                 $minus = ($coupon['discount'] / 100) * ($shopStock->cost * $quantity);
                 $base = ($shopStock->cost * $quantity);
+                if($base <= 0) {
+                    throw new \Exception("Cannot use a coupon on an item that is free.");
+                }
                 $new = $base - $minus;
                 $total_cost =  round($new);
             }
