@@ -103,18 +103,16 @@ class ShopController extends Controller
         }
 
         if($shop->use_coupons) {
-            $couponId = ItemTag::where('tag', 'coupon')->get();
-            foreach($couponId as $ids) {
-            $coupons = Item::find($ids->item_id);
-            $check = UserItem::where('item_id', $ids->item_id)->where('user_id', auth::user()->id)->where('count', '>', 0)->first();
-            }
+            $couponId = ItemTag::where('tag', 'coupon')->where('is_active', 1); // Removed get()
+            $itemIds = $couponId->pluck('item_id'); // Could be combined with above
+            $check = UserItem::with('item')->whereIn('item_id', $itemIds)->where('user_id', auth::user()->id)->where('count', '>', 0)->get()->pluck('item.name', 'id');
         }
 
         if(!$shop) abort(404);
         return view('shops._stock_modal', [
             'shop' => $shop,
             'stock' => $stock,
-            'coupons' => $coupons,
+            'items' => $itemIds,
             'userCoupons' => $check,
             'quantityLimit' => $quantityLimit,
             'userPurchaseCount' => $userPurchaseCount,
@@ -132,7 +130,7 @@ class ShopController extends Controller
     public function postBuy(Request $request, ShopManager $service)
     {
         $request->validate(ShopLog::$createRules);
-        if($service->buyStock($request->only(['stock_id', 'shop_id', 'slug', 'bank', 'quantity']), Auth::user())) {
+        if($service->buyStock($request->only(['stock_id', 'shop_id', 'slug', 'bank', 'quantity', 'use_coupon', 'coupon']), Auth::user())) {
             flash('Successfully purchased item.')->success();
         }
         else {

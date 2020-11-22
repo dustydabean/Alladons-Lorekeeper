@@ -9,6 +9,9 @@ use App\Models\Character\Character;
 use App\Models\Shop\Shop;
 use App\Models\Shop\ShopStock;
 use App\Models\Shop\ShopLog;
+use App\Models\User\UserItem;
+use App\Models\Item\Item;
+use App\Models\Item\ItemTag;
 
 class ShopManager extends Service
 {
@@ -50,7 +53,19 @@ class ShopManager extends Service
             // Check if the user can only buy a limited number of this item, and if it does, check that the user hasn't hit the limit
             if($shopStock->purchase_limit && $this->checkPurchaseLimitReached($shopStock, $user)) throw new \Exception("You have already purchased the maximum amount of this item you can buy.");
 
-            $total_cost = $shopStock->cost * $quantity;
+
+            if(isset($data['use_coupon'])) {
+                $userItem = UserItem::find($data['coupon']);
+                $item = Item::find($userItem->item_id);
+                if(!(new InventoryManager)->debitStack($user, 'Coupon Used', ['data' => 'Coupon used in purchase of ' . $shopStock->item->name . ' from ' . $shop->name], $userItem, 1)) throw new \Exception("Failed to remove coupon.");
+                
+                $tag = $item->tags()->where('tag', 'Coupon')->first();
+                $coupon = $tag->data;
+                $total_cost = ($coupon['discount'] / 100) * ($shopStock->cost * $quantity);
+            }
+            else {
+                $total_cost = $shopStock->cost * $quantity;
+            }
 
             $character = null;
             if($data['bank'] == 'character')

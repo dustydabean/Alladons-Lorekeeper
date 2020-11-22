@@ -29,8 +29,7 @@
                             $limits[] = $name;
                             }
                             echo implode(", ", $limits);
-                        ?>
-                        )</div>
+                        ?>)</div>
                     @endif
                 </div>
             </div>

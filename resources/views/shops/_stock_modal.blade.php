@@ -69,11 +69,11 @@
                 @endif
                 @if($stock->shop->use_coupons && $userCoupons !== Null)
                 <div class="form-group">
-                    {!! Form::checkbox('use_coupon', 1,  0, ['class' => 'is-coupon-class form-check-label', 'data-toggle' => 'toggle']) !!}
+                    {!! Form::checkbox('use_coupon', 1,  0, ['class' => 'is-coupon-class form-control', 'data-toggle' => 'toggle']) !!}
                     {!! Form::label('use_coupon', 'Do you want to use a coupon?', ['class' => 'form-check-label  ml-3 mb-2']) !!}
                 </div>
                 <div class="br-form-group" style="display: none">
-                    {!! Form::select('coupon', $userCoupons, null, ['class' => 'form-check-label', 'placeholder' => 'Select Coupon']) !!}
+                    {!! Form::select('coupon', $userCoupons, null, ['class' => 'form-control mb-2', 'placeholder' => 'Select a Coupon to Use']) !!}
                 </div>
                 @elseif($stock->shop->use_coupons && $userCoupons == Null)
                 <div class="alert alert-danger">You do not own any coupons.</div>

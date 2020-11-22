@@ -5,5 +5,5 @@
 
     <div class="form-group">
         {!! Form::label('discount', 'Discount') !!}
-        {!! Form::number('discount', null, ['class' => 'form-control', 'placeholder' => 'Input Discount Percent', 'min' => 1, 'max' => 100 ]) !!} 
+        {!! Form::number('discount', ($tag->getData()['discount']), ['class' => 'form-control', 'placeholder' => 'Input Discount Percent', 'min' => 1, 'max' => 100 ]) !!} 
     </div>
