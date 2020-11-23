@@ -4,6 +4,7 @@ use App\Services\Service;
 
 use DB;
 use Config;
+use Settings;
 
 use App\Models\Character\Character;
 use App\Models\Shop\Shop;
@@ -55,19 +56,35 @@ class ShopManager extends Service
 
 
             if(isset($data['use_coupon'])) {
+                // finding the users tag
                 $userItem = UserItem::find($data['coupon']);
+                // finding bought item
                 $item = Item::find($userItem->item_id);
-                if(!(new InventoryManager)->debitStack($user, 'Coupon Used', ['data' => 'Coupon used in purchase of ' . $shopStock->item->name . ' from ' . $shop->name], $userItem, 1)) throw new \Exception("Failed to remove coupon.");
-                
                 $tag = $item->tags()->where('tag', 'Coupon')->first();
                 $coupon = $tag->data;
-                $minus = ($coupon['discount'] / 100) * ($shopStock->cost * $quantity);
-                $base = ($shopStock->cost * $quantity);
-                if($base <= 0) {
-                    throw new \Exception("Cannot use a coupon on an item that is free.");
+
+                // if the coupon isn't infinite kill it
+                if(!$coupon['infinite']) {
+                    if(!(new InventoryManager)->debitStack($user, 'Coupon Used', ['data' => 'Coupon used in purchase of ' . $shopStock->item->name . ' from ' . $shop->name], $userItem, 1)) throw new \Exception("Failed to remove coupon.");
                 }
-                $new = $base - $minus;
-                $total_cost =  round($new);
+                if(!Settings::get('coupon_settings')) {
+                    $minus = ($coupon['discount'] / 100) * ($shopStock->cost * $quantity);
+                    $base = ($shopStock->cost * $quantity);
+                        if($base <= 0) {
+                            throw new \Exception("Cannot use a coupon on an item that is free.");
+                        }
+                    $new = $base - $minus;
+                    $total_cost =  round($new);
+                }
+                else {
+                    $minus = ($coupon['discount'] / 100) * ($shopStock->cost);
+                    $base = ($shopStock->cost * $quantity);
+                        if($base <= 0) {
+                            throw new \Exception("Cannot use a coupon on an item that is free.");
+                        }
+                    $new = $base - $minus;
+                    $total_cost =  round($new);
+                }
             }
             else {
                 $total_cost = $shopStock->cost * $quantity;

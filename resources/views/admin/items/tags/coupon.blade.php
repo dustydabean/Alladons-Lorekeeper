@@ -7,3 +7,8 @@
         {!! Form::label('discount', 'Discount') !!}
         {!! Form::number('discount', ($tag->getData()['discount']), ['class' => 'form-control', 'placeholder' => 'Input Discount Percent', 'min' => 1, 'max' => 100 ]) !!} 
     </div>
+
+    <div class="form-group">
+        {!! Form::checkbox('infinite', 1, ($tag->getData()['infinite']), ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!} 
+        {!! Form::label('infinite', 'Should this coupon be unlimited use?', ['class' => 'ml-3 form-check-label']) !!}
+    </div>

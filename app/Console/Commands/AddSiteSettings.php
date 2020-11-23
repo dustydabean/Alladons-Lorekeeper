@@ -214,6 +214,19 @@ class AddSiteSettings extends Command
         }
         else $this->line("Skipped: admin_user");
 
+        if(!DB::table('site_settings')->where('key', 'coupon_settings')->exists()) {
+            DB::table('site_settings')->insert([
+                [
+                    'key' => 'coupon_settings',
+                    'value' => 0,
+                    'description' => '0: Percentage is taken from total (e.g 20% from 2 items costing a total of 100 = 80), 1: Percentage is taken from item (e.g 20% from 2 items costing a total of 100 = 90)'
+                ]
+
+            ]);
+            $this->info("Added:   coupon_settings / Default: 0");
+        }
+        else $this->line("Skipped: coupon_settings");
+
         $this->line("\nSite settings up to date!");
         
     }

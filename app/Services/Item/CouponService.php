@@ -23,7 +23,7 @@ class CouponService extends Service
     public function getEditData()
     {
         return [
-            'shops' => Shop::orderBy('name')->pluck('name', 'id'),
+            
         ];
     }
 
@@ -37,7 +37,7 @@ class CouponService extends Service
     {
         $couponData = [];
         $couponData['discount'] = isset($tag->data['discount']) ? $tag->data['discount'] : null;
-        $coupondData['shops'] = isset($tag->data['shops']) ? $tag->data['shops'] : null;
+        $couponData['infinite'] = isset($tag->data['infinite']) ? $tag->data['infinite'] : null;
 
         return $couponData;
 
@@ -55,8 +55,10 @@ class CouponService extends Service
         DB::beginTransaction();
 
         try {
+            if(!isset($data['infinite'])) $data['infinite'] = 0;
 
             $coupon['discount'] = $data['discount'];
+            $coupon['infinite'] = $data['infinite'];
             $tag->update(['data' => json_encode($coupon)]);
 
             return $this->commitReturn(true);
