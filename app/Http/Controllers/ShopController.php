@@ -112,7 +112,6 @@ class ShopController extends Controller
         return view('shops._stock_modal', [
             'shop' => $shop,
             'stock' => $stock,
-            'items' => $itemIds,
             'userCoupons' => $check,
             'quantityLimit' => $quantityLimit,
             'userPurchaseCount' => $userPurchaseCount,
