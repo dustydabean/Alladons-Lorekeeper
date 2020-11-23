@@ -107,6 +107,9 @@ class ShopController extends Controller
             $itemIds = $couponId->pluck('item_id'); // Could be combined with above
             $check = UserItem::with('item')->whereIn('item_id', $itemIds)->where('user_id', auth::user()->id)->where('count', '>', 0)->get()->pluck('item.name', 'id');
         }
+        else {
+            $check = null;
+        }
 
         if(!$shop) abort(404);
         return view('shops._stock_modal', [
