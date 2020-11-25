@@ -43,6 +43,15 @@ Route::group(['prefix' => 'inventory', 'namespace' => 'Users'], function() {
     Route::get('selector', 'InventoryController@getSelector');
 });
 
+Route::group(['prefix' => 'pets', 'namespace' => 'Users'], function() {
+    Route::get('/', 'PetController@getIndex');
+    Route::post('transfer/{id}', 'PetController@postTransfer');
+    Route::post('delete/{id}', 'PetController@postDelete');
+    Route::post('name/{id}', 'PetController@postName');
+
+    Route::get('selector', 'PetController@getSelector');
+});
+
 Route::group(['prefix' => 'characters', 'namespace' => 'Users'], function() {
     Route::get('/', 'CharacterController@getIndex');
     Route::post('sort', 'CharacterController@postSortCharacters');

@@ -3,6 +3,7 @@
 use Carbon\Carbon;
 use App\Services\Service;
 
+use Auth;
 use DB;
 use Config;
 use Notifications;
@@ -136,6 +137,34 @@ class PetManager extends Service
                     ]);
                 return $this->commitReturn(true);
             }
+        } catch(\Exception $e) { 
+            $this->setError('error', $e->getMessage());
+        }
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Names an item stack.
+     *
+     * @param  \App\Models\User\User|\App\Models\Character\Character          $owner
+     * @param  \App\Models\User\UserItem|\App\Models\Character\CharacterItem  $stacks
+     * @param  int                                                            $quantities
+     * @return bool
+     */
+    public function nameStack($pet, $name)
+    {
+        DB::beginTransaction();
+
+        try {
+                $user = Auth::user();
+                if(!$user->hasAlias) throw new \Exception("Your deviantART account must be verified before you can perform this action.");
+                if(!$pet) throw new \Exception("An invalid pet was selected.");
+                if($pet->user_id != $user->id && !$user->hasPower('edit_inventories')) throw new \Exception("You do not own this pet.");
+
+                $pet['pet_name'] = $name;
+                $pet->save();
+            
+            return $this->commitReturn(true);
         } catch(\Exception $e) { 
             $this->setError('error', $e->getMessage());
         }

@@ -77,7 +77,7 @@
             @if(count($pets))
                 <div class="row">
                     @foreach($pets as $pet)
-                        <div class="col-md-3 col-6 profile-inventory-item">
+                        <div class="col profile-inventory-item">
                             <img src="{{ $pet->imageUrl }}" data-toggle="tooltip" title="{{ $pet->name }}" />
                         </div>
                     @endforeach
@@ -86,7 +86,7 @@
                 <div>No pets owned.</div>
             @endif
         </div>
-        <div class="text-right"><a href="{{ $user->url.'/inventory' }}">View all...</a></div>
+        <div class="text-right"><a href="{{ $user->url.'/pets' }}">View all...</a></div>
     </div>
 </div>
 

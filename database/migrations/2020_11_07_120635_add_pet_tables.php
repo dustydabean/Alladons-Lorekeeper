@@ -69,7 +69,7 @@ class AddPetTables extends Migration
 
             $table->foreign('pet_id')->references('id')->on('pets');
             $table->integer('stack_id')->unsigned()->nullable();
-            $table->foreign('stack_id')->references('id')->on('user_items');
+            $table->foreign('stack_id')->references('id')->on('user_pets');
 
             $table->foreign('sender_id')->references('id')->on('users');
             $table->foreign('recipient_id')->references('id')->on('users');
