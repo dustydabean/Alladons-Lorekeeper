@@ -19,8 +19,8 @@
                 <div class="row mb-3">
                     @foreach($chunk as $pet) 
                         <?php
-                        dd( $pet->pivot->pluck('pet_name', 'id'));
-                            $stackName = $pet->pivot->pluck('pet_name', 'id')->toArray()[$pet->first()->pivot->id];
+                        $pet->pivot->pluck('pet_name', 'id');
+                            $stackName = $pet->pivot->pluck('pet_name', 'id')->toArray()[$pet->pivot->id];
                         ?>
                         <div class="col-sm-3 col-6 text-center inventory-item" data-id="{{ $pet->pivot->id }}" data-name="{{ $user->name }}'s {{ $pet->name }}">
                             <div class="mb-1">
