@@ -80,7 +80,7 @@ class ShopController extends Controller
     {
         $id ? $request->validate(Shop::$updateRules) : $request->validate(Shop::$createRules);
         $data = $request->only([
-            'name', 'description', 'image', 'remove_image', 'is_active', 'is_staff', 'use_coupons'
+            'name', 'description', 'image', 'remove_image', 'is_active', 'is_staff', 'use_coupons', 'is_fto'
         ]);
         if($id && $service->updateShop(Shop::find($id), $data, Auth::user())) {
             flash('Shop updated successfully.')->success();
@@ -106,7 +106,7 @@ class ShopController extends Controller
     public function postEditShopStock(Request $request, ShopService $service, $id)
     {
         $data = $request->only([
-            'shop_id', 'item_id', 'currency_id', 'cost', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'purchase_limit'
+            'shop_id', 'item_id', 'currency_id', 'cost', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'purchase_limit', 'is_fto'
         ]);
         if($service->updateShopStock(Shop::find($id), $data, Auth::user())) {
             flash('Shop stock updated successfully.')->success();

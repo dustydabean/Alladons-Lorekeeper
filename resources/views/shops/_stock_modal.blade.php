@@ -25,6 +25,7 @@
     @endif
 
     @if(Auth::check())
+    @if($stock->is_fto && Auth::user()->settings->is_fto || !$stock->is_fto)
         <h5>Purchase</h5>
         @if($stock->is_limited_stock && $stock->quantity == 0)
             <div class="alert alert-warning mb-0">This item is out of stock.</div>
@@ -82,6 +83,9 @@
                     {!! Form::submit('Purchase', ['class' => 'btn btn-primary']) !!}
                 </div>
             {!! Form::close() !!}
+        @endif
+        @else
+        <div class="alert alert-danger">You must be a FTO to purchase this item.</div>
         @endif
     @else 
         <div class="alert alert-danger">You must be logged in to purchase this item.</div>

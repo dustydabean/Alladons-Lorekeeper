@@ -70,6 +70,18 @@ class ShopController extends Controller
                 }
             }
         }
+
+        if($shop->is_fto) {
+            if(!Auth::check()) {
+                flash('You must be logged in to enter this shop.')->error();
+                return redirect()->to('/shops');
+            }
+            if(!Auth::user()->settings->is_fto  && !Auth::user()->isStaff) {
+                flash('You must be a FTO to enter this shop.')->error();
+                return redirect()->to('/shops');
+            }
+        }
+        
         if(!$shop) abort(404);
         $items = count($categories) ? $shop->displayStock()->orderByRaw('FIELD(item_category_id,'.implode(',', $categories->pluck('id')->toArray()).')')->orderBy('name')->get()->groupBy('item_category_id') : $shop->displayStock()->orderBy('name')->get()->groupBy('item_category_id');
         return view('shops.shop', [

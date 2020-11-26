@@ -31,6 +31,12 @@
                 </div>
             </div>
         </div>
+
+        <div class="form-group">
+            {!! Form::checkbox('is_fto['.$key.']', 1, $stock ? $stock->is_fto : false, ['class' => 'form-check-input stock-toggle stock-field', 'data-name' => 'is_fto']) !!}
+            {!! Form::label('is_fto['.$key.']', 'FTO Only?', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If turned on, only FTO will be able to purchase the item.') !!}
+        </div>
+
         <div class="form-group">
             {!! Form::checkbox('is_limited_stock['.$key.']', 1, $stock ? $stock->is_limited_stock : false, ['class' => 'form-check-input stock-limited stock-toggle stock-field', 'data-name' => 'is_limited_stock']) !!}
             {!! Form::label('is_limited_stock['.$key.']', 'Set Limited Stock', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If turned on, will limit the amount purchaseable to the quantity set below.') !!}

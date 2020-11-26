@@ -127,6 +127,7 @@ class ShopService extends Service
                         'cost'                  => $data['cost'][$key],
                         'use_user_bank'         => isset($data['use_user_bank'][$key]),
                         'use_character_bank'    => isset($data['use_character_bank'][$key]),
+                        'is_fto'                => isset($data['is_fto'][$key]),
                         'is_limited_stock'      => isset($data['is_limited_stock'][$key]),
                         'quantity'              => isset($data['is_limited_stock'][$key]) ? $data['quantity'][$key] : 0,
                         'purchase_limit'        => $data['purchase_limit'][$key],
@@ -225,6 +226,7 @@ class ShopService extends Service
         DB::beginTransaction();
 
         try {
+            if(!isset($data['is_restricted'])) $data['is_restricted'] = 0;
 
             $shop = Shop::find($id);
             $shop->is_restricted = $data['is_restricted'];
@@ -241,7 +243,6 @@ class ShopService extends Service
                     ]);
                 }
             }
-
 
             return $this->commitReturn(true);
         } catch(\Exception $e) { 
