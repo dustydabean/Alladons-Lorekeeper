@@ -16,6 +16,7 @@
 
 Route::get('items/{id}', 'Users\InventoryController@getStack');
 Route::get('pets/{id}', 'Users\PetController@getStack');
+Route::get('items/character/{id}', 'Users\InventoryController@getCharacterStack');
 
 /**************************************************************************************************
     News
@@ -28,6 +29,16 @@ Route::group(['prefix' => 'news'], function() {
 });
 
 /**************************************************************************************************
+    Sales
+**************************************************************************************************/
+# PROFILES
+Route::group(['prefix' => 'sales'], function() {
+    Route::get('/', 'SalesController@getIndex');
+    Route::get('{id}.{slug?}', 'SalesController@getSales');
+    Route::get('{id}.', 'SalesController@getSales');
+});
+
+/**************************************************************************************************
     Users
 **************************************************************************************************/
 Route::get('/users', 'BrowseController@getUsers');
@@ -37,6 +48,7 @@ Route::get('/blacklist', 'BrowseController@getBlacklist');
 Route::group(['prefix' => 'user', 'namespace' => 'Users'], function() {
     Route::get('{name}', 'UserController@getUser');
     Route::get('{name}/characters', 'UserController@getUserCharacters');
+    Route::get('{name}/sublist/{key}', 'UserController@getUserSublist');
     Route::get('{name}/myos', 'UserController@getUserMyoSlots');
     Route::get('{name}/inventory', 'UserController@getUserInventory');
     Route::get('{name}/pets', 'UserController@getUserPets');
@@ -54,13 +66,16 @@ Route::group(['prefix' => 'user', 'namespace' => 'Users'], function() {
 **************************************************************************************************/
 Route::get('/masterlist', 'BrowseController@getCharacters');
 Route::get('/myos', 'BrowseController@getMyos');
+Route::get('/sublist/{key}', 'BrowseController@getSublist');
 Route::group(['prefix' => 'character', 'namespace' => 'Characters'], function() {
     Route::get('{slug}', 'CharacterController@getCharacter');
     Route::get('{slug}/profile', 'CharacterController@getCharacterProfile');
     Route::get('{slug}/bank', 'CharacterController@getCharacterBank');
+    Route::get('{slug}/inventory', 'CharacterController@getCharacterInventory');
     Route::get('{slug}/images', 'CharacterController@getCharacterImages');
     
     Route::get('{slug}/currency-logs', 'CharacterController@getCharacterCurrencyLogs');
+    Route::get('{slug}/item-logs', 'CharacterController@getCharacterItemLogs');
     Route::get('{slug}/ownership', 'CharacterController@getCharacterOwnershipLogs');
     Route::get('{slug}/change-log', 'CharacterController@getCharacterLogs');
     Route::get('{slug}/submissions', 'CharacterController@getCharacterSubmissions');
@@ -84,8 +99,10 @@ Route::group(['prefix' => 'world'], function() {
     Route::get('rarities', 'WorldController@getRarities');
     Route::get('species', 'WorldController@getSpecieses');
     Route::get('subtypes', 'WorldController@getSubtypes');
+    Route::get('species/{id}/traits', 'WorldController@getSpeciesFeatures');
     Route::get('item-categories', 'WorldController@getItemCategories');
     Route::get('items', 'WorldController@getItems');
+    Route::get('items/{id}', 'WorldController@getItem');
     Route::get('trait-categories', 'WorldController@getFeatureCategories');
     Route::get('traits', 'WorldController@getFeatures');
     Route::get('pet-categories', 'WorldController@getPetCategories');
@@ -93,6 +110,12 @@ Route::group(['prefix' => 'world'], function() {
     Route::get('prompt-categories', 'WorldController@getPromptCategories');
     Route::get('prompts', 'WorldController@getPrompts');
     Route::get('character-categories', 'WorldController@getCharacterCategories');
+});
+
+Route::group(['prefix' => 'prompts'], function() {
+    Route::get('/', 'PromptsController@getIndex');
+    Route::get('prompt-categories', 'PromptsController@getPromptCategories');
+    Route::get('prompts', 'PromptsController@getPrompts');
 });
 
 Route::group(['prefix' => 'shops'], function() {
@@ -123,3 +146,17 @@ Route::group(['prefix' => 'submissions', 'namespace' => 'Users'], function() {
 Route::group(['prefix' => 'claims', 'namespace' => 'Users'], function() {
     Route::get('view/{id}', 'SubmissionController@getClaim');
 });
+
+/**************************************************************************************************
+    Comments
+**************************************************************************************************/
+Route::get('comment/{id}', 'PermalinkController@getComment');
+
+/**************************************************************************************************
+    Reports
+**************************************************************************************************/
+Route::group(['prefix' => 'reports', 'namespace' => 'Users'], function() {
+    Route::get('/bug-reports', 'ReportController@getBugIndex');
+});
+
+

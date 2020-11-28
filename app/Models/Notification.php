@@ -146,4 +146,10 @@ class Notification extends Model
     const PET_TRANSFER                    = 41;
     const FORCED_PET_TRANSFER             = 42;
     const PET_GRANT                       = 43;
+    const REPORT_ASSIGNED                 = 220;
+    const REPORT_CLOSED                   = 221;
+    const COMMENT_MADE                    = 239;
+    const COMMENT_REPLY                   = 240;
+    const CHARACTER_ITEM_GRANT            = 501;
+    const CHARACTER_ITEM_REMOVAL          = 502;
 }
