@@ -54,6 +54,11 @@ class UserPet extends Model
         return $this->belongsTo('App\Models\Pet\Pet');
     }
 
+    public function character()
+    {
+        return $this->belongsTo('App\Models\Character\Character', 'character_id');
+    }
+
     /**********************************************************************************************
     
         ACCESSORS

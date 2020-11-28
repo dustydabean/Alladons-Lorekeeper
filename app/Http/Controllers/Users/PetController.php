@@ -12,6 +12,7 @@ use App\Models\Pet\Pet;
 use App\Models\Pet\PetCategory;
 use App\Models\Pet\PetLog;
 use App\Services\PetManager;
+use App\Models\Character\Character;
 
 use App\Http\Controllers\Controller;
 
@@ -53,10 +54,18 @@ class PetController extends Controller
     public function getStack(Request $request, $id)
     {
         $stack = UserPet::withTrashed()->where('id', $id)->with('pet')->first();
+        $chara = Character::find($stack->chara_id);
+        if(!$chara) {
+            $slug = null;
+        }
+        else {
+        $slug = $chara->slug;
+        }
         $readOnly = $request->get('read_only') ? : ((Auth::check() && $stack && !$stack->deleted_at && ($stack->user_id == Auth::user()->id || Auth::user()->hasPower('edit_inventories'))) ? 0 : 1);
 
         return view('home._pet_stack', [
             'stack' => $stack,
+            'chara' => $slug,
             'user' => Auth::user(),
             'userOptions' => ['' => 'Select User'] + User::visible()->where('id', '!=', $stack ? $stack->user_id : 0)->orderBy('name')->get()->pluck('verified_name', 'id')->toArray(),
             'readOnly' => $readOnly
@@ -118,6 +127,25 @@ class PetController extends Controller
         }
         return redirect()->back();
     }
+
+    /**
+     * Attaches an pet.
+     *
+     * @param  \Illuminate\Http\Request       $request
+     * @param  App\Services\CharacterManager  $service
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postAttach(Request $request, PetManager $service, $id)
+    {
+        if($service->attachStack(UserPet::find($id), $request->get('slug'))) {
+            flash('Pet attached successfully.')->success();
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back();
+    }
+
 
     /**
      * Shows the pet selection widget.

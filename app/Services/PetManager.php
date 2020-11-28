@@ -11,6 +11,7 @@ use Notifications;
 use App\Models\User\User;
 use App\Models\Pet\Pet;
 use App\Models\User\UserPet;
+use App\Models\Character\Character;
 
 class PetManager extends Service
 {
@@ -144,10 +145,10 @@ class PetManager extends Service
     }
 
     /**
-     * Names an item stack.
+     * Names a pet stack.
      *
-     * @param  \App\Models\User\User|\App\Models\Character\Character          $owner
-     * @param  \App\Models\User\UserItem|\App\Models\Character\CharacterItem  $stacks
+     * @param  \App\Models\User\User        $owner
+     * @param  \App\Models\User\UserPet
      * @param  int                                                            $quantities
      * @return bool
      */
@@ -162,6 +163,36 @@ class PetManager extends Service
                 if($pet->user_id != $user->id && !$user->hasPower('edit_inventories')) throw new \Exception("You do not own this pet.");
 
                 $pet['pet_name'] = $name;
+                $pet->save();
+            
+            return $this->commitReturn(true);
+        } catch(\Exception $e) { 
+            $this->setError('error', $e->getMessage());
+        }
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * attaches a pet stack.
+     *
+     * @param  \App\Models\User\User $owner
+     * @param  \App\Models\User\UserPet $stacks
+     * @param  int       $quantities
+     * @return bool
+     */
+    public function attachStack($pet, $slug)
+    {
+        DB::beginTransaction();
+
+        try {
+                $user = Auth::user();
+                $character = Character::where('slug', $slug)->first();
+                if(!$user->hasAlias) throw new \Exception("Your deviantART account must be verified before you can perform this action.");
+                if(!$pet) throw new \Exception("An invalid pet was selected.");
+                if($pet->user_id != $user->id && !$user->hasPower('edit_inventories')) throw new \Exception("You do not own this pet.");
+                if($character->user_id !== $user->id && !$user->hasPower('edit_inventories'))throw new \Exception("You do not own this character.");
+
+                $pet['chara_id'] = $character->id;
                 $pet->save();
             
             return $this->commitReturn(true);

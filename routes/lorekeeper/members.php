@@ -48,6 +48,7 @@ Route::group(['prefix' => 'pets', 'namespace' => 'Users'], function() {
     Route::post('transfer/{id}', 'PetController@postTransfer');
     Route::post('delete/{id}', 'PetController@postDelete');
     Route::post('name/{id}', 'PetController@postName');
+    Route::post('attach/{id}', 'PetController@postAttach');
 
     Route::get('selector', 'PetController@getSelector');
 });
