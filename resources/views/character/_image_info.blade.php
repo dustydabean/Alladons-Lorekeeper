@@ -79,7 +79,7 @@
                             <div class="ml-2 mr-3">
                                 <img src="{{ $pet->pet->imageUrl }}" style="max-width: 75px;"/>
                                 <br>
-                                {!! $pet->pet_name !!}
+                                <span class="text-light badge badge-dark" style="font-size:95%;">{!! $pet->pet_name !!}</span>
                             </div>
                         @endforeach
                         </div>
