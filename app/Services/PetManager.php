@@ -294,7 +294,7 @@ class PetManager extends Service
     public function createLog($senderId, $recipientId, $stackId, $type, $data, $petId, $quantity)
     {
         return DB::table('user_pets_log')->insert(
-            [
+            [       
                 'sender_id' => $senderId,
                 'recipient_id' => $recipientId,
                 'stack_id' => $stackId,

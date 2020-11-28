@@ -17,6 +17,7 @@ use App\Models\Currency\Currency;
 use App\Models\Submission\Submission;
 use App\Models\Submission\SubmissionCharacter;
 use App\Models\Prompt\Prompt;
+use App\Models\Pet\Pet;
 
 use App\Services\SubmissionManager;
 
@@ -100,6 +101,7 @@ class SubmissionController extends Controller
             'item_filter' => Item::orderBy('name')->get()->keyBy('id'),
             'items' => Item::orderBy('name')->pluck('name', 'id'),
             'currencies' => Currency::where('is_user_owned', 1)->orderBy('name')->pluck('name', 'id'),
+            'pets' => Pet::orderBy('name')->pluck('name', 'id'),
             'inventory' => $inventory,
             'page' => 'submission'
         ]));
@@ -223,6 +225,7 @@ class SubmissionController extends Controller
             'item_filter' => Item::orderBy('name')->get()->keyBy('id'),
             'items' => Item::orderBy('name')->pluck('name', 'id'),
             'currencies' => Currency::where('is_user_owned', 1)->orderBy('name')->pluck('name', 'id'),
+            'pets' => Pet::orderBy('name')->pluck('name', 'id'),
             'raffles' => Raffle::where('rolled_at', null)->where('is_active', 1)->orderBy('name')->pluck('name', 'id'),
             'page' => 'submission'
         ]));
