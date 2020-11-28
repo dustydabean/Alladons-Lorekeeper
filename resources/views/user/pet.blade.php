@@ -30,7 +30,7 @@
                                 <a href="#" class="inventory-stack inventory-stack-name">{{ $pet->name }}</a>
                             </div>
                             <div>
-                                <span class="inventory-stack inventory-stack-name badge badge-info" style="font-size:95%; margin:5px;">"{{ $stackName }}"</span>
+                                <span class="inventory-stack text-light badge badge-dark" style="font-size:95%; margin:5px;">{{ $stackName }}</span>
                             </div>
                         </div>
                     @endforeach
