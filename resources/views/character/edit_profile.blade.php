@@ -49,6 +49,10 @@
                 {!! Form::select('is_gift_writing_allowed', [0 => 'No', 1 => 'Yes', 2 => 'Ask First'], $character->is_gift_writing_allowed, ['class' => 'form-control user-select']) !!}
             </div>
         </div>
+        <div class="col-md form-group">
+            {!! Form::label('is_links_open', 'Allow Gift Writing', ['class' => 'form-check-label mb-3']) !!} {!! add_help('This will allow users to request links with your character.') !!}
+            {!! Form::checkbox('is_links_open', 1, $character->is_links_open, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
+        </div>
     @endif
     @if($character->is_tradeable ||  $character->is_sellable)
         <div class="form-group disabled">

@@ -51,6 +51,9 @@
             @if($character->is_trading)
                 <li class="list-group-item"><h5 class="mb-0"><i class="text-success far fa-circle fa-fw mr-2"></i> Open for trades</h5></li>
             @endif
+            @if($character->is_links_open)
+                <li class="list-group-item"><h5 class="mb-0"><i class="text-success far fa-circle fa-fw mr-2"></i> Open for links</h5></li>
+            @endif
         </ul>
     </div>
 @endif
