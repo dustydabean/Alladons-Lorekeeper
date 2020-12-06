@@ -61,7 +61,6 @@ class LinkService extends Service
     }
 
     public function updateInfo($data) {
-
         $types = [
             '???',
             'Acquaintence',
@@ -84,17 +83,20 @@ class LinkService extends Service
             'Significant Others',
         ];
 
-        $info = $data['info'];
-        $chara_1 = $data['chara_1'];
-        $chara_2 = $data['chara_2'];
-        $relation = CharacterRelation::where('chara_1', $chara_1)->where('chara_2', $chara_2)->first();
-
-        $type = array_search($data['type'], $types);
-
-        dd($type);
-        $relation->type = $type;
-        $relation->info = $info;
-        $relation->save();
+            $info = $data['info'];
+            $chara_1 = $data['chara_1'];
+            $chara_2 = $data['chara_2'];
+            $relation = CharacterRelation::where('chara_1', $chara_1)->where('chara_2', $chara_2)->first();
+        if(isset($data['type'])) {
+                $key = $data['type'];
+                $type = $types[$key];
+        }
+        else {
+            $type = '???';
+        }
+            $relation->type = $type;
+            $relation->info = $info;
+            $relation->save();
 
     return redirect()->back();
     }
