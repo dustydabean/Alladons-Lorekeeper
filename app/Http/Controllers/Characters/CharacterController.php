@@ -141,34 +141,8 @@ class CharacterController extends Controller
      */
     public function getCharacterLinks($slug)
     {
-        // setting up collections
-        $relation = collect([]);
-        $characters = collect([]);
-
-        // getting all links and removing the current characters ids. this lets us decide that the
-        // character will be on the left always and prevents duplicates
-        foreach($this->character->links as $link) {
-
-            // decoding the DB data to remove the character id
-        $ids = json_decode($link->data);
-
-        // remove id
-        $id = array_diff($ids->{'ids'}, array($this->character->id));
-        // put this new array into our collection
-        $relation->put("id", $id);
-        }
-
-        // here we get the character model for each id so we can use the 
-        // image and name for each
-        // need to setup way to get relation info
-        foreach($relation as $id) {
-            $chara = Character::find($id)->first();
-            $characters->put('characters', $chara);
-        }
-
         return view('character.links', [
             'character' => $this->character,
-            'relation' => $characters,
         ]);
     }
 
@@ -186,11 +160,8 @@ class CharacterController extends Controller
         $isOwner = ($this->character->user_id == Auth::user()->id);
         if(!$isMod && !$isOwner) abort(404);
 
-        // need to pass through links, relation setup?
-
         return view('character.edit_link', [
             'character' => $this->character,
-            'characterCurrencies' => Currency::where('is_character_owned', 1)->orderBy('sort_character', 'DESC')->pluck('name', 'id'),
         ]);
     }
     

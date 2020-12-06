@@ -200,6 +200,14 @@ class Character extends Model
         return $this->belongsToMany('App\Models\Item\Item', 'character_items')->withPivot('count', 'data', 'updated_at', 'id')->whereNull('character_items.deleted_at');
     }
 
+    /*
+    * Get the links for this character
+    */
+    public function links()
+    {
+       return $this->hasMany('App\Models\Character\CharacterRelation', 'chara_1');
+    }
+
     /**********************************************************************************************
     
         SCOPES
@@ -349,41 +357,6 @@ class Character extends Model
     public function getLogTypeAttribute()
     {
         return 'Character';
-    }
-
-    /*
-    * Get the links for this character
-    */
-    public function getLinksAttribute()
-    {
-        /*dd($this->hasMany('App\Models\Character\CharacterRelation', 'data')->whereJsonContains('data->ids', $this->id)->get());
-        $links = DB::table('character_relations')
-            ->where('status', 'Approved')
-            ->whereJsonContains('data->ids', $this->id)
-            ->get();
-        
-        foreach($links as $link) {
-            CharacterRelation::find($link->id);
-        }*/
-        
-        $links = DB::table('character_relations')
-            ->where('status', 'Approved')
-            ->whereJsonContains('data->ids', $this->id)
-            ->get();
-        //$this->hasMany('App\Models\Character\CharacterRelation', 'data')->whereJsonContains('data->ids', $this->id)->get()
-        return $links;
-    }
-
-    // Here we basically reassign each link to its model
-    public function getLinkAttribute()
-    {
-        $links = collect([]);
-        foreach($this->getLinksAttribute() as $link){
-            $chara = CharacterRelation::find($link->id);
-            $links->put('characters', $chara);
-        }
-
-        return $links;
     }
 
     /**********************************************************************************************

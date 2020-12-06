@@ -14,7 +14,7 @@ class CharacterRelation extends Model
      * @var array
      */
     protected $fillable = [
-        'data', 'info', 'type', 'status'
+        'chara_1', 'chara_2', 'info', 'type', 'status'
     ];
 
     /**
@@ -30,14 +30,13 @@ class CharacterRelation extends Model
 
     **********************************************************************************************/
 
-    public function getCharactersAttribute()
+    public function character()
     {
-        $characters = collect([]);
+        return $this->belongsTo('App\Models\Character\Character', 'chara_2');
+    }
 
-        $ids = json_decode($this->data);
-        $characters = Character::find($ids)->get();
-        dd($characters);
-
-        return $characters;
+    public function otherChara()
+    {
+        return $this->hasOne('App\Models\Character\CharacterRelation', 'chara_1')->where('chara_1', $this->chara_2);
     }
 }

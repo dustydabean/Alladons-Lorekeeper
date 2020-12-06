@@ -16,7 +16,8 @@ class AddCharacterLinks extends Migration
         //
         Schema::create('character_relations', function (Blueprint $table){
             $table->increments('id');
-            $table->string('data');
+            $table->integer('chara_1');
+            $table->integer('chara_2');
             $table->string('info')->nullable();
             $table->string('type')->default('???');
             $table->enum('status', ['Pending', 'Approved'])->default('Pending');

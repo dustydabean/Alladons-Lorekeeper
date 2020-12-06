@@ -22,7 +22,7 @@ class LinkService extends Service
 
     // This creates an abritrary link that serves to be made into a ''full'' link once the request is approved
     // If the character owners are the same (e.g one user owns both) the link will create and be fully developed
-    public function createLink($data, $owner = false) {
+    public function createLink($chara1, $chara2, $owner = false) {
 
     DB::beginTransaction();
 
@@ -30,13 +30,21 @@ class LinkService extends Service
 
         if($owner == True) {
             CharacterRelation::create([
-                'data' => json_encode(['ids' => $data]),
+                'chara_1' => $chara1,
+                'chara_2' => $chara2,
+                'status' => 'Approved'
+            ]);
+
+            CharacterRelation::create([
+                'chara_1' => $chara2,
+                'chara_2' => $chara1,
                 'status' => 'Approved'
             ]);
         }
         else {
             CharacterRelation::create([
-                'data' => json_encode(['ids' => $data]),
+                'chara_1' => $chara1,
+                'chara_2' => $chara2,
             ]);
         }
 

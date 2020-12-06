@@ -1252,6 +1252,8 @@ class CharacterManager extends Service
 
             $service = new LinkService;
 
+            if($character->is_links_open == 0) throw new \Exception("One or more character's links are closed to requests.");
+
             if(!$isAdmin)
             {
                 if($character->user_id != $user->id) throw new \Exception("You cannot edit this character.");
@@ -1263,8 +1265,9 @@ class CharacterManager extends Service
 
                 if($user->id == $requested->id ) {
                     // Create a relation with the character 
-                    $ids = array($link->id, $character->id);
-                    if($service->createLink($ids, true)) {
+                    $chara1 = $character->id;
+                    $chara2 = $link->id;
+                    if($service->createLink($chara1, $chara2, true)) {
                         flash('Link created succesfully!')->success();
                     }
                     else {
