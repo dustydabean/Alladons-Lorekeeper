@@ -53,21 +53,26 @@
         {{-- Basic info  --}}
             <div class="tab-pane fade show active">
                 <div class="row">
-                    <div class="col-md-5 mb-md-0 mb-2">
-                        <div class="card-block link-block">
+                    <div class="col-md-6 mb-md-0 mb-2">
+                        <div class="card m-2">
 
-                            {{ $link->info }}
-
-                            @if(Auth::check() && ($character->user_id == Auth::user()->id || Auth::user()->hasPower('manage_characters')))
+                                @if(Auth::check() && ($character->user_id == Auth::user()->id || Auth::user()->hasPower('manage_characters')))
+                                {!! Form::open() !!}
+                                {!! Form::textarea('info', $link->info ? $link->info : null, ['placeholder' => 'What are your characters feelings?', 'class' => 'form-control' , 'cols' => 20, 'rows' => 5, 'required' => '']) !!}
                                 <div class="text-right m-2">
-                                    <a href="{{ $character->url . '/links/edit' }}" class="btn btn-outline-info btn-sm"><i class="fas fa-cog"></i> Edit Info</a>
+                                    {!! Form::button('<i class="fas fa-cog"></i> Edit Info', ['class' => 'btn btn-outline-info btn-sm', 'type' => 'submit']) !!}
                                 </div>
-                            @endif
+                                {!! Form::close() !!}
+                                @else
+                                {{ $link->info }}
+                                @endif
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="col-md-7 mb-md-0 mb-2">
-                        {{ $link->otherChara->info }}
+                    <div class="col-md-6 mb-md-0 mb-2">
+                        <div class="card m-2">
+                                    {{ $link->otherChara->info }}
+                        </div>
                     </div>
                 </div>
             </div>
