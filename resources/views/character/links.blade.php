@@ -8,7 +8,8 @@
 {!! breadcrumbs([($character->category->masterlist_sub_id ? $character->category->sublist->name.' Masterlist' : 'Character masterlist') => ($character->category->masterlist_sub_id ? 'sublist/'.$character->category->sublist->key : 'masterlist' ), $character->fullName => $character->url, 'Profile' => $character->url . '/profile']) !!}
 
 <h2 class="bold">{{$character->fullName}}'s Links</h2>
-<div class="container">
+
+<div class="container mt-4">
 @foreach($character->links as $link)
 <div class="row mb-2">
     <div class="col-md-7 mb-md-0 mb-2 text-center">
@@ -36,7 +37,7 @@
     </div>
 </div>
 
-<div class="container">
+<div class="container mb-2">
     <div class="card character-bio w-100">
         <div class="card-header">
             <div class="row">
@@ -57,27 +58,36 @@
                         <div class="card m-2">
 
                                 @if(Auth::check() && ($character->user_id == Auth::user()->id || Auth::user()->hasPower('manage_characters')))
-                                {!! Form::open() !!}
-                                {!! Form::textarea('info', $link->info ? $link->info : null, ['placeholder' => 'What are your characters feelings?', 'class' => 'form-control' , 'cols' => 20, 'rows' => 5, 'required' => '']) !!}
+
+                                {!! Form::open(['url' => $character->url .'/links/info/'.$link->id]) !!}
+                                {!! Form::hidden('chara_1', $character->id) !!}
+                                {!! Form::hidden('chara_2', $link->id) !!}
+                                {!! Form::textarea('info', $link->info ? $link->info : null, ['placeholder' => 'What are your characters feelings?', 'class' => 'form-control mb-2' , 'cols' => 20, 'rows' => 5]) !!}
+                                
+                                {!! Form::select('type', $types, null, ['class' => 'form-control mt-2', 'placeholder' => 'Relationship Type']) !!}
                                 <div class="text-right m-2">
                                     {!! Form::button('<i class="fas fa-cog"></i> Edit Info', ['class' => 'btn btn-outline-info btn-sm', 'type' => 'submit']) !!}
                                 </div>
                                 {!! Form::close() !!}
                                 @else
-                                {{ $link->info }}
+                                <div class="m-4">{{ $link->info }}</div>
                                 @endif
                             </div>
                         </div>
 
                     <div class="col-md-6 mb-md-0 mb-2">
                         <div class="card m-2">
-                                    {{ $link->otherChara->info }}
+                            <div class="m-4">{{ $link->otherChara->info }}</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
+<br>
+<hr>
+<br>
 @endforeach
 </div>
 

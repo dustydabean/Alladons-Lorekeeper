@@ -56,7 +56,47 @@ class LinkService extends Service
     }
 
     public function addLink() {
+        // when a user approves
         
+    }
+
+    public function updateInfo($data) {
+
+        $types = [
+            '???',
+            'Acquaintence',
+            'Best Friends',
+            'Boss and Employee',
+            'Co-workers',
+            'Crushing',
+            'Enemy',
+            'Family',
+            'Friends',
+            'Frenemies',
+            'It\'s Complicated',
+            'Life Partners',
+            'On-and-Off',
+            'Partners in Crime',
+            'Past Relationship',
+            'Polyamorous Relationship',
+            'Rival',
+            'Roomate',
+            'Significant Others',
+        ];
+
+        $info = $data['info'];
+        $chara_1 = $data['chara_1'];
+        $chara_2 = $data['chara_2'];
+        $relation = CharacterRelation::where('chara_1', $chara_1)->where('chara_2', $chara_2)->first();
+
+        $type = array_search($data['type'], $types);
+
+        dd($type);
+        $relation->type = $type;
+        $relation->info = $info;
+        $relation->save();
+
+    return redirect()->back();
     }
     
 }

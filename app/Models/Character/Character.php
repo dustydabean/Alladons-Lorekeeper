@@ -205,7 +205,7 @@ class Character extends Model
     */
     public function links()
     {
-       return $this->hasMany('App\Models\Character\CharacterRelation', 'chara_1');
+       return $this->hasMany('App\Models\Character\CharacterRelation', 'chara_1')->where('status', 'Approved');
     }
 
     /**********************************************************************************************

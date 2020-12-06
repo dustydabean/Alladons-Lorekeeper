@@ -10,6 +10,7 @@ use Route;
 use Settings;
 use App\Models\User\User;
 use App\Models\Character\Character;
+use App\Models\Character\CharacterRelation;
 use App\Models\Species\Species;
 use App\Models\Rarity;
 use App\Models\Feature\Feature;
@@ -30,6 +31,7 @@ use App\Models\Character\CharacterTransfer;
 use App\Services\CurrencyManager;
 use App\Services\InventoryManager;
 use App\Services\CharacterManager;
+use App\Services\LinkService;
 
 use App\Http\Controllers\Controller;
 
@@ -141,13 +143,36 @@ class CharacterController extends Controller
      */
     public function getCharacterLinks($slug)
     {
+        $types = [
+            '???',
+            'Acquaintence',
+            'Best Friends',
+            'Boss and Employee',
+            'Co-workers',
+            'Crushing',
+            'Enemy',
+            'Family',
+            'Friends',
+            'Frenemies',
+            'It\'s Complicated',
+            'Life Partners',
+            'On-and-Off',
+            'Partners in Crime',
+            'Past Relationship',
+            'Polyamorous Relationship',
+            'Rival',
+            'Roomate',
+            'Significant Others',
+        ];
+
         return view('character.links', [
             'character' => $this->character,
+            'types' => $types,
         ]);
     }
 
     /**
-     * Shows a character's edit profile page.
+     * Shows a character's edit links page
      *
      * @param  string  $slug
      * @return \Illuminate\Contracts\Support\Renderable
@@ -166,7 +191,7 @@ class CharacterController extends Controller
     }
     
     /**
-     * Edits a character's profile.
+     * Edits a character's links
      *
      * @param  \Illuminate\Http\Request       $request
      * @param  App\Services\CharacterManager  $service
@@ -187,6 +212,28 @@ class CharacterController extends Controller
             foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
         }
         return redirect()->back();
+    }
+
+    /**
+     * Edits a character's link info
+     *
+     * @param  \Illuminate\Http\Request       $request
+     * @param  App\Services\CharacterManager  $service
+     * @param  string                         $slug
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postEditCharacterLinkInfo(Request $request, LinkService $service) {
+        // this is simple and messy
+
+        $data = $request->only(['chara_1', 'chara_2', 'info', 'type']);
+        if($service->updateInfo($data)) {
+            flash('Info updated successfully!')->success();
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back();
+
     }
 
     /**

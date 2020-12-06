@@ -1263,6 +1263,8 @@ class CharacterManager extends Service
                 $link = Character::where('slug', $slug)->first();
                 $requested = User::find($link->user_id);
 
+                if($link->is_links_open == 0) throw new \Exception("One or more character's links are closed to requests.");
+
                 if($user->id == $requested->id ) {
                     // Create a relation with the character 
                     $chara1 = $character->id;
