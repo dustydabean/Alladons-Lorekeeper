@@ -14,16 +14,20 @@
         You are editing this character as a staff member.
     </div>
 @endif
+<div class="alert alert-info">This creates a one-to-one relation with all requested characters!</div>
 
-{!! Form::open(['url' => 'links/edit/post']) !!}
+<strong><p>Characters you own will auto-link and not require approval.</p></strong>
+
+{!! Form::open(['url' => $character->url . '/links/edit']) !!}
 <div id="characters" class="mb-3">
 </div>
 <div class="text-right mb-3">
     <a href="#" class="btn btn-outline-info" id="addCharacter">Add Character</a>
 </div>
+{!! Form::submit('Request Links', ['class' => 'btn btn-primary']) !!}
+
 {!! Form::close() !!}
 
-{!! Form::submit('Request Links', ['class' => 'btn btn-primary', 'id' => 'idbuttonUpdateStatus', 'onclick' => "this.disabled=true;this.value='Roll Daily';this.form.submit();"]) !!}
 @include('widgets._link_select')
 
 @endsection

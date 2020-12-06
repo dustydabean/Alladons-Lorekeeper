@@ -350,6 +350,19 @@ class Character extends Model
         return 'Character';
     }
 
+    /*
+    * Get the links for this character
+    */
+    public function getLinksAttribute()
+    {
+        $links = DB::table('character_relations')
+            ->where('status', 'Approved')
+            ->whereJsonContains('data->ids', $this->id)
+            ->get();
+        //$this->hasMany('App\Models\Character\CharacterRelation', 'data')->whereJsonContains('data->ids', $this->id)->get()
+        return $links;
+    }
+
     /**********************************************************************************************
     
         OTHER FUNCTIONS

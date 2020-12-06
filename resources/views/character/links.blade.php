@@ -9,15 +9,12 @@
 
 <h2 class="bold">{{$character->fullName}}'s Links</h2>
 
-<div class="mb-3">
-    <div class="text-center">
-        <a href="{{ $character->image->canViewFull(Auth::check() ? Auth::user() : null) && file_exists( public_path($character->image->imageDirectory.'/'.$character->image->fullsizeFileName)) ? $character->image->fullsizeUrl : $character->image->imageUrl }}" data-lightbox="entry" data-title="{{ $character->fullName }}">
-        <img src="{{ $character->image->canViewFull(Auth::check() ? Auth::user() : null) && file_exists( public_path($character->image->imageDirectory.'/'.$character->image->fullsizeFileName)) ? $character->image->fullsizeUrl : $character->image->imageUrl }}" class="image" style="max-height:700px; max-width:700px;" />
-        </a>
-    </div>
-    @if($character->image->canViewFull(Auth::check() ? Auth::user() : null) && file_exists( public_path($character->image->imageDirectory.'/'.$character->image->fullsizeFileName)))
-        <div class="text-right">You are viewing the full-size image. <a href="{{ $character->image->imageUrl }}">View watermarked image</a>?</div>
-    @endif
+<div class="container">
+@foreach($relation as $link)
+<?php
+DB::table('characters')->where('id', $link);
+?>
+@endforeach
 </div>
 
 {{-- Bio --}}
@@ -25,13 +22,6 @@
 @if(Auth::check() && ($character->user_id == Auth::user()->id || Auth::user()->hasPower('manage_characters')))
     <div class="text-right mb-2">
         <a href="{{ $character->url . '/links/edit' }}" class="btn btn-outline-info btn-sm"><i class="fas fa-cog"></i> Edit Links</a>
-    </div>
-@endif
-@if($character->profile->parsed_text)
-    <div class="card mb-3">
-        <div class="card-body parsed-text">
-                {!! $character->profile->parsed_text !!}
-        </div>
     </div>
 @endif
 @endsection

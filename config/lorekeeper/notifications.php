@@ -286,8 +286,21 @@ return [
     ],
     // BOOKMARK_GIFT_WRITING
     39 => [
+        'name' => 'Bookmark Gift Writing',
         'message' => 'A character you have bookmarked (<a href="{character_url}">{character_name}</a>) has had its Gift Writing Allowed status changed. (<a href="{url}">View Bookmarks</a>)',
         'url' => 'account/bookmarks'
+    ],
+    // LINK_REQUESTED
+    200 => [
+        'name' => 'Link Requested',
+        'message' => '<a href="{link}">{user}</a> has requested to link your character {requested} to {characer}. (<a href="{url}">View Link</a>)',
+        'url' => '',
+    ],
+    // LINK_ACCEPTED
+    200 => [
+        'name' => 'Link Accepted',
+        'message' => '<a href="{link}">{user}</a> has accepted your link request to {requested}. (<a href="{url}">View Link</a>)',
+        'url' => '',
     ],
     // REPORT_ASSIGNED
     220 => [

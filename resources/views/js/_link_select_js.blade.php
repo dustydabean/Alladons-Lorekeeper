@@ -32,22 +32,5 @@
                 e.preventDefault();
                 $(this).parent().parent().parent().remove();
             });
-            node.find('.add-reward').on('click', function(e) {
-                e.preventDefault();
-                $clone = $components.find('.character-reward-row').clone();
-                $clone.find('.remove-reward').on('click', function(e) {
-                    e.preventDefault();
-                    $(this).parent().parent().remove();
-                });
-                updateRewardNames($clone, node.find('.character-info').data('id'));
-                $(this).parent().parent().find('.character-rewards').append($clone);
-            });
-        }
-
-        function updateRewardNames(node, id) {
-            node.find('.currency-id').attr('name', 'character_currency_id[' + id + '][]');
-            node.find('.quantity').attr('name', 'character_quantity[' + id + '][]');
-        }
-
     });
 </script>

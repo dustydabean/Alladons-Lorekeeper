@@ -141,8 +141,20 @@ class CharacterController extends Controller
      */
     public function getCharacterLinks($slug)
     {
+        $relation = collect([]);
+        // need to pass through links, relation setup?
+
+        foreach($this->character->links as $link) {
+
+        $ids = json_decode($link->data);
+
+        $id = array_diff($ids->{'ids'}, array($this->character->id));
+        $relation->put("id", $id);
+        }
+
         return view('character.links', [
             'character' => $this->character,
+            'relation' => $relation,
         ]);
     }
 
@@ -159,6 +171,8 @@ class CharacterController extends Controller
         $isMod = Auth::user()->hasPower('manage_characters');
         $isOwner = ($this->character->user_id == Auth::user()->id);
         if(!$isMod && !$isOwner) abort(404);
+
+        // need to pass through links, relation setup?
 
         return view('character.edit_link', [
             'character' => $this->character,
@@ -182,8 +196,7 @@ class CharacterController extends Controller
         $isOwner = ($this->character->user_id == Auth::user()->id);
         if(!$isMod && !$isOwner) abort(404);
         
-        if($service->updateCharacterProfile($request->only(['name', 'link', 'text', 'is_gift_art_allowed', 'is_gift_writing_allowed', 'is_trading', 'is_links_open', 'alert_user']), $this->character, Auth::user(), !$isOwner)) {
-            flash('Profile edited successfully.')->success();
+        if($service->updateCharacterLinks($request->only(['slug']), $this->character, Auth::user(), !$isOwner)) {
         }
         else {
             foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
