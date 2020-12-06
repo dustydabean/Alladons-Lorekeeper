@@ -30,13 +30,14 @@ class CharacterRelation extends Model
 
     **********************************************************************************************/
 
-    /**
-     * Get the character that is the target of the action.
-     */
-    public function characters() 
+    public function getCharactersAttribute()
     {
-        return $this->belongsToMany('App\Models\Character\Character');
+        $characters = collect([]);
+
+        $ids = json_decode($this->data);
+        $characters = Character::find($ids)->get();
+        dd($characters);
+
+        return $characters;
     }
-
-
 }
