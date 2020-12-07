@@ -21,7 +21,7 @@
         <li class="sidebar-section">
             <div class="sidebar-section-header">Settings</div>
             <div class="sidebar-item"><a href="{{ $character->url . '/profile/edit' }}" class="{{ set_active('character/'.$character->slug.'/profile/edit') }}">Edit Profile</a></div>
-            <div class="sidebar-item"><a href="{{ $character->url . '/links/edit' }}" class="{{ set_active('character/'.$character->slug.'/links/edit') }}">Edit Links</a></div>
+            <div class="sidebar-item"><a href="{{ $character->url . '/links/edit' }}" class="{{ set_active('character/'.$character->slug.'/links/edit') }}">Request Links</a></div>
             <div class="sidebar-item"><a href="{{ $character->url . '/transfer' }}" class="{{ set_active('character/'.$character->slug.'/transfer') }}">Transfer</a></div>
             @if(Auth::user()->id == $character->user_id)
                 <div class="sidebar-item"><a href="{{ $character->url . '/approval' }}" class="{{ set_active('character/'.$character->slug.'/approval') }}">Update Design</a></div>

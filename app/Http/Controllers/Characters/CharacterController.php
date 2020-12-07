@@ -222,7 +222,8 @@ class CharacterController extends Controller
      * @param  string                         $slug
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postEditCharacterLinkInfo(Request $request, LinkService $service) {
+    public function postEditCharacterLinkInfo(Request $request, LinkService $service) 
+    {
         // this is simple and messy
 
         $data = $request->only(['chara_1', 'chara_2', 'info', 'type']);
@@ -234,6 +235,24 @@ class CharacterController extends Controller
         }
         return redirect()->back();
 
+    }
+
+    /**
+     * deletes a link
+     *
+     * @param  string  $slug
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function postDeleteCharacterLink(Request $request, LinkService $service) 
+    {
+        $data = $request->only(['chara_1', 'chara_2']);
+        if($service->deleteLink($data)) {
+            flash('Link deleted successfully!')->success();
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back();
     }
 
     /**

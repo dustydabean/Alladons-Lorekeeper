@@ -37,6 +37,11 @@ class CharacterRelation extends Model
 
     public function otherChara()
     {
-        return $this->hasOne('App\Models\Character\CharacterRelation', 'chara_1')->where('chara_1', $this->chara_2);
+        return $this->hasOne('App\Models\Character\CharacterRelation', 'chara_1', 'chara_2')->where('chara_1', $this->chara_2);
+    }
+
+    public function inverse()
+    {
+        return $this->hasOne('App\Models\Character\CharacterRelation', 'chara_1', 'chara_2')->where('chara_1', $this->chara_2)->where('chara_2', $this->chara_1);
     }
 }

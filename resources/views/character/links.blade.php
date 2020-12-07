@@ -61,7 +61,7 @@
 
                                 {!! Form::open(['url' => $character->url .'/links/info/'.$link->id]) !!}
                                 {!! Form::hidden('chara_1', $character->id) !!}
-                                {!! Form::hidden('chara_2', $link->id) !!}
+                                {!! Form::hidden('chara_2', $link->chara_2) !!}
                                 {!! Form::textarea('info', $link->info ? $link->info : null, ['placeholder' => 'What are your characters feelings?', 'class' => 'form-control mb-2' , 'cols' => 20, 'rows' => 5]) !!}
                                 
                                 {!! Form::select('type', $types, null, ['class' => 'form-control mt-2', 'placeholder' => 'Relationship Type']) !!}
@@ -73,11 +73,13 @@
                                 <div class="m-4">{{ $link->info }}</div>
                                 @endif
                             </div>
+                            <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#deleteModal">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </div>
-
                     <div class="col-md-6 mb-md-0 mb-2">
                         <div class="card m-2">
-                            <div class="m-4">{{ $link->otherChara->info }}</div>
+                            <div class="m-4">{{ $link->otherchara->info }}</div>
                         </div>
                     </div>
                 </div>
@@ -88,6 +90,31 @@
 <br>
 <hr>
 <br>
+
+{{-- Model --}}
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModalLabel">Delete this link?</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          You will have to make a new request to get back the link. All data is non-retrievable.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+          {!! Form::open(['url' => $character->url .'/links/delete/'.$link->id]) !!}
+          {!! Form::hidden('chara_1', $character->id) !!}
+          {!! Form::hidden('chara_2', $link->chara_2) !!}
+          {!! Form::button('<i class="fas fa-trash"></i> Delete', ['class' => 'btn btn-danger btn-sm m-1', 'type' => 'submit']) !!}
+          {!! Form::close() !!}
+        </div>
+      </div>
+    </div>
+  </div>
 @endforeach
 </div>
 

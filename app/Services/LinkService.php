@@ -20,9 +20,13 @@ class LinkService extends Service
     |
     */
 
-    // This creates an abritrary link that serves to be made into a ''full'' link once the request is approved
-    // If the character owners are the same (e.g one user owns both) the link will create and be fully developed
-    public function createLink($chara1, $chara2, $owner = false) {
+    /**
+     *   // This creates an abritrary link that serves to be made into a ''full'' link once the request is approved
+     *   // If the character owners are the same (e.g one user owns both) the link will create and be fully developed
+     *
+     */
+    public function createLink($chara1, $chara2, $owner = false) 
+    {
 
     DB::beginTransaction();
 
@@ -55,12 +59,41 @@ class LinkService extends Service
         return $this->rollbackReturn(false);
     }
 
-    public function addLink() {
+    public function approveLink() 
+    {
         // when a user approves
         
     }
 
-    public function updateInfo($data) {
+    /**
+     *   Deletes link
+     *
+     */
+    public function deleteLink($data) 
+    {
+        DB::beginTransaction();
+
+        try {
+
+            $relation = CharacterRelation::where('chara_1', $data['chara_1'])->where('chara_2', $data['chara_2'])->first();
+            $relation->inverse->delete();
+            $relation->delete();
+
+            return $this->commitReturn(true);
+        } catch(\Exception $e) { 
+            $this->setError('error', $e->getMessage());
+        }
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     *  this is when a user changes the relationship type
+     *
+     */
+    public function updateInfo($data) 
+    {
+
+        // types
         $types = [
             '???',
             'Acquaintence',
@@ -83,10 +116,13 @@ class LinkService extends Service
             'Significant Others',
         ];
 
+        // info
             $info = $data['info'];
             $chara_1 = $data['chara_1'];
             $chara_2 = $data['chara_2'];
             $relation = CharacterRelation::where('chara_1', $chara_1)->where('chara_2', $chara_2)->first();
+
+        // matching key types
         if(isset($data['type'])) {
                 $key = $data['type'];
                 $type = $types[$key];
@@ -94,6 +130,7 @@ class LinkService extends Service
         else {
             $type = '???';
         }
+
             $relation->type = $type;
             $relation->info = $info;
             $relation->save();
