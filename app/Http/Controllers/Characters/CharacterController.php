@@ -206,7 +206,7 @@ class CharacterController extends Controller
         $isOwner = ($this->character->user_id == Auth::user()->id);
         if(!$isMod && !$isOwner) abort(404);
         
-        if($service->updateCharacterLinks($request->only(['slug']), $this->character, Auth::user(), !$isOwner)) {
+        if($service->updateCharacterLinks($request->only(['slug']), $this->character, Auth::user(), $isMod)) {
         }
         else {
             foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();

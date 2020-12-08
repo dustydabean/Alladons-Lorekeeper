@@ -5,6 +5,7 @@ use App\Services\Service;
 use Carbon\Carbon;
 
 use DB;
+use Auth;
 use Config;
 use Image;
 use Notifications;
@@ -1244,7 +1245,7 @@ class CharacterManager extends Service
      * @param  bool                             $isAdmin
      * @return  bool
      */
-    public function updateCharacterLinks($data, $character, $user, $isAdmin = false)
+    public function updateCharacterLinks($data, $character, $user, $isAdmin)
     {
         DB::beginTransaction();
 
@@ -1252,23 +1253,26 @@ class CharacterManager extends Service
 
             $service = new LinkService;
 
+            $isOwner = ($character->user_id == Auth::user()->id);
+
             if($character->is_links_open == 0) throw new \Exception("One or more character's links are closed to requests.");
 
-            if(!$isAdmin)
+            if($isAdmin !== true && !$isOwner)
             {
-                if($character->user_id != $user->id) throw new \Exception("You cannot edit this character.");
+                throw new \Exception("You cannot edit this character.");
             }
 
             foreach($data['slug'] as $slug) {
                 $link = Character::where('slug', $slug)->first();
                 $requested = User::find($link->user_id);
 
+                $chara1 = $character->id;
+                $chara2 = $link->id;
+
                 if($link->is_links_open == 0) throw new \Exception("One or more character's links are closed to requests.");
 
                 if($user->id == $requested->id ) {
                     // Create a relation with the character 
-                    $chara1 = $character->id;
-                    $chara2 = $link->id;
                     if($service->createLink($chara1, $chara2, true)) {
                         flash('Link created succesfully!')->success();
                     }
@@ -1279,15 +1283,8 @@ class CharacterManager extends Service
                 else {
                     // send a notification of the request to the other user. They can accept or deny.
                     // If denied the row is deleted, if accepted it updates the ids
-                    Notifications::create('LINK_REQUESTED', $requested, [
-                        'character' => $character->name,
-                        'request' => $link->name,
-                        'link' => $user->url,
-                        'name' => $user->name
-                    ]);
                     // create 'unapproved' link
-                    $ids = array($link->id, $character->id);
-                        if($service->createLink($ids, false)) {
+                        if($service->createLink($chara1, $chara2, false)) {
                             flash('Link request created succesfully!')->success();
                         }
                         else {

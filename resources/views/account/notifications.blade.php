@@ -44,6 +44,9 @@
                             <td>{!! format_date($notification->created_at) !!}</td>
                             <td class="text-right"><a href="#" data-id="{{ $notification->id }}" class="clear-notification"><i class="fas fa-times" aria-hidden="true"></i></a></td>
                         </tr>
+                        @if($type == 200) 
+                        {{ session()->put('notification', $notification->id) }}     
+                        @endif
                     @endforeach
                 </tbody>
             </table>
@@ -72,9 +75,7 @@
                 $row.fadeOut(300, function() { $(this).remove(); });
             });
         });
-
     });
-
 
 </script>
 @endsection

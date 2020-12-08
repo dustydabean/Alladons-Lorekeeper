@@ -293,13 +293,13 @@ return [
     // LINK_REQUESTED
     200 => [
         'name' => 'Link Requested',
-        'message' => '<a href="{link}">{user}</a> has requested to link your character {requested} to {characer}. (<a href="{url}">View Link</a>)',
+        'message' => '<a href="{link}">{user}</a> has requested to link your character {requested} to {character}. <a href="/links/accept/{id}" class="btn btn-sm btn-success m-1">Accept</a> <a href="/links/reject/{id}" class="btn btn-sm btn-danger m-1">Reject</a>',
         'url' => '',
     ],
     // LINK_ACCEPTED
-    200 => [
+    201 => [
         'name' => 'Link Accepted',
-        'message' => '<a href="{link}">{user}</a> has accepted your link request to {requested}. (<a href="{url}">View Link</a>)',
+        'message' => '<a href="{link}">{user}</a> has accepted your link request to {requested}. (<a href="{character}/links">View Character Links.</a>)',
         'url' => '',
     ],
     // REPORT_ASSIGNED

@@ -3,11 +3,13 @@
 use App\Services\Service;
 
 use DB;
+use Auth;
 use Config;
+use Notifications;
 
 use App\Models\Character\Character;
 use App\Models\Character\CharacterRelation;
-
+use App\Models\User\User;
 
 class LinkService extends Service
 {
@@ -32,6 +34,12 @@ class LinkService extends Service
 
     try {
 
+        if(CharacterRelation::where('chara_1', $chara1)->where('chara_2', $chara2)->exists() || CharacterRelation::where('chara_1', $chara2)->where('chara_2', $chara1)->exists()) 
+        {
+            flash("A relation already exists between one or more of these characters.")->error();
+            throw new \Exception;
+        }
+
         if($owner == True) {
             CharacterRelation::create([
                 'chara_1' => $chara1,
@@ -46,9 +54,23 @@ class LinkService extends Service
             ]);
         }
         else {
-            CharacterRelation::create([
+
+            $user = Auth::user();
+            $character = Character::find($chara1);
+            $link = Character::find($chara2);
+            $requested = User::find($link->user_id);
+
+            $relation = CharacterRelation::create([
                 'chara_1' => $chara1,
                 'chara_2' => $chara2,
+            ]);
+
+            Notifications::create('LINK_REQUESTED', $requested, [
+                'character' => $character->fullname,
+                'requested' => $link->fullname,
+                'link' => $user->url,
+                'user' => $user->name,
+                'id' => $relation->id
             ]);
         }
 
@@ -61,8 +83,12 @@ class LinkService extends Service
 
     public function approveLink() 
     {
-        // when a user approves
-        
+        // when a user approves a link
+    }
+
+    public function denyLink()
+    {
+        // when a user rejects a link
     }
 
     /**
