@@ -103,7 +103,7 @@ class LinkController extends Controller
 
         if($account->getDeleteNotification($notification))
         {
-
+            session()->forget(['notification']);
         }
         else {
             flash('Something went wrong :(')->error();
