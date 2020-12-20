@@ -13,7 +13,7 @@ class Forage extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'display_name',
+        'name', 'display_name', 'is_active'
     ];
 
     /**
@@ -68,9 +68,9 @@ class Forage extends Model
      *
      * @return string
      */
-    public function getDisplayNameAttribute()
+    public function getFancyDisplayNameAttribute()
     {
-        return '<span class="display-loot">'.$this->attributes['display_name'].'</span> '.add_help('This reward is random.');
+        return '<span class="display-loot">'.$this->attributes['display_name'].'</span> ';
     }
 
     /**

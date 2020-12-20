@@ -14,12 +14,12 @@
 @if(!count($tables))
     <p>No active forages. Come back soon!</p>
 @else
-    {!! $tables->render() !!}
-        @foreach($tables as $table)
-
-            <div class="btn btn-primary">{{ $table->displayName}}</div>
-        @endforeach
-      </div>
-    {!! $tables->render() !!}
+<div class="container text-center">
+    @foreach($tables as $table)
+        {!! Form::open(['url' => 'foraging/forage/'.$table->id ]) !!}
+        {!! Form::submit('Forage in the ' . $table->display_name , ['class' => 'btn btn-primary']) !!}
+        {!! Form::close() !!}
+    @endforeach
+</div>
 @endif
 @endsection

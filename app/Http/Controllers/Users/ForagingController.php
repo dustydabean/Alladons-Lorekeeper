@@ -25,7 +25,12 @@ class ForagingController extends Controller
     {
         return view('foraging.index', [
             'user' => Auth::user(),
-            'tables' => Forage::where('is_active', 1)->orderBy('name')->pluck('name', 'id'),
+            'tables' => Forage::where('is_active', 1)->orderBy('name')->get(),
         ]);
+    }
+
+    public function postForage($id, Request $request)
+    {
+        dd();
     }
 }
