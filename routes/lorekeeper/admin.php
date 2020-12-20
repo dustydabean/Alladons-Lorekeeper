@@ -198,6 +198,16 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('loot-tables/edit/{id?}', 'LootTableController@postCreateEditLootTable');
     Route::post('loot-tables/delete/{id}', 'LootTableController@postDeleteLootTable');
 
+    # FORAGING
+    Route::get('forages', 'ForageController@getIndex');
+    Route::get('forages/create', 'ForageController@getCreateForage');
+    Route::get('forages/edit/{id}', 'ForageController@getEditForage');
+    Route::get('forages/delete/{id}', 'ForageController@getDeleteForage');
+    Route::get('forages/roll/{id}', 'ForageController@getRollForage');
+    Route::post('forages/create', 'ForageController@postCreateEditForage');
+    Route::post('forages/edit/{id?}', 'ForageController@postCreateEditForage');
+    Route::post('forages/delete/{id}', 'ForageController@postDeleteLootTable');
+
     # PROMPTS
     Route::get('prompt-categories', 'PromptController@getIndex');
     Route::get('prompt-categories/create', 'PromptController@getCreatePromptCategory');

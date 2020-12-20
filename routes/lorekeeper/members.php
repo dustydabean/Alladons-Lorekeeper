@@ -169,3 +169,10 @@ Route::group(['prefix' => 'comments', 'namespace' => 'Comments'], function() {
     Route::post('/{comment}', 'CommentController@reply')->name('comments.reply');
     Route::post('/{id}/feature', 'CommentController@feature')->name('comments.feature');
 });
+
+/**************************************************************************************************	
+    Foraging
+**************************************************************************************************/	
+Route::group(['prefix' => 'foraging', 'namespace' => 'Users'], function() {
+    Route::get('/', 'ForagingController@getIndex');
+});
