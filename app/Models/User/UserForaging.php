@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Foraging;
+namespace App\Models\User;
 
 use Carbon\Carbon;
 use Config;
@@ -14,7 +14,7 @@ class UserForaging extends Model
      * @var array
      */
      protected $fillable = [
-        'user_id', 'last_foraged_at'
+        'user_id', 'last_forage_id', 'last_foraged_at', 'distribute_at', 'foraged'
     ];
 
     /**
@@ -25,11 +25,11 @@ class UserForaging extends Model
     protected $table = 'user_foraging';
 
     /**
-     * Whether the model contains timestamps to be saved and updated.
+     * Dates on the model to convert to Carbon instances.
      *
-     * @var string
+     * @var array
      */
-    public $timestamps = false;
+     public $dates = ['last_foraged_at', 'distribute_at'];
 
     /**********************************************************************************************
     
@@ -44,4 +44,9 @@ class UserForaging extends Model
      {
          return $this->belongsTo('App\Models\User\User');
      }
+
+    public function scopeRequiresUpdate($query)
+    {
+        return $query->whereNotIn('character_id', Character::where('is_myo_slot', 1)->pluck('id')->toArray())->whereIn('drop_id', CharacterDropData::where('data->is_active', 1)->pluck('id')->toArray())->where('next_day', '<', Carbon::now());
+    }
 }

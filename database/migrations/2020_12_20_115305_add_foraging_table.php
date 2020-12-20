@@ -17,7 +17,10 @@ class AddForagingTable extends Migration
         Schema::create('user_foraging', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id')->unsigned();
+            $table->integer('last_forage_id')->unsigned()->nullable();
             $table->timestamp('last_foraged_at')->nullable();
+            $table->timestamp('distribute_at')->nullable();
+            $table->boolean('foraged')->default(0);
         });
 
         Schema::create('forages', function (Blueprint $table) {
@@ -50,7 +53,7 @@ class AddForagingTable extends Migration
     {
         //
         Schema::dropIfExists('user_foraging');
-        Schema::dropIfExists('forages');
         Schema::dropIfExists('forage_rewards');
+        Schema::dropIfExists('forages');
     }
 }
