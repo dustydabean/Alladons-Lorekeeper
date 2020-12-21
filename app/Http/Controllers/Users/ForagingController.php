@@ -41,24 +41,31 @@ class ForagingController extends Controller
         ]);
     }
 
-    public function postForage($id, Request $request)
+    public function postForage($id, ForageService $service)
     {
-        $userForage = DB::table('user_foraging')->where('user_id', Auth::user()->id )->first();
-
-            if(!$userForage) {
-                $userForage = UserForaging::create([
-                    'user_id' => Auth::user()->id,
-                ]);
-            }
-
-        if($userForage->foraged == 1) throw new \Exception('You have already foraged today! Come back tomorrow.');
-
-        $userForage->last_forage_id = $id;
-        $userForage->last_foraged_at = carbon::now();
-        $userForage->distribute_at = carbon::now()->addMinutes(60);
-        $userForage->save();
+        if($service->initForage($id, Auth::user())) 
+        {
+            flash('You have begun to forage!')->info();
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
 
         return redirect()->back();
 
+    }
+
+    public function postClaim(ForageService $service)
+    {
+        if($service->claimReward(Auth::user())) 
+        {
+            flash('Forage successful!')->success();
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+
+        return redirect()->back();
+        
     }
 }

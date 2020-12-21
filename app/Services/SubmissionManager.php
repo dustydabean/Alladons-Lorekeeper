@@ -295,6 +295,8 @@ class SubmissionManager extends Service
         DB::beginTransaction();
 
         try {
+
+            dd($data);
             // 1. check that the submission exists
             // 2. check that the submission is pending
             $submission = Submission::where('status', 'Pending')->where('id', $data['id'])->first();
