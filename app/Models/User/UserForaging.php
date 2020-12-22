@@ -44,9 +44,4 @@ class UserForaging extends Model
      {
          return $this->belongsTo('App\Models\User\User');
      }
-
-    public function scopeRequiresUpdate($query)
-    {
-        return $query->whereNotIn('character_id', Character::where('is_myo_slot', 1)->pluck('id')->toArray())->whereIn('drop_id', CharacterDropData::where('data->is_active', 1)->pluck('id')->toArray())->where('next_day', '<', Carbon::now());
-    }
 }

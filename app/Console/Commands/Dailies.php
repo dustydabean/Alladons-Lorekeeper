@@ -41,6 +41,6 @@ class Dailies extends Command
     public function handle()
     {
         //
-        DB::table('user_foraginge')->where('foraged', '=', 1)->update(['foraged' => 0 ]);
+        DB::table('user_foraging')->where('foraged', '=', 1)->update(['foraged' => 0 ]);
     }
 }
