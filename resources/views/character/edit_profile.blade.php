@@ -50,7 +50,7 @@
             </div>
         </div>
         <div class="col-md form-group">
-            {!! Form::label('is_links_open', 'Allow Gift Writing', ['class' => 'form-check-label mb-3']) !!} {!! add_help('This will allow users to request links with your character.') !!}
+            {!! Form::label('is_links_open', 'Allow Link Requests?', ['class' => 'form-check-label mb-3']) !!} {!! add_help('This will allow users to request links with your character.') !!}
             {!! Form::checkbox('is_links_open', 1, $character->is_links_open, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
         </div>
     @endif
