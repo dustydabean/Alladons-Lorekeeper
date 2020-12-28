@@ -8,6 +8,8 @@ use DB;
 use Auth;
 use Notifications;
 
+use App\Models\Notification;
+
 use App\Models\User\User;
 use App\Models\Character\Character;
 use App\Models\Character\CharacterRelation;
@@ -21,7 +23,7 @@ class LinkController extends Controller
 {
     public function getAcceptLink($id)
     {
-        $this->deleteNotif();
+        $this->deleteNotif($id);
 
         if(!$this->postAcceptLink($id)) {
             flash('Link accepted succesfully!')->success();
@@ -35,7 +37,7 @@ class LinkController extends Controller
 
     public function getRejectLink($id)
     {
-        $this->deleteNotif();
+        $this->deleteNotif($id);
 
         $this->postRejectLink($id);
     }
@@ -95,9 +97,10 @@ class LinkController extends Controller
         return redirect()->to('/notifications');
     }
 
-    private function deleteNotif()
+    private function deleteNotif($id)
     {
-        $notification = session('notification');
+        $ids = (int)$id;
+        $notification = Notification::where('notification_type_id', 200)->where('user_id', Auth::user()->id)->whereJsonContains('data->id', $ids)->first();
 
         $account = new AccountController;
 
