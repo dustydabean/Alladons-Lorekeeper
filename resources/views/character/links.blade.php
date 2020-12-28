@@ -79,7 +79,7 @@
                         </div>
                     <div class="col-md-6 mb-md-0 mb-2">
                         <div class="card m-2">
-                            <div class="m-4">{{ $link->otherchara->info }}</div>
+                            <div class="m-4">{{ $link->inverse->info }}</div>
                         </div>
                     </div>
                 </div>
