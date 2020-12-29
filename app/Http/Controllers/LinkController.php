@@ -104,13 +104,9 @@ class LinkController extends Controller
 
         $account = new AccountController;
 
-        if($account->getDeleteNotification($notification))
+        if(!$account->getDeleteNotification($notification))
         {
-            
-        }
-        else {
-            flash('Something went wrong :(')->error();
-            return redirect()->back();
+            throw new \Exception('Could not delete notification #' .$notification->id . ' .');
         }
     }
 
