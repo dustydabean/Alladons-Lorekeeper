@@ -53,6 +53,8 @@ class ShopController extends Controller
         $categories = ItemCategory::orderBy('sort', 'DESC')->get();
         $shop = Shop::where('id', $id)->where('is_active', 1)->first();
 
+        if(!$shop) abort(404);
+
         if($shop->is_staff) {
             if(!Auth::check()) abort(404);
             if(!Auth::user()->isStaff) abort(404);
@@ -82,7 +84,6 @@ class ShopController extends Controller
             }
         }
         
-        if(!$shop) abort(404);
         $items = count($categories) ? $shop->displayStock()->orderByRaw('FIELD(item_category_id,'.implode(',', $categories->pluck('id')->toArray()).')')->orderBy('name')->get()->groupBy('item_category_id') : $shop->displayStock()->orderBy('name')->get()->groupBy('item_category_id');
         return view('shops.shop', [
             'shop' => $shop,
@@ -105,7 +106,8 @@ class ShopController extends Controller
     {
         $shop = Shop::where('id', $id)->where('is_active', 1)->first();
         $stock = ShopStock::with('item')->where('id', $stockId)->where('shop_id', $id)->first();
-
+        if(!$shop) abort(404);
+        
         $user = Auth::user();
         $quantityLimit = 0; $userPurchaseCount = 0; $purchaseLimitReached = false;
         if($user){
@@ -123,7 +125,6 @@ class ShopController extends Controller
             $check = null;
         }
 
-        if(!$shop) abort(404);
         return view('shops._stock_modal', [
             'shop' => $shop,
             'stock' => $stock,
