@@ -180,19 +180,44 @@ class PetManager extends Service
      * @param  int       $quantities
      * @return bool
      */
-    public function attachStack($pet, $slug)
+    public function attachStack($pet, $id)
     {
         DB::beginTransaction();
 
         try {
                 $user = Auth::user();
-                $character = Character::where('slug', $slug)->first();
+                $character = Character::find($id)->first();
                 if(!$user->hasAlias) throw new \Exception("Your deviantART account must be verified before you can perform this action.");
                 if(!$pet) throw new \Exception("An invalid pet was selected.");
                 if($pet->user_id != $user->id && !$user->hasPower('edit_inventories')) throw new \Exception("You do not own this pet.");
+                if(!$character) throw new \Exception("An invalid character was selected.");
                 if($character->user_id !== $user->id && !$user->hasPower('edit_inventories'))throw new \Exception("You do not own this character.");
 
                 $pet['chara_id'] = $character->id;
+                $pet->save();
+            
+            return $this->commitReturn(true);
+        } catch(\Exception $e) { 
+            $this->setError('error', $e->getMessage());
+        }
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * detaches a pet stack.
+     *
+     */
+    public function detachStack($pet)
+    {
+        DB::beginTransaction();
+
+        try {
+                $user = Auth::user();
+                if(!$user->hasAlias) throw new \Exception("Your deviantART account must be verified before you can perform this action.");
+                if(!$pet) throw new \Exception("An invalid pet was selected.");
+                if($pet->user_id != $user->id && !$user->hasPower('edit_inventories')) throw new \Exception("You do not own this pet.");
+
+                $pet['chara_id'] = null;
                 $pet->save();
             
             return $this->commitReturn(true);

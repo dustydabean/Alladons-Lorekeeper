@@ -42,18 +42,28 @@
                     {!! Form::close() !!}
                 </li>
                 <li class="list-group-item">
+                    @if($stack->chara_id != NULL)
+                    <a class="card-title h5 collapse-title"  data-toggle="collapse" href="#attachForm">@if($stack->user_id != $user->id) [ADMIN] @endif Detach Pet from Character</a>
+                    {!! Form::open(['url' => 'pets/detach/'.$stack->id, 'id' => 'attachForm', 'class' => 'collapse']) !!}
+                        <p>This pet is currently attached to {!! $stack->character->displayName !!}, do you want to detach them?</p>
+                        <div class="text-right">
+                            {!! Form::submit('Detach', ['class' => 'btn btn-primary']) !!}
+                        </div>
+                    {!! Form::close() !!}
+                    @else
                     <a class="card-title h5 collapse-title"  data-toggle="collapse" href="#attachForm">@if($stack->user_id != $user->id) [ADMIN] @endif Attach Pet to Character</a>
                     {!! Form::open(['url' => 'pets/attach/'.$stack->id, 'id' => 'attachForm', 'class' => 'collapse']) !!}
                         <p>Attach this pet to a character you own! They'll appear on the character's page.</p>
-                        <p>If a character is attached, their slug shall appear in the text box.</p>
+                        <p>Pets can be detached.</p>
                         <div class="form-group">
-                            {!! Form::label('slug', 'Slug') !!} {!! add_help('Insert your character\'s slug.') !!}
-                            {!! Form::text('slug', $chara, ['class'=>'form-control', 'placeholder' => 'Example slug: Character-001']) !!}
+                            {!! Form::label('id', 'Slug') !!} {!! add_help('Insert your character\'s slug.') !!}
+                            {!! Form::select('id', $chara, null, ['class'=>'form-control']) !!}
                         </div>
                         <div class="text-right">
                             {!! Form::submit('Attach', ['class' => 'btn btn-primary']) !!}
                         </div>
                     {!! Form::close() !!}
+                    @endif
                 </li>
                 @if($stack->isTransferrable || $user->hasPower('edit_inventories'))
                     <li class="list-group-item">
