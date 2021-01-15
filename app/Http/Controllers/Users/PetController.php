@@ -150,7 +150,7 @@ class PetController extends Controller
      */
     public function postDetach(Request $request, PetManager $service, $id)
     {
-        if($service->detachStack(UserPet::find($id), $request->get('slug'))) {
+        if($service->detachStack(UserPet::find($id))) {
             flash('Pet detached successfully.')->success();
         }
         else {
