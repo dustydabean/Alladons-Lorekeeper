@@ -187,7 +187,7 @@ class PetManager extends Service
         try {
                 $user = Auth::user();
                 if($id == NULL) throw new \Exception("No character selected.");
-                $character = Character::find($id)->first();
+                $character = Character::find($id);
                 if(!$user->hasAlias) throw new \Exception("Your deviantART account must be verified before you can perform this action.");
                 if(!$pet) throw new \Exception("An invalid pet was selected.");
                 if($pet->user_id != $user->id && !$user->hasPower('edit_inventories')) throw new \Exception("You do not own this pet.");
