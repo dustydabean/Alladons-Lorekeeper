@@ -46,6 +46,7 @@ class TradeListingManager extends Service
             if(!isset($data['contact'])) throw new \Exception("Please enter your preferred method(s) of contact.");
 
             $listing = TradeListing::create([
+                'title' => isset($data['title']) ? $data['title'] : null,
                 'user_id' => $user->id,
                 'comments' => isset($data['comments']) ? $data['comments'] : null,
                 'contact' => $data['contact'],
@@ -73,7 +74,7 @@ class TradeListingManager extends Service
                 $listing->data = json_encode($listingData);
                 $listing->save();
             }
-            
+
             // These checks are performed here, since it's faster and easier to check for the asset arrays (vs the separate inputs)
             if(!$listing->data) throw new \Exception("Please enter what you're seeking and offering.");
             if(!isset($listing->data['seeking']) && !isset($listing->data['seeking_etc'])) throw new \Exception("Please enter what you're seeking.");
@@ -85,7 +86,7 @@ class TradeListingManager extends Service
 
             return $this->commitReturn($listing);
 
-        } catch(\Exception $e) { 
+        } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);
@@ -109,9 +110,9 @@ class TradeListingManager extends Service
 
             $listing->expires_at = Carbon::now();
             $listing->save();
-            
+
             return $this->commitReturn($listing);
-        } catch(\Exception $e) { 
+        } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);
@@ -120,7 +121,7 @@ class TradeListingManager extends Service
     /**
      * Handles recording of assets on the seeking side of a trade listing, as well as initial validation.
      *
-     * @param  \App\Models\TradeListing $listing 
+     * @param  \App\Models\TradeListing $listing
      * @param  array                    $data
      * @return bool|array
      */
@@ -174,7 +175,7 @@ class TradeListingManager extends Service
             if($assetCount > $assetLimit) throw new \Exception("You may only include a maximum of {$assetLimit} things in a listing.");
 
             return $this->commitReturn(['seeking' => $seekingAssets]);
-        } catch(\Exception $e) { 
+        } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);
@@ -183,7 +184,7 @@ class TradeListingManager extends Service
     /**
      * Handles recording of assets on the user's side of a trade listing, as well as initial validation.
      *
-     * @param  \App\Models\TradeListing $listing 
+     * @param  \App\Models\TradeListing $listing
      * @param  array                    $data
      * @param  \App\Models\User\User    $user
      * @return bool|array
@@ -195,7 +196,7 @@ class TradeListingManager extends Service
             $userAssets = createAssetsArray();
             $assetCount = 0;
             $assetLimit = Config::get('lorekeeper.settings.trade_asset_limit');
-            
+
             // Attach items. They are not even held, merely recorded for display on the listing.
             if(isset($data['stack_id'])) {
                 foreach($data['stack_id'] as $key=>$stackId) {
@@ -239,7 +240,7 @@ class TradeListingManager extends Service
             if($assetCount > $assetLimit) throw new \Exception("You may only include a maximum of {$assetLimit} things in a listing.");
 
             return $this->commitReturn(['offering' => $userAssets]);
-        } catch(\Exception $e) { 
+        } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);

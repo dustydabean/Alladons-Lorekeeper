@@ -76,7 +76,7 @@ class TradeController extends Controller
     public function getTrade($id)
     {
         $trade = Trade::find($id);
-        
+
         if($trade->status != 'Completed' && !Auth::user()->hasPower('manage_characters') && !($trade->sender_id == Auth::user()->id || $trade->recipient_id == Auth::user()->id))   $trade = null;
 
         if(!$trade) abort(404);
@@ -146,7 +146,7 @@ class TradeController extends Controller
             'page' => 'trade'
         ]);
     }
-    
+
     /**
      * Creates a new trade.
      *
@@ -165,7 +165,7 @@ class TradeController extends Controller
         }
         return redirect()->back();
     }
-    
+
     /**
      * Edits a trade.
      *
@@ -196,12 +196,12 @@ class TradeController extends Controller
         $trade = Trade::where('id', $id)->where(function($query) {
             $query->where('recipient_id', Auth::user()->id)->orWhere('sender_id', Auth::user()->id);
         })->where('status', 'Open')->first();
-        
+
         return view('home.trades._confirm_offer_modal', [
             'trade' => $trade
         ]);
     }
-    
+
     /**
      * Confirms or unconfirms an offer.
      *
@@ -232,12 +232,12 @@ class TradeController extends Controller
         $trade = Trade::where('id', $id)->where(function($query) {
             $query->where('recipient_id', Auth::user()->id)->orWhere('sender_id', Auth::user()->id);
         })->where('status', 'Open')->first();
-        
+
         return view('home.trades._confirm_trade_modal', [
             'trade' => $trade
         ]);
     }
-    
+
     /**
      * Confirms or unconfirms a trade.
      *
@@ -268,12 +268,12 @@ class TradeController extends Controller
         $trade = Trade::where('id', $id)->where(function($query) {
             $query->where('recipient_id', Auth::user()->id)->orWhere('sender_id', Auth::user()->id);
         })->where('status', 'Open')->first();
-        
+
         return view('home.trades._cancel_trade_modal', [
             'trade' => $trade
         ]);
     }
-    
+
     /**
      * Cancels a trade.
      *
@@ -294,7 +294,7 @@ class TradeController extends Controller
     }
 
     /**********************************************************************************************
-    
+
         TRADE LISTINGS
 
     **********************************************************************************************/
@@ -384,7 +384,7 @@ class TradeController extends Controller
      */
     public function postCreateListing(Request $request, TradeListingManager $service)
     {
-        if($listing = $service->createTradeListing($request->only(['comments', 'contact', 'item_ids', 'quantities', 'stack_id', 'stack_quantity', 'offer_currency_ids', 'seeking_currency_ids', 'character_id', 'offering_etc', 'seeking_etc']), Auth::user())) {
+        if($listing = $service->createTradeListing($request->only(['title', 'comments', 'contact', 'item_ids', 'quantities', 'stack_id', 'stack_quantity', 'offer_currency_ids', 'seeking_currency_ids', 'character_id', 'offering_etc', 'seeking_etc']), Auth::user())) {
             flash('Trade listing created successfully.')->success();
             return redirect()->to($listing->url);
         }
@@ -406,7 +406,7 @@ class TradeController extends Controller
     {
         $listing = TradeListing::find($id);
         if(!$listing) abort(404);
-        
+
         if($service->markExpired(['id' => $id], Auth::user())) {
             flash('Listing expired successfully.')->success();
         }

@@ -6,7 +6,7 @@
 {!! breadcrumbs(['Trades' => 'trades/open', 'Listings' => 'trades/listings', 'Listing (#' . $listing->id . ')' => 'trades/listings/'.$listing->id]) !!}
 
 <h1>
-    Trade Listing (#{{ $listing->id }})
+    {!! $listing->displayName !!}
 
     <span class="float-right badge badge-{{ $listing->isActive ? 'success' : 'secondary' }}">{{ $listing->isActive ? 'Active' : 'Expired' }}</span>
 </h1>
@@ -40,7 +40,7 @@
             <div class="card-body">
                 @if($listing->comments)
                     {!! nl2br(htmlentities($listing->comments)) !!}
-                @else 
+                @else
                     No comment given.
                 @endif
             </div>
@@ -100,7 +100,7 @@
 @endsection
 
 @section('scripts')
-@parent 
+@parent
 @if($listing->isActive)
     <script>
         $(document).ready(function() {
@@ -109,7 +109,7 @@
 
             var $expireButton = $('#expireButton');
             var $expireSubmit = $('#expireSubmit');
-            
+
             $expireButton.on('click', function(e) {
                 e.preventDefault();
                 $confirmationModal.modal('show');

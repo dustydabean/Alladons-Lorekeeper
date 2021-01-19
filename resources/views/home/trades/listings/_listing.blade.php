@@ -1,8 +1,8 @@
 <div class="card mb-3">
     <div class="card-header">
-        <h2 class="mb-0"><a href="{{$listing->url}} ">Listing (#{{ $listing->id }})</a> : Posted by {!! $listing->user->displayName !!}
+        <h3 class="mb-0">{!! $listing->displayName !!} : Posted by {!! $listing->user->displayName !!}
             <a class="float-right" href="{{ url('reports/new?url=') . $listing->url }}"><i class="fas fa-exclamation-triangle" data-toggle="tooltip" title="Click here to report this trade listing." style="font-size:75%; opacity: 50%;"></i></a>
-        </h2>
+        </h3>
     </div>
     <div class="card-body">
         @if(isset($trade->terms_link) && $trade->terms_link)
@@ -18,15 +18,15 @@
             <hr />
         <div class="row">
             <div class="col-md-6">
-                <h3 class="card-heading">
+                <h5 class="card-heading">
                     Seeking:
-                </h3>
+                </h5>
                 @include('home.trades.listings._seeking_summary', ['user' => $listing->user, 'data' => isset($listing->data['seeking']) ? parseAssetData($listing->data['seeking']) : null, 'listing' => $listing, 'etc' => isset($listing->data['seeking_etc']) ? $listing->data['seeking_etc'] : null])
             </div>
             <div class="col-md-6">
-                <h3 class="card-heading">
+                <h5 class="card-heading">
                     Offering:
-                </h3>
+                </h5>
                 @include('home.trades.listings._offer_summary', ['user' => $listing->user, 'data' => isset($listing->data['offering']) ? parseAssetData($listing->data['offering']) : null, 'listing' => $listing, 'etc' => isset($listing->data['offering_etc']) ? $listing->data['offering_etc'] : null])
             </div>
         </div>
