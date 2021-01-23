@@ -175,7 +175,7 @@ class CurrencyService extends Service
         DB::beginTransaction();
 
         try {
-
+            if(DB::table('user_currencies')->where([['currency_id', '=', $currency->id], ['quantity', '>', 0]])->exists()) throw new \Exception("At least one user currently owns this currency. Please remove the currency before deleting it.");
             if(DB::table('loots')->where('rewardable_type', 'Currency')->where('rewardable_id', $currency->id)->exists()) throw new \Exception("A loot table currently distributes this currency as a potential reward. Please remove the currency before deleting it.");
             if(DB::table('prompt_rewards')->where('rewardable_type', 'Currency')->where('rewardable_id', $currency->id)->exists()) throw new \Exception("A prompt currently distributes this currency as a reward. Please remove the currency before deleting it.");
             if(DB::table('shop_stock')->where('currency_id', $currency->id)->exists()) throw new \Exception("A shop currently requires this currency to purchase an item. Please change the currency before deleting it.");
