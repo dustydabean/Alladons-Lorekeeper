@@ -14,9 +14,9 @@
     @if(Settings::get('global_event_goal') != 0)
 
         <div class="progress mb-2" style="height: 2em;">
-            <div class="progress-bar bg-success" role="progressbar" style="width: {{ $inverseProgress }}%" aria-valuenow="{{ $inverseProgress }}" aria-valuemin="0" aria-valuemax="{{ Settings::get('global_event_goal') }}">
-                @if($total && (Settings::get('global_event_goal') - $total->quantity) > 0)
-                    <h5 class="align-self-center my-2">{{ $total ? Settings::get('global_event_goal') - $total->quantity : Settings::get('global_event_goal') }}/{{ Settings::get('global_event_goal') }}</h5>
+            <div class="progress-bar bg-success" role="progressbar" style="width: {{ $progress }}%" aria-valuenow="{{ $progress }}" aria-valuemin="0" aria-valuemax="{{ Settings::get('global_event_goal') }}">
+                @if($total && $total->quantity > 0)
+                    <h5 class="align-self-center my-2">{{ $total ? $total->quantity : 0 }}/{{ Settings::get('global_event_goal') }}</h5>
                 @endif
             </div>
         </div>
@@ -25,12 +25,13 @@
             Inverse progress bar
 
             <div class="progress mb-2" style="height: 2em;">
-            <div class="progress-bar bg-success" role="progressbar" style="width: {{ $progress }}%" aria-valuenow="{{ $progress }}" aria-valuemin="0" aria-valuemax="{{ Settings::get('global_event_goal') }}">
-                @if($total && $total->quantity > 0)
-                    <h5 class="align-self-center my-2">{{ $total ? $total->quantity : 0 }}/{{ Settings::get('global_event_goal') }}</h5>
-                @endif
+                <div class="progress-bar bg-success" role="progressbar" style="width: {{ $inverseProgress }}%" aria-valuenow="{{ $inverseProgress }}" aria-valuemin="0" aria-valuemax="{{ Settings::get('global_event_goal') }}">
+                    @if($total && (Settings::get('global_event_goal') - $total->quantity) > 0)
+                        <h5 class="align-self-center my-2">{{ $total ? Settings::get('global_event_goal') - $total->quantity : Settings::get('global_event_goal') }}/{{ Settings::get('global_event_goal') }}</h5>
+                    @endif
+                </div>
             </div>
-        </div>
+
         -->
 
         <p class="text-center">
