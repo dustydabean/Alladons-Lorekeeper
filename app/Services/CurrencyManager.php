@@ -234,7 +234,7 @@ class CurrencyManager extends Service
 
                 // If global event score tracking is enabled, and the currency is the current
                 // event currency, credit the same amount to the admin user for global tracking
-                if(Settings::get('global_event_score') && $currency->id == Settings::get('event_currency')) {
+                if(Settings::get('global_event_score') && $currency->id == Settings::get('event_currency') && $recipient->id != Settings::get('admin_user')) {
                     $adminRecord = UserCurrency::where('user_id', Settings::get('admin_user'))->where('currency_id', $currency->id)->first();
                     if($adminRecord) {
                         // Laravel doesn't support composite primary keys, so directly updating the DB row here
