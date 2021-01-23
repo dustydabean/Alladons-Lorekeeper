@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Settings;
 
 use App\Models\Currency\Currency;
 use App\Models\Item\ItemCategory;
 use App\Models\Item\Item;
 use App\Models\Prompt\PromptCategory;
 use App\Models\Prompt\Prompt;
+use App\Models\User\UserCurrency;
+use App\Models\SitePage;
 
 class PromptsController extends Controller
 {
@@ -43,7 +46,7 @@ class PromptsController extends Controller
         $query = PromptCategory::query();
         $name = $request->get('name');
         if($name) $query->where('name', 'LIKE', '%'.$name.'%');
-        return view('prompts.prompt_categories', [  
+        return view('prompts.prompt_categories', [
             'categories' => $query->orderBy('sort', 'DESC')->paginate(20)->appends($request->query()),
         ]);
     }
@@ -58,12 +61,12 @@ class PromptsController extends Controller
     {
         $query = Prompt::active()->with('category');
         $data = $request->only(['prompt_category_id', 'name', 'sort']);
-        if(isset($data['prompt_category_id']) && $data['prompt_category_id'] != 'none') 
+        if(isset($data['prompt_category_id']) && $data['prompt_category_id'] != 'none')
             $query->where('prompt_category_id', $data['prompt_category_id']);
-        if(isset($data['name'])) 
+        if(isset($data['name']))
             $query->where('name', 'LIKE', '%'.$data['name'].'%');
 
-        if(isset($data['sort'])) 
+        if(isset($data['sort']))
         {
             switch($data['sort']) {
                 case 'alpha':
@@ -94,12 +97,32 @@ class PromptsController extends Controller
                     $query->sortEnd(true);
                     break;
             }
-        } 
+        }
         else $query->sortCategory();
 
         return view('prompts.prompts', [
             'prompts' => $query->paginate(20)->appends($request->query()),
             'categories' => ['none' => 'Any Category'] + PromptCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray()
+        ]);
+    }
+
+    /**
+     * Shows the event currency tracking page.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getEventTracking(Request $request)
+    {
+        if(!Settings::get('global_event_score')) abort(404);
+        $total = UserCurrency::where('user_id', Settings::get('admin_user'))->where('currency_id', Settings::get('event_currency'))->first();
+
+        return view('prompts.event_tracking', [
+            'currency' => Currency::find(Settings::get('event_currency')),
+            'total' => $total,
+            'progress' => $total ? ($total->quantity <= Settings::get('global_event_goal') ? ($total->quantity/Settings::get('global_event_goal'))*100 : 100) : 0,
+            'inverseProgress' => $total ? ($total->quantity <= Settings::get('global_event_goal') ? 100-(($total->quantity/Settings::get('global_event_goal'))*100) : 0) : 100,
+            'page' => SitePage::where('key', 'event-tracker')->first()
         ]);
     }
 }

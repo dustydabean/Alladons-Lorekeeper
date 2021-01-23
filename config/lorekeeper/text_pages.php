@@ -18,7 +18,7 @@ return [
     ],
     'privacy' => [
         'title' => 'Privacy Policy',
-        'text' => 'This is a page that explains how your site might use your members\' data. Users will see a link to this page when registering and a Privacy link is displayed at the bottom of the layout.' 
+        'text' => 'This is a page that explains how your site might use your members\' data. Users will see a link to this page when registering and a Privacy link is displayed at the bottom of the layout.'
     ],
     'about' => [
         'title' => 'About',
@@ -27,6 +27,10 @@ return [
     'credits' => [
         'title' => 'Credits',
         'text' => 'This page will contain credits for code, art, ect that has been used on your site!'
+    ],
+    'event-tracker' => [
+        'title' => 'Event Tracker',
+        'text' => 'This page will have information on the current event, to be displayed alongside information on a global event score. It does not need to be viewable, as it is automatically embedded into the event tracking page.'
     ],
 
 
