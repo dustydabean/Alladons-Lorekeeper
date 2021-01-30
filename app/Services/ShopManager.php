@@ -56,6 +56,7 @@ class ShopManager extends Service
 
 
             if(isset($data['use_coupon'])) {
+                if(!isset($data['coupon'])) throw new \Exception('Please select a coupon to use.');
                 // finding the users tag
                 $userItem = UserItem::find($data['coupon']);
                 // finding bought item
@@ -63,6 +64,8 @@ class ShopManager extends Service
                 $tag = $item->tags()->where('tag', 'Coupon')->first();
                 $coupon = $tag->data;
 
+                if(!$coupon['discount']) throw new \Exception('No discount amount set, please contact a site admin before trying to purchase again.');
+                
                 // if the coupon isn't infinite kill it
                 if(!$coupon['infinite']) {
                     if(!(new InventoryManager)->debitStack($user, 'Coupon Used', ['data' => 'Coupon used in purchase of ' . $shopStock->item->name . ' from ' . $shop->name], $userItem, 1)) throw new \Exception("Failed to remove coupon.");
