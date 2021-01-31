@@ -69,6 +69,9 @@
                     </div>
                 @endif
                 @if($stock->shop->use_coupons && $userCoupons !== Null)
+                    @if(Settings::get('limited_stock_coupon_settings') == 0)
+                    <p class="text-danger">Note that coupons cannot be used on limited stock items.</p>
+                    @endif
                 <div class="form-group">
                     {!! Form::checkbox('use_coupon', 1,  0, ['class' => 'is-coupon-class form-control', 'data-toggle' => 'toggle']) !!}
                     {!! Form::label('use_coupon', 'Do you want to use a coupon?', ['class' => 'form-check-label  ml-3 mb-2']) !!}

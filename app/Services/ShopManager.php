@@ -56,6 +56,9 @@ class ShopManager extends Service
 
 
             if(isset($data['use_coupon'])) {
+                // check if the the stock is limited stock
+                if($shopStock->is_limited_stock && !Settings::get('limited_stock_coupon_settings')) throw new \Exception('Sorry! You can\'t use coupons on limited stock items');
+
                 if(!isset($data['coupon'])) throw new \Exception('Please select a coupon to use.');
                 // finding the users tag
                 $userItem = UserItem::find($data['coupon']);
