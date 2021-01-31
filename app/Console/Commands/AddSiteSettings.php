@@ -232,7 +232,7 @@ class AddSiteSettings extends Command
                 [
                     'key' => 'limited_stock_coupon_settings',
                     'value' => 0,
-                    'description' => '0: Allows coupons to be used on limited stock items, 1: Allows coupons to be used on limited stock items'
+                    'description' => '0: Does not allow coupons to be used on limited stock items, 1: Allows coupons to be used on limited stock items'
                 ]
 
             ]);
