@@ -24,7 +24,7 @@
         <p>
             Users can view information about the current global score here:
 
-            {!! Form::text('url', url('event-score'), ['class' => 'form-control mb-4', 'disabled']) !!}
+            {!! Form::text('url', url('event-tracking'), ['class' => 'form-control mb-4', 'disabled']) !!}
 
             This page includes information from a text page.
             @if(Auth::user()->hasPower('edit_pages')) You can edit this page <a href="{{ url('/admin/pages/edit/'.$page->id) }}">here</a>.@endif
