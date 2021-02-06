@@ -83,9 +83,9 @@ class AddPetTables extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('pet_categories');
-        Schema::dropIfExists('pets');
-        Schema::dropIfExists('user_pets');
         Schema::dropIfExists('user_pets_log');
+        Schema::dropIfExists('user_pets');
+        Schema::dropIfExists('pets');
+        Schema::dropIfExists('pet_categories');
     }
 }
