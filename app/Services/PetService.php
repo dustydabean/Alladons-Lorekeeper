@@ -293,8 +293,6 @@ class PetService extends Service
             if(DB::table('prompt_rewards')->where('rewardable_type', 'Pet')->where('rewardable_id', $pet->id)->exists()) throw new \Exception("A prompt currently distributes this pet as a reward. Please remove the pet before deleting it.");
             //if(DB::table('shop_stock')->where('pet_id', $pet->id)->exists()) throw new \Exception("A shop currently stocks this pet. Please remove the pet before deleting it.");
             
-            $pet->tags()->delete();
-            if($pet->has_image) $this->deleteImage($pet->imagePath, $pet->imageFileName); 
             $pet->delete();
 
             return $this->commitReturn(true);
