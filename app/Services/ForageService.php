@@ -141,6 +141,7 @@ class ForageService extends Service
         return $this->rollbackReturn(false);
     }
 
+    // initaliases forage
     public function initForage($id, $user)
     {
         DB::beginTransaction();
@@ -154,11 +155,12 @@ class ForageService extends Service
                     ]);
                 }
 
-            if($userForage->foraged == 1) throw new \Exception('You have already foraged today! Come back tomorrow.');
+            if($userForage->reset_at >= Carbon::now()) throw new \Exception('You have already foraged today! Come back tomorrow.');
 
             $userForage->last_forage_id = $id;
             $userForage->last_foraged_at = carbon::now();
             $userForage->distribute_at = carbon::now()->addMinutes(60);
+            $userForage->reset_at = carbon::now()->addDays(1);
             $userForage->save();
 
             return $this->commitReturn(true);
@@ -168,7 +170,7 @@ class ForageService extends Service
         return $this->rollbackReturn(false);
     }
 
-
+    // claims
     public function claimReward($user)
     {
         DB::beginTransaction();
@@ -176,6 +178,7 @@ class ForageService extends Service
         try {
 
             $forage = Forage::find($user->foraging->last_forage_id);
+            if(!$forage) throw new \Exception('Error finding forage.');
             $set = $user->foraging;
 
             $rewards = $this->processRewards($forage, true);
@@ -189,7 +192,6 @@ class ForageService extends Service
 
             $set->last_forage_id = NULL;
             $set->distribute_at = NULL;
-            $set->foraged = 1;
 
             $set->save();
 
