@@ -73,9 +73,11 @@
                                 <div class="m-4">{{ $link->info }}</div>
                                 @endif
                             </div>
-                            <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#deleteModal">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                            @if(Auth::check() && ($character->user_id == Auth::user()->id || Auth::user()->hasPower('manage_characters')))
+                                <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#deleteModal">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            @endif
                         </div>
                     <div class="col-md-6 mb-md-0 mb-2">
                         <div class="card m-2">
