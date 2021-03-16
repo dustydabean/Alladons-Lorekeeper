@@ -238,7 +238,7 @@ class CurrencyManager extends Service
                     $adminRecord = UserCurrency::where('user_id', Settings::get('admin_user'))->where('currency_id', $currency->id)->first();
                     if($adminRecord) {
                         // Laravel doesn't support composite primary keys, so directly updating the DB row here
-                        DB::table('user_currencies')->where('user_id',  Settings::get('admin_user'))->where('currency_id', $currency->id)->update(['quantity' => $record->quantity + $quantity]);
+                        DB::table('user_currencies')->where('user_id',  Settings::get('admin_user'))->where('currency_id', $currency->id)->update(['quantity' => $adminRecord->quantity + $quantity]);
                     }
                     else {
                         $adminRecord = UserCurrency::create(['user_id' =>  Settings::get('admin_user'), 'currency_id' => $currency->id, 'quantity' => $quantity]);
