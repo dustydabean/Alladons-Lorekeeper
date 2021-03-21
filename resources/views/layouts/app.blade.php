@@ -71,7 +71,15 @@
 </head>
 <body>
     <div id="app">
-        <div class="site-header-image" id="header" style="background-image: url('{{ asset('images/header.png') }}');"></div>
+
+        @if(Auth::check() && Auth::user()->theme)
+            <div class="site-header-image" id="header" style="background-image: url('{{ Auth::user()->theme->headerImageUrl }}');"></div>
+        @elseif(isset($defaultTheme))
+            <div class="site-header-image" id="header" style="background-image: url('{{ $defaultTheme->headerImageUrl }}');"></div>
+        @else
+            <div class="site-header-image" id="header" style="background-image: url('{{ asset('images/header.png') }}');"></div>
+        @endif
+
         @include('layouts._nav')
         @if ( View::hasSection('sidebar') )
 			<div class="site-mobile-header bg-secondary"><a href="#" class="btn btn-sm btn-outline-light" id="mobileMenuButton">Menu <i class="fas fa-caret-right ml-1"></i></a></div>
