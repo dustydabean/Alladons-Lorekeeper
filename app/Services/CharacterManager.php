@@ -25,6 +25,7 @@ use App\Models\Character\CharacterImage;
 use App\Models\Character\CharacterTransfer;
 use App\Models\Character\CharacterDesignUpdate;
 use App\Models\Character\CharacterBookmark;
+use App\Models\Character\CharacterProfileCustomValue;
 use App\Models\User\UserCharacterLog;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
@@ -1285,6 +1286,28 @@ class CharacterManager extends Service
             $character->profile->text = $data['text'];
             $character->profile->parsed_text = parse($data['text']);
             $character->profile->save();
+
+            if (!$character->is_myo_slot) {
+                // clear old custom values and add new ones.
+                $character->profile->custom_values()->delete();
+                if(isset($data['custom_values_data'])) {
+                    foreach( $data['custom_values_data'] as $i => $val) {
+                        $val_parsed = parse($val);
+                        if ($val_parsed != "") {
+                            $group = isset($data['custom_values_group']) ? $data['custom_values_group'][$i] : null;
+                            $name = isset($data['custom_values_name']) ? $data['custom_values_name'][$i] : null;
+                            $custom_value = CharacterProfileCustomValue::create([
+                                'character_id' => $character->id,
+                                'group' => $group,
+                                'name' => $name,
+                                'data' => $val,
+                                'data_parsed' => $val_parsed,
+                            ]);
+                        }
+                    }
+                }
+                $character->profile->save();
+            }
 
             if($isAdmin && isset($data['alert_user']) && $character->is_visible && $character->user_id)
             {

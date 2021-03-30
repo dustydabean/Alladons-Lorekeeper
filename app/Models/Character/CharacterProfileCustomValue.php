@@ -7,7 +7,7 @@ use DB;
 use App\Models\Model;
 use App\Models\Character\CharacterCategory;
 
-class CharacterProfile extends Model
+class CharacterProfileCustomValue extends Model
 {
 
     /**
@@ -16,7 +16,7 @@ class CharacterProfile extends Model
      * @var array
      */
     protected $fillable = [
-        'character_id', 'text', 'parsed_text', 'link'
+        'character_id', 'group', 'name', 'data', 'data_parsed',
     ];
 
     /**
@@ -24,34 +24,27 @@ class CharacterProfile extends Model
      *
      * @var string
      */
-    protected $table = 'character_profiles';
-
-    /**
-     * The primary key of the model.
-     *
-     * @var string
-     */
-    public $primaryKey = 'character_id';
+    protected $table = 'character_profile_custom_values';
 
     /**********************************************************************************************
     
         RELATIONS
 
     **********************************************************************************************/
-    
+
+    /**
+     * Get the character this profile belongs to.
+     */
+    public function profile() 
+    {
+        return $this->belongsTo('App\Models\Character\CharacterProfile', 'character_id', 'character_id');
+    }
+
     /**
      * Get the character this profile belongs to.
      */
     public function character() 
     {
-        return $this->belongsTo('App\Models\Character\Character', 'character_id');
-    }
-
-    /**
-     * Get the custom values for this character.
-     */
-    public function custom_values() 
-    {
-        return $this->hasMany('App\Models\Character\CharacterProfileCustomValue', 'character_id', 'character_id');
+        return $this->belongsTo('App\Models\Character\Character', 'character_id', 'id');
     }
 }
