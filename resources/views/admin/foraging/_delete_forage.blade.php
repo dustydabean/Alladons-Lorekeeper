@@ -1,5 +1,5 @@
 @if($table)
-    {!! Form::open(['url' => 'admin/data/foraging/delete/'.$table->id]) !!}
+    {!! Form::open(['url' => 'admin/data/forages/delete/'.$table->id]) !!}
 
     <p>You are about to delete the forage <strong>{{ $table->name }}</strong>. This is not reversible.</p>
     <p>Are you sure you want to delete <strong>{{ $table->name }}</strong>?</p>
