@@ -216,7 +216,7 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::get('forages/roll/{id}', 'ForageController@getRollForage');
     Route::post('forages/create', 'ForageController@postCreateEditForage');
     Route::post('forages/edit/{id?}', 'ForageController@postCreateEditForage');
-    Route::post('forages/delete/{id}', 'ForageController@postDeleteLootTable');
+    Route::post('forages/delete/{id}', 'ForageController@postDeleteForage');
 
     # PROMPTS
     Route::get('prompt-categories', 'PromptController@getIndex');
