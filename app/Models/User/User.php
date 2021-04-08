@@ -85,6 +85,14 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Get user theme.
+     */
+    public function theme()
+    {
+        return $this->belongsTo('App\Models\Theme');
+    }
+
+    /**
      * Get user-editable profile data.
      */
     public function profile()
@@ -159,7 +167,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * Get all of the user's gallery submissions.
      */
-    public function gallerySubmissions() 
+    public function gallerySubmissions()
     {
         return $this->hasMany('App\Models\Gallery\GallerySubmission')->where('user_id', $this->id)->orWhereIn('id', GalleryCollaborator::where('user_id', $this->id)->where('type', 'Collab')->pluck('gallery_submission_id')->toArray())->visible($this)->accepted()->orderBy('created_at', 'DESC');
     }
@@ -167,7 +175,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * Get all of the user's favorited gallery submissions.
      */
-    public function galleryFavorites() 
+    public function galleryFavorites()
     {
         return $this->hasMany('App\Models\Gallery\GalleryFavorite')->where('user_id', $this->id);
     }

@@ -68,14 +68,20 @@
         <link href="{{ asset('css/custom.css') }}" rel="stylesheet">
     @endif
 
+    @if(Auth::check() && Auth::user()->theme)
+        <link href="{{ Auth::user()->theme->cssUrl }}" rel="stylesheet">
+    @elseif(isset($defaultTheme))
+        <link href="{{ $defaultTheme->CSSUrl }}" rel="stylesheet">
+    @endif
+
 </head>
 <body>
     <div id="app">
 
         @if(Auth::check() && Auth::user()->theme)
-            <div class="site-header-image" id="header" style="background-image: url('{{ Auth::user()->theme->headerImageUrl }}');"></div>
-        @elseif(isset($defaultTheme))
-            <div class="site-header-image" id="header" style="background-image: url('{{ $defaultTheme->headerImageUrl }}');"></div>
+            <div class="site-header-image" id="header" style="background-image: url('{{ Auth::user()->theme->imageUrl }}');"></div>
+        @elseif(isset($defaultTheme) && isset($defaultTheme->imageUrl))
+            <div class="site-header-image" id="header" style="background-image: url('{{ $defaultTheme->imageUrl }}');"></div>
         @else
             <div class="site-header-image" id="header" style="background-image: url('{{ asset('images/header.png') }}');"></div>
         @endif

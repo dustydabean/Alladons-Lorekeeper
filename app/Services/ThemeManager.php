@@ -6,6 +6,7 @@ use DB;
 use Config;
 
 use App\Models\Theme;
+use App\Models\User\User;
 
 class ThemeManager extends Service
 {
@@ -31,13 +32,14 @@ class ThemeManager extends Service
 
         try {
 
+            $data['id'] = 0;
             $data = $this->populateData($data);
 
             $header = null;
-            if(isset($data['image']) && $data['image']) {
+            if(isset($data['header']) && $data['header']) {
                 $data['has_header'] = 1;
-                $header = $data['image'];
-                unset($data['image']);
+                $header = $data['header'];
+                unset($data['header']);
             }
             else $data['has_header'] = 0;
 
@@ -49,20 +51,14 @@ class ThemeManager extends Service
             }
             else $data['has_css'] = 0;
 
-
             $theme = Theme::create($data);
 
             if ($header) {
-                $this->handleImage($header, $theme->path, $theme->imageFileName, null);
-                $this->processImage($header);
+                $theme->extension = $header->getClientOriginalExtension();
+                $theme->update();
+                $this->handleImage($header, $theme->imagePath, $theme->imageFileName, null);
             }
-            if ($css) {
-                $this->handleImage($css, $theme->path, $theme->cssFileName, null);
-                $this->processImage($css);
-            }
-
-            $this->processImage($image);
-
+            if ($css) $this->handleImage($css, $theme->imagePath, $theme->cssFileName, null);
 
             return $this->commitReturn($theme);
         } catch(\Exception $e) {
@@ -84,16 +80,17 @@ class ThemeManager extends Service
         DB::beginTransaction();
 
         try {
-            if(isset($data['theme_category_id']) && $data['theme_category_id'] == 'none') $data['theme_category_id'] = null;
 
             // More specific validation
             if(Theme::where('name', $data['name'])->where('id', '!=', $theme->id)->exists()) throw new \Exception("The name has already been taken.");
-            if((isset($data['theme_category_id']) && $data['theme_category_id']) && !ThemeCategory::where('id', $data['theme_category_id'])->exists()) throw new \Exception("The selected theme category is invalid.");
 
-            $data = $this->populateData($data);
+            $data['id'] = $theme->id;
+            $data = $this->populateData($data, $theme);
 
             $header = null;
             if(isset($data['header']) && $data['header']) {
+                if(isset($category->extension)) $old = $category->imageFileName;
+                else $old = null;
                 $data['has_header'] = 1;
                 $header = $data['header'];
                 unset($data['header']);
@@ -101,23 +98,17 @@ class ThemeManager extends Service
             $css = null;
             if(isset($data['css']) && $data['css']) {
                 $data['has_css'] = 1;
-                $header = $data['css'];
+                $css = $data['css'];
                 unset($data['css']);
             }
-
             $theme->update($data);
 
-            $theme->update([
-                'data' => json_encode([
-                    'rarity' => isset($data['rarity']) && $data['rarity'] ? $data['rarity'] : null,
-                    'uses' => isset($data['uses']) && $data['uses'] ? $data['uses'] : null,
-                    'release' => isset($data['release']) && $data['release'] ? $data['release'] : null,
-                    'prompts' => isset($data['prompts']) && $data['prompts'] ? $data['prompts'] : null,
-                    'resell' => isset($data['currency_quantity']) ? [$data['currency_id'] => $data['currency_quantity']] : null,
-                    ])
-            ]);
-
-            if ($theme) $this->handleImage($header, $theme->headerPath, $theme->headerFileName);
+            if ($header) {
+                $theme->extension = $header->getClientOriginalExtension();
+                $theme->update();
+                $this->handleImage($header, $theme->imagePath, $theme->imageFileName, $old);
+            }
+            if($css) $this->handleImage($css, $theme->imagePath, $theme->cssFileName);
 
             return $this->commitReturn($theme);
         } catch(\Exception $e) {
@@ -140,20 +131,46 @@ class ThemeManager extends Service
 
         $data['hash'] = randomString(10);
 
-        if (count($data['creator_name']) != count($data['creator_url'])) throw new \Exception("Creator name to creator url count mismatch.");
-        foreach($data['creator_name'] as $creator)
+        $names = explode(',',$data['creator_name']);
+        $urls = explode(',',$data['creator_url']);
+        $creators = [];
+
+        if (count($names) != count($urls)) throw new \Exception("Creator name to creator url count mismatch.");
+        foreach($names as $key => $creator)
         {
-            $creators[$creator] = $data['creator_url'];
+            $creators[trim($creator)] = trim($urls[$key]);
         }
+
         unset($data['creator_name']); unset($data['creator_url']);
         $data['creators'] = json_encode($creators);
 
         if(!isset($data['is_active'])) $data['is_active'] = 0;
 
+        // Unset Default
         if(isset($data['is_default']))
         {
-            $oldDefault = Theme::where('is_default',1)->first();
-            if ($oldDefault) $oldDefault->update(['is_default',0]);
+            DB::table('themes')
+            ->where('id', '!=', $data['id'])
+            ->where('is_default', 1)
+            ->update(['is_default' => 0]);
+        }
+        else $data['is_default'] = 0;
+
+        // Remove Header
+        if(isset($data['remove_header']) && isset($theme->extension) && $data['remove_header'])
+        {
+            $data['extension'] = null;
+            $this->deleteImage($theme->imagePath, $theme->imageFileName);
+            unset($data['remove_image']);
+            $data['has_header'] = 0;
+        }
+
+        // Remove Css
+        if(isset($data['remove_css']) && $data['remove_css'])
+        {
+            $this->deleteImage($theme->imagePath, $theme->cssFileName);
+            unset($data['remove_css']);
+            $data['has_css'] = 0;
         }
 
         return $data;
@@ -170,18 +187,13 @@ class ThemeManager extends Service
         DB::beginTransaction();
 
         try {
-            // Check first if the theme is currently owned or if some other site feature uses it
-            if(DB::table('user_themes')->where([['theme_id', '=', $theme->id], ['count', '>', 0]])->exists()) throw new \Exception("At least one user currently owns this theme. Please remove the theme(s) before deleting it.");
-            if(DB::table('character_themes')->where([['theme_id', '=', $theme->id], ['count', '>', 0]])->exists()) throw new \Exception("At least one character currently owns this theme. Please remove the theme(s) before deleting it.");
-            if(DB::table('loots')->where('rewardable_type', 'Theme')->where('rewardable_id', $theme->id)->exists()) throw new \Exception("A loot table currently distributes this theme as a potential reward. Please remove the theme before deleting it.");
-            if(DB::table('prompt_rewards')->where('rewardable_type', 'Theme')->where('rewardable_id', $theme->id)->exists()) throw new \Exception("A prompt currently distributes this theme as a reward. Please remove the theme before deleting it.");
-            if(DB::table('shop_stock')->where('theme_id', $theme->id)->exists()) throw new \Exception("A shop currently stocks this theme. Please remove the theme before deleting it.");
+            foreach(User::where('theme_id',$theme->id) as $user)
+            {
+                $user->update(['theme_id' => null]);
+            }
 
-            DB::table('themes_log')->where('theme_id', $theme->id)->delete();
-            DB::table('user_themes')->where('theme_id', $theme->id)->delete();
-            DB::table('character_themes')->where('theme_id', $theme->id)->delete();
-            $theme->tags()->delete();
-            if($theme->has_header) $this->deleteImage($theme->headerPath, $theme->headerFileName);
+            if($theme->has_header) $this->deleteImage($theme->imagePath, $theme->imageFileName);
+            if($theme->has_css) $this->deleteImage($theme->imagePath, $theme->cssFileName);
             $theme->delete();
 
             return $this->commitReturn(true);

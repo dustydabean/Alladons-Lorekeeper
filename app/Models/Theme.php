@@ -138,7 +138,9 @@ class Theme extends Model
      */
     public function getDisplayNameAttribute()
     {
-        return $this->name ;
+        if(!$this->is_active) return '<s>'.$this->name.'</a>';
+        if($this->is_default) return $this->name . ' (default)';
+        else return $this->name ;
     }
 
     /**
@@ -148,7 +150,12 @@ class Theme extends Model
      */
     public function getCreatorDataAttribute()
     {
-        dd(json_decode($this->creators),true);
+        $creators = json_decode($this->creators,true);
+
+        $names = implode(', ',array_keys($creators));
+        $urls =  implode(', ',array_values($creators));
+
+        return ['name' => $names, 'url' => $urls];
     }
 
     /**
@@ -158,7 +165,9 @@ class Theme extends Model
      */
     public function getCreatorDisplayNameAttribute()
     {
-        dd(json_decode($this->creators),true);
+        $names = [];
+        foreach(json_decode($this->creators,true) as $name => $url) $names[] = '<a href="'. $url . '">'. $name . '</a>';
+        return implode(', ',$names);
     }
 
     /**
@@ -178,7 +187,7 @@ class Theme extends Model
      */
     public function getImageFileNameAttribute()
     {
-        return $this->id . '-image.'.$this->extension;
+        return $this->id . '-header.'.$this->extension;
     }
 
     /**
@@ -199,7 +208,28 @@ class Theme extends Model
     public function getImageUrlAttribute()
     {
         if (!$this->has_header) return asset('images/header.png');
-        return asset($this->imageDirectory . '/' . $this->imageFileName);
+        return asset($this->imageDirectory . '/' . $this->imageFileName . '?' . $this->hash);
+    }
+
+    /**
+     * Gets the file name of the model's css.
+     *
+     * @return string
+     */
+    public function getCSSFileNameAttribute()
+    {
+        return $this->id . '.css';
+    }
+
+    /**
+     * Gets the URL of the model's css.
+     *
+     * @return string
+     */
+    public function getCSSUrlAttribute()
+    {
+        if (!$this->has_css) return null;
+        return asset($this->ImageDirectory . '/' . $this->CSSFileName . '?' . $this->hash);
     }
 
     /**
