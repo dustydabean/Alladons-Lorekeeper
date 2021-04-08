@@ -11,7 +11,7 @@
     @endif
 </h1>
 @if($theme->creators) <h5>by {!! $theme->creatorDisplayName !!}</h5> @endif
-<p class="alert alert-warning">All input fields are required.</p>
+<p class="text-danger">* All input fields are required.</p>
 
 {!! Form::open(['url' => $theme->id ? 'admin/themes/edit/'.$theme->id : 'admin/themes/create', 'files' => true]) !!}
 

@@ -39,23 +39,24 @@ class MyoController extends Controller
      */
     public function __construct()
     {
-       $this->middleware(function ($request, $next) {
-           $id = Route::current()->parameter('id');
-           $check = Character::where('id', $id)->first();
-           if(!$check) abort(404);
+        parent::__construct();
+        $this->middleware(function ($request, $next) {
+            $id = Route::current()->parameter('id');
+            $check = Character::where('id', $id)->first();
+            if(!$check) abort(404);
 
-           if($check->is_myo_slot) {
-             $query = Character::myo(1)->where('id', $id);
-             if(!(Auth::check() && Auth::user()->hasPower('manage_characters'))) $query->where('is_visible', 1);
-             $this->character = $query->first();
-             if(!$this->character) abort(404);
-             $this->character->updateOwner();
-             return $next($request);
-           }
-           else {
-             return redirect('/character/' . $check->slug);
-           }
-       });
+            if($check->is_myo_slot) {
+                $query = Character::myo(1)->where('id', $id);
+                if(!(Auth::check() && Auth::user()->hasPower('manage_characters'))) $query->where('is_visible', 1);
+                $this->character = $query->first();
+                if(!$this->character) abort(404);
+                $this->character->updateOwner();
+                return $next($request);
+            }
+            else {
+                return redirect('/character/' . $check->slug);
+            }
+        });
     }
 
     /**
