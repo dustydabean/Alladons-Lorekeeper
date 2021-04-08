@@ -37,7 +37,7 @@ class Theme extends Model
      */
     public static $createRules = [
         'name' => 'required|unique:themes|between:3,100',
-        'header' => 'required|mimes:png,jpg,jpeg,gif,svg',
+        'header' => 'mimes:png,jpg,jpeg,gif,svg',
         'css' => 'required|mimetypes:text/plain',
         'active' => 'nullable|boolean',
         'default' => 'nullable|boolean',
