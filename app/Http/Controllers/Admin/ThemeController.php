@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Admin\Data;
+namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 
 use Auth;
 
-use App\Models\Theme\Theme;
+use App\Models\Theme;
 use App\Models\User\User;
 
 use App\Services\ThemeManager;
@@ -30,7 +30,7 @@ class ThemeController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getThemeIndex(Request $request)
+    public function getIndex(Request $request)
     {
         $query = Theme::query();
         $data = $request->only(['name', 'sort']);
@@ -100,14 +100,15 @@ class ThemeController extends Controller
     {
         $id ? $request->validate(Theme::$updateRules) : $request->validate(Theme::$createRules);
         $data = $request->only([
-            'name', 'creator_name', 'creator_url', 'image', 'css', 'is_active', 'is_default'
+            'name', 'creator_name', 'creator_url', 'header', 'css', 'is_active', 'is_default'
         ]);
+
         if($id && $service->updateTheme(Theme::find($id), $data, Auth::user())) {
             flash('Theme updated successfully.')->success();
         }
         else if (!$id && $theme = $service->createTheme($data, Auth::user())) {
             flash('Theme created successfully.')->success();
-            return redirect()->to('admin/data/themes/edit/'.$theme->id);
+            return redirect()->to('admin/themes/edit/'.$theme->id);
         }
         else {
             foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
@@ -145,7 +146,7 @@ class ThemeController extends Controller
         else {
             foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
         }
-        return redirect()->to('admin/data/themes');
+        return redirect()->to('admin/themes');
     }
 
 }

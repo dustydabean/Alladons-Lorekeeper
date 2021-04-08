@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Theme;
+namespace App\Models;
 
 use Config;
 use DB;
@@ -37,12 +37,12 @@ class Theme extends Model
      */
     public static $createRules = [
         'name' => 'required|unique:themes|between:3,100',
-        'image' => 'mimes:png,jpg,jpeg,gif',
-        'css' => 'mimes:css',
+        'header' => 'required|mimes:png,jpg,jpeg,gif,svg',
+        'css' => 'required|mimetypes:text/plain',
         'active' => 'nullable|boolean',
         'default' => 'nullable|boolean',
-        'creators_name' => 'required',
-        'creators_url' => 'required',
+        'creator_name' => 'required',
+        'creator_url' => 'required',
     ];
 
     /**
@@ -52,12 +52,12 @@ class Theme extends Model
      */
     public static $updateRules = [
         'name' => 'required|between:3,100',
-        'image' => 'mimes:png,jpg,jpeg,gif',
-        'css' => 'mimes:css',
+        'header' => 'mimes:png,jpg,jpeg,gif,svg',
+        'css' => 'mimetypes:text/plain',
         'active' => 'nullable|boolean',
         'default' => 'nullable|boolean',
-        'creators_name' => 'required',
-        'creators_url' => 'required',
+        'creator_name' => 'required',
+        'creator_url' => 'required',
     ];
 
     /**********************************************************************************************
@@ -138,7 +138,27 @@ class Theme extends Model
      */
     public function getDisplayNameAttribute()
     {
-        return $this->name;
+        return $this->name ;
+    }
+
+    /**
+     * Displays the theme's creators' names and Urls
+     *
+     * @return string
+     */
+    public function getCreatorDataAttribute()
+    {
+        dd(json_decode($this->creators),true);
+    }
+
+    /**
+     * Displays the theme's creators' names in a string that links to them.
+     *
+     * @return string
+     */
+    public function getCreatorDisplayNameAttribute()
+    {
+        dd(json_decode($this->creators),true);
     }
 
     /**

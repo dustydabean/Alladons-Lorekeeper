@@ -63,6 +63,18 @@ Route::group(['prefix' => 'files', 'middleware' => 'power:edit_site_settings'], 
     Route::post('folder/rename', 'FileController@postRenameFolder');
 });
 
+# THEME MANAGER
+Route::group(['prefix' => 'themes', 'middleware' => 'power:edit_site_settings'], function() {
+    Route::get('/', 'ThemeController@getIndex');
+
+    Route::get('create', 'ThemeController@getCreateTheme');
+    Route::get('edit/{id}', 'ThemeController@getEditTheme');
+    Route::get('delete/{id}', 'ThemeController@getDeleteTheme');
+    Route::post('create', 'ThemeController@postCreateEditTheme');
+    Route::post('edit/{id}', 'ThemeController@postCreateEditTheme');
+    Route::post('delete/{id}', 'ThemeController@postDeleteTheme');
+});
+
 # SITE IMAGES
 Route::group(['prefix' => 'images', 'middleware' => 'power:edit_site_settings'], function() {
     Route::get('/', 'FileController@getSiteImages');

@@ -7,7 +7,7 @@ use Config;
 
 use App\Models\Theme;
 
-class ThemeService extends Service
+class ThemeManager extends Service
 {
     /*
     |--------------------------------------------------------------------------
