@@ -27,7 +27,6 @@ class CommentController extends Controller implements CommentControllerInterface
 {
     public function __construct()
     {
-        parent::__construct();
         $this->middleware('web');
 
         if (Config::get('comments.guest_commenting') == true) {
