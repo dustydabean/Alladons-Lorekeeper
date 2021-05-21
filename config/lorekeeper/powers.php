@@ -35,6 +35,10 @@ return [
         'name' => 'Edit Inventories',
         'description' => 'Allow rank to grant and remove items from user inventories, as well as grant/remove currency from users and characters.'
     ],
+    'view_hidden_genetics' => [
+        'name' => 'View Hidden Genetics',
+        'description' => 'Allow rank to view genes & genomes that have their data hidden to regular users.'
+    ],
     'manage_characters' => [
         'name' => 'Manage Masterlist',
         'description' => 'Allow rank to create/edit new characters. This includes uploading new images, modifying traits on an existing character and forcing ownership transfers.'
