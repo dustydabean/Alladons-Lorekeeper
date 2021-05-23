@@ -156,6 +156,11 @@ return [
                 'name' => 'Traits',
                 'url' => 'admin/data/traits'
             ],
+            // Genetics
+            [
+                'name' => 'Genetics',
+                'url' => 'admin/data/genetics'
+            ],
             [
                 'name' => 'Shops',
                 'url' => 'admin/data/shops'

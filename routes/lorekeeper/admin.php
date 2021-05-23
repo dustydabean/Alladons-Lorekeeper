@@ -179,6 +179,15 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('traits/edit/{id?}', 'FeatureController@postCreateEditFeature');
     Route::post('traits/delete/{id}', 'FeatureController@postDeleteFeature');
 
+    # GENETICS
+    Route::get('genetics', 'GeneticsController@getIndex');
+    Route::get('genetics/sort', 'GeneticsController@getSortIndex');
+    Route::post('genetics/sort', 'GeneticsController@postSortLoci');
+    Route::get('genetics/create', 'GeneticsController@getCreateLoci');
+    Route::post('genetics/create', 'GeneticsController@postCreateEditLoci');
+    Route::get('genetics/edit/{id}', 'GeneticsController@getEditLoci');
+    Route::post('genetics/edit/{id}', 'GeneticsController@postCreateEditLoci');
+
     # CHARACTER CATEGORIES
     Route::get('character-categories', 'CharacterCategoryController@getIndex');
     Route::get('character-categories/create', 'CharacterCategoryController@getCreateCharacterCategory');
