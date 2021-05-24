@@ -83,7 +83,7 @@ class LociAllele extends Model
      */
     public function getFullNameAttribute()
     {
-        $name = $this->name . "(" . $this->modifier . ")";
+        $name = $this->name . (($this->modifier && $this->modifier != "") ? "(" . $this->modifier . ")" : "");
         return $this->is_dominant ? $name : strtolower($name);
     }
 }

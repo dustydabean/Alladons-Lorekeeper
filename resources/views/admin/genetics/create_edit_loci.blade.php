@@ -180,6 +180,10 @@ $( document ).ready(function() {
             });
             $('#allele-creation').append($clone);
         });
+        $('.delete-allele-button').on('click', function(e) {
+            e.preventDefault();
+            loadModal("{{ url('admin/data/genetics/delete-allele/'.$category->id) }}", 'Delete Allele');
+        });
         function addAlleleListeners($clone)
         {
             $button = $clone.find('.delete-allele-row');

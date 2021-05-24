@@ -152,9 +152,9 @@ class GeneticsController extends Controller
      */
     public function getDeleteLoci($id)
     {
-        $category = FeatureCategory::find($id);
+        $category = Loci::find($id);
         return view('admin.genetics._delete_loci', [
-            'category' => $category,
+            'loci' => $category,
         ]);
     }
 
@@ -184,9 +184,10 @@ class GeneticsController extends Controller
      */
     public function getDeleteAllele($id)
     {
-        $allele = LociAllele::find($id);
-        return view('admin.genetics._delete_allele', [
-            'allele' => $allele,
+        $loci = Loci::find($id);
+        return view('admin.genetics._delete_loci_allele', [
+            'loci' => $loci,
+            'alleles' => $loci->alleles->pluck('full_name', 'id')->toArray(),
         ]);
     }
 
@@ -200,14 +201,14 @@ class GeneticsController extends Controller
      */
     public function postDeleteAllele(Request $request, GeneticsService $service, $id)
     {
-        $allele = LociAllele::find($id)->first();
-        if (!$allele) abort(404);
-        $cat = $allele->loci_id;
-        if($id && $service->deleteLociAllele($allele)) {
+        $loci = Loci::find($id);
+        if (!$loci) abort(404);
+        $data = $request->only(['target_allele', 'replacement_allele']);
+        if($id && $service->deleteLociAllele($data, $loci)) {
             flash('Allele deleted successfully.')->success();
         } else {
             foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
         }
-        return redirect()->to('admin/data/genetics/edit/'.$cat);
+        return redirect()->to('admin/data/genetics/edit/'.$loci->id);
     }
 }

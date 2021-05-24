@@ -1,5 +1,8 @@
 <?php namespace App\Services;
 
+use App\Models\Character\CharacterGenomeGene;
+use App\Models\Character\CharacterGenomeGradient;
+use App\Models\Character\CharacterGenomeNumeric;
 use App\Services\Service;
 
 use DB;
@@ -139,6 +142,62 @@ class GeneticsService extends Service
             {
                 Loci::where('id', $s)->update(['sort' => $key]);
             }
+            return $this->commitReturn(true);
+        } catch(\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Deletes a loci, all instances of characters having those genes, and all the gene's alleles.
+     *
+     * @param  array  $data
+     * @return bool
+     */
+    public function deleteLoci($loci)
+    {
+        DB::beginTransaction();
+        try {
+            $characterGenes;
+            if ($loci->type == "gene") $characterGenes = CharacterGenomeGene::where("loci_id", $loci->id);
+            else if ($loci->type == "gradient") $characterGenes = CharacterGenomeGradient::where("loci_id", $loci->id);
+            else if ($loci->type == "numeric") $characterGenes = CharacterGenomeNumeric::where("loci_id", $loci->id);
+            else throw new \Exception("Something went wrong, Loci had an impossible type set.");
+
+            if($characterGenes) $characterGenes->delete();
+            if ($loci->type == "gene") $loci->alleles()->delete();
+            $loci->delete();
+
+            return $this->commitReturn(true);
+        } catch(\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Deletes an allele and replaces it with an existing allele from the same locus.
+     *
+     * @param  array  $data
+     * @return bool
+     */
+    public function deleteLociAllele($data, $loci)
+    {
+        DB::beginTransaction();
+        try {
+            if(!$loci) throw new \Exception("Error with Loci.");
+            if($loci->type != "gene" || !$loci->alleles->count()) throw new \Exception("This loci doesn't have alleles.");
+            if($loci->alleles->count() <= 1) throw new \Exception("You can't delete alleles from a loci with only one allele.");
+            $target = LociAllele::find($data['target_allele']);
+            if(!$target || $target->loci_id != $loci->id) throw new \Exception("Invalid target.");
+            $replacement = LociAllele::find($data['replacement_allele']);
+            if(!$replacement || $replacement->loci_id != $loci->id) throw new \Exception("Invalid replacement.");
+            if($target->id == $replacement->id) throw new \Exception("Can't replace an allele with itself.");
+
+            CharacterGenomeGene::where('loci_allele_id', $target->id)->update(['loci_allele_id' => $replacement->id]);
+            $target->delete();
+
             return $this->commitReturn(true);
         } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
