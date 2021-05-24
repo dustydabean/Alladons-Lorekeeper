@@ -229,10 +229,10 @@ class CharacterManager extends Service
     /**
      * Handles character genome data.
      *
-     * @param  array                            $data
-     * @return \App\Models\Character\Character  $character
-     * @param  bool                             $isMyo
-     * @return \App\Models\Character\CharacterImage|bool
+     * @param  array                                  $data
+     * @param  \App\Models\Character\Character        $character
+     * @param  \App\Models\Character\CharacterGenome  $character
+     * @return \App\Models\Character\CharacterGenome|bool
      */
     private function handleCharacterGenome($data, $character, $genome = null)
     {
@@ -296,6 +296,31 @@ class CharacterManager extends Service
             $this->setError('error', $e->getMessage());
         }
         return false;
+    }
+
+    /**
+     * Deletes a character genome.
+     *
+     * @param \App\Models\Character\Character  $character
+     * @param \App\Models\Character\Genome     $character
+     * @return bool
+     */
+    public function deleteCharacterGenome($character, $genome)
+    {
+        DB::beginTransaction();
+        try {
+            if ($genome->character->id != $character->id) throw new \Exception("Wrong character.");
+
+            $genome->genes()->delete();
+            $genome->gradients()->delete();
+            $genome->numerics()->delete();
+            $genome->delete();
+
+            return $this->commitReturn(true);
+        } catch(\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+        return $this->rollbackReturn(false);
     }
 
     /**

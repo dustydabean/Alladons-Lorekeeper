@@ -1,3 +1,4 @@
+<div>
 @php
     $button = "";
     if (Auth::user() && Auth::user()->hasPower('manage-characters') && Auth::user()->hasPower('view-genomes')) {
@@ -8,6 +9,7 @@
             $button .= "add-genome\"><i class=\"fas fa-plus\"";
 
         $button .= "></i></a>";
+        if($genome) $button .= "<a href=\"#\" class=\"btn btn-link btn-sm text-danger delete-genome\" data-genome-id=\"". $genome->id ."\"><i class=\"fas fa-minus\"></i></a>";
     }
 @endphp
 
@@ -49,9 +51,11 @@
                 }
                 echo('</div>');
             }
-            if(Auth::user() && $genome->visibility_level != 2 && Auth::user()->hasPower('view-genomes'))
+            if(Auth::user() && $genome->visibility_level != 2 && Auth::user()->hasPower('view-genomes')) {
                 echo add_help("This character's genome is either fully or partially hidden. You can only view its details because of your rank.");
-                echo $button;
+                echo isset($buttons) ? "" : $button;
+            }
         @endphp
     @endif
 @endif
+</div>

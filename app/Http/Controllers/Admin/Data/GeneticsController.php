@@ -30,6 +30,11 @@ class GeneticsController extends Controller
     |
     */
 
+    public function __construct()
+    {
+        if(!Auth::user()->hasPower("view_hidden_genetics")) abort(404);
+    }
+
     /**
      * Shows the gene group as a sorted index.
      *
