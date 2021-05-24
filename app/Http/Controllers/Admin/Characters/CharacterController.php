@@ -109,12 +109,7 @@ class CharacterController extends Controller
      */
     public function getCreateCharacterMyoGenes(Request $request) {
         $loci = Loci::where('id', $request->input('loci'))->first();
-        $alleles = [];
-        if ($loci->type == "gene") {
-            $alleles = LociAllele::selectRaw('id, if(modifier is not null and modifier != \'\', if(is_dominant is true, concat(name, \'(\', modifier, \')\'), lower(concat(name, \'(\', modifier, \')\'))), if(is_dominant is true, name, lower(name))) as name')->where('loci_id', $loci->id)
-                ->orderBy('is_dominant', 'desc')->orderBy('sort', 'asc')
-                ->pluck('name', 'id')->toArray();
-        }
+        $alleles = $loci->getAlleles();
         return view('admin.masterlist._create_character_genetics', [
             'loci' => $loci,
             'alleles' => $alleles,

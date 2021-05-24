@@ -94,4 +94,12 @@ class Loci extends Model
     {
         return url('masterlist?feature_id[]='.$this->id);
     }
+
+    public function getAlleles()
+    {
+        if($this->type != "gene") return [];
+        return LociAllele::selectRaw('id, if(modifier is not null and modifier != \'\', if(is_dominant is true, concat(name, \'(\', modifier, \')\'), lower(concat(name, \'(\', modifier, \')\'))), if(is_dominant is true, name, lower(name))) as name')->where('loci_id', $this->id)
+                ->orderBy('is_dominant', 'desc')->orderBy('sort', 'asc')
+                ->pluck('name', 'id')->toArray();
+    }
 }

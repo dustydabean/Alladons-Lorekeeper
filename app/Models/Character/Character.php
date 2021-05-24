@@ -209,11 +209,11 @@ class Character extends Model
     }
 
     /**
-     * Get the user-editable profile data of the character.
+     * Get the character's genomes.
      */
-    public function genome()
+    public function genomes()
     {
-        return $this->hasOne('App\Models\Character\CharacterGenome', 'character_id');
+        return $this->hasMany('App\Models\Character\CharacterGenome', 'character_id');
     }
 
     /**********************************************************************************************

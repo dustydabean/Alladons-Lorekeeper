@@ -18,6 +18,7 @@ class CharacterGenome extends Model
      */
     protected $fillable = [
         'character_id',
+        'visibility_level',
     ];
 
     /**
