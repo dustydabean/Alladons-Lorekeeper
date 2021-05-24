@@ -51,10 +51,9 @@
                 }
                 echo('</div>');
             }
-            if(Auth::user() && $genome->visibility_level != 2 && Auth::user()->hasPower('view-genomes')) {
+            if(Auth::user() && $genome->visibility_level != 2 && Auth::user()->hasPower('view-genomes'))
                 echo add_help("This character's genome is either fully or partially hidden. You can only view its details because of your rank.");
-                echo isset($buttons) ? "" : $button;
-            }
+            echo isset($buttons) ? "" : $button;
         @endphp
     @endif
 @endif
