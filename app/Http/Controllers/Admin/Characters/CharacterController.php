@@ -137,6 +137,7 @@ class CharacterController extends Controller
             'artist_id', 'artist_url',
             'species_id', 'subtype_id', 'rarity_id', 'feature_id', 'feature_data',
             'gene_id', 'gene_allele_id', 'gene_numeric_data', 'gene_gradient_data',
+            'genome_visibility',
             'image', 'thumbnail', 'image_description'
         ]);
         if ($character = $service->createCharacter($data, Auth::user())) {
@@ -168,6 +169,7 @@ class CharacterController extends Controller
             'artist_id', 'artist_url',
             'species_id', 'subtype_id', 'rarity_id', 'feature_id', 'feature_data',
             'gene_id', 'gene_allele_id', 'gene_numeric_data', 'gene_gradient_data',
+            'genome_visibility',
             'image', 'thumbnail'
         ]);
         if ($character = $service->createCharacter($data, Auth::user(), true)) {
@@ -361,6 +363,7 @@ class CharacterController extends Controller
     {
         $data = $request->only([
             'gene_id', 'gene_allele_id', 'gene_gradient_data', 'gene_numeric_data',
+            'genome_visibility',
         ]);
         $this->character = Character::where('slug', $slug)->first();
         if(!$this->character) abort(404);
@@ -389,6 +392,7 @@ class CharacterController extends Controller
     {
         $data = $request->only([
             'gene_id', 'gene_allele_id', 'gene_gradient_data', 'gene_numeric_data',
+            'genome_visibility',
         ]);
         $this->character = Character::where('id', $id)->first();
         if(!$this->character || !$this->character->is_myo_slot) abort(404);
@@ -417,6 +421,7 @@ class CharacterController extends Controller
     {
         $data = $request->only([
             'gene_id', 'gene_allele_id', 'gene_gradient_data', 'gene_numeric_data',
+            'genome_visibility',
         ]);
         $this->character = Character::where('slug', $slug)->first();
         if(!$this->character) abort(404);
@@ -443,6 +448,7 @@ class CharacterController extends Controller
     {
         $data = $request->only([
             'gene_id', 'gene_allele_id', 'gene_gradient_data', 'gene_numeric_data',
+            'genome_visibility',
         ]);
         $this->character = Character::where('id', $id)->first();
         if(!$this->character || !$this->character->is_myo_slot) abort(404);

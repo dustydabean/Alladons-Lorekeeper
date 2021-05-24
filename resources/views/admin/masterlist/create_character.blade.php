@@ -238,6 +238,15 @@
     </div>
 
     <div class="form-group">
+        @php $dVis = Settings::get('genome_default_visibility'); @endphp
+        {!! Form::label('genome_visibility', 'Genome Visibility') !!}
+        {!! Form::select('genome_visibility', [0 => "Completely Hidden", 1 => "Half-Hidden", 2 => "Completely Visible"], $dVis, ['class' => "form-control"]) !!}
+        <span class="form-text text-muted">
+            The default site setting for genome visibility is <strong class="text-dark">{{ $dVis < 1 ? "Completely Hidden" : ($dVis == 1 ? "Half-Hidden" : "Fully Visible") }}</strong>.
+        </span>
+    </div>
+
+    <div class="form-group">
         {!! Form::label('Genes') !!}
         <div id="geneList"></div>
         <div class="form-group inline">

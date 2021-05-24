@@ -287,6 +287,10 @@ class CharacterManager extends Service
                 }
             }
 
+            if (isset($data['genome_visibility'])) {
+                $genome->visibility_level = min(2, max(0, $data['genome_visibility']));
+                $genome->save();
+            }
             return $genome;
         } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
