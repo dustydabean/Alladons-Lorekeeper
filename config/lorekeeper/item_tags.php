@@ -28,6 +28,6 @@ return [
     'gene_reveal' => [
         'name' => 'Gene Reveal',
         'text_color' => '#ffffff',
-        'background_color' => '#d33e42'
+        'background_color' => '#A8CE5E'
     ],
 ];
