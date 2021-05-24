@@ -47,4 +47,12 @@ class CharacterGenomeNumeric extends Model
     {
         return $this->belongsTo('App\Models\Genetics\Loci');
     }
+
+    /**
+     * Estimated value attribute.
+     */
+    public function getEstValueAttribute() {
+        $frag = $this->loci->length / 3;
+        return ($this->value <= $frag) ? "0-" . ceil($frag) : (($this->value <= ceil($frag * 2)) ? floor($frag)."-".ceil($frag * 2) : floor($frag * 2).$this->loci->length);
+    }
 }

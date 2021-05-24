@@ -103,6 +103,9 @@ class AddSiteSettings extends Command
 
         $this->addSiteSetting('group_currency', 1, 'ID of the group currency to award from gallery submissions (if enabled).');
 
+        # Genetics
+        $this->addSiteSetting('genome_default_visibility', 0, '0: Genomes are hidden by default. 1: Only the most dominant genes are visible by default. 2: Genomes are fully visible by default.');
+
         $this->line("\nSite settings up to date!");
 
     }

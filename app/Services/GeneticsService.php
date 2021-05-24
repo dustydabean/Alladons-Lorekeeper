@@ -92,9 +92,10 @@ class GeneticsService extends Service
 
                 // Sort Child Alleles
                 if (isset($data['allele_sort'])) {
-                    $sort = array_reverse(explode(',', $data['allele_sort']));
-                    foreach($sort as $key => $s)
+                    $sort = explode(',', $data['allele_sort']);
+                    foreach($sort as $index => $s)
                     {
+                        $key = $index; //count($sort)-$index-1;
                         $allele = LociAllele::where('id', $s)->first();
                         if (!$allele) throw new \Exception("Trying to edit an allele that does not exist.");
                         if ($allele->loci_id != $category->id) throw new \Exception("Trying to edit an allele that does not belong to this group.");
@@ -106,7 +107,7 @@ class GeneticsService extends Service
                         if (!$modifier) $modifier = "";
                         $allele->update([
                             'is_dominant' => $isDom,
-                            'sort' => $key,
+                            'sort' => $index,
                             'name' => $name,
                             'modifier' => $modifier,
                         ]);

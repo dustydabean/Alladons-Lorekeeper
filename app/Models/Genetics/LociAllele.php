@@ -75,4 +75,15 @@ class LociAllele extends Model
         $name = $this->name . "<sup>" . $this->modifier . "</sup>";
         return $this->is_dominant ? $name : strtolower($name);
     }
+
+    /**
+     * Displays the model's name, linked to its encyclopedia page.
+     *
+     * @return string
+     */
+    public function getFullNameAttribute()
+    {
+        $name = $this->name . "(" . $this->modifier . ")";
+        return $this->is_dominant ? $name : strtolower($name);
+    }
 }

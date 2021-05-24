@@ -6,8 +6,9 @@ use Config;
 use DB;
 use App\Models\Model;
 use App\Models\Character\CharacterCategory;
+use App\Models\Genetics\Loci;
 
-class CharacterFeature extends Model
+class CharacterGenome extends Model
 {
 
     /**
@@ -45,7 +46,7 @@ class CharacterFeature extends Model
      */
     public function genes()
     {
-        return $this->hasMany('App\Models\Character\CharacterGenomeGenes')->groupBy('loci_id');
+        return $this->hasMany('App\Models\Character\CharacterGenomeGene');//->groupBy('loci_id');
     }
 
     /**
@@ -53,7 +54,7 @@ class CharacterFeature extends Model
      */
     public function gradients()
     {
-        return $this->hasMany('App\Models\Character\CharacterGenomeGradients')->groupBy('loci_id');
+        return $this->hasMany('App\Models\Character\CharacterGenomeGradient');//->groupBy('loci_id');
     }
 
     /**
@@ -61,6 +62,15 @@ class CharacterFeature extends Model
      */
     public function numerics()
     {
-        return $this->hasMany('App\Models\Character\CharacterGenomeNumerics')->groupBy('loci_id');
+        return $this->hasMany('App\Models\Character\CharacterGenomeNumeric');//->groupBy('loci_id');
+    }
+
+    public function getLoci()
+    {
+        $array = array_values(array_unique($this->genes->pluck('loci_id')->toArray()));
+        foreach(array_unique($this->gradients->pluck('loci_id')->toArray()) as $value) array_push($array, $value);
+        foreach(array_unique($this->numerics->pluck('loci_id')->toArray()) as $value) array_push($array, $value);
+        $loci = Loci::whereIn('id', $array)->orderBy('sort', 'desc')->get();
+        return $loci;
     }
 }

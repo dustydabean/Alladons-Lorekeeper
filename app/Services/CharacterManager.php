@@ -25,12 +25,18 @@ use App\Models\Character\CharacterImage;
 use App\Models\Character\CharacterTransfer;
 use App\Models\Character\CharacterDesignUpdate;
 use App\Models\Character\CharacterBookmark;
+use App\Models\Character\CharacterGenome;
+use App\Models\Character\CharacterGenomeGene;
+use App\Models\Character\CharacterGenomeGradient;
+use App\Models\Character\CharacterGenomeNumeric;
 use App\Models\User\UserCharacterLog;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
 use App\Models\Rarity;
 use App\Models\Currency\Currency;
 use App\Models\Feature\Feature;
+use App\Models\Genetics\Loci;
+use App\Models\Genetics\LociAllele;
 
 class CharacterManager extends Service
 {
@@ -132,6 +138,10 @@ class CharacterManager extends Service
             $character->character_image_id = $image->id;
             $character->save();
 
+            // Create character genome
+            $genome = $this->handleCharacterGenome($data, $character);
+            if(!$genome) throw new \Exception("Error happened while trying to create genome.");
+
             // Add a log for the character
             // This logs all the updates made to the character
             $this->createLog($user->id, null, $recipientId, $url, $character->id, $isMyo ? 'MYO Slot Created' : 'Character Created', 'Initial upload', 'character');
@@ -210,6 +220,68 @@ class CharacterManager extends Service
             $character->profile()->create([]);
 
             return $character;
+        } catch(\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+        return false;
+    }
+
+    /**
+     * Handles character genome data.
+     *
+     * @param  array                            $data
+     * @return \App\Models\Character\Character  $character
+     * @param  bool                             $isMyo
+     * @return \App\Models\Character\CharacterImage|bool
+     */
+    private function handleCharacterGenome($data, $character)
+    {
+        try {
+            $genome = CharacterGenome::create(['character_id' => $character->id]);
+
+            $alleleOffset = 0;
+            $gradientOffset = 0;
+            $numOffset = 0;
+
+            foreach($data['gene_id'] as $index => $id)
+            {
+                $loci = Loci::where('id', $id)->first();
+                if($loci && $loci->type == "gene") {
+                    for ($i=0; $i < $loci->length; $i++) {
+                        $key = $alleleOffset;
+                        $allele = isset($data['gene_allele_id'][$key]) ? $data['gene_allele_id'][$key] : null;
+                        if($allele != null) CharacterGenomeGene::create([
+                            'character_genome_id' => $genome->id,
+                            'loci_allele_id' => $allele,
+                            'loci_id' => $loci->id,
+                        ]);
+                        $alleleOffset++;
+                    }
+                } elseif ($loci && $loci->type == "gradient") {
+                    $key = $gradientOffset;
+                    $value = isset($data['gene_gradient_data'][$key]) ? $data['gene_gradient_data'][$key] : null;
+                    $value = preg_replace(["/\+/", "/-/"], ["1", "0"], $value);
+                    while (strlen($value) < $loci->length) $value .= "0";
+                    if($value != null) CharacterGenomeGradient::create([
+                        'character_genome_id' => $genome->id,
+                        'loci_id' => $loci->id,
+                        'value' => $value,
+                    ]);
+                    $gradientOffset++;
+                } elseif ($loci && $loci->type == "numeric") {
+                    $key = $numOffset;
+                    $value = isset($data['gene_numeric_data'][$key]) ? $data['gene_numeric_data'][$key] : null;
+                    $value = max(min(255, $value), 0);
+                    if($value != null) CharacterGenomeNumeric::create([
+                        'character_genome_id' => $genome->id,
+                        'loci_id' => $loci->id,
+                        'value' => $value,
+                    ]);
+                    $numOffset++;
+                }
+            }
+
+            return $genome;
         } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }

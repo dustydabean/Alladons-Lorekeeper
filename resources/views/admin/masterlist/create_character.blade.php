@@ -237,11 +237,26 @@
         </div>
     </div>
 
+    <div class="form-group">
+        {!! Form::label('Genes') !!}
+        <div id="geneList"></div>
+        <div class="form-group inline">
+            <a href="#" class="add-genetics-row btn btn-primary mb-2">Add Gene</a>
+        </div>
+    </div>
+
     <div class="text-right">
         {!! Form::submit('Create Character', ['class' => 'btn btn-primary']) !!}
     </div>
     {!! Form::close() !!}
 @endif
+
+{{-- Genetics Helper Fields --}}
+<div class="genetics-row hide mb-2 d-flex">
+    {!! Form::select('gene_id[]', $genes, null, ['class' => 'form-control gene-select', 'placeholder' => 'Select Gene Group']) !!}
+    <div class="mx-2 gene-select-options input-group"></div>
+    <a href="#" class="btn btn-danger mb-2 delete-genetics-row"><i class="fas fa-times"></i></a>
+</div>
 
 @endsection
 
@@ -261,6 +276,43 @@
         type: "GET", url: "{{ url('admin/masterlist/check-subtype') }}?species="+species+"&myo="+myo, dataType: "text"
       }).done(function (res) { $("#subtypes").html(res); }).fail(function (jqXHR, textStatus, errorThrown) { alert("AJAX call failed: " + textStatus + ", " + errorThrown); });
     });
+
+    // Genetics additions.
+    $(".add-genetics-row").click(function(e){
+        e.preventDefault();
+        $clone = $(".genetics-row").clone();
+        $clone.removeClass("genetics-row hide");
+        $("#geneList").append($clone);
+        addGeneSelectionListener($clone.find(".gene-select"));
+        $clone.find(".delete-genetics-row").click(function(e){
+            e.preventDefault();
+            $(this).parent().remove();
+        });
+    });
+    function addGeneSelectionListener($select) {
+        $select.selectize();
+        $select.change(function(){
+            var loci = $(this).val();
+            var options = $(this).parent().find(".gene-select-options");
+            var myo = '<?php echo($isMyo); ?>';
+            $.ajax({
+                type: "GET", url: "{{ url('admin/masterlist/check-genes') }}?loci="+loci+"&myo="+myo, dataType: "text"
+            }).done(function (res) {
+                options.html(res);
+                options.find(".allele-select").selectize();
+                options.find(".gradient-gene-input").change(function(e){
+                    validateGradientInput($(this));
+                });
+            }).fail(function (jqXHR, textStatus, errorThrown) {
+                alert("AJAX call failed: " + textStatus + ", " + errorThrown);
+            });
+        });
+    }
+    function validateGradientInput($input) {
+        var val = $input.val();
+        while(val.length < $input.attr('maxlength')) val += "-";
+        $input.val(val.replace(/[1]/g,"+").replace(/[^-+]/g,"-"));
+    }
 </script>
 
 @endsection

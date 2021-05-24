@@ -24,6 +24,8 @@ use App\Services\CurrencyManager;
 use App\Services\TradeManager;
 
 use App\Http\Controllers\Controller;
+use App\Models\Genetics\Loci;
+use App\Models\Genetics\LociAllele;
 
 class CharacterController extends Controller
 {
@@ -61,6 +63,7 @@ class CharacterController extends Controller
             'rarities' => ['0' => 'Select Rarity'] + Rarity::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'specieses' => ['0' => 'Select Species'] + Species::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'subtypes' => ['0' => 'Pick a Species First'],
+            'genes' => ['0' => 'Select Gene Group'] + Loci::orderBy('sort', 'desc')->pluck('name', 'id')->toArray(),
             'features' => Feature::orderBy('name')->pluck('name', 'id')->toArray(),
             'isMyo' => false
         ]);
@@ -78,6 +81,7 @@ class CharacterController extends Controller
             'rarities' => ['0' => 'Select Rarity'] + Rarity::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'specieses' => ['0' => 'Select Species'] + Species::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'subtypes' => ['0' => 'Pick a Species First'],
+            'genes' => ['0' => 'Select Gene Group'] + Loci::orderBy('sort', 'desc')->pluck('name', 'id')->toArray(),
             'features' => Feature::orderBy('name')->pluck('name', 'id')->toArray(),
             'isMyo' => true
         ]);
@@ -98,6 +102,27 @@ class CharacterController extends Controller
     }
 
     /**
+     * Gets the genes for character creation.
+     *
+     * @param  Request  $request
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCreateCharacterMyoGenes(Request $request) {
+        $loci = Loci::where('id', $request->input('loci'))->first();
+        $alleles = [];
+        if ($loci->type == "gene") {
+            $alleles = LociAllele::selectRaw('id, if(modifier is not null and modifier != \'\', if(is_dominant is true, concat(name, \'(\', modifier, \')\'), lower(concat(name, \'(\', modifier, \')\'))), if(is_dominant is true, name, lower(name))) as name')->where('loci_id', $loci->id)
+                ->orderBy('is_dominant', 'desc')->orderBy('sort', 'asc')
+                ->pluck('name', 'id')->toArray();
+        }
+        return view('admin.masterlist._create_character_genetics', [
+            'loci' => $loci,
+            'alleles' => $alleles,
+            'isMyo' => $request->input('myo'),
+        ]);
+    }
+
+    /**
      * Creates a character.
      *
      * @param  \Illuminate\Http\Request       $request
@@ -115,6 +140,7 @@ class CharacterController extends Controller
             'designer_id', 'designer_url',
             'artist_id', 'artist_url',
             'species_id', 'subtype_id', 'rarity_id', 'feature_id', 'feature_data',
+            'gene_id', 'gene_allele_id', 'gene_numeric_data', 'gene_gradient_data',
             'image', 'thumbnail', 'image_description'
         ]);
         if ($character = $service->createCharacter($data, Auth::user())) {
@@ -145,6 +171,7 @@ class CharacterController extends Controller
             'designer_id', 'designer_url',
             'artist_id', 'artist_url',
             'species_id', 'subtype_id', 'rarity_id', 'feature_id', 'feature_data',
+            'gene_id', 'gene_allele_id', 'gene_numeric_data', 'gene_gradient_data',
             'image', 'thumbnail'
         ]);
         if ($character = $service->createCharacter($data, Auth::user(), true)) {

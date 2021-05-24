@@ -45,7 +45,7 @@ class CharacterGenomeGene extends Model
      */
     public function allele()
     {
-        return $this->belongsTo('App\Models\Genetics\LociAllele');
+        return $this->belongsTo('App\Models\Genetics\LociAllele', 'loci_allele_id');
     }
 
     /**
