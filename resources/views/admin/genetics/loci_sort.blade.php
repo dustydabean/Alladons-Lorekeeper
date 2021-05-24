@@ -23,7 +23,7 @@
             @foreach($categories as $category)
                 <li class="sort-item list-group-item" data-id="{{ $category->id }}">
                     <a class="fas fa-arrows-alt-v handle mr-3" href="#"></a>
-                    {!! $category->displayName !!} ({{ ucfirst($category->type) }})
+                    {!! $category->name !!} ({{ ucfirst($category->type) }})
                 </li>
             @endforeach
         </ul>
