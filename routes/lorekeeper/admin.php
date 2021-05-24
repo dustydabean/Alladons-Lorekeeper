@@ -368,6 +368,12 @@ Route::group(['prefix' => 'character', 'namespace' => 'Characters', 'middleware'
     Route::post('{slug}/settings', 'CharacterController@postCharacterSettings');
 
     Route::post('{slug}/transfer', 'CharacterController@postTransfer');
+
+    # GENOMES
+    Route::get('{slug}/genome/create', 'CharacterController@getCreateCharacterGenome');
+    Route::post('{slug}/genome/create', 'CharacterController@postCreateCharacterGenome');
+    Route::get('{slug}/genome/{id}', 'CharacterController@getEditCharacterGenome');
+    Route::post('{slug}/genome/{id}', 'CharacterController@postEditCharacterGenome');
 });
 // Might rewrite these parts eventually so there's less code duplication...
 Route::group(['prefix' => 'myo', 'namespace' => 'Characters', 'middleware' => 'power:manage_characters'], function() {
@@ -387,6 +393,12 @@ Route::group(['prefix' => 'myo', 'namespace' => 'Characters', 'middleware' => 'p
     Route::post('{id}/settings', 'CharacterController@postMyoSettings');
 
     Route::post('{id}/transfer', 'CharacterController@postMyoTransfer');
+
+    # GENOMES
+    Route::get('{id}/genome/create', 'CharacterController@getCreateMyoGenome');
+    Route::post('{id}/genome/create', 'CharacterController@postCreateMyoGenome');
+    Route::get('{id}/genome/{gid}', 'CharacterController@getEditMyoGenome');
+    Route::post('{id}/genome/{gid}', 'CharacterController@postEditMyoGenome');
 });
 
 # RAFFLES

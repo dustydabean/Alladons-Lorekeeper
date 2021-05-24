@@ -24,6 +24,7 @@ use App\Services\CurrencyManager;
 use App\Services\TradeManager;
 
 use App\Http\Controllers\Controller;
+use App\Models\Character\CharacterGenome;
 use App\Models\Genetics\Loci;
 use App\Models\Genetics\LociAllele;
 
@@ -265,6 +266,188 @@ class CharacterController extends Controller
         if(!$this->character) abort(404);
         if ($service->updateCharacterStats($data, $this->character, Auth::user())) {
             flash('Character stats updated successfully.')->success();
+            return redirect()->to($this->character->url);
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back()->withInput();
+    }
+
+    /**
+     * Shows the edit character genes modal.
+     *
+     * @param  string  $slug
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCreateCharacterGenome($slug)
+    {
+        $this->character = Character::where('slug', $slug)->first();
+        if(!$this->character) abort(404);
+        return $this->getCreateGenome(false);
+    }
+
+    /**
+     * Shows the edit character genes modal.
+     *
+     * @param  string  $slug
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getEditCharacterGenome($slug, $gid)
+    {
+        $this->character = Character::where('slug', $slug)->first();
+        if(!$this->character) abort(404);
+        return $this->getEditGenome($gid, false);
+    }
+
+    /**
+     * Shows the edit character genes modal.
+     *
+     * @param  string  $slug
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCreateMyoGenome($id)
+    {
+        $this->character = Character::where('is_myo_slot', 1)->where('id', $id)->first();
+        if(!$this->character) abort(404);
+        return $this->getCreateGenome(true);
+    }
+
+    /**
+     * Shows the edit character genes modal.
+     *
+     * @param  string  $slug
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getEditMyoGenome($id, $gid)
+    {
+        $this->character = Character::where('is_myo_slot', 1)->where('id', $id)->first();
+        if(!$this->character) abort(404);
+        return $this->getEditGenome($gid, true);
+    }
+
+    private function getCreateGenome($isMyo) {
+        if(!$this->character) abort(404);
+        return view('character.admin._edit_genes_modal', [
+            'character' => $this->character,
+            'genome' => new CharacterGenome,
+            'genes' => Loci::orderBy('sort')->pluck('name', 'id')->toArray(),
+            'isMyo' => $isMyo,
+        ]);
+    }
+
+    private function getEditGenome($id, $isMyo) {
+        if(!$this->character) abort(404);
+        $this->genome = $this->character->genomes->where('id', $id)->first();
+        if(!$this->genome) abort(404);
+        return view('character.admin._edit_genes_modal', [
+            'character' => $this->character,
+            'genome' => $this->genome,
+            'genes' => Loci::orderBy('sort')->pluck('name', 'id')->toArray(),
+            'isMyo' => $isMyo,
+        ]);
+    }
+
+    /**
+     * Edits a character's genome.
+     *
+     * @param  \Illuminate\Http\Request       $request
+     * @param  App\Services\CharacterManager  $service
+     * @param  string                         $slug
+     * @param  int                            $gid
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postEditCharacterGenome(Request $request, CharacterManager $service, $slug, $gid)
+    {
+        $data = $request->only([
+            'gene_id', 'gene_allele_id', 'gene_gradient_data', 'gene_numeric_data',
+        ]);
+        $this->character = Character::where('slug', $slug)->first();
+        if(!$this->character) abort(404);
+        $this->genome = CharacterGenome::where('character_id', $this->character->id)->where('id', $gid)->first();
+        if(!$this->genome) abort(404);
+        if ($service->updateCharacterGenome($data, $this->character, $this->genome, Auth::user())) {
+            flash('Character genome updated successfully.')->success();
+            return redirect()->to($this->character->url);
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back()->withInput();
+    }
+
+    /**
+     * Edits a myo's genome.
+     *
+     * @param  \Illuminate\Http\Request       $request
+     * @param  App\Services\CharacterManager  $service
+     * @param  int                            $id
+     * @param  int                            $gid
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postEditMyoGenome(Request $request, CharacterManager $service, $id, $gid)
+    {
+        $data = $request->only([
+            'gene_id', 'gene_allele_id', 'gene_gradient_data', 'gene_numeric_data',
+        ]);
+        $this->character = Character::where('id', $id)->first();
+        if(!$this->character || !$this->character->is_myo_slot) abort(404);
+        $this->genome = CharacterGenome::where('character_id', $id)->where('id', $gid)->first();
+        if(!$this->genome) abort(404);
+        if ($service->updateCharacterGenome($data, $this->character, $this->genome, Auth::user())) {
+            flash('Character genome updated successfully.')->success();
+            return redirect()->to($this->character->url);
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back()->withInput();
+    }
+
+    /**
+     * Edits a character's genome.
+     *
+     * @param  \Illuminate\Http\Request       $request
+     * @param  App\Services\CharacterManager  $service
+     * @param  string                         $slug
+     * @param  int                            $gid
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postCreateCharacterGenome(Request $request, CharacterManager $service, $slug)
+    {
+        $data = $request->only([
+            'gene_id', 'gene_allele_id', 'gene_gradient_data', 'gene_numeric_data',
+        ]);
+        $this->character = Character::where('slug', $slug)->first();
+        if(!$this->character) abort(404);
+        if ($service->updateCharacterGenome($data, $this->character, null, Auth::user())) {
+            flash('Character genome created successfully.')->success();
+            return redirect()->to($this->character->url);
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back()->withInput();
+    }
+
+    /**
+     * Edits a myo's genome.
+     *
+     * @param  \Illuminate\Http\Request       $request
+     * @param  App\Services\CharacterManager  $service
+     * @param  int                            $id
+     * @param  int                            $gid
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postCreateMyoGenome(Request $request, CharacterManager $service, $id)
+    {
+        $data = $request->only([
+            'gene_id', 'gene_allele_id', 'gene_gradient_data', 'gene_numeric_data',
+        ]);
+        $this->character = Character::where('id', $id)->first();
+        if(!$this->character || !$this->character->is_myo_slot) abort(404);
+        if ($service->updateCharacterGenome($data, $this->character, null, Auth::user())) {
+            flash('Character genome created successfully.')->success();
             return redirect()->to($this->character->url);
         }
         else {

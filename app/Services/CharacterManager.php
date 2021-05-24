@@ -234,10 +234,16 @@ class CharacterManager extends Service
      * @param  bool                             $isMyo
      * @return \App\Models\Character\CharacterImage|bool
      */
-    private function handleCharacterGenome($data, $character)
+    private function handleCharacterGenome($data, $character, $genome = null)
     {
         try {
-            $genome = CharacterGenome::create(['character_id' => $character->id]);
+            if(!$genome) {
+                $genome = CharacterGenome::create(['character_id' => $character->id]);
+            } else {
+                $genome->genes()->delete();
+                $genome->gradients()->delete();
+                $genome->numerics()->delete();
+            }
 
             $alleleOffset = 0;
             $gradientOffset = 0;
@@ -1149,6 +1155,32 @@ class CharacterManager extends Service
                 $character->save();
                 $count++;
             }
+
+            return $this->commitReturn(true);
+        } catch(\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Updates a character's genome.
+     *
+     * @param  array                                  $data
+     * @param  \App\Models\Character\CharacterGenome  $genome
+     * @param  \App\Models\User\User                  $user
+     * @return  bool
+     */
+    public function updateCharacterGenome($data, $character, $genome, $user)
+    {
+        DB::beginTransaction();
+        try {
+            if(!$user->hasPower("view_hidden_genetics")) throw new \Exception("You don't have the power to see this.");
+
+            $this->handleCharacterGenome($data, $character, $genome, $user);
+
+            // $character->update();
+            $this->createLog($user->id, null, null, null, $character->id, 'Character Updated', 'Genome edited', 'character', true);
 
             return $this->commitReturn(true);
         } catch(\Exception $e) {

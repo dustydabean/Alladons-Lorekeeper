@@ -1,5 +1,18 @@
+@php
+    $button = "";
+    if (Auth::user()->hasPower('manage-characters') && Auth::user()->hasPower('view-genomes')) {
+        $button .= "<a href=\"#\" class=\"btn btn-link btn-sm ";
+        if($genome)
+            $button .= "edit-genome\" data-genome-id=\"". $genome->id ."\"><i class=\"fas fa-cog\"";
+        else
+            $button .= "add-genome\"><i class=\"fas fa-plus\"";
+
+        $button .= "></i></a>";
+    }
+@endphp
+
 @if(!$genome)
-    Unknown
+    Unknown {!! $button !!}
 @else
     @php
         $visible = 0;
@@ -13,7 +26,8 @@
         @php
             $bool = $visible == 1;
             foreach ($genome->getLoci() as $loci) {
-                echo('<div class="d-inline text-nowrap text-monospace mr-2" data-toggle="tooltip" title="'. $loci->name .'"">');
+                $divOpen = '<div class="d-inline text-nowrap text-monospace mr-2" data-toggle="tooltip" title="'. $loci->name .'"">';
+                echo($divOpen);
                 if ($loci->type == "gene") {
                     if($bool)
                         foreach ($loci->alleles as $allele)
@@ -24,17 +38,20 @@
                     else
                         foreach ($genome->genes->where('loci_id', $loci->id) as $item)
                             echo($item->allele->displayName);
-                }
-                elseif ($loci->type == "gradient")
+                } elseif ($loci->type == "gradient") {
+                    $i = 0;
                     foreach ($genome->gradients->where('loci_id', $loci->id) as $item)
-                        echo($bool ? $item->displayValue : $item->displayGenome);
-                elseif ($loci->type == "numeric")
+                        echo(($i++ == 0 ? "" : "</div>".$divOpen) . ($bool ? $item->displayValue : $item->displayGenome));
+                } elseif ($loci->type == "numeric") {
+                    $i = 0;
                     foreach ($genome->numerics->where('loci_id', $loci->id) as $item)
-                        echo($bool ? $item->estValue : $item->value);
+                        echo(($i++ == 0 ? "" : "</div>".$divOpen) . ($bool ? $item->estValue : $item->value));
+                }
                 echo('</div>');
             }
             if($genome->visibility_level != 2 && Auth::user()->hasPower('view-genomes'))
                 echo add_help("This character's genome is either fully or partially hidden. You can only view its details because of your rank.");
+                echo $button;
         @endphp
     @endif
 @endif
