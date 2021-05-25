@@ -30,11 +30,6 @@ class GeneticsController extends Controller
     |
     */
 
-    public function __construct()
-    {
-        if(!Auth::user()->hasPower("view_hidden_genetics")) abort(404);
-    }
-
     /**
      * Shows the gene group as a sorted index.
      *
@@ -43,6 +38,7 @@ class GeneticsController extends Controller
      */
     public function getIndex(Request $request)
     {
+        if(!Auth::user()->hasPower("view_hidden_genetics")) abort(404);
         $query = Loci::query();
         $data = $request->only(['name', 'type']);
         if(isset($data['name'])) $query->where('name', 'LIKE', '%'.$data['name'].'%');
@@ -73,6 +69,7 @@ class GeneticsController extends Controller
      */
     public function getSortIndex()
     {
+        if(!Auth::user()->hasPower("view_hidden_genetics")) abort(404);
         return view('admin.genetics.loci_sort', [
             'categories' => loci::orderBy('sort', 'desc')->get()
         ]);
@@ -87,6 +84,7 @@ class GeneticsController extends Controller
      */
     public function postSortLoci(Request $request, GeneticsService $service)
     {
+        if(!Auth::user()->hasPower("view_hidden_genetics")) abort(404);
         if($service->sortLoci($request->get('sort'))) {
             flash('Gene group order updated successfully.')->success();
         } else {
@@ -102,6 +100,7 @@ class GeneticsController extends Controller
      */
     public function getCreateLoci()
     {
+        if(!Auth::user()->hasPower("view_hidden_genetics")) abort(404);
         return view('admin.genetics.create_edit_loci', [
             'category' => new Loci
         ]);
@@ -115,6 +114,7 @@ class GeneticsController extends Controller
      */
     public function getEditLoci($id)
     {
+        if(!Auth::user()->hasPower("view_hidden_genetics")) abort(404);
         $category = Loci::find($id);
         if(!$category) abort(404);
         return view('admin.genetics.create_edit_loci', [
@@ -132,6 +132,7 @@ class GeneticsController extends Controller
      */
     public function postCreateEditLoci(Request $request, GeneticsService $service, $id = null)
     {
+        if(!Auth::user()->hasPower("view_hidden_genetics")) abort(404);
         // $id ? $request->validate(FeatureCategory::$updateRules) : $request->validate(FeatureCategory::$createRules);
         $data = $request->only([
             'name', 'type', 'length', 'chromosome',
@@ -157,6 +158,7 @@ class GeneticsController extends Controller
      */
     public function getDeleteLoci($id)
     {
+        if(!Auth::user()->hasPower("view_hidden_genetics")) abort(404);
         $category = Loci::find($id);
         return view('admin.genetics._delete_loci', [
             'loci' => $category,
@@ -173,6 +175,7 @@ class GeneticsController extends Controller
      */
     public function postDeleteLoci(Request $request, GeneticsService $service, $id)
     {
+        if(!Auth::user()->hasPower("view_hidden_genetics")) abort(404);
         if($id && $service->deleteLoci(Loci::find($id))) {
             flash('Loci deleted successfully.')->success();
         } else {
@@ -189,6 +192,7 @@ class GeneticsController extends Controller
      */
     public function getDeleteAllele($id)
     {
+        if(!Auth::user()->hasPower("view_hidden_genetics")) abort(404);
         $loci = Loci::find($id);
         return view('admin.genetics._delete_loci_allele', [
             'loci' => $loci,
@@ -206,6 +210,7 @@ class GeneticsController extends Controller
      */
     public function postDeleteAllele(Request $request, GeneticsService $service, $id)
     {
+        if(!Auth::user()->hasPower("view_hidden_genetics")) abort(404);
         $loci = Loci::find($id);
         if (!$loci) abort(404);
         $data = $request->only(['target_allele', 'replacement_allele']);
