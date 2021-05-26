@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Data;
 use Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Character\Character;
+use App\Models\Character\CharacterBreedingLog;
 use App\Models\Character\CharacterGenome;
 use App\Models\Feature\Feature;
 use App\Models\Feature\FeatureCategory;
@@ -13,6 +14,7 @@ use App\Models\Genetics\LociAllele;
 use App\Models\Rarity;
 use App\Models\Species\Species;
 use App\Models\User\User;
+use App\Services\CharacterManager;
 use App\Services\GeneticsService;
 use Illuminate\Http\Request;
 
@@ -217,6 +219,22 @@ class GeneticsController extends Controller
     }
 
     /**
+     * Shows a breeding log page.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getBreedingLog(Request $request, $id)
+    {
+        $log = CharacterBreedingLog::where('id', $id)->first();
+        if (!$log) abort(404);
+
+        return view('admin.genetics.breeding_log', [
+            'log' => $log,
+        ]);
+    }
+
+    /**
      * Shows the breeding roller index.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -235,6 +253,33 @@ class GeneticsController extends Controller
             'features' => Feature::orderBy('name')->pluck('name', 'id')->toArray(),
             'lineageDetected' => class_exists("App\Models\Character\CharacterLineage", false),
         ]);
+    }
+
+    /**
+     * Posts a breeding roll.
+     *
+     * @param  \Illuminate\Http\Request     $request
+     * @param  App\Services\FeatureService  $service
+     * @param  int|null                     $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postBreedingRoll(Request $request, CharacterManager $service)
+    {
+        $request->validate(Character::$myoRules);
+        $data = $request->only([
+            'parents', 'min_offspring', 'max_offspring', 'twin_chance', 'twin_depth', 'chimera_chance', 'chimera_depth', 'litter_limit',
+            'name', 'user_id', 'genome_visibility', 'species_id', 'subtype_id', 'rarity_id',
+            'is_visible', 'is_giftable', 'is_tradeable', 'is_sellable', 'sale_value', 'transferrable_at',
+            'description', 'image', 'use_cropper', 'x0', 'x1', 'y0', 'y1', 'thumbnail',
+            'designer_id', 'designer_url', 'artist_id', 'artist_url',
+        ]);
+        if ($litter = $service->createMyoLitter($data, Auth::user())) {
+            flash('Breeding rolled successfully.')->success();
+            return redirect()->to('admin/genetics/logs/breeding/'.$litter->id);
+        } else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back()->withInput();
     }
 
     /**

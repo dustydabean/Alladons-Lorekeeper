@@ -115,6 +115,59 @@ class CharacterGenome extends Model
     }
 
     /**
+     * Cross this with another genome. Generates actual data.
+     */
+    public function breedWith($sire)
+    {
+        $genodata = [
+            'gene_id' => [],
+            'gene_allele_id' => [],
+            'gene_gradient_data' => [],
+            'gene_numeric_data' => [],
+        ];
+        foreach (Loci::query()->orderBy('sort', 'desc')->get() as $loci)
+        {
+            if ($this->hasLocus($loci) || $sire->hasLocus($loci))
+            {
+                $damGenes = $this->getGenes($loci);
+                $sireGenes = $sire->getGenes($loci);
+                $flag = true;
+
+                if ($loci->type == "gene")
+                {
+                    array_push($genodata['gene_allele_id'], ($damGenes == null) ? $loci->getDefault()->id : $damGenes->random()->allele->id);
+                    array_push($genodata['gene_allele_id'], ($sireGenes == null) ? $loci->getDefault()->id : $sireGenes->random()->allele->id);
+                }
+                else if ($loci->type == "gradient")
+                {
+                    $dam = ($damGenes == null) ? $loci->getDefault() : $damGenes->random()->display_genome;
+                    $pop = ($sireGenes == null) ? $loci->getDefault() : $sireGenes->random()->display_genome;
+                    $rufus = "";
+                    for ($i = 0; $i < $loci->length/2; $i++) $rufus .= substr($dam, ($i*2)+mt_rand(0,1), 1).substr($pop, ($i*2)+mt_rand(0,1), 1);
+                    array_push($genodata['gene_gradient_data'], $rufus);
+                }
+                else if ($loci->type == "numeric")
+                {
+                    $flag = false;
+                    $genes[0] = ($damGenes == null) ? $loci->getDefault() : $damGenes->random()->value;
+                    $genes[1] = ($sireGenes == null) ? $loci->getDefault() : $sireGenes->random()->value;
+                    $num = $genes[mt_rand(0, 1)];
+                    if ($genes[0] === null && $loci->default != 1) $num = $genes[1];
+                    if ($genes[1] === null && $loci->default != 1) $num = $genes[0];
+                    if ($num)
+                    {
+                        array_push($genodata['gene_numeric_data'], $num);
+                        $flag = true;
+                    }
+                }
+
+                if ($flag) array_push($genodata['gene_id'], $loci->id);
+            }
+        }
+        return $genodata;
+    }
+
+    /**
      * Cross this with another genome. Used for previews.
      */
     public function crossWith($sire)

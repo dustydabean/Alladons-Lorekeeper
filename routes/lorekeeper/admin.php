@@ -100,6 +100,9 @@ Route::group(['prefix' => 'genetics', 'namespace' => 'Data', 'middleware' => ['p
         Route::get('roller', 'GeneticsController@getBreedingRoller');
         Route::get('fetch-genomes', 'GeneticsController@getCharacterGenomes');
         Route::get('preview-breeding', 'GeneticsController@getPossibleChildGenomes');
+        Route::get('logs/breeding/{id}', 'GeneticsController@getBreedingLog');
+
+        Route::post('roll-litter', 'GeneticsController@postBreedingRoll');
 
     });
 
