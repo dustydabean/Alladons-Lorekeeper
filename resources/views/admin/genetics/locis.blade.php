@@ -3,13 +3,13 @@
 @section('admin-title') Trait Categories @endsection
 
 @section('admin-content')
-{!! breadcrumbs(['Admin Panel' => 'admin', 'Genetics' => 'admin/data/genetics']) !!}
+{!! breadcrumbs(['Admin Panel' => 'admin', 'Genetics' => 'admin/genetics']) !!}
 
 <h1>
     Gene Groups
     <div class="float-right">
-        <a class="btn btn-primary" href="{{ url('admin/data/genetics/create') }}"><i class="fas fa-plus mr-1"></i> New</a>
-        <a class="btn btn-primary ml-1" href="{{ url('admin/data/genetics/sort') }}"><i class="fas fa-bars mr-1"></i> Sort</a>
+        <a class="btn btn-primary" href="{{ url('admin/genetics/create') }}"><i class="fas fa-plus mr-1"></i> New</a>
+        <a class="btn btn-primary ml-1" href="{{ url('admin/genetics/sort') }}"><i class="fas fa-bars mr-1"></i> Sort</a>
     </div>
 </h1>
 

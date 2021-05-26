@@ -3,13 +3,13 @@
 @section('admin-title') Trait Categories @endsection
 
 @section('admin-content')
-{!! breadcrumbs(['Admin Panel' => 'admin', 'Genetics' => 'admin/data/genetics', 'Sort Groups' => 'admin/data/genetics/sort']) !!}
+{!! breadcrumbs(['Admin Panel' => 'admin', 'Genetics' => 'admin/genetics/genes', 'Sort Groups' => 'admin/data/genetics/sort']) !!}
 
 <h1>
     Gene Groups
     <div class="float-right">
-        <a class="btn btn-primary" href="{{ url('admin/data/genetics/create') }}"><i class="fas fa-plus mr-1"></i> New</a>
-        <a class="btn btn-primary ml-1" href="{{ url('admin/data/genetics') }}"><i class="fas fa-search mr-1"></i> Search</a>
+        <a class="btn btn-primary" href="{{ url('admin/genetics/create') }}"><i class="fas fa-plus mr-1"></i> New</a>
+        <a class="btn btn-primary ml-1" href="{{ url('admin/genetics/genes') }}"><i class="fas fa-search mr-1"></i> Search</a>
     </div>
 </h1>
 
@@ -30,7 +30,7 @@
     </div>
 
     <div class="mb-4 text-right">
-        {!! Form::open(['url' => 'admin/data/genetics/sort']) !!}
+        {!! Form::open(['url' => 'admin/genetics/sort']) !!}
         {!! Form::hidden('sort', '', ['id' => 'sortableOrder']) !!}
         {!! Form::submit('Save Order', ['class' => 'btn btn-primary']) !!}
         {!! Form::close() !!}

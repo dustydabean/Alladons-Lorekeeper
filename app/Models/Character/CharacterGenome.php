@@ -127,7 +127,7 @@ class CharacterGenome extends Model
             if ($this->hasLocus($loci) || $sire->hasLocus($loci))
             {
                 $gene = $this->inheritGene($loci, $this->getGenes($loci), $sire->getGenes($loci));
-                if($gene) array_push($genes, "<span class='text-monospace mx-1' data-toggle='tooltip' title='". $loci->name ."'>". $gene ."</span>");
+                if($gene !== null) array_push($genes, "<span class='text-monospace text-nowrap mx-1' data-toggle='tooltip' title='". $loci->name ."'>". $gene ."</span>");
             }
         }
 
@@ -148,11 +148,11 @@ class CharacterGenome extends Model
             $alleles = "";
 
             // Matrilineal gene
-            if ($damGenes == null) $alleles.= $loci->allelesReversed->first()->display_name;
+            if ($damGenes == null) $alleles.= $loci->getDefault()->display_name;
             else $alleles.= $damGenes->random()->allele->display_name;
 
             // Patrilineal gene
-            if ($sireGenes == null) $alleles.= $loci->allelesReversed->first()->display_name;
+            if ($sireGenes == null) $alleles.= $loci->getDefault()->display_name;
             else $alleles.= $sireGenes->random()->allele->display_name;
 
             return $alleles;
@@ -161,11 +161,11 @@ class CharacterGenome extends Model
             $dam = ""; $sire = "";
 
             // Matrilineal gene
-            if ($damGenes == null) for($i = 0; $i < $loci->length; $i++) $dam.="-";
+            if ($damGenes == null) $dam = $loci->getDefault();
             else $dam = $damGenes->random()->display_genome;
 
             // Patrilineal gene
-            if ($sireGenes == null) for($i = 0; $i < $loci->length; $i++) $sire.="-";
+            if ($sireGenes == null) $sire = $loci->getDefault();
             else $sire = $sireGenes->random()->display_genome;
 
             // Let's see if I remember how to do this...
@@ -176,10 +176,12 @@ class CharacterGenome extends Model
 
             return $rufus;
         } elseif ($loci->type == "numeric") {
-            $fromMother = mt_rand(0, 1) == 0;
-            if ($damGenes == null) return $sireGenes->random()->value;
-            if ($sireGenes == null) return $damGenes->random()->value;
-            return $fromMother ? $damGenes->random()->value : $sireGenes->random()->value;
+            $genes = [];
+            $genes[0] = $damGenes == null ? $loci->getDefault() : $damGenes->random()->value;
+            $genes[1] = $sireGenes == null ? $loci->getDefault() : $sireGenes->random()->value;
+            if ($genes[0] === null && $loci->default != 1) return $genes[1];
+            if ($genes[1] === null && $loci->default != 1) return $genes[0];
+            return $genes[mt_rand(0, 1)];
         }
     }
 }

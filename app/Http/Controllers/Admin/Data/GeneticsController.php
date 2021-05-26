@@ -96,7 +96,8 @@ class GeneticsController extends Controller
     public function getCreateLoci()
     {
         return view('admin.genetics.create_edit_loci', [
-            'category' => new Loci
+            'category' => new Loci,
+            'defaultOptions' => ["Cannot Set"],
         ]);
     }
 
@@ -112,6 +113,7 @@ class GeneticsController extends Controller
         if(!$category) abort(404);
         return view('admin.genetics.create_edit_loci', [
             'category' => $category,
+            'defaultOptions' => $category->getDefaultOptions(),
         ]);
     }
 
@@ -127,6 +129,7 @@ class GeneticsController extends Controller
     {
         $data = $request->only([
             'name', 'type', 'length', 'chromosome',
+            'default',
             'is_dominant', 'allele_name', 'modifier', 'allele_sort',
             'edit_allele_dominance', 'edit_allele_name', 'edit_allele_modifier',
         ]);
@@ -134,7 +137,7 @@ class GeneticsController extends Controller
             flash('Category updated successfully.')->success();
         } else if (!$id && $category = $service->createLoci($data, Auth::user())) {
             flash('Category created successfully.')->success();
-            return redirect()->to('admin/data/genetics/edit/'.$category->id);
+            return redirect()->to('admin/genetics/edit/'.$category->id);
         } else {
             foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
         }
@@ -170,7 +173,7 @@ class GeneticsController extends Controller
         } else {
             foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
         }
-        return redirect()->to('admin/data/genetics');
+        return redirect()->to('admin/genetics');
     }
 
     /**
@@ -206,7 +209,7 @@ class GeneticsController extends Controller
         } else {
             foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
         }
-        return redirect()->to('admin/data/genetics/edit/'.$loci->id);
+        return redirect()->to('admin/genetics/edit/'.$loci->id);
     }
 
     /**
@@ -256,7 +259,11 @@ class GeneticsController extends Controller
         if (!$dam) abort(404);
         if (!$dam->genomes) abort(404);
 
-        $children = $this->testCombineGenes($sire, $dam);
+        $children = $this->testCombineGenes(
+            $sire, $dam,
+            max(0, $request->input('min')), max(0, $request->input('max')),
+            max(0, min(100, $request->input('twin'))), max(1, $request->input('depth'))
+        );
 
         return view('admin.genetics._fetch_genomes', [
             'genomes' => $children,
@@ -264,17 +271,26 @@ class GeneticsController extends Controller
         ]);
     }
 
-    private function testCombineGenes($sire, $dam)
+    private function testCombineGenes($sire, $dam, $min = 0, $max = 3, $twin = 0, $depth = 1)
     {
         $children = [];
-        for ($i = 0; $i < 3; $i++) {
+        for ($i = 0; $i < mt_rand($min, $max); $i++) {
             // gets random genomes from parents, allows for children to be from different genomes.
             $mother = $dam->genomes->random();
             $father = $sire->genomes->random();
 
             // a function inside CharacterGenome that will cross mother's genes with father's.
             // called from the mother's genome to ensure the matrilineal genes go first.
-            $children += [ $i => $mother->crossWith($father) ];
+            $child = $mother->crossWith($father);
+            $d = 0;
+            array_push($children, $child);
+            while (mt_rand(1, 100) <= $twin && $d < $depth) {
+                $new = $child;
+                if ($d == 0) array_push($new, "<span class='mx-1 text-monospace'>Twin!</span>");
+                if ($d > 0) array_push($new, "<span class='mx-1 text-monospace'>Twin x".($d + 1)."!</span>");
+                array_push($children, $new);
+                $d++;
+            }
         }
         return $children;
     }

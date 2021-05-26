@@ -19,6 +19,7 @@ class Loci extends Model
      */
     protected $fillable = [
         'name', 'type', 'length', 'chromosome', 'sort',
+        'default',
     ];
 
     /**
@@ -109,5 +110,43 @@ class Loci extends Model
         return LociAllele::selectRaw('id, if(modifier is not null and modifier != \'\', if(is_dominant is true, concat(name, \'(\', modifier, \')\'), lower(concat(name, \'(\', modifier, \')\'))), if(is_dominant is true, name, lower(name))) as name')->where('loci_id', $this->id)
                 ->orderBy('is_dominant', 'desc')->orderBy('sort', 'asc')
                 ->pluck('name', 'id')->toArray();
+    }
+
+    /**
+     * Gets the default options for this loci.
+     *
+     * @return array
+     */
+    public function getDefaultOptions()
+    {
+        if ($this->type == "gene") return $this->getAlleles();
+        if ($this->type == "gradient") return ["Inherit as if this were all \"-\".", "Inherit as if this were all \"+\".", "Inherit as if this were alternating \"-\" and \"+\"."];
+        if ($this->type == "numeric") return ["Always inherit from other parent.", "Inherits from other parent half the time.", "Inherit as if the value was zero.", "Inherit as if the value was ".$this->length, "Inherit as if the value was ".round($this->length / 2)];
+        return [];
+    }
+
+    /**
+     * Gets the default option for this loci.
+     *
+     * @return int|string|\App\Models\Genetics\LociAllele
+     */
+    public function getDefault()
+    {
+        if ($this->type == "gene") {
+            $allele = $this->alleles->where('id', $this->default)->first();
+            return $allele ? $allele : $this->allelesReversed->first();
+        }
+        if ($this->type == "gradient") {
+            $gene = "";
+            while(strlen($gene) < $this->length) $gene .= $this->default == 1 ? "+" : ($this->default == 2 ? (strlen($gene) % 2 ? "-" : "+") : "-");
+            return $gene;
+        }
+        if ($this->type == "numeric") {
+            if($this->default == 2) return 0;
+            if($this->default == 3) return $this->length;
+            if($this->default == 4) return round($this->length / 2);
+            return null;
+        }
+        return null;
     }
 }

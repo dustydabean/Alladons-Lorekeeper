@@ -3,7 +3,7 @@
 @section('admin-title') Trait Categories @endsection
 
 @section('admin-content')
-{!! breadcrumbs(['Admin Panel' => 'admin', 'Genetics' => 'admin/data/genetics', ($category->id ? 'Edit' : 'Create').' Gene Group' => $category->id ? 'admin/data/genetics/edit/'.$category->id : 'admin/data/genetics/create']) !!}
+{!! breadcrumbs(['Admin Panel' => 'admin', 'Genetics' => 'admin/genetics/genes', ($category->id ? 'Edit' : 'Create').' Gene Group' => $category->id ? 'admin/data/genetics/edit/'.$category->id : 'admin/data/genetics/create']) !!}
 
 <h1>{{ $category->id ? 'Edit' : 'Create' }} Gene Group
     @if($category->id)
@@ -14,7 +14,7 @@
     <p class="alert alert-info">Alleles can only be created after the gene is made.</p>
 @endif
 
-{!! Form::open(['url' => $category->id ? 'admin/data/genetics/edit/'.$category->id : 'admin/data/genetics/create']) !!}
+{!! Form::open(['url' => $category->id ? 'admin/genetics/edit/'.$category->id : 'admin/genetics/create']) !!}
 
 <h3>Basic Information</h3>
 
@@ -39,8 +39,8 @@
     </div>
     <div class="col-6">
         <div class="form-group">
-            {!! Form::label('chromosome', 'Chromosome (Optional)') . add_help("Loci on the same chromosome are linked, and will inherit together instead of separate. Set to zero or empty to disable chromosomal pairing.") !!}
-            {!! Form::number('chromosome', $category->chromosome, ['class' => 'form-control', 'min' => 0, 'max' => 255]) !!}
+            {!! Form::label('default', 'Default Inheritance') . add_help("Used to determine what happens when one parent has this gene and the other doesn't. Can only be set after creation.") !!}
+            {!! Form::select('default', $defaultOptions, $category->id ? $category->default : 0, ['class' => 'form-control', 'disabled' => $category->id == null]) !!}
         </div>
     </div>
 </div>
@@ -160,7 +160,7 @@
 $( document ).ready(function() {
     $('.delete-category-button').on('click', function(e) {
         e.preventDefault();
-        loadModal("{{ url('admin/data/genetics/delete') }}/{{ $category->id }}", 'Delete Category');
+        loadModal("{{ url('admin/genetics/delete') }}/{{ $category->id }}", 'Delete Category');
     });
 
     @if($category->id && $category->type == 'gene')
@@ -182,7 +182,7 @@ $( document ).ready(function() {
         });
         $('.delete-allele-button').on('click', function(e) {
             e.preventDefault();
-            loadModal("{{ url('admin/data/genetics/delete-allele/'.$category->id) }}", 'Delete Allele');
+            loadModal("{{ url('admin/genetics/delete-allele/'.$category->id) }}", 'Delete Allele');
         });
         function addAlleleListeners($clone)
         {

@@ -39,6 +39,7 @@ class GeneticsService extends Service
             if ($data['length'] > 255) throw new \Exception("Length must be less than 256.");
 
             if (!isset($data['chromosome']) || $data['chromosome'] <= 0) $data['chromosome'] = null;
+            if (!isset($data['default']) || $data['default'] < 0) $data['default'] = 0;
 
             $loci = Loci::create($data);
             return $this->commitReturn($loci);
@@ -76,6 +77,9 @@ class GeneticsService extends Service
 
             // Chromosome
             if (!isset($data['chromosome']) || $data['chromosome'] <= 0) $data['chromosome'] = null;
+
+            // Default
+            if (!isset($data['default']) || $data['default'] < 0) $data['default'] = 0;
 
             // Alleles
             if ($category->type == "gene") {
@@ -159,7 +163,7 @@ class GeneticsService extends Service
     {
         DB::beginTransaction();
         try {
-            $characterGenes;
+            $characterGenes = null;
             if ($loci->type == "gene") $characterGenes = CharacterGenomeGene::where("loci_id", $loci->id);
             else if ($loci->type == "gradient") $characterGenes = CharacterGenomeGradient::where("loci_id", $loci->id);
             else if ($loci->type == "numeric") $characterGenes = CharacterGenomeNumeric::where("loci_id", $loci->id);
