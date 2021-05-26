@@ -262,7 +262,8 @@ class GeneticsController extends Controller
         $children = $this->testCombineGenes(
             $sire, $dam,
             max(0, $request->input('min')), max(0, $request->input('max')),
-            max(0, min(100, $request->input('twin'))), max(1, $request->input('depth'))
+            max(0, min(100, $request->input('twin'))), max(1, $request->input('depth')),
+            max(0, min(100, $request->input('chimera'))), max(1, $request->input('genomes')),
         );
 
         return view('admin.genetics._fetch_genomes', [
@@ -271,7 +272,7 @@ class GeneticsController extends Controller
         ]);
     }
 
-    private function testCombineGenes($sire, $dam, $min = 0, $max = 3, $twin = 0, $depth = 1)
+    private function testCombineGenes($sire, $dam, $min = 0, $max = 3, $twin = 0, $depth = 1, $chimerism = 0, $genomes = 1)
     {
         $children = [];
         for ($i = 0; $i < mt_rand($min, $max); $i++) {
@@ -281,15 +282,47 @@ class GeneticsController extends Controller
 
             // a function inside CharacterGenome that will cross mother's genes with father's.
             // called from the mother's genome to ensure the matrilineal genes go first.
-            $child = $mother->crossWith($father);
-            $d = 0;
-            array_push($children, $child);
+            $child = [ $mother->crossWith($father) ];
+
+            $g = 1; // Has one genome.
+            while (mt_rand(1, 100) <= $chimerism && $g <= $genomes-1) {
+                // Add another one, this child's a chimera!
+                array_push($child, $mother->crossWith($father));
+                $g++;
+            }
+
+            $d = 0; // Twin depth.
+            $twins = [];
             while (mt_rand(1, 100) <= $twin && $d < $depth) {
-                $new = $child;
-                if ($d == 0) array_push($new, "<span class='mx-1 text-monospace'>Twin!</span>");
-                if ($d > 0) array_push($new, "<span class='mx-1 text-monospace'>Twin x".($d + 1)."!</span>");
-                array_push($children, $new);
+                // Grab a random genome from the original child...
+                $twin = $child[mt_rand(0, count($child)-1)];
+                // Or maybe even another twin!
+                if (count($twins) > 0) {
+                    $randomTwin = $twins[mt_rand(0, count($twins)-1)];
+                    $twin = $randomTwin[mt_rand(0, count($randomTwin)-1)];
+                }
+                $twin = [ $twin ];
+
+                // Now, does this twin have chimerism?
+                $g = 1; // Has one genome.
+                while (mt_rand(1, 100) <= $chimerism && $g <= $genomes-1) {
+                    // Not anymore, now it's a chimera!
+                    array_push($twin, $mother->crossWith($father));
+                    $g++;
+                }
+
+                array_push($twins, $twin);
                 $d++;
+            }
+
+            // Add the child to the children array.
+            if(count($child) > 1) array_push($child, ["<span class='mx-1 text-monospace'>Chimera!</span>"]);
+            array_push($children, $child);
+
+            // Add the twins to the children array.
+            foreach ($twins as $id => $twin) {
+                array_push($twin, ["<span class='mx-1 text-monospace'>Twin".($id > 0 ? " x".($id + 1) : "")."!".(count($twin) > 1 ? " Chimera!" : "")."</span>"]);
+                array_push($children, $twin);
             }
         }
         return $children;
