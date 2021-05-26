@@ -6,9 +6,13 @@ use Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Character\Character;
 use App\Models\Character\CharacterGenome;
+use App\Models\Feature\Feature;
 use App\Models\Feature\FeatureCategory;
 use App\Models\Genetics\Loci;
 use App\Models\Genetics\LociAllele;
+use App\Models\Rarity;
+use App\Models\Species\Species;
+use App\Models\User\User;
 use App\Services\GeneticsService;
 use Illuminate\Http\Request;
 
@@ -224,6 +228,12 @@ class GeneticsController extends Controller
         $characters = Character::selectRaw("id, if(name is not null, concat(slug, ': ', name), slug) as select_name")->where('is_myo_slot', false)->whereIn('id', $ids)->pluck('select_name', 'id')->toArray();
         return view('admin.genetics.roller', [
             'characters' => $characters,
+            'userOptions' => User::where("is_banned", false)->orderBy('name')->pluck('name', 'id')->toArray(),
+            'rarities' => ['0' => 'Select Rarity'] + Rarity::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'speciesOptions' => ['0' => 'Select Species'] + Species::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'subtypes' => ['0' => 'Pick a Species First'],
+            'features' => Feature::orderBy('name')->pluck('name', 'id')->toArray(),
+            'lineageDetected' => class_exists("App\Models\Character\CharacterLineage", false),
         ]);
     }
 
@@ -264,6 +274,7 @@ class GeneticsController extends Controller
             max(0, $request->input('min')), max(0, $request->input('max')),
             max(0, min(100, $request->input('twin'))), max(1, $request->input('depth')),
             max(0, min(100, $request->input('chimera'))), max(1, $request->input('genomes')),
+            max(1, $request->input('limit')),
         );
 
         return view('admin.genetics._fetch_genomes', [
@@ -272,9 +283,10 @@ class GeneticsController extends Controller
         ]);
     }
 
-    private function testCombineGenes($sire, $dam, $min = 0, $max = 3, $twin = 0, $depth = 1, $chimerism = 0, $genomes = 1)
+    private function testCombineGenes($sire, $dam, $min = 0, $max = 3, $twin = 0, $depth = 1, $chimerism = 0, $genomes = 1, $limit = 99999)
     {
         $children = [];
+        $count = 0;
         for ($i = 0; $i < mt_rand($min, $max); $i++) {
             // gets random genomes from parents, allows for children to be from different genomes.
             $mother = $dam->genomes->random();
@@ -283,6 +295,7 @@ class GeneticsController extends Controller
             // a function inside CharacterGenome that will cross mother's genes with father's.
             // called from the mother's genome to ensure the matrilineal genes go first.
             $child = [ $mother->crossWith($father) ];
+            $count++;
 
             $g = 1; // Has one genome.
             while (mt_rand(1, 100) <= $chimerism && $g <= $genomes-1) {
@@ -293,7 +306,7 @@ class GeneticsController extends Controller
 
             $d = 0; // Twin depth.
             $twins = [];
-            while (mt_rand(1, 100) <= $twin && $d < $depth) {
+            while (mt_rand(1, 100) <= $twin && $d < $depth && $count < $limit) {
                 // Grab a random genome from the original child...
                 $twin = $child[mt_rand(0, count($child)-1)];
                 // Or maybe even another twin!
@@ -302,6 +315,7 @@ class GeneticsController extends Controller
                     $twin = $randomTwin[mt_rand(0, count($randomTwin)-1)];
                 }
                 $twin = [ $twin ];
+                $count++;
 
                 // Now, does this twin have chimerism?
                 $g = 1; // Has one genome.
@@ -324,6 +338,9 @@ class GeneticsController extends Controller
                 array_push($twin, ["<span class='mx-1 text-monospace'>Twin".($id > 0 ? " x".($id + 1) : "")."!".(count($twin) > 1 ? " Chimera!" : "")."</span>"]);
                 array_push($children, $twin);
             }
+
+            // Return if we've met the hard limit.
+            if ($count >= $limit) return $children;
         }
         return $children;
     }
