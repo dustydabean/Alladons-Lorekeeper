@@ -42,6 +42,14 @@ class Loci extends Model
         return $this->hasMany('App\Models\Genetics\LociAllele')->orderBy('is_dominant', 'desc')->orderBy('sort', 'asc');
     }
 
+    /**
+     * Gets the alleles of this feature, sorted by LEAST dominant.
+     */
+    public function allelesReversed()
+    {
+        return $this->hasMany('App\Models\Genetics\LociAllele')->orderBy('is_dominant', 'asc')->orderBy('sort', 'desc');
+    }
+
     /**********************************************************************************************
 
         SCOPES

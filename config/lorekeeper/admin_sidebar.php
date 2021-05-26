@@ -125,6 +125,19 @@ return [
             ],
         ]
     ],
+    'Genetics' => [
+        'power' => 'view_hidden_genetics',
+        'links' => [
+            [
+                'name' => 'Gene Groups',
+                'url' => 'admin/genetics/genes'
+            ],
+            [
+                'name' => 'Breeding Roller',
+                'url' => 'admin/genetics/roller'
+            ]
+        ]
+    ],
     'Data' => [
         'power' => 'edit_data',
         'links' => [
@@ -155,11 +168,6 @@ return [
             [
                 'name' => 'Traits',
                 'url' => 'admin/data/traits'
-            ],
-            // Genetics
-            [
-                'name' => 'Genetics',
-                'url' => 'admin/data/genetics'
             ],
             [
                 'name' => 'Shops',

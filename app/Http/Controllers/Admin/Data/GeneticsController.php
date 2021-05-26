@@ -2,22 +2,15 @@
 
 namespace App\Http\Controllers\Admin\Data;
 
-use Illuminate\Http\Request;
-
 use Auth;
-
-use App\Models\Feature\FeatureCategory;
-use App\Models\Feature\Feature;
-use App\Models\Rarity;
-use App\Models\Species\Species;
-use App\Models\Species\Subtype;
-
-use App\Services\FeatureService;
-
 use App\Http\Controllers\Controller;
+use App\Models\Character\Character;
+use App\Models\Character\CharacterGenome;
+use App\Models\Feature\FeatureCategory;
 use App\Models\Genetics\Loci;
 use App\Models\Genetics\LociAllele;
 use App\Services\GeneticsService;
+use Illuminate\Http\Request;
 
 class GeneticsController extends Controller
 {
@@ -30,6 +23,11 @@ class GeneticsController extends Controller
     |
     */
 
+    /** Controller Middleware */
+    public function __construct() {
+        $this->middleware("power:view_hidden_genetics");
+    }
+
     /**
      * Shows the gene group as a sorted index.
      *
@@ -38,7 +36,6 @@ class GeneticsController extends Controller
      */
     public function getIndex(Request $request)
     {
-        if(!Auth::user()->hasPower("view_hidden_genetics")) abort(404);
         $query = Loci::query();
         $data = $request->only(['name', 'type']);
         if(isset($data['name'])) $query->where('name', 'LIKE', '%'.$data['name'].'%');
@@ -69,7 +66,6 @@ class GeneticsController extends Controller
      */
     public function getSortIndex()
     {
-        if(!Auth::user()->hasPower("view_hidden_genetics")) abort(404);
         return view('admin.genetics.loci_sort', [
             'categories' => loci::orderBy('sort', 'desc')->get()
         ]);
@@ -84,7 +80,6 @@ class GeneticsController extends Controller
      */
     public function postSortLoci(Request $request, GeneticsService $service)
     {
-        if(!Auth::user()->hasPower("view_hidden_genetics")) abort(404);
         if($service->sortLoci($request->get('sort'))) {
             flash('Gene group order updated successfully.')->success();
         } else {
@@ -100,7 +95,6 @@ class GeneticsController extends Controller
      */
     public function getCreateLoci()
     {
-        if(!Auth::user()->hasPower("view_hidden_genetics")) abort(404);
         return view('admin.genetics.create_edit_loci', [
             'category' => new Loci
         ]);
@@ -114,7 +108,6 @@ class GeneticsController extends Controller
      */
     public function getEditLoci($id)
     {
-        if(!Auth::user()->hasPower("view_hidden_genetics")) abort(404);
         $category = Loci::find($id);
         if(!$category) abort(404);
         return view('admin.genetics.create_edit_loci', [
@@ -132,8 +125,6 @@ class GeneticsController extends Controller
      */
     public function postCreateEditLoci(Request $request, GeneticsService $service, $id = null)
     {
-        if(!Auth::user()->hasPower("view_hidden_genetics")) abort(404);
-        // $id ? $request->validate(FeatureCategory::$updateRules) : $request->validate(FeatureCategory::$createRules);
         $data = $request->only([
             'name', 'type', 'length', 'chromosome',
             'is_dominant', 'allele_name', 'modifier', 'allele_sort',
@@ -158,7 +149,6 @@ class GeneticsController extends Controller
      */
     public function getDeleteLoci($id)
     {
-        if(!Auth::user()->hasPower("view_hidden_genetics")) abort(404);
         $category = Loci::find($id);
         return view('admin.genetics._delete_loci', [
             'loci' => $category,
@@ -175,7 +165,6 @@ class GeneticsController extends Controller
      */
     public function postDeleteLoci(Request $request, GeneticsService $service, $id)
     {
-        if(!Auth::user()->hasPower("view_hidden_genetics")) abort(404);
         if($id && $service->deleteLoci(Loci::find($id))) {
             flash('Loci deleted successfully.')->success();
         } else {
@@ -192,7 +181,6 @@ class GeneticsController extends Controller
      */
     public function getDeleteAllele($id)
     {
-        if(!Auth::user()->hasPower("view_hidden_genetics")) abort(404);
         $loci = Loci::find($id);
         return view('admin.genetics._delete_loci_allele', [
             'loci' => $loci,
@@ -210,7 +198,6 @@ class GeneticsController extends Controller
      */
     public function postDeleteAllele(Request $request, GeneticsService $service, $id)
     {
-        if(!Auth::user()->hasPower("view_hidden_genetics")) abort(404);
         $loci = Loci::find($id);
         if (!$loci) abort(404);
         $data = $request->only(['target_allele', 'replacement_allele']);
@@ -220,5 +207,75 @@ class GeneticsController extends Controller
             foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
         }
         return redirect()->to('admin/data/genetics/edit/'.$loci->id);
+    }
+
+    /**
+     * Shows the breeding roller index.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getBreedingRoller(Request $request)
+    {
+        $ids = CharacterGenome::select('character_id')->distinct()->pluck('character_id')->toArray();
+        $characters = Character::selectRaw("id, if(name is not null, concat(slug, ': ', name), slug) as select_name")->where('is_myo_slot', false)->whereIn('id', $ids)->pluck('select_name', 'id')->toArray();
+        return view('admin.genetics.roller', [
+            'characters' => $characters,
+        ]);
+    }
+
+    /**
+     * Grabs the list of a character's genomes.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCharacterGenomes(Request $request)
+    {
+        $character = Character::where('id', $request->input('id'))->where('is_myo_slot', false)->first();
+        if (!$character) abort(404);
+        if (!$character->genomes) abort(404);
+        return view('admin.genetics._fetch_genomes', [
+            'genomes' => $character->genomes,
+        ]);
+    }
+
+    /**
+     * Grabs a list of possible child genomes.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getPossibleChildGenomes(Request $request)
+    {
+        $sire = Character::where('id', $request->input('sire'))->where('is_myo_slot', false)->first();
+        if (!$sire) abort(404);
+        if (!$sire->genomes) abort(404);
+
+        $dam = Character::where('id', $request->input('dam'))->where('is_myo_slot', false)->first();
+        if (!$dam) abort(404);
+        if (!$dam->genomes) abort(404);
+
+        $children = $this->testCombineGenes($sire, $dam);
+
+        return view('admin.genetics._fetch_genomes', [
+            'genomes' => $children,
+            'preview' => true,
+        ]);
+    }
+
+    private function testCombineGenes($sire, $dam)
+    {
+        $children = [];
+        for ($i = 0; $i < 3; $i++) {
+            // gets random genomes from parents, allows for children to be from different genomes.
+            $mother = $dam->genomes->random();
+            $father = $sire->genomes->random();
+
+            // a function inside CharacterGenome that will cross mother's genes with father's.
+            // called from the mother's genome to ensure the matrilineal genes go first.
+            $children += [ $i => $mother->crossWith($father) ];
+        }
+        return $children;
     }
 }

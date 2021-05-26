@@ -44,7 +44,7 @@
                 <div class="col-5">{{ $feature->name }}</div>
                 <div class="col-5">{{ ucfirst($feature->type) }} ({{ $feature->length }})</div>
                 <div class="col-2">
-                    <a href="{{ url('admin/data/genetics/edit/'.$feature->id) }}" class="btn btn-primary py-0 px-1 w-100">Edit</a>
+                    <a href="{{ url('admin/genetics/edit/'.$feature->id) }}" class="btn btn-primary py-0 px-1 w-100">Edit</a>
                 </div>
             </div>
         @endforeach

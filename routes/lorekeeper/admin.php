@@ -73,6 +73,38 @@ Route::group(['prefix' => 'images', 'middleware' => 'power:edit_site_settings'],
     Route::post('reset', 'FileController@postResetFile');
 });
 
+# GENETICS
+Route::group(['prefix' => 'genetics', 'namespace' => 'Data', 'middleware' => ['power:view_hidden_genetics']], function() {
+
+    # GENETIC DATA
+    Route::middleware(['power:edit_data'])->group(function() {
+
+        Route::get('genes', 'GeneticsController@getIndex');
+        Route::get('sort', 'GeneticsController@getSortIndex');
+        Route::get('create', 'GeneticsController@getCreateLoci');
+        Route::get('edit/{id}', 'GeneticsController@getEditLoci');
+        Route::get('delete/{id}', 'GeneticsController@getDeleteLoci');
+        Route::get('delete-allele/{id}', 'GeneticsController@getDeleteAllele');
+
+        Route::post('sort', 'GeneticsController@postSortLoci');
+        Route::post('create', 'GeneticsController@postCreateEditLoci');
+        Route::post('edit/{id}', 'GeneticsController@postCreateEditLoci');
+        Route::post('delete/{id}', 'GeneticsController@postDeleteLoci');
+        Route::post('delete-allele/{id}', 'GeneticsController@postDeleteAllele');
+
+    });
+
+    # ROLLERS & SUCH
+    Route::middleware(['power:manage_characters'])->group(function() {
+
+        Route::get('roller', 'GeneticsController@getBreedingRoller');
+        Route::get('fetch-genomes', 'GeneticsController@getCharacterGenomes');
+        Route::get('preview-breeding', 'GeneticsController@getPossibleChildGenomes');
+
+    });
+
+});
+
 # DATA
 Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:edit_data'], function() {
 
@@ -178,19 +210,6 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('traits/create', 'FeatureController@postCreateEditFeature');
     Route::post('traits/edit/{id?}', 'FeatureController@postCreateEditFeature');
     Route::post('traits/delete/{id}', 'FeatureController@postDeleteFeature');
-
-    # GENETICS
-    Route::get('genetics', 'GeneticsController@getIndex');
-    Route::get('genetics/sort', 'GeneticsController@getSortIndex');
-    Route::post('genetics/sort', 'GeneticsController@postSortLoci');
-    Route::get('genetics/create', 'GeneticsController@getCreateLoci');
-    Route::post('genetics/create', 'GeneticsController@postCreateEditLoci');
-    Route::get('genetics/edit/{id}', 'GeneticsController@getEditLoci');
-    Route::post('genetics/edit/{id}', 'GeneticsController@postCreateEditLoci');
-    Route::get('genetics/delete/{id}', 'GeneticsController@getDeleteLoci');
-    Route::post('genetics/delete/{id}', 'GeneticsController@postDeleteLoci');
-    Route::get('genetics/delete-allele/{id}', 'GeneticsController@getDeleteAllele');
-    Route::post('genetics/delete-allele/{id}', 'GeneticsController@postDeleteAllele');
 
     # CHARACTER CATEGORIES
     Route::get('character-categories', 'CharacterCategoryController@getIndex');
