@@ -138,6 +138,7 @@ class CharacterManager extends Service
             // Generate the children...
             // *******************************************************
 
+            $bool = isset($data['default_image']);
             $data += ['default_image' => true, 'feature_id' => [], 'feature_data' => []];
             if( isset($data['generate_lineage']) && $data['generate_lineage'] && method_exists($this, 'handleCharacterLineage')) {
                 $data += [
@@ -226,8 +227,10 @@ class CharacterManager extends Service
             // The children have generated...
 
             // Clean up the images we told the character manager not to delete.
-            $this->deleteImage($litter[0]->image->imageDirectory, $litter[0]->image->imageFileName);
-            $this->deleteImage($litter[0]->image->imageDirectory, $litter[0]->image->thumbnailFileName);
+            if (!$bool) {
+                $this->deleteImage($litter[0]->image->imageDirectory, $litter[0]->image->imageFileName);
+                $this->deleteImage($litter[0]->image->imageDirectory, $litter[0]->image->thumbnailFileName);
+            }
 
             return $this->commitReturn($litterLog);
         } catch(\Exception $e) {
