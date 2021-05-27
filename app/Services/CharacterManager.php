@@ -138,6 +138,18 @@ class CharacterManager extends Service
             // *******************************************************
 
             $data += ['default_image' => true, 'feature_id' => [], 'feature_data' => []];
+            if( isset($data['generate_lineage']) && $data['generate_lineage'] && method_exists($this, 'handleCharacterLineage')) {
+                $data += [
+                    // Character Lineages
+                    'generate_ancestors' => true,
+                    'sire_id' => $parents[1]->id,
+                    'dam_id' => $parents[0]->id,
+
+                    // WB Lineages
+                    'parent_type' => ["Character", "Character"],
+                    'parent_data' => [$parents[0]->id, $parents[1]->id],
+                ];
+            }
             $litter = [];
             $genomes = [];
             for ($i = 0; $i < mt_rand($settings['min_offspring'], $settings['max_offspring']); $i++) {

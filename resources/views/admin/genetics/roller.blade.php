@@ -222,7 +222,11 @@
 <hr>
 
 @if($lineageDetected)
-    <p><strong>Character Genetic Data</strong> has detected that one of Pure09's character lineage extensions might be installed. Do you want to try and automatically link the parents and their generated offspring?</p>
+    <p><strong>Character Genetic Data</strong> has detected that you might have a lineage extension installed. Do you want to try and automatically link the parents to their generated offspring?</p>
+    <div class="form-group">
+        {!! Form::checkbox('generate_lineage', 1, false, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
+        {!! Form::label('generate_lineage', 'Lineage Connection', ['class' => 'form-check-label ml-3']) !!}
+    </div>
 @endif
 
 <div class="text-right">

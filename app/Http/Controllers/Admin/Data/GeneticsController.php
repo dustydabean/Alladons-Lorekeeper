@@ -272,6 +272,7 @@ class GeneticsController extends Controller
             'is_visible', 'is_giftable', 'is_tradeable', 'is_sellable', 'sale_value', 'transferrable_at',
             'description', 'image', 'use_cropper', 'x0', 'x1', 'y0', 'y1', 'thumbnail',
             'designer_id', 'designer_url', 'artist_id', 'artist_url',
+            'generate_lineage',
         ]);
         if ($litter = $service->createMyoLitter($data, Auth::user())) {
             flash('Breeding rolled successfully.')->success();
