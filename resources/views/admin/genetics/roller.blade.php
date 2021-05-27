@@ -3,7 +3,7 @@
 @section('admin-title') Breeding Roller @endsection
 
 @section('admin-content')
-{!! breadcrumbs(['Admin Panel' => 'admin', 'Genetics' => 'admin/data/genetics/genes', 'Roller' => 'admin/data/genetics/roller']) !!}
+{!! breadcrumbs(['Admin Panel' => 'admin', 'Genetics' => 'admin/genetics/genes', 'Breeding Roller' => 'admin/genetics/roller']) !!}
 
 <h1>Breeding Roller</h1>
 <p><strong>Traits are not heritable or set automatically.</strong> This is just for genome creation via inheritance.</p>

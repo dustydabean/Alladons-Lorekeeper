@@ -14,6 +14,7 @@ class CharacterBreedingLog extends Model
      */
     protected $fillable = [
         'name', 'roller_settings', 'rolled_at',
+        'user_id',
     ];
 
     /**
@@ -67,5 +68,13 @@ class CharacterBreedingLog extends Model
     public function children()
     {
         return $this->loggedCharacters()->where('is_parent', false);
+    }
+
+    /**
+     * Get the user associated with this record. (Staff member who rolled it.)
+     */
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User\User');
     }
 }

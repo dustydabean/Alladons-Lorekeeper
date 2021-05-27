@@ -235,6 +235,23 @@ class GeneticsController extends Controller
     }
 
     /**
+     * Shows the breeding log index.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getBreedingLogs(Request $request)
+   {
+       $query = CharacterBreedingLog::query();
+       $data = $request->only(['name', 'type']);
+       if(isset($data['name'])) $query->where('name', 'LIKE', '%'.$data['name'].'%');
+
+       return view('admin.genetics.logs', [
+           'logs' => $query->orderBy('rolled_at', isset($data['type']) ? $data['type'] : 'desc')->paginate(20)->appends($request->query()),
+       ]);
+   }
+
+    /**
      * Shows the breeding roller index.
      *
      * @param  \Illuminate\Http\Request  $request

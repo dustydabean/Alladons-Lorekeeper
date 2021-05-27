@@ -3,9 +3,11 @@
 @section('admin-title') Breeding Log @endsection
 
 @section('admin-content')
-{!! breadcrumbs(['Admin Panel' => 'admin', 'Genetics' => 'admin/data/genetics/genes', 'Breeding Logs' => 'admin/data/genetics/logs', 'Log #'.$log->id => 'admin/data/genetics/logs/breeding/'.$log->id]) !!}
+{!! breadcrumbs(['Admin Panel' => 'admin', 'Genetics' => 'admin/genetics/genes', 'Breeding Logs' => 'admin/genetics/logs', 'Log #'.$log->id => 'admin/genetics/logs/breeding/'.$log->id]) !!}
 
-<h1>Breeding Log #{{ $log->id }}</h1>
+<h1 class="mb-0">Breeding Log #{{ $log->id }}</h1>
+<p>Rolled by {!! $log->user->displayName !!} {!! pretty_date($log->rolled_at) !!}</p>
+
 <p class="alert alert-info">The breeding roller will not automatically assign traits! Make sure you have assigned traits to the generated myo slots as needed.</p>
 <hr>
 

@@ -135,7 +135,11 @@ return [
             [
                 'name' => 'Breeding Roller',
                 'url' => 'admin/genetics/roller'
-            ]
+            ],
+            [
+                'name' => 'Breeding Logs',
+                'url' => 'admin/genetics/logs'
+            ],
         ]
     ],
     'Data' => [

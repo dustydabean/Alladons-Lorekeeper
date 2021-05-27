@@ -122,6 +122,7 @@ class CharacterManager extends Service
                 'name' => isset($data['name']) ? $data['name'] : null,
                 'roller_settings' => $settings,
                 'rolled_at' => Carbon::now(),
+                'user_id' => $user->id,
             ]);
 
             // Log the parents.
