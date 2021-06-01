@@ -91,11 +91,12 @@ class GrantController extends Controller
     public function getPets()
     {
         return view('admin.grants.pets', [
+            'users' => User::orderBy('id')->pluck('name', 'id'),
             'pets' => Pet::orderBy('name')->pluck('name', 'id')
         ]);
     }
 
-    /**
+    /** 
      * Grants or removes pets from multiple users.
      *
      * @param  \Illuminate\Http\Request        $request
@@ -104,7 +105,7 @@ class GrantController extends Controller
      */
     public function postPets(Request $request, PetManager $service)
     {
-        $data = $request->only(['names', 'pet_id', 'quantity', 'data', 'disallow_transfer', 'notes']);
+        $data = $request->only(['names', 'pet_ids', 'quantities', 'data', 'disallow_transfer', 'notes']);
         if($service->grantPets($data, Auth::user())) {
             flash('Pets granted successfully.')->success();
         }

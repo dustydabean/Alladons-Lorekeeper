@@ -3,19 +3,16 @@
 namespace App\Models\User;
 
 use App\Models\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class UserPet extends Model
 {
-    use SoftDeletes;
-
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'data', 'pet_id', 'user_id', 'attached_at'
+        'pet_id', 'variant_name', 'has_image'
     ];
 
     /**
@@ -30,21 +27,13 @@ class UserPet extends Model
      *
      * @var string
      */
-    protected $table = 'user_pets';
+    protected $table = 'pet_variants';
 
     /**********************************************************************************************
     
         RELATIONS
 
     **********************************************************************************************/
-
-    /**
-     * Get the user who owns the stack.
-     */
-    public function user() 
-    {
-        return $this->belongsTo('App\Models\User\User');
-    }
 
     /**
      * Get the pet associated with this pet stack.
@@ -54,45 +43,50 @@ class UserPet extends Model
         return $this->belongsTo('App\Models\Pet\Pet');
     }
 
-    public function character()
-    {
-        return $this->belongsTo('App\Models\Character\Character', 'chara_id');
-    }
-
     /**********************************************************************************************
     
         ACCESSORS
 
     **********************************************************************************************/
 
-    /**
-     * Get the data attribute as an associative array.
-     *
-     * @return array
-     */
-    public function getDataAttribute() 
-    {
-        return json_decode($this->attributes['data'], true);
-    }
-    
-    /**
-     * Checks if the stack is transferrable.
-     *
-     * @return array
-     */
-    public function getIsTransferrableAttribute()
-    {
-        if(!isset($this->data['disallow_transfer']) && $this->pet->allow_transfer) return true;
-        return false;
-    }
-
-    /**
-     * Gets the stack's asset type for asset management.
+        /**
+     * Gets the file directory containing the model's image.
      *
      * @return string
      */
-    public function getAssetTypeAttribute()
+    public function getImageDirectoryAttribute()
     {
-        return 'user_pets';
+        return 'images/data/pets';
+    }
+
+    /**
+     * Gets the file name of the model's image.
+     *
+     * @return string
+     */
+    public function getImageFileNameAttribute()
+    {
+        return $this->id . $this->variant_name .'-image.png';
+    }
+
+    /**
+     * Gets the path to the file directory containing the model's image.
+     *
+     * @return string
+     */
+    public function getImagePathAttribute()
+    {
+        return public_path($this->imageDirectory);
+    }
+    
+    /**
+     * Gets the URL of the model's image.
+     *
+     * @return string
+     */
+    public function getImageUrlAttribute()
+    {
+        if (!$this->has_image) return null;
+        return asset($this->imageDirectory . '/' . $this->imageFileName);
     }
 }

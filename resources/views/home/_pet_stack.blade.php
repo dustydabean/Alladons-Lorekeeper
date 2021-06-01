@@ -42,7 +42,11 @@
                     {!! Form::close() !!}
                 </li>
                 <li class="list-group-item">
-                    @if($stack->chara_id != NULL)
+                    @php 
+                    $now = Carbon\Carbon::parse($stack->attached_at);
+                    $diff = $now->addDays(Settings::get('claymore_cooldown'));
+                    @endphp
+                    @if($stack->chara_id != NULL && $diff < Carbon\Carbon::now())
                     <a class="card-title h5 collapse-title"  data-toggle="collapse" href="#attachForm">@if($stack->user_id != $user->id) [ADMIN] @endif Detach Pet from Character</a>
                     {!! Form::open(['url' => 'pets/detach/'.$stack->id, 'id' => 'attachForm', 'class' => 'collapse']) !!}
                         <p>This pet is currently attached to {!! $stack->character->displayName !!}, do you want to detach them?</p>
@@ -50,10 +54,10 @@
                             {!! Form::submit('Detach', ['class' => 'btn btn-primary']) !!}
                         </div>
                     {!! Form::close() !!}
-                    @else
+                    @elseif($stack->chara_id == NULL || $diff < Carbon\Carbon::now())
                     <a class="card-title h5 collapse-title"  data-toggle="collapse" href="#attachForm">@if($stack->user_id != $user->id) [ADMIN] @endif Attach Pet to Character</a>
                     {!! Form::open(['url' => 'pets/attach/'.$stack->id, 'id' => 'attachForm', 'class' => 'collapse']) !!}
-                        <p>Attach this pet to a character you own! They'll appear on the character's page.</p>
+                        <p>Attach this pet to a character you own! They'll appear on the character's page and any stat bonuses will automatically be applied.</p>
                         <p>Pets can be detached.</p>
                         <div class="form-group">
                             {!! Form::label('id', 'Slug') !!} {!! add_help('Insert your character\'s slug.') !!}
@@ -63,9 +67,12 @@
                             {!! Form::submit('Attach', ['class' => 'btn btn-primary']) !!}
                         </div>
                     {!! Form::close() !!}
+                    @else
+                    <a class="card-title h5">You cannot currently attach / detach this pet! It is under cooldown.</a>
                     @endif
                 </li>
                 @if($stack->isTransferrable || $user->hasPower('edit_inventories'))
+                    @if(!$stack->chara_id)
                     <li class="list-group-item">
                         <a class="card-title h5 collapse-title"  data-toggle="collapse" href="#transferForm">@if($stack->user_id != $user->id) [ADMIN] @endif Transfer Pet</a>
                         {!! Form::open(['url' => 'pets/transfer/'.$stack->id, 'id' => 'transferForm', 'class' => 'collapse']) !!}
@@ -81,6 +88,11 @@
                             </div>
                         {!! Form::close() !!}
                     </li>
+                    @else
+                    <li class="list-group-item bg-light">
+                        <h5 class="card-title mb-0 text-muted"><i class="fas fa-lock mr-2"></i> Currently attached to a character</h5>
+                    </li>
+                    @endif
                 @else
                     <li class="list-group-item bg-light">
                         <h5 class="card-title mb-0 text-muted"><i class="fas fa-lock mr-2"></i> Account-bound</h5>

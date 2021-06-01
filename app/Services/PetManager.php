@@ -8,6 +8,8 @@ use DB;
 use Config;
 use Notifications;
 
+use Illuminate\Support\Arr;
+
 use App\Models\User\User;
 use App\Models\Pet\Pet;
 use App\Models\User\UserPet;
@@ -36,24 +38,41 @@ class PetManager extends Service
         DB::beginTransaction();
 
         try {
-            if($data['quantity'] <= 0) throw new \Exception("The quantity must be at least 1.");
+            foreach($data['quantities'] as $q) {
+                if($q <= 0) throw new \Exception("All quantities must be at least 1.");
+            }
 
             // Process names
-            $users = User::whereIn('name', explode(',', str_replace(' ', '', $data['names'])))->get();
-            if(!count($users)) throw new \Exception("No valid users found.");
+            $users = User::find($data['names']);
+            if(count($users) != count($data['names'])) throw new \Exception("An invalid user was selected.");
+
+            $keyed_quantities = [];
+            array_walk($data['pet_ids'], function($id, $key) use(&$keyed_quantities, $data) {
+                if($id != null && !in_array($id, array_keys($keyed_quantities), TRUE)) {
+                    $keyed_quantities[$id] = $data['quantities'][$key];
+                }
+            });
 
             // Process pet
-            $pet = Pet::find($data['pet_id']);
-            if(!$pet) throw new \Exception("Invalid pet selected.");
+            $pets = Pet::find($data['pet_ids']);
+            if(!count($pets)) throw new \Exception("No valid pets found.");
 
             foreach($users as $user) {
-                $this->creditPet($staff, $user, 'Staff Grant', array_only($data, ['data', 'disallow_transfer', 'notes']), $pet, $data['quantity']);
-                Notifications::create('PET_GRANT', $user, [
-                    'pet_name' => $pet->name,
-                    'pet_quantity' => $data['quantity'],
-                    'sender_url' => $staff->url,
-                    'sender_name' => $staff->name
-                ]);
+                foreach($pets as $pet) {
+                    if($this->creditPet($staff, $user, 'Staff Grant', Arr::only($data, ['data', 'disallow_transfer', 'notes']), $pet, $keyed_quantities[$pet->id]))
+                    {
+                        Notifications::create('PET_GRANT', $user, [
+                            'pet_name' => $pet->name,
+                            'pet_quantity' => $keyed_quantities[$pet->id],
+                            'sender_url' => $staff->url,
+                            'sender_name' => $staff->name
+                        ]);
+                    }
+                    else
+                    {
+                        throw new \Exception("Failed to credit pets to ".$user->name.".");
+                    }
+                }
             }
 
             return $this->commitReturn(true);
@@ -195,6 +214,7 @@ class PetManager extends Service
                 if($character->user_id !== $user->id && !$user->hasPower('edit_inventories'))throw new \Exception("You do not own this character.");
 
                 $pet['chara_id'] = $character->id;
+                $pet['attached_at'] = Carbon::now();
                 $pet->save();
             
             return $this->commitReturn(true);
