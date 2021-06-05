@@ -63,6 +63,11 @@ class Pet extends Model
         return $this->belongsTo('App\Models\Pet\PetCategory', 'pet_category_id');
     }
 
+    public function variants()
+    {
+        return $this->hasMany('App\Models\Pet\PetVariant', 'pet_id');
+    }
+
     /**********************************************************************************************
     
         SCOPES
@@ -190,5 +195,11 @@ class Pet extends Model
     public function getAssetTypeAttribute()
     {
         return 'pets';
+    }
+
+    public function VariantImage($id)
+    {
+        if($id == 0 || !$id) return $this->imageurl;
+        else return $this->variants()->where('id', $id)->first()->imageUrl;
     }
 }

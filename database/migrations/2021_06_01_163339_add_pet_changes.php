@@ -41,11 +41,11 @@ class AddPetChanges extends Migration
         //
         Schema::table('pet_categories', function (Blueprint $table) { 
             $table->dropColumn('allow_attach');
-            $table->dropColumn('variant_id');
         });
 
         Schema::table('user_pets', function (Blueprint $table) { 
             $table->dropColumn('attached_at');
+            $table->dropColumn('variant_id');
         });
 
         Schema::dropIfExists('pet_variants');

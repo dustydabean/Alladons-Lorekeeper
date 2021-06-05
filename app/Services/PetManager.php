@@ -249,6 +249,25 @@ class PetManager extends Service
     }
 
     /**
+     * edits variant
+     */
+    public function editVariant($id, $pet)
+    {
+        DB::beginTransaction();
+
+        try {
+
+                $pet['variant_id'] = $id;
+                $pet->save();
+            
+            return $this->commitReturn(true);
+        } catch(\Exception $e) { 
+            $this->setError('error', $e->getMessage());
+        }
+        return $this->rollbackReturn(false);
+    }
+
+    /**
      * Credits an pet to a user.
      *
      * @param  \App\Models\User\User  $sender

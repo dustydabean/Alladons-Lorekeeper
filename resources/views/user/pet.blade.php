@@ -24,7 +24,7 @@
                         ?>
                         <div class="col-sm-3 col-6 text-center inventory-item" data-id="{{ $pet->pivot->id }}" data-name="{{ $user->name }}'s {{ $pet->name }}">
                             <div class="mb-1">
-                                <a href="#" class="inventory-stack"><img src="{{ $pet->imageUrl }}" /></a>
+                                <a href="#" class="inventory-stack"><img src="{{ $pet->VariantImage($pet->pivot->variant_id) }}" class="img-fluid" style="width:50%;"/></a>
                             </div>
                             <div>
                                 <a href="#" class="inventory-stack inventory-stack-name">{{ $pet->name }}</a>

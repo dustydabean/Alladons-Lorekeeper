@@ -6,6 +6,7 @@ use DB;
 use Config;
 
 use App\Models\Pet\PetCategory;
+use App\Models\Pet\PetVariant;
 use App\Models\Pet\Pet;
 
 class PetService extends Service
@@ -295,6 +296,62 @@ class PetService extends Service
             //if(DB::table('shop_stock')->where('pet_id', $pet->id)->exists()) throw new \Exception("A shop currently stocks this pet. Please remove the pet before deleting it.");
             
             $pet->delete();
+
+            return $this->commitReturn(true);
+        } catch(\Exception $e) { 
+            $this->setError('error', $e->getMessage());
+        }
+        return $this->rollbackReturn(false);
+    }
+
+    public function editVariants($data, $pet)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            // this is so the user doesn't have to re-upload the variant image every time. It's not perfect but is some-what convenient
+            if(isset($data['variant_names'])) {
+                foreach($data['variant_names'] as $key => $type) {
+                    if($pet->variants()->where('variant_name', $type)->exists()) {
+
+                        $temp = $pet->variants()->where('variant_name', $type)->first();
+
+                        if($temp->has_image && !isset($data['variant_images'][$key])) {
+                            $data['variant_images'][$key] = 1;
+                            // we do this so it isn't deleted in the next function
+                            $temp->has_image = 0;
+                            $temp->save();
+                        }
+                    }
+                }
+            }
+            // Clear the old variants...
+            foreach($pet->variants as $variant)
+            {
+                if($variant->has_image) $this->deleteImage($variant->imagePath, $variant->imageFileName);
+            }
+            $pet->variants()->delete();
+
+            // make new variants
+            if(isset($data['variant_names'])) {
+                foreach($data['variant_names'] as $key => $type)
+                {
+                    $variant = PetVariant::create([
+                        'pet_id'          => $pet->id,
+                        'variant_name' => $type,
+                        'has_image'   => isset($data['variant_images'][$key]) ? 1 : 0,
+                    ]);
+
+                    $image = null;
+                    if(isset($data['variant_images'][$key]) && $data['variant_images'][$key] && $data['variant_images'][$key] != 1 ) {
+                        $image = $data['variant_images'][$key];
+                        unset($data['variant_images'][$key]);
+                    }
+
+                    if($image) $this->handleImage($image, $variant->imagePath, $variant->imagefilename);
+                }
+            }
 
             return $this->commitReturn(true);
         } catch(\Exception $e) { 

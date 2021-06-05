@@ -95,7 +95,7 @@
                 <div class="row">
                     @foreach($pets as $pet)
                         <div class="col profile-inventory-item">
-                            <img src="{{ $pet->imageUrl }}" data-toggle="tooltip" title="{{ $pet->name }}" />
+                            <a href="#" class="inventory-stack"><img src="{{ $pet->variantimage($pet->pivot->variant_id) }}" class="img-fluid" style="width:25%;" data-toggle="tooltip" title="{{ $pet->name }}" />
                         </div>
                     @endforeach
                 </div>

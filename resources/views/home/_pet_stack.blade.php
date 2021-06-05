@@ -2,7 +2,7 @@
     <div class="text-center">Invalid pet selected.</div>
 @else
     <div class="text-center">
-        <div class="mb-1"><a href="{{ $stack->pet->url }}"><img src="{{ $stack->pet->imageUrl }}" /></a></div>
+        <div class="mb-1"><a href="{{ $stack->pet->url }}"><img src="{{ $stack->pet->variantimage($stack->variant_id) }}" class="img-fluid" style="width:50%;"/></a></div>
         <div class="mb-1"><a href="{{ $stack->pet->url }}">{{ $stack->pet->name }}</a></div>
     </div>
     
@@ -71,6 +71,20 @@
                     <a class="card-title h5">You cannot currently attach / detach this pet! It is under cooldown.</a>
                     @endif
                 </li>
+                @if($user->hasPower('edit_inventories'))
+                    <li class="list-group-item">
+                        <a class="card-title h5 collapse-title"  data-toggle="collapse" href="#variantForm">[ADMIN] Change Pet Variant</a>
+                        {!! Form::open(['url' => 'pets/variant/'.$stack->id, 'id' => 'variantForm', 'class' => 'collapse']) !!}
+                            <div class="form-group">
+                                @php $variants = ['0' => 'Default'] + $stack->pet->variants()->pluck('variant_name', 'id')->toArray() @endphp
+                                {!! Form::select('variant_id', $variants, $stack->variant_id, ['class'=>'form-control']) !!}
+                            </div>
+                            <div class="text-right">
+                                {!! Form::submit('Change Variant', ['class' => 'btn btn-primary']) !!}
+                            </div>
+                        {!! Form::close() !!}
+                    </li>
+                @endif
                 @if($stack->isTransferrable || $user->hasPower('edit_inventories'))
                     @if(!$stack->chara_id)
                     <li class="list-group-item">

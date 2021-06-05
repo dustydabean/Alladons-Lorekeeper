@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Models\User;
+namespace App\Models\Pet;
 
 use App\Models\Model;
 
-class UserPet extends Model
+class PetVariant extends Model
 {
     /**
      * The attributes that are mass assignable.
@@ -20,7 +20,7 @@ class UserPet extends Model
      *
      * @var string
      */
-    public $timestamps = true;
+    public $timestamps = false;
 
     /**
      * The table associated with the model.
@@ -49,7 +49,7 @@ class UserPet extends Model
 
     **********************************************************************************************/
 
-        /**
+    /**
      * Gets the file directory containing the model's image.
      *
      * @return string
@@ -66,7 +66,7 @@ class UserPet extends Model
      */
     public function getImageFileNameAttribute()
     {
-        return $this->id . $this->variant_name .'-image.png';
+        return $this->pet_id .'-'. $this->variant_name .'-image.png';
     }
 
     /**

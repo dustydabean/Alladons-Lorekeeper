@@ -59,6 +59,7 @@ Route::group(['prefix' => 'pets', 'namespace' => 'Users'], function() {
     Route::post('name/{id}', 'PetController@postName');
     Route::post('attach/{id}', 'PetController@postAttach');
     Route::post('detach/{id}', 'PetController@postDetach');
+    Route::post('variant/{id}', 'PetController@postVariant');
 
     Route::get('selector', 'PetController@getSelector');
 });

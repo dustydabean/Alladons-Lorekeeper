@@ -261,4 +261,23 @@ class PetController extends Controller
         }
         return redirect()->to('admin/data/pets');
     }
+
+    /**
+     * Edits pet variants
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  App\Services\PetService  $service
+     * @param  int                       $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postEditVariants(Request $request, PetService $service, $id)
+    {
+        if($id && $service->editVariants($request->only(['variant_names', 'variant_images']), Pet::find($id))) {
+            flash('Variants editted successfully.')->success();
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back();
+    }
 }

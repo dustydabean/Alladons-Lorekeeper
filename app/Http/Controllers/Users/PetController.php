@@ -160,6 +160,24 @@ class PetController extends Controller
     }
 
     /**
+     * Changes variant
+     *
+     * @param  \Illuminate\Http\Request       $request
+     * @param  App\Services\CharacterManager  $service
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postVariant(Request $request, PetManager $service, $id) 
+    {
+        if($service->editVariant($request->input('variant_id'), UserPet::find($id))) {
+            flash('Pet variant changed successfully.')->success();
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back();
+    }
+
+    /**
      * Shows the pet selection widget.
      *
      * @param  int  $id
