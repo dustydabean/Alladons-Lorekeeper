@@ -1,6 +1,6 @@
 <?php
 return [
-    
+
     // FORMAT EXAMPLE.
     //
     // 'extension_tracker' => [
@@ -11,6 +11,14 @@ return [
     //     ]),
     //     'version' => '1.0.0',
     // ],
-    
+
+    'trade_listings' => [
+        'key' => 'trade_listings',
+        'wiki_key' => 'Trade_Listings',
+        'creators' => json_encode([
+            'Mercury' => 'https://github.com/itinerare/',
+        ]),
+        'version' => '1.0.0',
+    ],
 
 ];
