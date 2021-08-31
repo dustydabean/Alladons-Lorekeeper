@@ -1,5 +1,5 @@
 @if($loci)
-    {!! Form::open(['url' => 'admin/data/genetics/delete-allele/'.$loci->id]) !!}
+    {!! Form::open(['url' => 'admin/genetics/delete-allele/'.$loci->id]) !!}
 
     <p>Here, you can delete an allele from <strong>{{ $loci->name }}</strong> and replace all instances of it in character genomes with another allele from the same gene group.</p>
 
