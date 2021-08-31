@@ -179,7 +179,7 @@ class GeneticsController extends Controller
         } else {
             foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
         }
-        return redirect()->to('admin/genetics');
+        return redirect()->to('admin/genetics/genes');
     }
 
     /**
