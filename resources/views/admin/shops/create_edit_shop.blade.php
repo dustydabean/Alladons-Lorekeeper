@@ -97,21 +97,31 @@
     {!! Form::close() !!}
 
     <h3>Shop Stock</h3>
-    {!! Form::open(['url' => 'admin/data/shops/stock/'.$shop->id]) !!}
-        <div class="text-right mb-3">
-            <a href="#" class="add-stock-button btn btn-outline-primary">Add Stock</a>
+    <div class="text-right mb-3">
+        <a href="#" class="add-stock-button btn btn-outline-primary">Add Stock</a>
+    </div>
+    <div id="shopStock">
+        <div class="row col-12">
+        @foreach($shop->stock as $stock)
+        <div class="col-4">
+            <div class="card p-3 my-1">
+                <div><a href="{{ $stock->item->idUrl }}"><strong>{{ $stock->item->name }}</strong></a></div>
+                <div><strong>Cost: </strong> {!! $stock->currency->display($stock->cost) !!}</div>
+                @if($stock->is_limited_stock) <div>Stock: {{ $stock->quantity }}</div> @endif
+                @if($stock->purchase_limit) <div class="text-danger">Max {{ $stock->purchase_limit }} per user</div> @endif
+                <div class="text-right">
+                    <button class="btn btn-primary" onclick="editStock({{$stock->id}})">
+                        {{-- pencil icon --}}
+                        <i class="fas fa-pencil-alt"></i>
+                    </button>
+                    <div class="btn btn-danger" onclick="deleteStock({{$stock->id}})">
+                        {{-- trash icon --}}
+                        <i class="fas fa-trash"></i>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div id="shopStock">
-            @foreach($shop->stock as $key=>$stock)
-                @include('admin.shops._stock', ['stock' => $stock, 'key' => $key])
-            @endforeach
-        </div>
-        <div class="text-right">
-            {!! Form::submit('Edit', ['class' => 'btn btn-primary']) !!}
-        </div>
-    {!! Form::close() !!}
-    <div class="" id="shopStockData">
-        @include('admin.shops._stock', ['stock' => null, 'key' => 0])
+        @endforeach
     </div>
 @endif
 
@@ -127,9 +137,14 @@
 @section('scripts')
 @parent
 <script>
+    // edit stock function
+    function editStock(id) {
+        loadModal("{{ url('admin/data/shops/stock/edit') }}/" + id, 'Edit Stock');
+    }
+    function deleteStock(id) {
+        loadModal("{{ url('admin/data/shops/stock/delete') }}/" + id, 'Delete Stock');
+    }
 $( document ).ready(function() {
-    var $shopStock = $('#shopStock');
-    var $stock = $('#shopStockData').find('.stock');
 
     $('.delete-shop-button').on('click', function(e) {
         e.preventDefault();
@@ -137,43 +152,8 @@ $( document ).ready(function() {
     });
     $('.add-stock-button').on('click', function(e) {
         e.preventDefault();
-
-        var clone = $stock.clone();
-        $shopStock.append(clone);
-        clone.removeClass('hide');
-        attachStockListeners(clone);
-        refreshStockFieldNames();
+        loadModal("{{ url('admin/data/shops/stock') }}/{{ $shop->id }}", 'Add Stock');
     });
-
-    attachStockListeners($('#shopStock .stock'));
-    function attachStockListeners(stock) {
-        stock.find('.stock-toggle').bootstrapToggle();
-        stock.find('.stock-limited').on('change', function(e) {
-            var $this = $(this);
-            if($this.is(':checked')) {
-                $this.parent().parent().parent().parent().find('.stock-limited-quantity').removeClass('hide');
-            }
-            else {
-                $this.parent().parent().parent().parent().find('.stock-limited-quantity').addClass('hide');
-            }
-        });
-        stock.find('.remove-stock-button').on('click', function(e) {
-            e.preventDefault();
-            $(this).parent().parent().parent().remove();
-            refreshStockFieldNames();
-        });
-        stock.find('.card-body [data-toggle=tooltip]').tooltip({html: true});
-    }
-    function refreshStockFieldNames()
-    {
-        $('.stock').each(function(index) {
-            var $this = $(this);
-            var key = index;
-            $this.find('.stock-field').each(function() {
-                $(this).attr('name', $(this).data('name') + '[' + key + ']');
-            });
-        });
-    }
 
     $('#add-feature').on('click', function(e) {
         e.preventDefault();

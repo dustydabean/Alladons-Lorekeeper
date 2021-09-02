@@ -14,6 +14,7 @@
     <p>{!! $shop->parsed_description !!}</p>
 </div>
 
+<h3>Items</h3>
 @foreach($items as $categoryId=>$categoryItems)
     <div class="card mb-3 inventory-category">
         <h5 class="card-header inventory-header">

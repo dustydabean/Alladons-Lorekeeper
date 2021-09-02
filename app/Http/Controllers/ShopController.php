@@ -105,7 +105,7 @@ class ShopController extends Controller
     public function getShopStock(ShopManager $service, $id, $stockId)
     {
         $shop = Shop::where('id', $id)->where('is_active', 1)->first();
-        $stock = ShopStock::with('item')->where('id', $stockId)->where('shop_id', $id)->first();
+        $stock = ShopStock::where('id', $stockId)->where('shop_id', $id)->first();
         if(!$shop) abort(404);
         
         $user = Auth::user();
