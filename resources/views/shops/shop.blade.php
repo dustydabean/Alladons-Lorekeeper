@@ -14,7 +14,7 @@
     <p>{!! $shop->parsed_description !!}</p>
 </div>
 
-<h3>Items</h3>
+@if(count($items))<h3>Items</h3>@endif
 @foreach($items as $categoryId=>$categoryItems)
     <div class="card mb-3 inventory-category">
         <h5 class="card-header inventory-header">
@@ -42,7 +42,7 @@
     </div>
 @endforeach
 
-<h3>Pets</h3>
+@if(count($pets))<h3>Pets</h3>@endif
 @foreach($pets as $categoryId=>$categoryItems)
     <div class="card mb-3 inventory-category">
         <h5 class="card-header inventory-header">
