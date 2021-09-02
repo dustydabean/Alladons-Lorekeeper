@@ -37,25 +37,25 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group">
-                    {!! Form::checkbox('use_user_bank', 1, $stock->use_user_bank ?? null , ['class' => 'form-check-input stock-toggle stock-field', 'data-name' => 'use_user_bank']) !!}
+                    {!! Form::checkbox('use_user_bank', 1, $stock->use_user_bank ?? 1, ['class' => 'form-check-input stock-toggle stock-field', 'data-name' => 'use_user_bank']) !!}
                     {!! Form::label('use_user_bank', 'Use User Bank', ['class' => 'form-check-label ml-3']) !!} {!! add_help('This will allow users to purchase the item using the currency in their accounts, provided that users can own that currency.') !!}
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="form-group mb-0">
-                    {!! Form::checkbox('use_character_bank', 1, $stock->use_character_bank ?? null, ['class' => 'form-check-input stock-toggle stock-field', 'data-name' => 'use_character_bank']) !!}
+                    {!! Form::checkbox('use_character_bank', 1, $stock->use_character_bank ?? 1, ['class' => 'form-check-input stock-toggle stock-field', 'data-name' => 'use_character_bank']) !!}
                     {!! Form::label('use_character_bank', 'Use Character Bank', ['class' => 'form-check-label ml-3']) !!} {!! add_help('This will allow users to purchase the item using the currency belonging to characters they own, provided that characters can own that currency.') !!}
                 </div>
             </div>
         </div>
 
         <div class="form-group">
-            {!! Form::checkbox('is_fto', 1, $stock->is_fto ?? null, ['class' => 'form-check-input stock-toggle stock-field', 'data-name' => 'is_fto']) !!}
+            {!! Form::checkbox('is_fto', 1, $stock->is_fto ?? 0, ['class' => 'form-check-input stock-toggle stock-field', 'data-name' => 'is_fto']) !!}
             {!! Form::label('is_fto', 'FTO Only?', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If turned on, only FTO will be able to purchase the item.') !!}
         </div>
 
         <div class="form-group">
-            {!! Form::checkbox('is_limited_stock', 1, $stock->is_limited_stock ?? null, ['class' => 'form-check-input stock-limited stock-toggle stock-field', 'id' => 'is_limited_stock']) !!}
+            {!! Form::checkbox('is_limited_stock', 1, $stock->is_limited_stock ?? 0, ['class' => 'form-check-input stock-limited stock-toggle stock-field', 'id' => 'is_limited_stock']) !!}
             {!! Form::label('is_limited_stock', 'Set Limited Stock', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If turned on, will limit the amount purchaseable to the quantity set below.') !!}
         </div>
     </div>
@@ -64,13 +64,13 @@
         <div class="card-body">
             <div>
                 {!! Form::label('quantity', 'Quantity') !!} {!! add_help('If left blank, will be set to 0 (sold out).') !!}
-                {!! Form::text('quantity', $stock->quantity ?? null, ['class' => 'form-control stock-field']) !!}
+                {!! Form::text('quantity', $stock->quantity ?? 0, ['class' => 'form-control stock-field']) !!}
             </div>
         </div>
     </div>
     <div>
         {!! Form::label('purchase_limit', 'User Purchase Limit') !!} {!! add_help('This is the maximum amount of this item a user can purchase from this shop. Set to 0 to allow infinite purchases.') !!}
-        {!! Form::text('purchase_limit', $stock->purchase_limit ?? null, ['class' => 'form-control stock-field']) !!}
+        {!! Form::text('purchase_limit', $stock->purchase_limit ?? 0, ['class' => 'form-control stock-field']) !!}
     </div>
 
 <div class="text-right mt-1">

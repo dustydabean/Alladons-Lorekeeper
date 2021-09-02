@@ -45,7 +45,7 @@ class ShopManager extends Service
             if(!$shop) throw new \Exception("Invalid shop selected.");
 
             // Check that the stock exists and belongs to the shop
-            $shopStock = ShopStock::where('id', $data['stock_id'])->where('shop_id', $data['shop_id'])->with('currency')->with('item')->first();
+            $shopStock = ShopStock::where('id', $data['stock_id'])->where('shop_id', $data['shop_id'])->with('currency')->first();
             if(!$shopStock) throw new \Exception("Invalid item selected.");
 
             // Check if the item has a quantity, and if it does, check there is enough stock remaining
