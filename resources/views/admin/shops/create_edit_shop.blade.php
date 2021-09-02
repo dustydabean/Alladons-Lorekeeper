@@ -105,7 +105,7 @@
         @foreach($shop->stock as $stock)
         <div class="col-4">
             <div class="card p-3 my-1">
-                <div><a href="{{ $stock->item->idUrl }}"><strong>{{ $stock->item->name }}</strong></a></div>
+                <div><a href="{{ $stock->item->idUrl }}"><strong>{{ $stock->item->name }} - {{ $stock->stock_type }}</strong></a></div>
                 <div><strong>Cost: </strong> {!! $stock->currency->display($stock->cost) !!}</div>
                 @if($stock->is_limited_stock) <div>Stock: {{ $stock->quantity }}</div> @endif
                 @if($stock->purchase_limit) <div class="text-danger">Max {{ $stock->purchase_limit }} per user</div> @endif
