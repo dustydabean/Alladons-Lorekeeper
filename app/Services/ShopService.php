@@ -6,6 +6,7 @@ use DB;
 use Config;
 
 use App\Models\Shop\Shop;
+use App\Models\Shop\ShopLimit;
 use App\Models\Shop\ShopStock;
 
 class ShopService extends Service
@@ -127,6 +128,7 @@ class ShopService extends Service
                         'cost'                  => $data['cost'][$key],
                         'use_user_bank'         => isset($data['use_user_bank'][$key]),
                         'use_character_bank'    => isset($data['use_character_bank'][$key]),
+                        'is_fto'                => isset($data['is_fto'][$key]),
                         'is_limited_stock'      => isset($data['is_limited_stock'][$key]),
                         'quantity'              => isset($data['is_limited_stock'][$key]) ? $data['quantity'][$key] : 0,
                         'purchase_limit'        => $data['purchase_limit'][$key],
@@ -155,6 +157,8 @@ class ShopService extends Service
     {
         if(isset($data['description']) && $data['description']) $data['parsed_description'] = parse($data['description']);
         $data['is_active'] = isset($data['is_active']);
+        $data['is_staff'] = isset($data['is_staff']);
+        $data['use_coupons'] = isset($data['use_coupons']);
         
         if(isset($data['remove_image']))
         {
@@ -209,6 +213,36 @@ class ShopService extends Service
 
             foreach($sort as $key => $s) {
                 Shop::where('id', $s)->update(['sort' => $key]);
+            }
+
+            return $this->commitReturn(true);
+        } catch(\Exception $e) { 
+            $this->setError('error', $e->getMessage());
+        }
+        return $this->rollbackReturn(false);
+    }
+
+    public function restrictShop($data, $id) 
+    {
+        DB::beginTransaction();
+
+        try {
+            if(!isset($data['is_restricted'])) $data['is_restricted'] = 0;
+
+            $shop = Shop::find($id);
+            $shop->is_restricted = $data['is_restricted'];
+            $shop->save();
+
+            $shop->limits()->delete();
+
+            if(isset($data['item_id'])) {
+                foreach($data['item_id'] as $key => $type)
+                {
+                    ShopLimit::create([
+                        'shop_id'       => $shop->id,
+                        'item_id' => $type,
+                    ]);
+                }
             }
 
             return $this->commitReturn(true);

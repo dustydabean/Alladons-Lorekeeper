@@ -46,7 +46,8 @@ class ShopController extends Controller
     public function getCreateShop()
     {
         return view('admin.shops.create_edit_shop', [
-            'shop' => new Shop
+            'shop' => new Shop,
+            'items' => Item::orderBy('name')->pluck('name', 'id')
         ]);
     }
     
@@ -79,7 +80,7 @@ class ShopController extends Controller
     {
         $id ? $request->validate(Shop::$updateRules) : $request->validate(Shop::$createRules);
         $data = $request->only([
-            'name', 'description', 'image', 'remove_image', 'is_active'
+            'name', 'description', 'image', 'remove_image', 'is_active', 'is_staff', 'use_coupons', 'is_fto'
         ]);
         if($id && $service->updateShop(Shop::find($id), $data, Auth::user())) {
             flash('Shop updated successfully.')->success();
@@ -105,7 +106,7 @@ class ShopController extends Controller
     public function postEditShopStock(Request $request, ShopService $service, $id)
     {
         $data = $request->only([
-            'shop_id', 'item_id', 'currency_id', 'cost', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'purchase_limit'
+            'shop_id', 'item_id', 'currency_id', 'cost', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'purchase_limit', 'is_fto'
         ]);
         if($service->updateShopStock(Shop::find($id), $data, Auth::user())) {
             flash('Shop stock updated successfully.')->success();
@@ -161,6 +162,21 @@ class ShopController extends Controller
     {
         if($service->sortShop($request->get('sort'))) {
             flash('Shop order updated successfully.')->success();
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back();
+    }
+
+    public function postRestrictShop(Request $request, ShopService $service, $id)
+    {
+        $data = $request->only([
+            'item_id', 'is_restricted'
+        ]);
+
+        if($service->restrictShop($data, $id)) {
+            flash('Shop limits updated successfully.')->success();
         }
         else {
             foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();

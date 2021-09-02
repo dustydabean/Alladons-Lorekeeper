@@ -13,7 +13,7 @@ class Shop extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'sort', 'has_image', 'description', 'parsed_description', 'is_active'
+        'name', 'sort', 'has_image', 'description', 'parsed_description', 'is_active', 'is_staff', 'use_coupons', 'is_restricted', 'is_fto'
     ];
 
     /**
@@ -65,6 +65,11 @@ class Shop extends Model
     public function displayStock()
     {
         return $this->belongsToMany('App\Models\Item\Item', 'shop_stock')->withPivot('item_id', 'currency_id', 'cost', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'purchase_limit', 'id');
+    }
+
+    public function limits()
+    {
+        return $this->hasMany('App\Models\Shop\ShopLimit', 'shop_id');
     }
 
     /**********************************************************************************************

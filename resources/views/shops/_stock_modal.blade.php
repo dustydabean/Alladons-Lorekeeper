@@ -20,7 +20,12 @@
         </div>
     @endif
 
+    @if($stock->shop->use_coupons)
+        <div class="alert alert-success">You can use coupons in this store!</div>
+    @endif
+
     @if(Auth::check())
+        @if($stock->is_fto && Auth::user()->settings->is_fto || !$stock->is_fto)
         <h5>
             Purchase
             <span class="float-right">
@@ -68,12 +73,29 @@
                         {!! Form::text('slug', null, ['class' => 'form-control']) !!}
                     </div>
                 @endif
+                @if($stock->shop->use_coupons && $userCoupons !== Null)
+                    @if(Settings::get('limited_stock_coupon_settings') == 0)
+                    <p class="text-danger">Note that coupons cannot be used on limited stock items.</p>
+                    @endif
+                <div class="form-group">
+                    {!! Form::checkbox('use_coupon', 1,  0, ['class' => 'is-coupon-class form-control', 'data-toggle' => 'toggle']) !!}
+                    {!! Form::label('use_coupon', 'Do you want to use a coupon?', ['class' => 'form-check-label  ml-3 mb-2']) !!}
+                </div>
+                <div class="br-form-group" style="display: none">
+                    {!! Form::select('coupon', $userCoupons, null, ['class' => 'form-control mb-2', 'placeholder' => 'Select a Coupon to Use']) !!}
+                </div>
+                @elseif($stock->shop->use_coupons && $userCoupons == Null)
+                <div class="alert alert-danger">You do not own any coupons.</div>
+                @endif
                 <div class="text-right">
                     {!! Form::submit('Purchase', ['class' => 'btn btn-primary']) !!}
                 </div>
             {!! Form::close() !!}
         @endif
-    @else
+        @else
+        <div class="alert alert-danger">You must be a FTO to purchase this item.</div>
+        @endif
+    @else 
         <div class="alert alert-danger">You must be logged in to purchase this item.</div>
     @endif
 @endif
@@ -86,6 +108,14 @@
                 $useCharacterBank.removeClass('hide');
             else
                 $useCharacterBank.addClass('hide');
+        });
+
+    $( document ).ready(function() {
+        $('.is-coupon-class').change(function(e){
+            console.log(this.checked)
+            $('.br-form-group').css('display',this.checked ? 'block' : 'none')
+                })
+            $('.br-form-group').css('display',$('.is-restricted-class').prop('checked') ? 'block' : 'none')
         });
 
     </script>

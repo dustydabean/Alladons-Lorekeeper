@@ -4,11 +4,15 @@ use App\Services\Service;
 
 use DB;
 use Config;
+use Settings;
 
 use App\Models\Character\Character;
 use App\Models\Shop\Shop;
 use App\Models\Shop\ShopStock;
 use App\Models\Shop\ShopLog;
+use App\Models\User\UserItem;
+use App\Models\Item\Item;
+use App\Models\Item\ItemTag;
 
 class ShopManager extends Service
 {
@@ -50,7 +54,47 @@ class ShopManager extends Service
             // Check if the user can only buy a limited number of this item, and if it does, check that the user hasn't hit the limit
             if($shopStock->purchase_limit && $this->checkPurchaseLimitReached($shopStock, $user)) throw new \Exception("You have already purchased the maximum amount of this item you can buy.");
 
-            $total_cost = $shopStock->cost * $quantity;
+
+            if(isset($data['use_coupon'])) {
+                // check if the the stock is limited stock
+                if($shopStock->is_limited_stock && !Settings::get('limited_stock_coupon_settings')) throw new \Exception('Sorry! You can\'t use coupons on limited stock items');
+
+                if(!isset($data['coupon'])) throw new \Exception('Please select a coupon to use.');
+                // finding the users tag
+                $userItem = UserItem::find($data['coupon']);
+                // finding bought item
+                $item = Item::find($userItem->item_id);
+                $tag = $item->tags()->where('tag', 'Coupon')->first();
+                $coupon = $tag->data;
+
+                if(!$coupon['discount']) throw new \Exception('No discount amount set, please contact a site admin before trying to purchase again.');
+                
+                // if the coupon isn't infinite kill it
+                if(!$coupon['infinite']) {
+                    if(!(new InventoryManager)->debitStack($user, 'Coupon Used', ['data' => 'Coupon used in purchase of ' . $shopStock->item->name . ' from ' . $shop->name], $userItem, 1)) throw new \Exception("Failed to remove coupon.");
+                }
+                if(!Settings::get('coupon_settings')) {
+                    $minus = ($coupon['discount'] / 100) * ($shopStock->cost * $quantity);
+                    $base = ($shopStock->cost * $quantity);
+                        if($base <= 0) {
+                            throw new \Exception("Cannot use a coupon on an item that is free.");
+                        }
+                    $new = $base - $minus;
+                    $total_cost =  round($new);
+                }
+                else {
+                    $minus = ($coupon['discount'] / 100) * ($shopStock->cost);
+                    $base = ($shopStock->cost * $quantity);
+                        if($base <= 0) {
+                            throw new \Exception("Cannot use a coupon on an item that is free.");
+                        }
+                    $new = $base - $minus;
+                    $total_cost =  round($new);
+                }
+            }
+            else {
+                $total_cost = $shopStock->cost * $quantity;
+            }
 
             $character = null;
             if($data['bank'] == 'character')
