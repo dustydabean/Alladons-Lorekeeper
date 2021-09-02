@@ -41,7 +41,7 @@ class ShopController extends Controller
             'shops' => Shop::where('is_active', 1)->orderBy('sort', 'DESC')->get()
             ]);
     }
-    
+
     /**
      * Shows a shop.
      *
@@ -114,6 +114,7 @@ class ShopController extends Controller
             $quantityLimit = $service->getStockPurchaseLimit($stock, Auth::user());
             $userPurchaseCount = $service->checkUserPurchases($stock, Auth::user());
             $purchaseLimitReached = $service->checkPurchaseLimitReached($stock, Auth::user());
+            $userOwned = UserItem::where('user_id', $user->id)->where('item_id', $stock->item->id)->where('count', '>', 0)->get();
         }
 
         if($shop->use_coupons) {
@@ -131,7 +132,8 @@ class ShopController extends Controller
             'userCoupons' => $check,
             'quantityLimit' => $quantityLimit,
             'userPurchaseCount' => $userPurchaseCount,
-            'purchaseLimitReached' => $purchaseLimitReached
+            'purchaseLimitReached' => $purchaseLimitReached,
+            'userOwned' => $user ? $userOwned : null
 		]);
     }
 
