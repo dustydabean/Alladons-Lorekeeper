@@ -93,6 +93,7 @@ class ShopController extends Controller
         return view('shops.shop', [
             'shop' => $shop,
             'categories' => $categories->keyBy('id'),
+            'petCategories' => $petCategories->keyBy('id'),
             'items' => $items,
             'pets' => $pets,
             'shops' => Shop::where('is_active', 1)->orderBy('sort', 'DESC')->get(),
