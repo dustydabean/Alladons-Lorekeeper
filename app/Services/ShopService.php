@@ -109,37 +109,72 @@ class ShopService extends Service
         DB::beginTransaction();
 
         try {
-            if(isset($data['item_id'])) {
-                foreach($data['item_id'] as $key => $itemId)
-                {
-                    if($data['cost'][$key] == null) throw new \Exception("One or more of the items is missing a cost.");
-                    if($data['cost'][$key] < 0) throw new \Exception("One or more of the items has a negative cost.");
-                }
 
-                // Clear the existing shop stock
-                $shop->stock()->delete();
-
-                foreach($data['item_id'] as $key => $itemId)
-                {
-                    $shop->stock()->create([
-                        'shop_id'               => $shop->id,
-                        'item_id'               => $data['item_id'][$key],
-                        'currency_id'           => $data['currency_id'][$key],
-                        'cost'                  => $data['cost'][$key],
-                        'use_user_bank'         => isset($data['use_user_bank'][$key]),
-                        'use_character_bank'    => isset($data['use_character_bank'][$key]),
-                        'is_fto'                => isset($data['is_fto'][$key]),
-                        'is_limited_stock'      => isset($data['is_limited_stock'][$key]),
-                        'quantity'              => isset($data['is_limited_stock'][$key]) ? $data['quantity'][$key] : 0,
-                        'purchase_limit'        => $data['purchase_limit'][$key],
-                    ]);
-                }
-            } else {
-                // Clear the existing shop stock
-                $shop->stock()->delete();
-            }
+            $shop->stock()->create([
+                'shop_id'               => $shop->id,
+                'item_id'               => $data['item_id'],
+                'currency_id'           => $data['currency_id'],
+                'cost'                  => $data['cost'],
+                'use_user_bank'         => isset($data['use_user_bank']),
+                'use_character_bank'    => isset($data['use_character_bank']),
+                'is_fto'                => isset($data['is_fto']),
+                'is_limited_stock'      => isset($data['is_limited_stock']),
+                'quantity'              => isset($data['is_limited_stock']) ? $data['quantity'] : 0,
+                'purchase_limit'        => $data['purchase_limit'],
+                'stock_type'            => $data['stock_type'],
+            ]);
 
             return $this->commitReturn($shop);
+        } catch(\Exception $e) { 
+            $this->setError('error', $e->getMessage());
+        }
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Updates shop stock.
+     *
+     * @param  \App\Models\Shop\Shop  $shop
+     * @param  array                  $data 
+     * @param  \App\Models\User\User  $user
+     * @return bool|\App\Models\Shop\Shop
+     */
+    public function editShopStock($stock, $data, $user)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            $stock->update([
+                'shop_id'               => $stock->shop->id,
+                'item_id'               => $data['item_id'],
+                'currency_id'           => $data['currency_id'],
+                'cost'                  => $data['cost'],
+                'use_user_bank'         => isset($data['use_user_bank']),
+                'use_character_bank'    => isset($data['use_character_bank']),
+                'is_fto'                => isset($data['is_fto']),
+                'is_limited_stock'      => isset($data['is_limited_stock']),
+                'quantity'              => isset($data['is_limited_stock']) ? $data['quantity'] : 0,
+                'purchase_limit'        => $data['purchase_limit'],
+                'stock_type'            => $data['stock_type'],
+            ]);
+
+            return $this->commitReturn($stock);
+        } catch(\Exception $e) { 
+            $this->setError('error', $e->getMessage());
+        }
+        return $this->rollbackReturn(false);
+    }
+
+    public function deleteStock($stock)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            $stock->delete();
+
+            return $this->commitReturn(true);
         } catch(\Exception $e) { 
             $this->setError('error', $e->getMessage());
         }

@@ -45,7 +45,7 @@ class ShopManager extends Service
             if(!$shop) throw new \Exception("Invalid shop selected.");
 
             // Check that the stock exists and belongs to the shop
-            $shopStock = ShopStock::where('id', $data['stock_id'])->where('shop_id', $data['shop_id'])->with('currency')->with('item')->first();
+            $shopStock = ShopStock::where('id', $data['stock_id'])->where('shop_id', $data['shop_id'])->with('currency')->first();
             if(!$shopStock) throw new \Exception("Invalid item selected.");
 
             // Check if the item has a quantity, and if it does, check there is enough stock remaining
@@ -138,10 +138,18 @@ class ShopManager extends Service
             ]);
             
             // Give the user the item, noting down 1. whose currency was used (user or character) 2. who purchased it 3. which shop it was purchased from
-            if(!(new InventoryManager)->creditItem(null, $user, 'Shop Purchase', [
-                'data' => $shopLog->itemData, 
-                'notes' => 'Purchased ' . format_date($shopLog->created_at)
-            ], $shopStock->item, $quantity)) throw new \Exception("Failed to purchase item.");
+            if($shopStock->stock_type == 'Item') {
+                if(!(new InventoryManager)->creditItem(null, $user, 'Shop Purchase', [
+                    'data' => $shopLog->itemData, 
+                    'notes' => 'Purchased ' . format_date($shopLog->created_at)
+                ], $shopStock->item, $quantity)) throw new \Exception("Failed to purchase item.");
+            }
+            elseif($shopStock->stock_type == 'Pet') {
+                if(!(new PetManager)->creditPet(null, $user, 'Shop Purchase', [
+                    'data' => $shopLog->itemData, 
+                    'notes' => 'Purchased ' . format_date($shopLog->created_at)
+                ], $shopStock->item, $quantity)) throw new \Exception("Failed to purchase item.");
+            }
 
             return $this->commitReturn($shop);
         } catch(\Exception $e) { 
