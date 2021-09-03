@@ -71,6 +71,24 @@
                     <a class="card-title h5">You cannot currently attach / detach this pet! It is under cooldown.</a>
                     @endif
                 </li>
+                @if($user && $splices && $user->id == $stack->user_id)
+                <li class="list-group-item">
+                    <a class="card-title h5 collapse-title"  data-toggle="collapse" href="#userVariantForm">Change Pet Variant</a>
+                    {!! Form::open(['url' => 'pets/variant/'.$stack->id, 'id' => 'userVariantForm', 'class' => 'collapse']) !!}
+                    <p>This will use a splice item!</p>
+                        <div class="form-group">
+                            {!! Form::select('stack_id', $splices, null, ['class'=>'form-control']) !!}
+                        </div>
+                        <div class="form-group">
+                            @php $variants = ['0' => 'Default'] + $stack->pet->variants()->pluck('variant_name', 'id')->toArray() @endphp
+                            {!! Form::select('variant_id', $variants, $stack->variant_id, ['class'=>'form-control']) !!}
+                        </div>
+                        <div class="text-right">
+                            {!! Form::submit('Change Variant', ['class' => 'btn btn-primary']) !!}
+                        </div>
+                    {!! Form::close() !!}
+                </li>
+                @endif
                 @if($user->hasPower('edit_inventories'))
                     <li class="list-group-item">
                         <a class="card-title h5 collapse-title"  data-toggle="collapse" href="#variantForm">[ADMIN] Change Pet Variant</a>

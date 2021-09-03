@@ -11,7 +11,11 @@ use App\Models\User\UserPet;
 use App\Models\Pet\Pet;
 use App\Models\Pet\PetCategory;
 use App\Models\Pet\PetLog;
+use App\Models\Item\ItemTag;
+use App\Models\User\UserItem;
 use App\Services\PetManager;
+use App\Services\InventoryManager;
+
 use App\Models\Character\Character;
 
 use App\Http\Controllers\Controller;
@@ -58,12 +62,15 @@ class PetController extends Controller
 
         $readOnly = $request->get('read_only') ? : ((Auth::check() && $stack && !$stack->deleted_at && ($stack->user_id == Auth::user()->id || Auth::user()->hasPower('edit_inventories'))) ? 0 : 1);
 
+        $tags = ItemTag::where('tag', 'splice')->where('is_active', 1)->pluck('item_id');
+        $splices = UserItem::where('user_id', $stack->user_id)->whereIn('item_id', $tags)->where('count', '>', 0)->with('item')->get()->pluck('item.name', 'id');
         return view('home._pet_stack', [
             'stack' => $stack,
             'chara' => $chara,
             'user' => Auth::user(),
             'userOptions' => ['' => 'Select User'] + User::visible()->where('id', '!=', $stack ? $stack->user_id : 0)->orderBy('name')->get()->pluck('verified_name', 'id')->toArray(),
-            'readOnly' => $readOnly
+            'readOnly' => $readOnly,
+            'splices' => $splices
         ]);
     }
     
@@ -168,7 +175,16 @@ class PetController extends Controller
      */
     public function postVariant(Request $request, PetManager $service, $id) 
     {
-        if($service->editVariant($request->input('variant_id'), UserPet::find($id))) {
+        $pet = UserPet::find($id);
+        if($request->input('stack_id')) {
+            $item = UserItem::find($request->input('stack_id'));
+            $invman = new InventoryManager;
+            if(!$invman->debitStack($pet->user, 'Used to change pet variant', ['data' => 'Used to change '.$pet->pet->name.' variant'], $item, 1)) {
+                flash('Could not debit splice.')->error();   
+                return redirect()->back();
+            } 
+        }
+        if($service->editVariant($request->input('variant_id'), $pet)) {
             flash('Pet variant changed successfully.')->success();
         }
         else {

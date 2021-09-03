@@ -197,9 +197,9 @@ class Pet extends Model
         return 'pets';
     }
 
-    public function VariantImage($id)
+    public function VariantImage($id = null)
     {
-        if($id == 0 || !$id) return $this->imageurl;
+        if(!$id) return $this->imageUrl;
         else return $this->variants()->where('id', $id)->first()->imageUrl;
     }
 }

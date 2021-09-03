@@ -310,46 +310,60 @@ class PetService extends Service
 
         try {
 
+            $temp = [];
             // this is so the user doesn't have to re-upload the variant image every time. It's not perfect but is some-what convenient
             if(isset($data['variant_names'])) {
                 foreach($data['variant_names'] as $key => $type) {
                     if($pet->variants()->where('variant_name', $type)->exists()) {
 
-                        $temp = $pet->variants()->where('variant_name', $type)->first();
+                        $temp[] = $pet->variants()->where('variant_name', $type)->first()->id;
+                        $tempVar = $pet->variants()->where('variant_name', $type)->first();
 
-                        if($temp->has_image && !isset($data['variant_images'][$key])) {
-                            $data['variant_images'][$key] = 1;
+                        if($tempVar->has_image && !isset($data['variant_images'][$key])) {
                             // we do this so it isn't deleted in the next function
-                            $temp->has_image = 0;
-                            $temp->save();
+
+                            $image = null;
+                            if(isset($data['variant_images'][$key]) && $data['variant_images'][$key] && $data['variant_images'][$key] != 1 ) {
+                                $image = $data['variant_images'][$key];
+                                unset($data['variant_images'][$key]);
+                            }
+    
+                            if($image) $this->handleImage($image, $tempVar->imagePath, $tempVar->imagefilename);
                         }
                     }
                 }
             }
-            // Clear the old variants...
-            foreach($pet->variants as $variant)
-            {
-                if($variant->has_image) $this->deleteImage($variant->imagePath, $variant->imageFileName);
+            foreach($pet->variants as $variant) {
+                if(!in_array($variant->id, $temp)) {
+                    $variant->delete();
+                }
             }
-            $pet->variants()->delete();
+            // Clear the old variants...
+            //foreach($pet->variants as $variant)
+            //{
+            //    if($variant->has_image) $this->deleteImage($variant->imagePath, $variant->imageFileName);
+            //}
+            //$pet->variants()->delete();
 
             // make new variants
             if(isset($data['variant_names'])) {
                 foreach($data['variant_names'] as $key => $type)
                 {
-                    $variant = PetVariant::create([
-                        'pet_id'          => $pet->id,
-                        'variant_name' => $type,
-                        'has_image'   => isset($data['variant_images'][$key]) ? 1 : 0,
-                    ]);
+                    if(!$pet->variants()->where('variant_name', $type)->exists()) {
+                        $variant = PetVariant::create([
+                            'pet_id'          => $pet->id,
+                            'variant_name' => $type,
+                            'has_image'   => isset($data['variant_images'][$key]) ? 1 : 0,
+                        ]);
 
-                    $image = null;
-                    if(isset($data['variant_images'][$key]) && $data['variant_images'][$key] && $data['variant_images'][$key] != 1 ) {
-                        $image = $data['variant_images'][$key];
-                        unset($data['variant_images'][$key]);
+                        $image = null;
+                        if(isset($data['variant_images'][$key]) && $data['variant_images'][$key] && $data['variant_images'][$key] != 1 ) {
+                            $image = $data['variant_images'][$key];
+                            unset($data['variant_images'][$key]);
+                        }
+
+                        if($image) $this->handleImage($image, $variant->imagePath, $variant->imagefilename);
                     }
-
-                    if($image) $this->handleImage($image, $variant->imagePath, $variant->imagefilename);
                 }
             }
 
