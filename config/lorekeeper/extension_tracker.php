@@ -13,8 +13,8 @@ return [
     // ],
 
     'event_tools' => [
-        'key' => 'event_tools',
-        'wiki_key' => 'event_tools',
+        'key' => 'Event_Tools',
+        'wiki_key' => 'Event_Tools',
         'creators' => json_encode([
             'Mercury' => 'https://github.com/itinerare/',
         ]),
