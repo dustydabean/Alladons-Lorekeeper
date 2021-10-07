@@ -24,6 +24,12 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        $schedule->command('backup:clean')
+            ->daily()->at('01:00');
+        $schedule->command('backup:run')
+            ->daily()->at('01:10');
+        $schedule->command('backup:monitor')
+            ->daily()->at('01:40');
         $schedule->command('check-news')
                 ->everyMinute();
         $schedule->exec('rm public/images/avatars/*.tmp')
