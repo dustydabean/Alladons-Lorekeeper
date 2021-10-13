@@ -50,7 +50,7 @@ class ShopManager extends Service
             // Check if the user can only buy a limited number of this item, and if it does, check that the user hasn't hit the limit
             if($shopStock->purchase_limit && $this->checkPurchaseLimitReached($shopStock, $user)) throw new \Exception("You have already purchased the maximum amount of this item you can buy.");
 
-            $total_cost = $shopStock->cost * $quantity;
+            $total_cost = $shopStock->displayCost * $quantity;
 
             $character = null;
             if($data['bank'] == 'character')
@@ -72,7 +72,7 @@ class ShopManager extends Service
                 // - currency must be user-held
                 // - user has enough currency
                 if(!$shopStock->use_user_bank || !$shopStock->currency->is_user_owned) throw new \Exception("You cannot use your user bank to pay for this item.");
-                if($shopStock->cost > 0 && !(new CurrencyManager)->debitCurrency($user, null, 'Shop Purchase', 'Purchased '.$shopStock->item->name.' from '.$shop->name, $shopStock->currency, $total_cost)) throw new \Exception("Not enough currency to make this purchase.");
+                if($shopStock->displayCost > 0 && !(new CurrencyManager)->debitCurrency($user, null, 'Shop Purchase', 'Purchased '.$shopStock->item->name.' from '.$shop->name, $shopStock->currency, $total_cost)) throw new \Exception("Not enough currency to make this purchase.");
             }
 
             // If the item has a limited quantity, decrease the quantity
@@ -129,7 +129,7 @@ class ShopManager extends Service
      */
     public function checkUserPurchases($shopStock, $user)
     {
-        return ShopLog::where('shop_id', $shopStock->shop_id)->where('item_id', $shopStock->item_id)->where('user_id', $user->id)->sum('quantity');
+        return ShopLog::where('shop_id', $shopStock->shop_id)->where('cost', $shopStock->cost)->where('item_id', $shopStock->item_id)->where('user_id', $user->id)->sum('quantity');
     }
 
     public function getStockPurchaseLimit($shopStock, $user)

@@ -52,4 +52,18 @@ class ShopStock extends Model
     {
         return $this->belongsTo('App\Models\Currency\Currency');
     }
+    
+    /**********************************************************************************************
+    
+        OTHER FUNCTIONS
+
+    **********************************************************************************************/
+
+    /**
+     * Makes the cost an integer for display
+     */
+    public function getDisplayCostAttribute()
+    {
+        return (int)$this->cost;
+    }
 }
