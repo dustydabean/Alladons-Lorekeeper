@@ -132,7 +132,7 @@ class ShopManager extends Service
                 'character_id' => $character ? $character->id : null, 
                 'user_id' => $user->id, 
                 'currency_id' => $shopStock->currency->id, 
-                'cost' => $total_cost, 
+                'cost' => $shopStock->cost, 
                 'item_id' => $shopStock->item_id, 
                 'quantity' => $quantity
             ]);
