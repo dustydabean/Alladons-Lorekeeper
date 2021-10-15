@@ -149,8 +149,9 @@ class HuntTarget extends Model
      */
     public function getDisplayItemAttribute()
     {
-        $image = ($this->item->imageUrl) ? '<img class="small-icon" src="'.$this->item->imageUrl.'"/>' : null;
-        return $image.' '.$this->item->displayName.' ×'.$this->attributes['quantity'];
+		if (!$this->item) return 'Deleted Asset';
+		$image = ($this->item->imageUrl) ? '<img class="small-icon" src="'.$this->item->imageUrl.'"/>' : null;
+		return $image.' '.$this->item->displayName.' ×'.$this->attributes['quantity'];
     }
 
     /**
@@ -160,6 +161,7 @@ class HuntTarget extends Model
      */
     public function getDisplayItemLongAttribute()
     {
+		if (!$this->item) return 'Deleted Asset';
         $image = ($this->item->imageUrl) ? '<img style="max-height:150px;" src="'.$this->item->imageUrl.'" data-toggle="tooltip" title="'.$this->item->name.'"/>' : null;
         return $image.(isset($image) ? '<br/>' : '').' '.$this->item->displayName.' ×'.$this->attributes['quantity'];
     }
@@ -171,6 +173,7 @@ class HuntTarget extends Model
      */
     public function getDisplayItemShortAttribute()
     {
+		if (!$this->item) return 'Deleted Asset';
         $image = ($this->item->imageUrl) ? '<img style="max-height:150px;" src="'.$this->item->imageUrl.'" data-toggle="tooltip" title="'.$this->item->name.'"/>' : null;
         if(isset($image)) return $image;
         else return $this->item->displayName;
@@ -193,6 +196,7 @@ class HuntTarget extends Model
      */
     public function getDisplayLinkAttribute()
     {
+		if (!$this->item) return 'Deleted Asset';
         $image = ($this->item->imageUrl) ? '<img src="'.$this->item->imageUrl.'" alt="'.$this->item->name.'" />' : $this->item->name;
         return '<a href="'.$this->url.'">'.$image.'</a>';
     }
@@ -204,6 +208,7 @@ class HuntTarget extends Model
      */
     public function getWikiLinkAttribute()
     {
+		if (!$this->item) return 'Deleted Asset';
         $image = ($this->item->imageUrl) ? $this->item->imageUrl : $this->item->name;
         return '['.$this->url.' '.$image.']';
     }
