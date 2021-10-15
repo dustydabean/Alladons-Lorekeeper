@@ -64,7 +64,7 @@
                         @foreach($logArray as $key => $found)
                             @if(isset($found))
                                 @if(isset($hunt->targets[$key - 1]->description))
-                                    <p>The <strong>{!! $hunt->targets[$key - 1]->item->name !!}</strong> had this message for you:</p>
+                                    <p>The <strong>{!! ($hunt->targets[$key - 1]->item) ? $hunt->targets[$key - 1]->item->name : 'Deleted Asset' !!}</strong> had this message for you:</p>
                                     <p>
                                         <i>{!! $hunt->targets[$key - 1]->description !!}</i>
                                     </p>
