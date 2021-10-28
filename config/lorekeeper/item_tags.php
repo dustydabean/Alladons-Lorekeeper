@@ -18,10 +18,16 @@ return [
         'text_color' => '#ffffff',
         'background_color' => '#f6993f'
     ],
-    
+
     'slot' => [
         'name' => 'Slot',
         'text_color' => '#ffffff',
         'background_color' => '#1fd1a7'
+    ],
+
+    'breedingperm' => [
+        'name' => 'Breeding Permission',
+        'text_color' => '#ffffff',
+        'background_color' => '#cbbd8a'
     ],
 ];

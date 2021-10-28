@@ -148,6 +148,11 @@ class CharacterManager extends Service
                 $recipient->settings->save();
             }
 
+            // Grant breeding permission currency to the character if relevant
+            if(Settings::get('breeding_permission_autogrant')) {
+                if(!(new CurrencyManager)->creditCurrency($user, $character, 'Automatic Breeding Permission Grant', 'Character Created', Settings::get('breeding_permission_currency'), Settings::get('breeding_permission_autogrant'))) throw new \Exception('An error occurred while granting breeding permissions.');
+            }
+
             // If the recipient has an account, send them a notification
             if(is_object($recipient) && $user->id != $recipient->id) {
                 Notifications::create($isMyo ? 'MYO_GRANT' : 'CHARACTER_UPLOAD', $recipient, [
