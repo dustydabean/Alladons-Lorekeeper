@@ -12,7 +12,7 @@ return [
     //     'version' => '1.0.0',
     // ],
     
-	'extension_tracker' => [
+	'liveclock' => [
          'key' => 'liveclock',
          'wiki_key' => 'LiveClock',
          'creators' => json_encode([
