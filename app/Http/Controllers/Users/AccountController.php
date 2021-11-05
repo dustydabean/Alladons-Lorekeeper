@@ -8,6 +8,7 @@ use Image;
 
 use App\Models\User\User;
 use App\Models\User\UserAlias;
+use App\Models\Character\BreedingPermission;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -38,7 +39,7 @@ class AccountController extends Controller
     {
         if(Auth::user()->is_banned)
             return view('account.banned');
-        else 
+        else
             return redirect()->to('/');
     }
 
@@ -51,7 +52,7 @@ class AccountController extends Controller
     {
         return view('account.settings');
     }
-    
+
     /**
      * Edits the user's profile.
      *
@@ -84,7 +85,7 @@ class AccountController extends Controller
         }
         return redirect()->back();
     }
-    
+
     /**
      * Changes the user's password.
      *
@@ -106,7 +107,7 @@ class AccountController extends Controller
         }
         return redirect()->back();
     }
-    
+
     /**
      * Changes the user's email address and sends a verification email.
      *
@@ -162,7 +163,7 @@ class AccountController extends Controller
             'notifications' => $notifications
         ]);
     }
-    
+
     /**
      * Deletes a notification and returns a response.
      *
@@ -274,5 +275,24 @@ class AccountController extends Controller
             foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
         }
         return redirect()->back();
+    }
+
+    /**
+     * Shows the user's owned breeding permissions.
+     *
+     * @param  \Illuminate\Http\Request       $request
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getBreedingPermissions(Request $request)
+    {
+        $permissions = BreedingPermission::where('recipient_id', Auth::user()->id);
+        $used = $request->get('used');
+        if(!$used) $used = 0;
+
+        $permissions = $permissions->where('is_used', $used);
+
+        return view('home.breeding_permissions', [
+            'permissions' => $permissions->orderBy('id', 'DESC')->paginate(20)->appends($request->query()),
+        ]);
     }
 }

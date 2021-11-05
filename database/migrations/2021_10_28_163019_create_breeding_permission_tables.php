@@ -26,6 +26,22 @@ class CreateBreedingPermissionTables extends Migration
 
             $table->timestamps();
         });
+
+        Schema::create('breeding_permissions_log', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+            $table->increments('id');
+
+            $table->integer('breeding_permission_id')->unsigned()->index();
+
+            $table->integer('sender_id')->unsigned()->nullable()->default(null);
+            $table->integer('recipient_id')->unsigned()->nullable()->default(null);
+
+            $table->string('log', 255);
+            $table->string('log_type', 191);
+            $table->string('data', 1024)->nullable()->default(null);
+
+            $table->timestamps();
+        });
     }
 
     /**
@@ -36,5 +52,6 @@ class CreateBreedingPermissionTables extends Migration
     public function down()
     {
         Schema::dropIfExists('breeding_permissions');
+        Schema::dropIfExists('breeding_permissions_log');
     }
 }

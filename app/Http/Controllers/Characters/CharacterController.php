@@ -15,6 +15,9 @@ use App\Models\Rarity;
 use App\Models\Feature\Feature;
 use App\Models\Character\CharacterProfile;
 
+use App\Models\Character\BreedingPermission;
+use App\Models\Character\BreedingPermissionLog;
+
 use App\Models\Currency\Currency;
 use App\Models\Currency\CurrencyLog;
 use App\Models\User\UserCurrency;
@@ -225,6 +228,58 @@ class CharacterController extends Controller
     }
 
     /**
+     * Shows a character's breeding permissions.
+     *
+     * @param  \Illuminate\Http\Request       $request
+     * @param  string                         $slug
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCharacterBreedingPermissions(Request $request, $slug)
+    {
+        return view('character.breeding_permissions', [
+            'character' => $this->character,
+            'permissions' => $this->character->breedingPermissions()->orderBy('is_used')->paginate(20)->appends($request->query())
+        ]);
+    }
+
+    /**
+     * Shows the new breeding permission modal.
+     *
+     * @param  string  $slug
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getNewBreedingPermission($slug)
+    {
+        if(!Auth::check() || $this->character->user_id != Auth::user()->id) abort(404);
+
+        return view('character._create_edit_breeding_permission', [
+            'character' => $this->character,
+            'breedingPermission' => new BreedingPermission,
+            'userOptions' => User::orderBy('id')->pluck('name', 'id')
+        ]);
+    }
+
+    /**
+     * Shows the transfer breeding permission modal.
+     *
+     * @param  string  $slug
+     * @param  int     $id
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getTransferBreedingPermission($slug, $id)
+    {
+        $permission = BreedingPermission::where('id', $id)->first();
+        if(!Auth::check() || !$permission || ($permission->recipient_id != Auth::user()->id && !Auth::user()->hasPower('manage_characters')))
+            abort(404);
+
+        return view('character._transfer_breeding_permission', [
+            'character' => $this->character,
+            'breedingPermission' => $permission,
+            'userOptions' => User::orderBy('id')->pluck('name', 'id')
+        ]);
+    }
+
+    /**
      * Transfers currency between the user and character.
      *
      * @param  \Illuminate\Http\Request       $request
@@ -336,6 +391,50 @@ class CharacterController extends Controller
     {
         if($service->deleteStack($this->character, CharacterItem::find($request->get('ids')), $request->get('quantities'))) {
             flash('Item deleted successfully.')->success();
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back();
+    }
+
+    /**
+     * Creates a new breeding permission for a character.
+     *
+     * @param  \Illuminate\Http\Request       $request
+     * @param  App\Services\CharacterManager  $service
+     * @param  string                         $slug
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postNewBreedingPermission(Request $request, CharacterManager $service, $slug)
+    {
+        if(!Auth::check()) abort(404);
+
+        $request->validate(BreedingPermission::$createRules);
+
+        if($service->createBreedingPermission($request->only(['recipient_id', 'type', 'description']), $this->character, Auth::user())) {
+            flash('Breeding permission created successfully.')->success();
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back();
+    }
+
+    /**
+     * Transfers a breeding permission.
+     *
+     * @param  \Illuminate\Http\Request       $request
+     * @param  App\Services\CharacterManager  $service
+     * @param  string                         $slug
+     * @param  int                            $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postTransferBreedingPermission(Request $request, CharacterManager $service, $slug, $id)
+    {
+        if ($service->transferBreedingPermission($this->character, BreedingPermission::where('id', $id)->first(), User::where('id', $request->only(['recipient_id']))->first(), Auth::user())) {
+            flash('Breeding permission transferred successfully.')->success();
+            return redirect()->back();
         }
         else {
             foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();

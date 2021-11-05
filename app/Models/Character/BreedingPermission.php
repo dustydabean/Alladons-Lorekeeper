@@ -36,16 +36,8 @@ class BreedingPermission extends Model
      * @var array
      */
     public static $createRules = [
-        'character_id' => 'required',
-        'description' => 'string|nullable|max:500'
-    ];
-
-    /**
-     * Validation rules for updating.
-     *
-     * @var array
-     */
-    public static $updateRules = [
+        'recipient_id' => 'required',
+        'type' => 'required',
         'description' => 'string|nullable|max:500'
     ];
 
@@ -69,5 +61,22 @@ class BreedingPermission extends Model
     public function recipient()
     {
         return $this->belongsTo('App\Models\User\User', 'recipient_id');
+    }
+
+    /**********************************************************************************************
+
+        OTHER FUNCTIONS
+
+    **********************************************************************************************/
+
+    /**
+     * Get the breeding permission's ownership logs.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getOwnershipLogs()
+    {
+        $query = BreedingPermissionLog::with('sender.rank')->with('recipient.rank')->where('breeding_permission_id', $this->id)->orderBy('id', 'DESC');
+        return $query->get();
     }
 }

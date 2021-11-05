@@ -31,6 +31,8 @@ use App\Models\Species\Subtype;
 use App\Models\Rarity;
 use App\Models\Currency\Currency;
 use App\Models\Feature\Feature;
+use App\Models\Character\BreedingPermission;
+use App\Models\Character\BreedingPermissionLog;
 
 class CharacterManager extends Service
 {
@@ -1082,6 +1084,190 @@ class CharacterManager extends Service
                 $character->save();
                 $count++;
             }
+
+            return $this->commitReturn(true);
+        } catch(\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Creates a breeding permission.
+     *
+     * @param  array                                 $data
+     * @param  \App\Models\Character\Character       $character
+     * @param  \App\Models\User\User                 $user
+     * @return  bool
+     */
+    public function createBreedingPermission($data, $character, $user)
+    {
+        DB::beginTransaction();
+
+        try {
+            // Perform additional checks
+            if($character->user_id != $user->id) throw new \Exception('Only this character\'s owner may create new breeding permissions.');
+            if($user->id == $data['recipient_id']) throw new \Exception('You cannot grant a breeding permission to yourself.');
+            if($character->availableBreedingPermissions < 1) throw new \Exception('This character may not have any more breeding permissions created.');
+
+            // Create the permission itself
+            $permission = BreedingPermission::create([
+                'character_id' => $character->id,
+                'recipient_id' => $data['recipient_id'],
+                'type' => $data['type'],
+                'description' => $data['description']
+            ]);
+
+            if(!$permission) throw new \Exception('Failed to create breeding permission.');
+
+            // Create a log for the permission
+            if(!$this->createBreedingPermissionLog($user->id, $data['recipient_id'], $permission->id, 'Breeding Permission Granted', $data['type'].' Permission Created')) throw new \Exception('Failed to create log.');
+
+            // Create a notification for the recipient
+            Notifications::create('BREEDING_PERMISSION_GRANTED', $permission->recipient, [
+                'character_name' => $character->name,
+                'character_slug' => $character->slug,
+                'sender_url' => $user->url,
+                'sender_name' => $user->name,
+                'type' => strtolower($permission->type)
+            ]);
+
+            return $this->commitReturn(true);
+        } catch(\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Marks a breeding permission as used.
+     *
+     * @param  \App\Models\Character\Character          $character
+     * @param  \App\Models\Character\BreedingPermission $permission
+     * @param  \App\Models\User\User                    $user
+     * @return  bool
+     */
+    public function useBreedingPermission($character, $permission, $user)
+    {
+        DB::beginTransaction();
+
+        try {
+            if(!$permission) throw new \Exception('Invalid breeding permission');
+            if($permission->is_used) throw new \Exception('This permission has already been used.');
+
+            // Update the permission
+            $permission->update(['is_used' => 1]);
+
+            // Create a log
+            if(!$this->createBreedingPermissionLog($user->id, null, $permission->id, 'Breeding Permission Marked Used', null)) throw new \Exception('Failed to create log.');
+
+            // Create notifications for both the character owner and recipient
+            foreach([$character->user, $permission->recipient] as $notificationRecipient) {
+                if($notificationRecipient->id != $user->id) {
+                    Notifications::create('BREEDING_PERMISSION_USED', $notificationRecipient, [
+                        'character_name' => $character->name,
+                        'character_slug' => $character->slug,
+                        'sender_url' => $user->url,
+                        'sender_name' => $user->name,
+                        'type' => strtolower($permission->type),
+                        'permission_id' => $permission->id
+                    ]);
+                }
+            }
+
+            return $this->commitReturn(true);
+        } catch(\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Transfers a breeding permission.
+     *
+     * @param  \App\Models\Character\Character          $character
+     * @param  \App\Models\Character\BreedingPermission $permission
+     * @param  \App\Models\User\User                    $recipient
+     * @param  \App\Models\User\User                    $user
+     * @return  bool
+     */
+    public function transferBreedingPermission($character, $permission, $recipient, $user)
+    {
+        DB::beginTransaction();
+
+        try {
+            if(!$permission) throw new \Exception('Invalid breeding permission');
+            if($permission->is_used) throw new \Exception('This permission has already been used.');
+
+            if(!$recipient) throw new \Exception('Invalid recipient.');
+            if($recipient->id == $permission->recipient_id) throw new \Exception('Cannot transfer breeding permission; the current and selected recipient are the same.');
+
+            // It might be strange to allow transferral of breeding permissions back
+            // to the character's original owner, but it also might come in handy.
+            // The following line would disallow this; it is preserved here, albeit commented out, for convenience.
+            //if($recipient->id == $character->user_id) throw new \Exception('Cannot transfer breeding permission; the selected recipient is the character\'s owner.');
+
+            // Record the pre-existing recipient
+            $oldRecipient = $permission->recipient;
+
+            // Update the permission
+            $permission->update(['recipient_id' => $recipient->id]);
+
+            // Create a log
+            if(!$this->createBreedingPermissionLog($oldRecipient->id, $recipient->id, $permission->id, 'Breeding Permission Transferred', 'Transferred by '.$user->displayName.($user->id != $oldRecipient->id ? ' (Admin Transfer)' : '' ))) throw new \Exception('Failed to create log.');
+
+            // If this is a forced/admin transfer, send the original recipient a notification
+            if($user->id != $oldRecipient->id) {
+                Notifications::create('FORCED_BREEDING_PERMISSION_TRANSFER', $oldRecipient, [
+                    'character_name' => $character->name,
+                    'character_slug' => $character->slug,
+                    'sender_url' => $user->url,
+                    'sender_name' => $user->name,
+                    'type' => strtolower($permission->type)
+                ]);
+            }
+
+            // Create a notification for the recipient
+            if($recipient->id != $user->id) {
+                Notifications::create('BREEDING_PERMISSION_TRANSFER', $recipient, [
+                    'character_name' => $character->name,
+                    'character_slug' => $character->slug,
+                    'sender_url' => $user->url,
+                    'sender_name' => $user->name,
+                    'type' => strtolower($permission->type)
+                ]);
+            }
+
+            return $this->commitReturn(true);
+        } catch(\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Creates a breeding permission log.
+     *
+     * @param  int     $senderId
+     * @param  int     $recipientId
+     * @param  int     $breedingPermissionId
+     * @param  string  $type
+     * @param  string  $data
+     * @return bool
+     */
+    public function createBreedingPermissionLog($senderId, $recipientId, $breedingPermissionId, $type, $data)
+    {
+        DB::beginTransaction();
+
+        try {
+            BreedingPermissionLog::create([
+                'sender_id' => $senderId,
+                'recipient_id' => $recipientId,
+                'breeding_permission_id' => $breedingPermissionId,
+                'log' => $type . ($data ? ' (' . $data . ')' : ''),
+                'log_type' => $type,
+                'data' => $data
+            ]);
 
             return $this->commitReturn(true);
         } catch(\Exception $e) {

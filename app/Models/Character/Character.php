@@ -7,6 +7,7 @@ use DB;
 use Carbon\Carbon;
 use Notifications;
 use App\Models\Model;
+use Settings;
 
 use App\Models\User\User;
 use App\Models\User\UserCharacterLog;
@@ -365,6 +366,28 @@ class Character extends Model
     public function getLogTypeAttribute()
     {
         return 'Character';
+    }
+
+    /**
+     * Gets the character's maximum number of breeding permissions.
+     *
+     * @return int
+     */
+    public function getMaxBreedingPermissionsAttribute()
+    {
+        $currencies = $this->getCurrencies(true)->where('id', Settings::get('breeding_permission_currency'))->first();
+        if(!$currencies) return 0;
+        return $currencies->quantity;
+    }
+
+    /**
+     * Gets the character's number of available breeding permissions.
+     *
+     * @return int
+     */
+    public function getAvailableBreedingPermissionsAttribute()
+    {
+        return $this->maxBreedingPermissions - $this->breedingPermissions->count();
     }
 
     /**********************************************************************************************

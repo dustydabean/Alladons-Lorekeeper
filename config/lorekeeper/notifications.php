@@ -24,7 +24,7 @@ return [
         'message' => 'You have received a staff grant of {item_name} (×{item_quantity}) from <a href="{sender_url}">{sender_name}</a>. (<a href="{url}">View Inventory</a>)',
         'url' => 'inventory'
     ],
-    
+
     // CURRENCY_REMOVAL
     2 => [
         'name' => 'Currency Removal',
@@ -73,21 +73,21 @@ return [
         'message' => '{character_name} has received a staff grant of {currency_quantity} {currency_name} from <a href="{sender_url}">{sender_name}</a>. (<a href="{url}">View Bank</a>)',
         'url' => 'character/{character_slug}/bank'
     ],
-    
+
     // CHARACTER_CURRENCY_REMOVAL
     9 => [
         'name' => 'Character Currency Removal',
         'message' => '{currency_quantity} {currency_name} was removed from {character_name} by <a href="{sender_url}">{sender_name}</a>. (<a href="{url}">View Bank</a>)',
         'url' => 'character/{character_slug}/bank'
     ],
-    
+
     // CHARACTER_PROFILE_EDIT
     10 => [
         'name' => 'Character Profile Edited',
         'message' => '{character_name}\'s profile was edited by <a href="{sender_url}">{sender_name}</a>. (<a href="{url}">View Character</a>)',
         'url' => 'character/{character_slug}/profile'
     ],
-    
+
     // IMAGE_UPLOAD
     11 => [
         'name' => 'Image Upload',
@@ -406,5 +406,33 @@ return [
         'name' => 'Gallery Submission Participant',
         'message' => '<a href="{sender_url}">{sender}</a> has added you as a participant on a gallery submission. (<a href="{url}">View Submission</a>)',
         'url' => 'gallery/view/{submission_id}'
+    ],
+
+    // BREEDING_PERMISSION_GRANTED
+    517 => [
+        'name' => 'Breeding Permission Granted',
+        'message' => '<a href="{sender_url}">{sender_name}</a> has granted you a {type} breeding permission for <a href="character/{character_slug}">{character_name}</a>. (<a href="{url}">View Breeding Permissions</a>)',
+        'url' => 'breeding-permissions'
+    ],
+
+    // BREEDING_PERMISSION_USED
+    518 => [
+        'name' => 'Breeding Permission Used',
+        'message' => '<a href="{sender_url}">{sender_name}</a> has marked a {type} breeding permission (#{permission_id}) for <a href="character/{character_slug}">{character_name}</a> as used. (<a href="{url}/used">View Breeding Permissions</a>)',
+        'url' => 'breeding-permissions'
+    ],
+
+    // BREEDING_PERMISSION_TRANSFER
+    519 => [
+        'name' => 'Breeding Permission Transfer',
+        'message' => '<a href="{sender_url}">{sender_name}</a> has transferred a {type} breeding permission for <a href="character/{character_slug}">{character_name}</a> to you. (<a href="{url}">View Breeding Permissions</a>)',
+        'url' => 'breeding-permissions'
+    ],
+
+    // FORCED_BREEDING_PERMISSION_TRANSFER
+    520 => [
+        'name' => 'Forced Breeding Permission Transfer',
+        'message' => '<a href="{sender_url}">{sender_name}</a> has transferred a {type} breeding permission for <a href="character/{character_slug}">{character_name}</a> from you. (<a href="{url}">View Breeding Permissions</a>)',
+        'url' => 'breeding-permissions'
     ],
 ];
