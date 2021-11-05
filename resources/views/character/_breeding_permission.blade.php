@@ -37,7 +37,7 @@
                 @if($permission->description)
                     <strong>Notes:</strong>
                     <p>
-                        {!! $permission->description !!}
+                        {!! nl2br(htmlentities($permission->description)) !!}
                     </p>
                 @else
                     <p><i>No notes provided.</i></p>
