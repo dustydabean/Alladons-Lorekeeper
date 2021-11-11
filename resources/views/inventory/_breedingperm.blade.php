@@ -7,7 +7,7 @@
             {!! Form::select('breedingperm_character_id', $characterOptions, null, ['class' => 'form-control mr-2 default character-select', 'placeholder' => 'Select Character']) !!}
         </div>
         <div class="text-right">
-            {!! Form::button('Open', ['class' => 'btn btn-primary', 'name' => 'action', 'value' => 'act', 'type' => 'submit']) !!}
+            {!! Form::button('Redeem', ['class' => 'btn btn-primary', 'name' => 'action', 'value' => 'act', 'type' => 'submit']) !!}
         </div>
     </div>
 </li>
