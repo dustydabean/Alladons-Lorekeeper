@@ -207,17 +207,18 @@ class Feature extends Model
         if(isset($this->parent_id) && $this->display_mode != 0) {
             switch($this->display_mode) {
                 case 1:
-                    return $this->name.' ('.$this->species->name.')';
+                    $name = $this->name.' ('.$this->species->name.')';
                     break;
                 case 2:
-                    return $this->parent->name.' ('.$this->name.')';
+                    $name = $this->parent->name.' ('.$this->name.')';
                     break;
                 case 3:
-                    return $this->name.' '.$this->parent->name;
+                    $name = $this->name.' '.$this->parent->name;
                     break;
             }
         }
-        return '<a href="'.$this->url.'" class="display-trait">'.$this->name.'</a>'.($this->rarity? ' (' . $this->rarity->displayName . ')' : '');
+
+        return '<a href="'.$this->url.'" class="display-trait">'.(isset($name) ? $name : $this->name).'</a>'.($this->rarity? ' (' . $this->rarity->displayName . ')' : '');
     }
 
     /**
