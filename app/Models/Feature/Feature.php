@@ -210,9 +210,13 @@ class Feature extends Model
                     $name = $this->name.' ('.$this->species->name.')';
                     break;
                 case 2:
-                    $name = $this->parent->name.' ('.$this->name.')';
+                    if($this->subtype)
+                        $name = $this->name.' ('.$this->subtype->name.')';
                     break;
                 case 3:
+                    $name = $this->parent->name.' ('.$this->name.')';
+                    break;
+                case 4:
                     $name = $this->name.' '.$this->parent->name;
                     break;
             }

@@ -97,7 +97,8 @@
                                 {!! Form::label('Display Mode') !!} {!! add_help("This controls how this alternate type's name will be displayed around the site. 'Name' refers to this type's name, whereas 'Parent Name' refers to the parent trait's name. Other values refer to this type's settings.") !!}
                                 {!! Form::select('alt[display_mode]['.$altType->id.']', [
                                         0 => 'Name', 1 => 'Name (Species)',
-                                        2 => 'Parent Name (Name)', 3 => 'Name Parent Name',
+                                        2 => 'Name (Subtype)', 3 => 'Parent Name (Name)',
+                                        4 => 'Name Parent Name',
                                     ], $altType->display_mode, ['class' => 'form-control']) !!}
                             </div>
                         </div>
@@ -183,7 +184,8 @@
                             {!! Form::label('Display Mode') !!} {!! add_help("This controls how this alternate type's name will be displayed around the site. 'Name' refers to this type's name, whereas 'Parent Name' refers to the parent trait's name. Other values refer to this type's settings.") !!}
                             {!! Form::select('alt[display_mode][]', [
                                 0 => 'Name', 1 => 'Name (Species)',
-                                2 => 'Parent Name (Name)', 3 => 'Name Parent Name',
+                                2 => 'Name (Subtype)', 3 => 'Parent Name (Name)',
+                                4 => 'Name Parent Name',
                             ], 0, ['class' => 'form-control']) !!}
                         </div>
                     </div>
