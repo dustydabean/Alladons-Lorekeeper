@@ -148,7 +148,7 @@ class WorldController extends Controller
      */
     public function getFeatures(Request $request)
     {
-        $query = Feature::with('category')->with('rarity')->with('species');
+        $query = Feature::with('category')->with('rarity')->with('species')->where('display_separate', 1);
         $data = $request->only(['rarity_id', 'feature_category_id', 'species_id', 'name', 'sort']);
         if(isset($data['rarity_id']) && $data['rarity_id'] != 'none')
             $query->where('rarity_id', $data['rarity_id']);
@@ -214,6 +214,7 @@ class WorldController extends Controller
 
         $features = count($categories) ?
             $species->features()
+                ->where('display_separate', 1)
                 ->orderByRaw('FIELD(feature_category_id,'.implode(',', $categories->pluck('id')->toArray()).')')
                 ->orderByRaw('FIELD(rarity_id,'.implode(',', $rarities->pluck('id')->toArray()).')')
                 ->orderBy('has_image', 'DESC')
@@ -221,6 +222,7 @@ class WorldController extends Controller
                 ->get()
                 ->groupBy(['feature_category_id', 'id']) :
             $species->features()
+                ->where('display_separate', 1)
                 ->orderByRaw('FIELD(rarity_id,'.implode(',', $rarities->pluck('id')->toArray()).')')
                 ->orderBy('has_image', 'DESC')
                 ->orderBy('name')

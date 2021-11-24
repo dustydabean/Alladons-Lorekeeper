@@ -17,7 +17,8 @@ class Feature extends Model
      * @var array
      */
     protected $fillable = [
-        'feature_category_id', 'species_id', 'subtype_id', 'rarity_id', 'name', 'has_image', 'description', 'parsed_description'
+        'feature_category_id', 'species_id', 'subtype_id', 'rarity_id', 'name', 'has_image', 'description', 'parsed_description', 'parent_id',
+        'display_mode', 'display_separate'
     ];
 
     /**
@@ -93,6 +94,22 @@ class Feature extends Model
     public function category()
     {
         return $this->belongsTo('App\Models\Feature\FeatureCategory', 'feature_category_id');
+    }
+
+    /**
+     * Get the parent of this feature, if present.
+     */
+    public function parent()
+    {
+        return $this->belongsTo('App\Models\Feature\Feature', 'parent_id');
+    }
+
+    /**
+     * Get alternate types of this feature.
+     */
+    public function altTypes()
+    {
+        return $this->hasMany('App\Models\Feature\Feature', 'parent_id');
     }
 
     /**********************************************************************************************
@@ -187,6 +204,19 @@ class Feature extends Model
      */
     public function getDisplayNameAttribute()
     {
+        if(isset($this->parent_id) && $this->display_mode != 0) {
+            switch($this->display_mode) {
+                case 1:
+                    return $this->name.' ('.$this->species->name.')';
+                    break;
+                case 2:
+                    return $this->parent->name.' ('.$this->name.')';
+                    break;
+                case 3:
+                    return $this->name.' '.$this->parent->name;
+                    break;
+            }
+        }
         return '<a href="'.$this->url.'" class="display-trait">'.$this->name.'</a>'.($this->rarity? ' (' . $this->rarity->displayName . ')' : '');
     }
 

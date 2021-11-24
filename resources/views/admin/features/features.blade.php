@@ -56,7 +56,7 @@
           <div class="col-6 col-md-2">{{ $feature->category ? $feature->category->name : '---' }}</div>
           <div class="col-6 col-md-2">{{ $feature->species ? $feature->species->name : '---' }}</div>
           <div class="col-6 col-md-2">{{ $feature->subtype ? $feature->subtype->name : '---' }}</div>
-          <div class="col-12 col-md-1"><a href="{{ url('admin/data/traits/edit/'.$feature->id) }}" class="btn btn-primary py-0 px-1 w-100">Edit</a></div>
+          <div class="col-12 col-md-1"><a href="{{ url('admin/data/traits/edit/'.($feature->parent_id ? $feature->parent_id : $feature->id)) }}" class="btn btn-primary py-0 px-1 w-100">Edit</a></div>
         </div>
         @endforeach
       </div>
