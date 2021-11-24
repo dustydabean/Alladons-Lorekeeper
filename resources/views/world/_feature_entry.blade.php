@@ -24,7 +24,17 @@
             <div class="collapse show" id="alt-{{ $feature->id }}">
                 <ul>
                     @foreach($feature->altTypes as $altType)
-                        <li>{!! $altType->displayName !!}</li>
+                        <li>
+                            {!! $altType->displayName !!}
+                            @if(!$altType->display_separately)
+                                @if($altType->species_id)
+                                    <div><strong>Species:</strong> {!! $altType->species->displayName !!} @if($altType->subtype_id) ({!! $altType->subtype->displayName !!} subtype) @endif</div>
+                                @endif
+                                <div class="world-entry-text parsed-text">
+                                    {!! $altType->parsed_description !!}
+                                </div>
+                            @endif
+                        </li>
                     @endforeach
                 </ul>
             </div>
