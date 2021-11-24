@@ -269,7 +269,6 @@ class FeatureService extends Service
                 // as a feature with the same rarity or species
                 ($parent && Feature::where('name', $data['name'])
                 ->where('id', '!=', $feature->id)
-                ->where('id', '!=', $parent->id)
                 ->whereNotIn('id', $parent->altTypes()->pluck('id')->toArray())
                 ->where(function($query) use ($data) {
                     return $query->where('rarity_id', $data['rarity_id'])
