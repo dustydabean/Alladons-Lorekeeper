@@ -226,6 +226,47 @@ class Feature extends Model
     }
 
     /**
+     * Displays the model's name, clarified.
+     *
+     * @return string
+     */
+    public function getSelectionNameAttribute()
+    {
+        if(isset($this->parent_id) && $this->display_mode != 0) {
+            switch($this->display_mode) {
+                case 1:
+                    $name = $this->name.' ('.$this->species->name.')';
+                    break;
+                case 2:
+                    if($this->subtype)
+                        $name = $this->name.' ('.$this->subtype->name.')';
+                    break;
+                case 3:
+                    $name = $this->parent->name.' ('.$this->name.')';
+                    break;
+                case 4:
+                    $name = $this->name.' '.$this->parent->name;
+                    break;
+            }
+        }
+        if(!isset($name)) $name = $this->name;
+
+        if($this->parent_id && $name == $this->parent->name) {
+            $diffArray = [];
+            if($this->rarity_id && $this->parent->rarity_id && $this->rarity_id != $this->parent->rarity_id)
+                $diffArray[] = $this->rarity->name;
+            if($this->species_id && $this->parent->species_id && $this->species_id != $this->parent->species_id)
+                $diffArray[] = $this->species->name;
+            if($this->subtype_id && $this->parent->subtype_id && $this->subtype_id != $this->parent->subtype_id)
+                $diffArray[] = $this->subtype->name;
+
+            $name = $this->name.' ('.implode('/', $diffArray).')';
+        }
+
+        return $name;
+    }
+
+    /**
      * Gets the file directory containing the model's image.
      *
      * @return string
