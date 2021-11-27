@@ -25,7 +25,7 @@
                 <ul>
                     @foreach($feature->altTypes as $altType)
                         <li>
-                            {!! $altType->displayName !!}
+                            {!! $altType->displayName !!} <a href="{{ $altType->searchUrl }}" class="world-entry-search text-muted"><i class="fas fa-search"></i></a>
                             @if(!$altType->display_separately)
                                 @if($altType->species_id)
                                     <div><strong>Species:</strong> {!! $altType->species->displayName !!} @if($altType->subtype_id) ({!! $altType->subtype->displayName !!} subtype) @endif</div>
