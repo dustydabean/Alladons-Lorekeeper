@@ -204,7 +204,7 @@ class Feature extends Model
      */
     public function getDisplayNameAttribute()
     {
-        if(isset($this->parent_id) && $this->display_mode != 0) {
+        if($this->display_mode != 0) {
             switch($this->display_mode) {
                 case 1:
                     $name = $this->name.' ('.($this->species ? $this->species->name : 'None').')';
@@ -213,10 +213,12 @@ class Feature extends Model
                         $name = $this->name.' ('.$this->subtype->name.')';
                     break;
                 case 3:
-                    $name = $this->parent->name.' ('.$this->name.')';
+                    if($this->parent)
+                        $name = $this->parent->name.' ('.$this->name.')';
                     break;
                 case 4:
-                    $name = $this->name.' '.$this->parent->name;
+                    if($this->parent)
+                        $name = $this->name.' '.$this->parent->name;
                     break;
             }
         }
@@ -231,7 +233,7 @@ class Feature extends Model
      */
     public function getSelectionNameAttribute()
     {
-        if(isset($this->parent_id) && $this->display_mode != 0) {
+        if($this->display_mode != 0) {
             switch($this->display_mode) {
                 case 1:
                     $name = $this->name.' ('.($this->species ? $this->species->name : 'None').')';
@@ -241,10 +243,12 @@ class Feature extends Model
                         $name = $this->name.' ('.$this->subtype->name.')';
                     break;
                 case 3:
-                    $name = $this->parent->name.' ('.$this->name.')';
+                    if($this->parent)
+                        $name = $this->parent->name.' ('.$this->name.')';
                     break;
                 case 4:
-                    $name = $this->name.' '.$this->parent->name;
+                    if($this->parent)
+                        $name = $this->name.' '.$this->parent->name;
                     break;
             }
         }

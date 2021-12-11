@@ -30,6 +30,16 @@
     </div>
 </div>
 
+@if($feature->altTypes->count())
+    <div class="form-group">
+        {!! Form::label('Display Mode') !!} {!! add_help("This controls how this trait's name will be displayed around the site. 'Name' refers to this type's name. Other values refer to this trait's settings.") !!}
+        {!! Form::select('display_mode', [
+            0 => 'Name', 1 => 'Name (Species)',
+            2 => 'Name (Subtype)'
+        ], $feature->display_mode, ['class' => 'form-control']) !!}
+    </div>
+@endif
+
 <div class="form-group">
     {!! Form::label('World Page Image (Optional)') !!} {!! add_help('This image is used only on the world information pages.') !!}
     <div>{!! Form::file('image') !!}</div>
