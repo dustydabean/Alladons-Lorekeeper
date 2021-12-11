@@ -207,8 +207,7 @@ class Feature extends Model
         if(isset($this->parent_id) && $this->display_mode != 0) {
             switch($this->display_mode) {
                 case 1:
-                    $name = $this->name.' ('.$this->species->name.')';
-                    break;
+                    $name = $this->name.' ('.($this->species ? $this->species->name : 'None').')';
                 case 2:
                     if($this->subtype)
                         $name = $this->name.' ('.$this->subtype->name.')';
