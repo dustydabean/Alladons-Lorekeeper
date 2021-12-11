@@ -204,7 +204,7 @@ class Feature extends Model
      */
     public function getDisplayNameAttribute()
     {
-        if($this->display_mode != 0) {
+        if(($this->parent_id || $this->altTypes->count()) && $this->display_mode != 0) {
             switch($this->display_mode) {
                 case 1:
                     $name = $this->name.' ('.($this->species ? $this->species->name : 'None').')';
@@ -233,7 +233,7 @@ class Feature extends Model
      */
     public function getSelectionNameAttribute()
     {
-        if($this->display_mode != 0) {
+        if(($this->parent_id || $this->altTypes->count()) && $this->display_mode != 0) {
             switch($this->display_mode) {
                 case 1:
                     $name = $this->name.' ('.($this->species ? $this->species->name : 'None').')';
