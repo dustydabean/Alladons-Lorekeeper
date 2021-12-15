@@ -122,6 +122,7 @@ class ShopService extends Service
                 'quantity'              => isset($data['is_limited_stock']) ? $data['quantity'] : 0,
                 'purchase_limit'        => $data['purchase_limit'],
                 'stock_type'            => $data['stock_type'],
+                'is_visible'            => isset($data['is_visible']) ? $data['is_visible'] : 0,
             ]);
 
             return $this->commitReturn($shop);
@@ -157,6 +158,7 @@ class ShopService extends Service
                 'quantity'              => isset($data['is_limited_stock']) ? $data['quantity'] : 0,
                 'purchase_limit'        => $data['purchase_limit'],
                 'stock_type'            => $data['stock_type'],
+                'is_visible'            => isset($data['is_visible']) ? $data['is_visible'] : 0,
             ]);
 
             return $this->commitReturn($stock);
