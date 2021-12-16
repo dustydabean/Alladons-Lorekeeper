@@ -10,6 +10,7 @@ use Route;
 use Settings;
 use App\Models\User\User;
 use App\Models\Character\Character;
+use App\Models\Character\CharacterFolder;
 use App\Models\Currency\Currency;
 use App\Models\Currency\CurrencyLog;
 use App\Models\User\UserCurrency;
@@ -18,6 +19,7 @@ use App\Models\Character\CharacterTransfer;
 
 use App\Services\CurrencyManager;
 use App\Services\CharacterManager;
+use App\Services\FolderManager;
 
 use App\Http\Controllers\Controller;
 
@@ -43,6 +45,7 @@ class CharacterController extends Controller
 
         return view('home.characters', [
             'characters' => $characters,
+            'folders' => ['None' => 'None'] + Auth::user()->folders()->pluck('name', 'id')->toArray(),
         ]);
     }
 
@@ -69,13 +72,75 @@ class CharacterController extends Controller
      */
     public function postSortCharacters(Request $request, CharacterManager $service)
     {
-        if ($service->sortCharacters($request->only(['sort']), Auth::user())) {
+        if ($service->sortCharacters($request->only(['sort', 'folder_ids']), Auth::user())) {
             flash('Characters sorted successfully.')->success();
             return redirect()->back();
         }
         else {
             foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
         }
+        return redirect()->back();
+    }
+
+    /**
+     * Gets the create folder modal
+     */
+    public function getCreateFolder()
+    {
+        return view('home._create_edit_folder', [
+            'folder' => new CharacterFolder,
+        ]);
+    }
+
+    /**
+     * Gets the edit folder modal
+     */
+    public function getEditFolder($id)
+    {
+        $folder = CharacterFolder::find($id);
+        if(!$folder) abort(404);
+
+        return view('home._create_edit_folder', [
+            'folder' => $folder,
+        ]);
+    }
+
+    /**
+     * Posts create / edit folder
+     */
+    public function postCreateEditFolder(Request $request, FolderManager $service, $id = null)
+    {
+        if($id) {
+            $folder = CharacterFolder::find($id);
+            if(!$folder) abort(404);
+            if(!$service->editFolder($request->only(['name', 'description']), Auth::user(), $folder)) {
+                foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+            }
+            else flash('Folder edited successfully.')->success();
+            return redirect()->back();
+
+        }
+        else {
+            if(!$service->createFolder($request->only(['name', 'description']), Auth::user())) {
+                foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+            }
+            else flash('Folder created successfully.')->success();
+            return redirect()->back();
+        }
+    }
+
+    /**
+     * Deletes a folder
+     */
+    public function postDeleteFolder(FolderManager $service, $id)
+    {
+        $folder = CharacterFolder::find($id);
+        if(!$folder) abort(404);
+
+        if(!$service->deleteFolder($folder)) {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        else flash('Folder deleted successfully.')->success();
         return redirect()->back();
     }
 
