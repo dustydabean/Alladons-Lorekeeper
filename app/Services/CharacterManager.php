@@ -1676,7 +1676,7 @@ class CharacterManager extends Service
      */
     public function moveCharacter($character, $recipient, $data, $cooldown = -1, $logType = null)
     {   
-        if($charater->folder_id) {
+        if($character->folder_id) {
             $character->folder_id = null;
             $character->save();
         } 
