@@ -147,6 +147,7 @@ class ForageService extends Service
         DB::beginTransaction();
 
         try {
+            $timeReset = '00:00:00';
             $userForage = UserForaging::where('user_id', $user->id )->first();
 
                 if(!$userForage) {
@@ -156,11 +157,13 @@ class ForageService extends Service
                 }
 
             if($userForage->reset_at >= Carbon::now()) throw new \Exception('You have already foraged today! Come back tomorrow.');
-
+            
             $userForage->last_forage_id = $id;
             $userForage->last_foraged_at = carbon::now();
             $userForage->distribute_at = carbon::now()->addMinutes(60);
-            $userForage->reset_at = carbon::now()->addDays(1);
+            $date = Carbon::now()->addDays(1)->format('d-m-Y');
+            $date = Carbon::parse($date . $timeReset);
+            $userForage->reset_at = $date;
             $userForage->save();
 
             return $this->commitReturn(true);
