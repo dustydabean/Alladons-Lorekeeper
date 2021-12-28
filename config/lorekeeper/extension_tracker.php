@@ -1,6 +1,6 @@
 <?php
 return [
-    
+
     // FORMAT EXAMPLE.
     //
     // 'extension_tracker' => [
@@ -18,8 +18,8 @@ return [
         'creators' => json_encode([
             'Newt' => 'https://github.com/ne-wt/',
         ]),
-        'version' => '1.0.2',
+        'version' => '1.0.3',
     ],
-    
+
 
 ];
