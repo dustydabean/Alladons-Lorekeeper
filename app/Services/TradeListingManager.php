@@ -204,7 +204,7 @@ class TradeListingManager extends Service
                     if(!$stack || $stack->user_id != $user->id) throw new \Exception("Invalid item selected.");
                     if(!$stack->item->allow_transfer || isset($stack->data['disallow_transfer'])) throw new \Exception("One or more of the selected items cannot be transferred.");
 
-                    addAsset($userAssets, $stack, $data['stack_quantity'][$key]);
+                    addAsset($userAssets, $stack, $data['stack_quantity'][$stackId]);
                     $assetCount++;
                 }
             }
