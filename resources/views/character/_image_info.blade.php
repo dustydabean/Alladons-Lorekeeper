@@ -97,7 +97,7 @@
                 @if(Auth::check() && Auth::user()->hasPower('manage_characters'))
                     <div class="mt-3">
                         <a href="#" class="btn btn-outline-info btn-sm edit-features" data-id="{{ $image->id }}"><i class="fas fa-cog"></i> Edit</a>
-                        @if(Auth::user()->hasPower('view_genomes')) <a href="#" class="btn btn-outline-info btn-sm add-genome mx-1"><i class="fas fa-plus mr-1"></i><i class="fas fa-dna"></i></a> @endif
+                        @if(Auth::user()->hasPower('view_hidden_genetics')) <a href="#" class="btn btn-outline-info btn-sm add-genome mx-1"><i class="fas fa-plus mr-1"></i><i class="fas fa-dna"></i></a> @endif
                     </div>
                 @endif
             </div>
