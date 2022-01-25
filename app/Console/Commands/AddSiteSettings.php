@@ -103,33 +103,10 @@ class AddSiteSettings extends Command
 
         $this->addSiteSetting('group_currency', 1, 'ID of the group currency to award from gallery submissions (if enabled).');
 
-        if(!DB::table('site_settings')->where('key', 'coupon_settings')->exists()) {
-            DB::table('site_settings')->insert([
-                [
-                    'key' => 'coupon_settings',
-                    'value' => 0,
-                    'description' => '0: Percentage is taken from total (e.g 20% from 2 items costing a total of 100 = 80), 1: Percentage is taken from item (e.g 20% from 2 items costing a total of 100 = 90)'
-                ]
+        $this->addSiteSetting('shop_type', 0, '0: Default, 1: Collapsible.');
 
-            ]);
-            $this->info("Added:   coupon_settings / Default: 0");
-        }
-        else $this->line("Skipped: limited_stock_coupon_settings");
-
-        if(!DB::table('site_settings')->where('key', 'limited_stock_coupon_settings')->exists()) {
-            DB::table('site_settings')->insert([
-                [
-                    'key' => 'limited_stock_coupon_settings',
-                    'value' => 0,
-                    'description' => '0: Does not allow coupons to be used on limited stock items, 1: Allows coupons to be used on limited stock items'
-                ]
-
-            ]);
-            $this->info("Added:   limited_stock_coupon_settings / Default: 0");
-        }
-        else $this->line("Skipped: limited_stock_coupon_settings");
-
-        $this->line("\nSite settings up to date!");
-
+        $this->addSiteSetting('coupon_settings', 0, '0: Percentage is taken from total (e.g 20% from 2 items costing a total of 100 = 80), 1: Percentage is taken from item (e.g 20% from 2 items costing a total of 100 = 90)');
+        
+        $this->addSiteSetting('limited_stock_coupon_settings', 0, '0: Does not allow coupons to be used on limited stock items, 1: Allows coupons to be used on limited stock items');
     }
 }

@@ -15,6 +15,9 @@
 </div>
 
 @if(count($items))<h3>Items</h3>@endif
+@if(Settings::get('shop_type'))
+    @include('shops._tab', ['items' => $items, 'shop' => $shop])
+@else
 @foreach($items as $categoryId=>$categoryItems)
     <div class="card mb-3 inventory-category">
         <h5 class="card-header inventory-header">
@@ -41,7 +44,7 @@
         </div>
     </div>
 @endforeach
-
+@endif
 @endsection
 
 @section('scripts')
