@@ -13,7 +13,8 @@ class ShopStock extends Model
      * @var array
      */
     protected $fillable = [
-        'shop_id', 'item_id', 'currency_id', 'cost', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'sort', 'purchase_limit', 'is_fto', 'stock_type', 'is_visible'
+        'shop_id', 'item_id', 'currency_id', 'cost', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'sort', 'purchase_limit', 'is_fto', 'stock_type', 'is_visible',
+        'restock', 'restock_quantity', 'restock_interval', 'range'
     ];
 
     /**

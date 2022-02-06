@@ -109,6 +109,8 @@ class ShopService extends Service
         DB::beginTransaction();
 
         try {
+            if(!$data['stock_type']) throw new \Exception("Please select a stock type.");
+            if(!$data['item_id']) throw new \Exception("You must select an item.");
 
             $shop->stock()->create([
                 'shop_id'               => $shop->id,
@@ -123,6 +125,10 @@ class ShopService extends Service
                 'purchase_limit'        => $data['purchase_limit'],
                 'stock_type'            => $data['stock_type'],
                 'is_visible'            => isset($data['is_visible']) ? $data['is_visible'] : 0,
+                'restock'               => isset($data['restock']) ? $data['restock'] : 0,
+                'restock_quantity'      => isset($data['restock']) && isset($data['quantity']) ? $data['quantity'] : 1,
+                'restock_interval'      => isset($data['restock_interval']) ? $data['restock_interval'] : 2,
+                'range'                 => isset($data['range']) ? $data['range'] : 0,
             ]);
 
             return $this->commitReturn($shop);
@@ -145,6 +151,8 @@ class ShopService extends Service
         DB::beginTransaction();
 
         try {
+            if(!$data['stock_type']) throw new \Exception("Please select a stock type.");
+            if(!$data['item_id']) throw new \Exception("You must select an item.");
 
             $stock->update([
                 'shop_id'               => $stock->shop->id,
@@ -159,6 +167,10 @@ class ShopService extends Service
                 'purchase_limit'        => $data['purchase_limit'],
                 'stock_type'            => $data['stock_type'],
                 'is_visible'            => isset($data['is_visible']) ? $data['is_visible'] : 0,
+                'restock'               => isset($data['restock']) ? $data['restock'] : 0,
+                'restock_quantity'      => isset($data['restock']) && isset($data['quantity']) ? $data['quantity'] : 1,
+                'restock_interval'      => isset($data['restock_interval']) ? $data['restock_interval'] : 2,
+                'range'                 => isset($data['range']) ? $data['range'] : 0,
             ]);
 
             return $this->commitReturn($stock);

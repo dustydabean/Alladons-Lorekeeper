@@ -30,7 +30,8 @@ class Kernel extends ConsoleKernel
                 ->daily();
         $schedule->command('check-sales')
                 ->everyMinute();
-
+        $schedule->command('restock-shops')
+                ->everyDay();
     }
 
     /**

@@ -118,6 +118,7 @@
                     @if(!$stock->is_visible)<div class="col-2"> <i class="fas fa-eye-slash"></i></div>@endif
                 </div>
                 @if($stock->is_limited_stock) <div>Stock: {{ $stock->quantity }}</div> @endif
+                @if($stock->is_limited_stock) <div>Restock: {!! $stock->restock ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-danger"></i>' !!}</div> @endif
                 @if($stock->purchase_limit) <div class="text-danger">Max {{ $stock->purchase_limit }} per user</div> @endif
                 <div class="text-right">
                     <button class="btn btn-primary" onclick="editStock({{$stock->id}})">

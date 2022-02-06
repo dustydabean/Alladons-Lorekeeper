@@ -65,11 +65,23 @@
         </div>
     </div>
     
-    <div class="card mb-3 stock-limited-quantity hide">
+    <div class="card mb-3 stock-limited-quantity {{ $stock->is_limited_stock ? '' : 'hide' }}">
         <div class="card-body">
             <div>
                 {!! Form::label('quantity', 'Quantity') !!} {!! add_help('If left blank, will be set to 0 (sold out).') !!}
                 {!! Form::text('quantity', $stock->quantity ?? 0, ['class' => 'form-control stock-field']) !!}
+            </div>
+            <div class="my-2">
+                {!! Form::checkbox('restock', 1, $stock->restock ?? 0, ['class' => 'form-check-input']) !!}
+                {!! Form::label('restock', 'Auto Restock?',  ['class' => 'form-check-label ml-3']) !!} {!! add_help('If ticked to yes it will auto restock at the interval defined below.') !!}
+            </div>
+            <div>
+                {!! Form::label('restock_interval', 'Restock Interval') !!}
+                {!! Form::select('restock_interval', [1 => 'Day', 2 => 'Week', 3 => 'Month'], $stock->restock_interval ?? 2, ['class' => 'form-control stock-field']) !!}
+            </div>
+            <div class="my-2">
+                {!! Form::checkbox('range', 1, $stock->range ?? 0, ['class' => 'form-check-input']) !!}
+                {!! Form::label('range', 'Restock in Range?',  ['class' => 'form-check-label ml-3']) !!} {!! add_help('If ticked to yes it will restock a random quantity between 1 and the quantity set above.') !!}
             </div>
         </div>
     </div>
