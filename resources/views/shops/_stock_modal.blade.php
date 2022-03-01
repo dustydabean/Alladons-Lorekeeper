@@ -7,6 +7,7 @@
         <div><strong>Cost: </strong> {!! $stock->currency->display($stock->displayCost) !!}</div>
         @if($stock->is_limited_stock) <div>Stock: {{ $stock->quantity }}</div> @endif
         @if($stock->purchase_limit) <div class="text-danger">Max {{ $stock->purchase_limit }} per user</div> @endif
+        @if($stock->disallow_transfer) <div class="text-danger">Cannot be transferred after purchase</div> @endif
     </div>
 
     @if($stock->item->parsed_description)

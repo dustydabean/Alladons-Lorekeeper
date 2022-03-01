@@ -141,7 +141,8 @@ class ShopManager extends Service
             if($shopStock->stock_type == 'Item') {
                 if(!(new InventoryManager)->creditItem(null, $user, 'Shop Purchase', [
                     'data' => $shopLog->itemData, 
-                    'notes' => 'Purchased ' . format_date($shopLog->created_at)
+                    'notes' => 'Purchased ' . format_date($shopLog->created_at),
+                    'disallow_transfer' => $shopStock->disallow_transfer ? 1 : null,
                 ], $shopStock->item, $quantity)) throw new \Exception("Failed to purchase item.");
             }
 

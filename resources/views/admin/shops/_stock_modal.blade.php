@@ -60,6 +60,11 @@
         </div>
 
         <div class="form-group">
+            {!! Form::checkbox('disallow_transfer', 1, $stock->disallow_transfer ?? 0, ['class' => 'form-check-input stock-toggle stock-field', 'data-name' => 'disallow_transfer']) !!}
+            {!! Form::label('disallow_transfer', 'Disallow Transfer', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If turned on, users will be unable to transfer this item after purchase.') !!}
+        </div>
+
+        <div class="form-group">
             {!! Form::checkbox('is_visible', 1, $stock->is_visible ?? 1, ['class' => 'form-check-input stock-limited stock-toggle stock-field']) !!}
             {!! Form::label('is_visible', 'Set Visibility', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If turned off it will not appear in the store.') !!}
         </div>
@@ -91,7 +96,7 @@
     </div>
 
 <div class="text-right mt-1">
-    {!! Form::submit('Add', ['class' => 'btn btn-primary']) !!}
+    {!! Form::submit($stock->id ? 'Edit' : 'Create', ['class' => 'btn btn-primary']) !!}
 </div>
 {!! Form::close() !!}
 </div>

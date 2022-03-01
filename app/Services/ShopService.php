@@ -171,6 +171,7 @@ class ShopService extends Service
                 'restock_quantity'      => isset($data['restock']) && isset($data['quantity']) ? $data['quantity'] : 1,
                 'restock_interval'      => isset($data['restock_interval']) ? $data['restock_interval'] : 2,
                 'range'                 => isset($data['range']) ? $data['range'] : 0,
+                'disallow_transfer'     => isset($data['disallow_transfer']) ? $data['disallow_transfer'] : 0
             ]);
 
             return $this->commitReturn($stock);
