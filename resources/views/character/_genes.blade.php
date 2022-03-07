@@ -1,7 +1,7 @@
 <div>
 @php
     $button = "";
-    if (Auth::user() && Auth::user()->hasPower('manage-characters') && Auth::user()->hasPower('view-genomes')) {
+    if (Auth::user() && Auth::user()->hasPower('manage_characters') && Auth::user()->hasPower('view_hidden_genetics')) {
         $button .= "<a href=\"#\" class=\"btn btn-link btn-sm ";
         if($genome)
             $button .= "edit-genome\" data-genome-id=\"". $genome->id ."\"><i class=\"fas fa-cog\"";
@@ -18,7 +18,7 @@
 @else
     @php
         $visible = 0;
-        if(Auth::user() && Auth::user()->hasPower('view-genomes')) $visible = 2;
+        if(Auth::user() && Auth::user()->hasPower('view_hidden_genetics')) $visible = 2;
         else if ($genome->visibility_level) $visible = $genome->visibility_level;
         else $visible = Settings::get('genome_default_visibility');
     @endphp
@@ -28,7 +28,7 @@
         @php
             $bool = $visible == 1;
             foreach ($genome->getLoci() as $loci) {
-                $divOpen = '<div class="d-inline text-nowrap text-monospace mr-2" data-toggle="tooltip" title="'. $loci->name .'"">';
+                $divOpen = '<div class="d-inline text-monospace mr-2" data-toggle="tooltip"  style="word-wrap: break-word;" title="'. $loci->name .'"">'; 
                 echo($divOpen);
                 if ($loci->type == "gene") {
                     if($bool)
@@ -51,7 +51,7 @@
                 }
                 echo('</div>');
             }
-            if(Auth::user() && $genome->visibility_level != 2 && Auth::user()->hasPower('view-genomes'))
+            if(Auth::user() && $genome->visibility_level != 2 && Auth::user()->hasPower('view_hidden_genetics'))
                 echo add_help("This character's genome is either fully or partially hidden. You can only view its details because of your rank.");
             echo isset($buttons) ? "" : $button;
         @endphp
