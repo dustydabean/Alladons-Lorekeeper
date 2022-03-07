@@ -28,7 +28,7 @@
         @php
             $bool = $visible == 1;
             foreach ($genome->getLoci() as $loci) {
-                $divOpen = '<div class="d-inline text-monospace mr-2" data-toggle="tooltip"  style="word-wrap: break-word;" title="'. $loci->name .'"">'; 
+                $divOpen = '<div class="float-left py-1 text-monospace mr-2" data-toggle="tooltip" style="word-wrap: break-word;" title="'. $loci->name .'"">';
                 echo($divOpen);
                 if ($loci->type == "gene") {
                     if($bool)
@@ -51,9 +51,11 @@
                 }
                 echo('</div>');
             }
+            echo("<div class='float-left'>");
             if(Auth::user() && $genome->visibility_level != 2 && Auth::user()->hasPower('view_hidden_genetics'))
                 echo add_help("This character's genome is either fully or partially hidden. You can only view its details because of your rank.");
             echo isset($buttons) ? "" : $button;
+            echo("</div><div class='clearfix'></div>")
         @endphp
     @endif
 @endif
