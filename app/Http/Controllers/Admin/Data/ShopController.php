@@ -44,9 +44,14 @@ class ShopController extends Controller
      */
     public function getCreateShop()
     {
+        // get all items where they have a tag 'coupon'
+        $coupons = Item::whereHas('tags', function($query) {
+            $query->where('tag', 'coupon')->where('is_active', 1);
+        })->orderBy('name')->pluck('name', 'id');
         return view('admin.shops.create_edit_shop', [
             'shop' => new Shop,
             'items' => Item::orderBy('name')->pluck('name', 'id'),
+            'coupons' => $coupons,
         ]);
     }
     
@@ -60,10 +65,16 @@ class ShopController extends Controller
     {
         $shop = Shop::find($id);
         if(!$shop) abort(404);
+
+        // get all items where they have a tag 'coupon'
+        $coupons = Item::released()->whereHas('tags', function($query) {
+            $query->where('tag', 'coupon');
+        })->orderBy('name')->pluck('name', 'id');
         return view('admin.shops.create_edit_shop', [
             'shop' => $shop,
             'items' => Item::orderBy('name')->pluck('name', 'id'),
             'currencies' => Currency::orderBy('name')->pluck('name', 'id'),
+            'coupons' => $coupons,
         ]);
     }
 
@@ -79,7 +90,7 @@ class ShopController extends Controller
     {
         $id ? $request->validate(Shop::$updateRules) : $request->validate(Shop::$createRules);
         $data = $request->only([
-            'name', 'description', 'image', 'remove_image', 'is_active', 'is_staff', 'use_coupons', 'is_fto'
+            'name', 'description', 'image', 'remove_image', 'is_active', 'is_staff', 'use_coupons', 'is_fto', 'allowed_coupons'
         ]);
         if($id && $service->updateShop(Shop::find($id), $data, Auth::user())) {
             flash('Shop updated successfully.')->success();

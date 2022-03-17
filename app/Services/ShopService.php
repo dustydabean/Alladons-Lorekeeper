@@ -209,6 +209,7 @@ class ShopService extends Service
         $data['is_active'] = isset($data['is_active']);
         $data['is_staff'] = isset($data['is_staff']);
         $data['use_coupons'] = isset($data['use_coupons']);
+        $data['allowed_coupons'] = isset($data['allowed_coupons']) ? $data['allowed_coupons'] : null;
         
         if(isset($data['remove_image']))
         {
