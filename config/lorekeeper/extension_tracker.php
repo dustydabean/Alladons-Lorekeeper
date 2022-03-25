@@ -12,7 +12,7 @@ return [
     //     'version' => '1.0.0',
     // ],
 
-    'extension_tracker' => [
+    'shop_features' => [
         'key' => 'shop_features',
         'wiki_key' => 'Shop_Features',
         'creators' => json_encode([
