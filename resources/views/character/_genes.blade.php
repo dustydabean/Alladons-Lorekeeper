@@ -19,7 +19,7 @@
     @php
         $visible = 0;
         if(Auth::user() && Auth::user()->hasPower('view_hidden_genetics')) $visible = 2;
-        else if ($genome->visibility_level) $visible = $genome->visibility_level;
+        else if (isset($genome->visibility_level)) $visible = $genome->visibility_level;
         else $visible = Settings::get('genome_default_visibility');
     @endphp
     @if($visible < 1)
