@@ -146,9 +146,6 @@ class ForageService extends Service
         DB::beginTransaction();
 
         try {
-            // Check first if the table is currently in use
-            // - Prompts
-            // - Box rewards (unfortunately this can't be checked easily)
 
             $table->loot()->delete();
             $table->delete();
