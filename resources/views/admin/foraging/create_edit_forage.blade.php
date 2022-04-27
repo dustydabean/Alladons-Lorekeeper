@@ -11,23 +11,43 @@
     @endif
 </h1>
 
-{!! Form::open(['url' => $table->id ? 'admin/data/forages/edit/'.$table->id : 'admin/data/forages/create']) !!}
+{!! Form::open(['url' => $table->id ? 'admin/data/forages/edit/'.$table->id : 'admin/data/forages/create', 'files' => true]) !!}
 
 <h3>Basic Information</h3>
-
-<div class="form-group">
-    {!! Form::label('Name') !!} {!! add_help('This is the name you will use to identify this table internally. This name will not be shown to users and does not have to be unique, but a name that can be easily identified is recommended.') !!}
-    {!! Form::text('name', $table->name, ['class' => 'form-control']) !!}
+<div class="row">
+    <div class="col-md">
+        <div class="form-group">
+            {!! Form::label('Name') !!} {!! add_help('This is the name you will use to identify this table internally. This name will not be shown to users and does not have to be unique, but a name that can be easily identified is recommended.') !!}
+            {!! Form::text('name', $table->name, ['class' => 'form-control']) !!}
+        </div>        
+    </div>
+    <div class="col-md">
+        <div class="form-group">
+            {!! Form::label('Display Name') !!} {!! add_help('This is the name that will be shown to users, for example when displaying the rewards for doing a prompt. This is for display purposes and can be something more vague than the above, e.g. "A Random Rare Item"') !!}
+            {!! Form::text('display_name', $table->getOriginal('display_name'), ['class' => 'form-control']) !!}
+        </div>
+    </div>
 </div>
 
 <div class="form-group">
-    {!! Form::label('Display Name') !!} {!! add_help('This is the name that will be shown to users, for example when displaying the rewards for doing a prompt. This is for display purposes and can be something more vague than the above, e.g. "A Random Rare Item"') !!}
-    {!! Form::text('display_name', $table->getOriginal('display_name'), ['class' => 'form-control']) !!}
+    @if($table->has_image)
+        <img src="{{$table->imageUrl }}" class="img-fluid mr-2 mb-2" style="height: 10em;" />
+        <br>
+    @endif
+    {!! Form::label('Page Image (Optional)') !!} {!! add_help('Displays above the forage button.') !!}
+    <div>{!! Form::file('image') !!}</div>
+    <div class="text-muted">Recommended size: 100px x 100px</div>
+    @if($table->has_image)
+        <div class="form-check">
+            {!! Form::checkbox('remove_image', 1, false, ['class' => 'form-check-input']) !!}
+            {!! Form::label('remove_image', 'Remove current image', ['class' => 'form-check-label']) !!}
+        </div>
+    @endif
 </div>
 
 <div class="form-group">
-    {!! Form::label('s_active', 'Active (visible to users)', ['class' => 'form-check-label ml-3']) !!}
     {!! Form::checkbox('is_active', 1, $table->is_active, ['class' => 'form-check-input mr-2', 'data-toggle' => 'toggle']) !!}
+    {!! Form::label('s_active', 'Active (visible to users)', ['class' => 'form-check-label ml-3']) !!}
 </div>
 
 <h3>Loot</h3>

@@ -13,7 +13,7 @@ class Forage extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'display_name', 'is_active'
+        'name', 'display_name', 'is_active', 'has_image'
     ];
 
     /**
@@ -62,6 +62,47 @@ class Forage extends Model
         ACCESSORS
 
     **********************************************************************************************/
+
+    /**
+     * Gets the file directory containing the model's image.
+     *
+     * @return string
+     */
+    public function getImageDirectoryAttribute()
+    {
+        return 'images/data/foraging';
+    }
+
+    /**
+     * Gets the file name of the model's image.
+     *
+     * @return string
+     */
+    public function getImageFileNameAttribute()
+    {
+        return $this->id . '-forage.png';
+    }
+
+    /**
+     * Gets the path to the file directory containing the model's image.
+     *
+     * @return string
+     */
+    public function getImagePathAttribute()
+    {
+        return public_path($this->imageDirectory);
+    }
+
+    /**
+     * Gets the URL of the model's image.
+     *
+     * @return string
+     */
+    public function getImageUrlAttribute()
+    {
+        if (!$this->has_image) return null;
+        return asset($this->imageDirectory . '/' . $this->imageFileName);
+    }
     
     /**
      * Displays the model's name, linked to its encyclopedia page.

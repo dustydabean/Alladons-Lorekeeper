@@ -82,7 +82,7 @@ class ForageController extends Controller
     {
         $id ? $request->validate(Forage::$updateRules) : $request->validate(Forage::$createRules);
         $data = $request->only([
-            'name', 'display_name', 'rewardable_type', 'rewardable_id', 'quantity', 'weight', 'is_active'
+            'name', 'display_name', 'rewardable_type', 'rewardable_id', 'quantity', 'weight', 'is_active', 'image'
         ]);
         if($id && $service->updateForage(Forage::find($id), $data)) {
             flash('Forage updated successfully.')->success();

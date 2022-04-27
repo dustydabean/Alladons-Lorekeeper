@@ -44,4 +44,13 @@ class UserForaging extends Model
      {
          return $this->belongsTo('App\Models\User\User');
      }
+
+     /**
+      * Get current forage 
+      */
+    public function forage() 
+    {
+        if($this->last_forage_id) 
+            return $this->belongsTo('App\Models\Foraging\Forage', 'last_forage_id');
+    }
 }

@@ -103,6 +103,8 @@ class AddSiteSettings extends Command
 
         $this->addSiteSetting('group_currency', 1, 'ID of the group currency to award from gallery submissions (if enabled).');
 
+        $this->addSiteSetting('foraging_stamina', 1, 'How many times a user can forage a day.');
+
         $this->line("\nSite settings up to date!");
 
     }
