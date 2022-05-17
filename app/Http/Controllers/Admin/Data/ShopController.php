@@ -37,7 +37,7 @@ class ShopController extends Controller
             'shops' => Shop::orderBy('sort', 'DESC')->get()
         ]);
     }
-    
+
     /**
      * Shows the create shop page.
      *
@@ -49,7 +49,7 @@ class ShopController extends Controller
             'shop' => new Shop
         ]);
     }
-    
+
     /**
      * Shows the edit shop page.
      *
@@ -105,7 +105,7 @@ class ShopController extends Controller
     public function postEditShopStock(Request $request, ShopService $service, $id)
     {
         $data = $request->only([
-            'shop_id', 'item_id', 'currency_id', 'cost', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'purchase_limit'
+            'shop_id', 'item_id', 'currency_id', 'cost', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'purchase_limit', 'purchase_limit_timeframe'
         ]);
         if($service->updateShopStock(Shop::find($id), $data, Auth::user())) {
             flash('Shop stock updated successfully.')->success();
@@ -116,7 +116,7 @@ class ShopController extends Controller
         }
         return redirect()->back();
     }
-    
+
     /**
      * Gets the shop deletion modal.
      *

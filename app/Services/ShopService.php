@@ -20,15 +20,15 @@ class ShopService extends Service
     */
 
     /**********************************************************************************************
-     
+
         SHOPS
 
     **********************************************************************************************/
-    
+
     /**
      * Creates a new shop.
      *
-     * @param  array                  $data 
+     * @param  array                  $data
      * @param  \App\Models\User\User  $user
      * @return bool|\App\Models\Shop\Shop
      */
@@ -53,17 +53,17 @@ class ShopService extends Service
             if ($image) $this->handleImage($image, $shop->shopImagePath, $shop->shopImageFileName);
 
             return $this->commitReturn($shop);
-        } catch(\Exception $e) { 
+        } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);
     }
-    
+
     /**
      * Updates a shop.
      *
      * @param  \App\Models\Shop\Shop  $shop
-     * @param  array                  $data 
+     * @param  array                  $data
      * @param  \App\Models\User\User  $user
      * @return bool|\App\Models\Shop\Shop
      */
@@ -77,7 +77,7 @@ class ShopService extends Service
 
             $data = $this->populateShopData($data, $shop);
 
-            $image = null;            
+            $image = null;
             if(isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
                 $image = $data['image'];
@@ -89,17 +89,17 @@ class ShopService extends Service
             if ($shop) $this->handleImage($image, $shop->shopImagePath, $shop->shopImageFileName);
 
             return $this->commitReturn($shop);
-        } catch(\Exception $e) { 
+        } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);
     }
-    
+
     /**
      * Updates shop stock.
      *
      * @param  \App\Models\Shop\Shop  $shop
-     * @param  array                  $data 
+     * @param  array                  $data
      * @param  \App\Models\User\User  $user
      * @return bool|\App\Models\Shop\Shop
      */
@@ -130,6 +130,7 @@ class ShopService extends Service
                         'is_limited_stock'      => isset($data['is_limited_stock'][$key]),
                         'quantity'              => isset($data['is_limited_stock'][$key]) ? $data['quantity'][$key] : 0,
                         'purchase_limit'        => $data['purchase_limit'][$key],
+                        'purchase_limit_timeframe' => $data['purchase_limit_timeframe'][$key]
                     ]);
                 }
             } else {
@@ -138,7 +139,7 @@ class ShopService extends Service
             }
 
             return $this->commitReturn($shop);
-        } catch(\Exception $e) { 
+        } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);
@@ -147,7 +148,7 @@ class ShopService extends Service
     /**
      * Processes user input for creating/updating a shop.
      *
-     * @param  array                  $data 
+     * @param  array                  $data
      * @param  \App\Models\Shop\Shop  $shop
      * @return array
      */
@@ -155,20 +156,20 @@ class ShopService extends Service
     {
         if(isset($data['description']) && $data['description']) $data['parsed_description'] = parse($data['description']);
         $data['is_active'] = isset($data['is_active']);
-        
+
         if(isset($data['remove_image']))
         {
-            if($shop && $shop->has_image && $data['remove_image']) 
-            { 
-                $data['has_image'] = 0; 
-                $this->deleteImage($shop->shopImagePath, $shop->shopImageFileName); 
+            if($shop && $shop->has_image && $data['remove_image'])
+            {
+                $data['has_image'] = 0;
+                $this->deleteImage($shop->shopImagePath, $shop->shopImageFileName);
             }
             unset($data['remove_image']);
         }
 
         return $data;
     }
-    
+
     /**
      * Deletes a shop.
      *
@@ -183,11 +184,11 @@ class ShopService extends Service
             // Delete shop stock
             $shop->stock()->delete();
 
-            if($shop->has_image) $this->deleteImage($shop->shopImagePath, $shop->shopImageFileName); 
+            if($shop->has_image) $this->deleteImage($shop->shopImagePath, $shop->shopImageFileName);
             $shop->delete();
 
             return $this->commitReturn(true);
-        } catch(\Exception $e) { 
+        } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);
@@ -212,7 +213,7 @@ class ShopService extends Service
             }
 
             return $this->commitReturn(true);
-        } catch(\Exception $e) { 
+        } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);

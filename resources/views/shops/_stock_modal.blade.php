@@ -30,9 +30,10 @@
         @if($stock->is_limited_stock && $stock->quantity == 0)
             <div class="alert alert-warning mb-0">This item is out of stock.</div>
         @elseif($purchaseLimitReached)
-            <div class="alert alert-warning mb-0">You have already purchased the limit of {{ $stock->purchase_limit }} of this item.</div>
+            <div class="alert alert-warning mb-0">You have already purchased the limit of {{ $stock->purchase_limit }} of this item @if($stock->purchase_limit_timeframe !== 'lifetime') within the {{$stock->purchase_limit_timeframe}} reset @endif.</div>
         @else
-            @if($stock->purchase_limit) <div class="alert alert-warning mb-3">You have purchased this item {{ $userPurchaseCount }} times.</div>@endif
+
+            @if($stock->purchase_limit) <div class="alert alert-warning mb-3">You have purchased this item {{ $userPurchaseCount }} times @if($stock->purchase_limit_timeframe !== 'lifetime') within the {{$stock->purchase_limit_timeframe}} reset @endif.</div>@endif
             {!! Form::open(['url' => 'shops/buy']) !!}
                 {!! Form::hidden('shop_id', $shop->id) !!}
                 {!! Form::hidden('stock_id', $stock->id) !!}
