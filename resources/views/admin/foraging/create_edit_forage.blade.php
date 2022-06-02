@@ -62,10 +62,10 @@
     <thead>
         <tr>
             <th width="25%">Loot Type</th>
-            <th width="25%">Reward</th>
+            <th width="35%">Reward</th>
             <th width="10%">Quantity</th>
             <th width="10%">Weight {!! add_help('A higher weight means a reward is more likely to be rolled. Weights have to be integers above 0 (round positive number, no decimals) and do not have to add up to be a particular number.') !!}</th>
-            <th width="20%">Chance</th>
+            <th width="10%">Chance</th>
             <th width="10%"></th>
         </tr>
     </thead>
@@ -224,13 +224,13 @@ $( document ).ready(function() {
             weights.push(current);
         });
 
-        
+
         $('#lootTableBody .loot-row-chance').each(function( index ) {
             var current = (weights[index] / total) * 100;
             $(this).html(current.toString() + '%');
         });
     }
 });
-    
+
 </script>
 @endsection

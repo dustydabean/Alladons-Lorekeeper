@@ -8,6 +8,7 @@ use Auth;
 
 use App\Models\Item\Item;
 use App\Models\Currency\Currency;
+use App\Models\Loot\LootTable;
 use App\Models\Foraging\Forage;
 
 use App\Services\ForageService;
@@ -48,7 +49,7 @@ class ForageController extends Controller
             'table' => new Forage,
             'items' => Item::orderBy('name')->pluck('name', 'id'),
             'currencies' => Currency::orderBy('name')->pluck('name', 'id'),
-            'tables' => Forage::orderBy('name')->pluck('name', 'id'),
+            'tables' => LootTable::orderBy('name')->pluck('name', 'id'),
         ]);
     }
     
@@ -66,7 +67,7 @@ class ForageController extends Controller
             'table' => $table,
             'items' => Item::orderBy('name')->pluck('name', 'id'),
             'currencies' => Currency::orderBy('name')->pluck('name', 'id'),
-            'tables' => Forage::orderBy('name')->pluck('name', 'id'),
+            'tables' => LootTable::orderBy('name')->pluck('name', 'id'),
         ]);
     }
 
