@@ -49,7 +49,7 @@
                 {!! Form::text('purchase_limit['.$key.']', $stock ? $stock->purchase_limit : 0, ['class' => 'form-control stock-field', 'data-name' => 'purchase_limit']) !!}
             </div>
             <div class="col-md-6">
-                {!! Form::label('purchase_limit_timeframe['.$key.']', 'User Purchase Limit') !!} {!! add_help('This is the timeframe that the purchase limit will apply to. I.E. yearly will only look at purchases made after the beginning of the current year. Weekly starts on Sunday. Rollover will happen on UTC time.') !!}
+                {!! Form::label('purchase_limit_timeframe['.$key.']', 'Purchase Limit Timeout') !!} {!! add_help('This is the timeframe that the purchase limit will apply to. I.E. yearly will only look at purchases made after the beginning of the current year. Weekly starts on Sunday. Rollover will happen on UTC time.') !!}
                 {!! Form::select('purchase_limit_timeframe['.$key.']', ["lifetime" => "Lifetime", "yearly" => "Yearly", "monthly" => "Monthly", "weekly" => "Weekly", "daily" => "Daily"] , $stock ? $stock->purchase_limit_timeframe : 0, ['class' => 'form-control stock-field', 'data-name' => 'purchase_limit_timeframe']) !!}
             </div>
         </div>
