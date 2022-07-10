@@ -20,6 +20,7 @@
                 <tr class="sort-item" data-id="{{ $shop->id }}">
                     <td>
                         <a class="fas fa-arrows-alt-v handle mr-3" href="#"></a>
+                        @if($shop->is_staff)<i class="fas fa-crown mr-1"></i>@endif
                         {!! $shop->displayName !!}
                     </td>
                     <td class="text-right">
