@@ -6,7 +6,7 @@
         <div><a href="{{ $stock->item->idUrl }}"><strong>{{ $stock->item->name }}</strong></a></div>
         <div><strong>Cost: </strong> {!! $stock->currency->display($stock->displayCost) !!}</div>
         @if($stock->is_limited_stock) <div>Stock: {{ $stock->quantity }}</div> @endif
-        @if($stock->purchase_limit) <div class="text-danger">Max {{ $stock->purchase_limit }} per user</div> @endif
+        @if($stock->purchase_limit) <div class="text-danger">Max {{ $stock->purchase_limit }} @if($stock->purchase_limit_timeframe !== 'lifetime') {{ $stock->purchase_limit_timeframe }} @endif per user</div> @endif
         @if($stock->disallow_transfer) <div class="text-danger">Cannot be transferred after purchase</div> @endif
     </div>
 
@@ -100,7 +100,7 @@
         @else
         <div class="alert alert-danger">You must be a FTO to purchase this item.</div>
         @endif
-    @else 
+    @else
         <div class="alert alert-danger">You must be logged in to purchase this item.</div>
     @endif
 @endif

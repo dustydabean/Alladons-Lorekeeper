@@ -70,6 +70,7 @@ class ShopController extends Controller
         $coupons = Item::released()->whereHas('tags', function($query) {
             $query->where('tag', 'coupon');
         })->orderBy('name')->pluck('name', 'id');
+
         return view('admin.shops.create_edit_shop', [
             'shop' => $shop,
             'items' => Item::orderBy('name')->pluck('name', 'id'),
