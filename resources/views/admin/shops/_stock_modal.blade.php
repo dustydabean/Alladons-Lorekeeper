@@ -32,7 +32,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="pl-4">
         <div class="row">
             <div class="col-md-6">
@@ -69,7 +69,7 @@
             {!! Form::label('is_visible', 'Set Visibility', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If turned off it will not appear in the store.') !!}
         </div>
     </div>
-    
+
     <div class="card mb-3 stock-limited-quantity {{ $stock->is_limited_stock ? '' : 'hide' }}">
         <div class="card-body">
             <div>
@@ -90,9 +90,15 @@
             </div>
         </div>
     </div>
-    <div>
-        {!! Form::label('purchase_limit', 'User Purchase Limit') !!} {!! add_help('This is the maximum amount of this item a user can purchase from this shop. Set to 0 to allow infinite purchases.') !!}
-        {!! Form::text('purchase_limit', $stock->purchase_limit ?? 0, ['class' => 'form-control stock-field']) !!}
+    <div class="row">
+        <div class="col-md-6">
+            {!! Form::label('purchase_limit', 'User Purchase Limit') !!} {!! add_help('This is the maximum amount of this item a user can purchase from this shop. Set to 0 to allow infinite purchases.') !!}
+            {!! Form::text('purchase_limit', $stock ? $stock->purchase_limit : 0, ['class' => 'form-control stock-field', 'data-name' => 'purchase_limit']) !!}
+        </div>
+        <div class="col-md-6">
+            {!! Form::label('purchase_limit_timeframe', 'Purchase Limit Timeout') !!} {!! add_help('This is the timeframe that the purchase limit will apply to. I.E. yearly will only look at purchases made after the beginning of the current year. Weekly starts on Sunday. Rollover will happen on UTC time.') !!}
+            {!! Form::select('purchase_limit_timeframe', ["lifetime" => "Lifetime", "yearly" => "Yearly", "monthly" => "Monthly", "weekly" => "Weekly", "daily" => "Daily"] , $stock ? $stock->purchase_limit_timeframe : 0, ['class' => 'form-control stock-field', 'data-name' => 'purchase_limit_timeframe']) !!}
+        </div>
     </div>
 
 <div class="text-right mt-1">

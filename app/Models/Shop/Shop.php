@@ -22,7 +22,7 @@ class Shop extends Model
      * @var string
      */
     protected $table = 'shops';
-    
+
     /**
      * Validation rules for creation.
      *
@@ -33,7 +33,7 @@ class Shop extends Model
         'description' => 'nullable',
         'image' => 'mimes:png',
     ];
-    
+
     /**
      * Validation rules for updating.
      *
@@ -46,7 +46,7 @@ class Shop extends Model
     ];
 
     /**********************************************************************************************
-    
+
         RELATIONS
 
     **********************************************************************************************/
@@ -54,17 +54,17 @@ class Shop extends Model
     /**
      * Get the shop stock.
      */
-    public function stock() 
+    public function stock()
     {
         return $this->hasMany('App\Models\Shop\ShopStock');
     }
-    
+
     /**
      * Get the shop stock as items for display purposes.
      */
     public function displayStock()
     {
-        return $this->belongsToMany('App\Models\Item\Item', 'shop_stock')->withPivot('item_id', 'currency_id', 'cost', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'purchase_limit', 'id', 'is_visible', 'disallow_transfer')->wherePivot('is_visible', 1);
+        return $this->belongsToMany('App\Models\Item\Item', 'shop_stock')->withPivot('item_id', 'currency_id', 'cost', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'purchase_limit', 'purchase_limit_timeframe', 'id', 'is_visible', 'disallow_transfer')->wherePivot('is_visible', 1);
     }
 
     public function limits()
@@ -73,11 +73,11 @@ class Shop extends Model
     }
 
     /**********************************************************************************************
-    
+
         ACCESSORS
 
     **********************************************************************************************/
-    
+
     /**
      * Displays the shop's name, linked to its purchase page.
      *
@@ -117,7 +117,7 @@ class Shop extends Model
     {
         return public_path($this->imageDirectory);
     }
-    
+
     /**
      * Gets the URL of the model's image.
      *
@@ -138,9 +138,9 @@ class Shop extends Model
     {
         return url('shops/'.$this->id);
     }
-    
+
     /**********************************************************************************************
-    
+
         OTHER FUNCTIONS
 
     **********************************************************************************************/

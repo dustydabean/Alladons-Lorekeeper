@@ -36,7 +36,7 @@ class ShopController extends Controller
             'shops' => Shop::orderBy('sort', 'DESC')->get()
         ]);
     }
-    
+
     /**
      * Shows the create shop page.
      *
@@ -54,7 +54,7 @@ class ShopController extends Controller
             'coupons' => $coupons,
         ]);
     }
-    
+
     /**
      * Shows the edit shop page.
      *
@@ -70,6 +70,7 @@ class ShopController extends Controller
         $coupons = Item::released()->whereHas('tags', function($query) {
             $query->where('tag', 'coupon');
         })->orderBy('name')->pluck('name', 'id');
+
         return view('admin.shops.create_edit_shop', [
             'shop' => $shop,
             'items' => Item::orderBy('name')->pluck('name', 'id'),
@@ -159,7 +160,7 @@ class ShopController extends Controller
     public function postEditShopStock(Request $request, ShopService $service, $id)
     {
         $data = $request->only([
-            'shop_id', 'item_id', 'currency_id', 'cost', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'purchase_limit', 'is_fto', 'stock_type', 'is_visible',
+            'shop_id', 'item_id', 'currency_id', 'cost', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'purchase_limit', 'purchase_limit_timeframe', 'is_fto', 'stock_type', 'is_visible',
             'restock', 'restock_quantity', 'restock_interval', 'range', 'disallow_transfer'
         ]);
         if($service->editShopStock(ShopStock::find($id), $data, Auth::user())) {
@@ -183,7 +184,7 @@ class ShopController extends Controller
     public function postCreateShopStock(Request $request, ShopService $service, $id)
     {
         $data = $request->only([
-            'shop_id', 'item_id', 'currency_id', 'cost', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'purchase_limit', 'is_fto', 'stock_type', 'is_visible',
+            'shop_id', 'item_id', 'currency_id', 'cost', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'purchase_limit', 'purchase_limit_timeframe', 'is_fto', 'stock_type', 'is_visible',
             'restock', 'restock_quantity', 'restock_interval', 'range'
         ]);
         if($service->updateShopStock(Shop::find($id), $data, Auth::user())) {
@@ -230,7 +231,7 @@ class ShopController extends Controller
         }
         return redirect()->to('admin/data/shops/edit/'.$shop->id);
     }
-    
+
     /**
      * Gets the shop deletion modal.
      *
