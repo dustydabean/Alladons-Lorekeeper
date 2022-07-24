@@ -32,7 +32,7 @@ use App\Models\Character\CharacterTransfer;
 use App\Services\CurrencyManager;
 use App\Services\InventoryManager;
 use App\Services\CharacterManager;
-use App\Services\LinkService;
+use App\Services\CharacterLinkService;
 
 use App\Http\Controllers\Controller;
 
@@ -237,7 +237,7 @@ class CharacterController extends Controller
      * @param  string                         $slug
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postEditCharacterLinkInfo(Request $request, LinkService $service) 
+    public function postEditCharacterLinkInfo(Request $request, CharacterLinkService $service) 
     {
         // this is simple and messy
 
@@ -258,7 +258,7 @@ class CharacterController extends Controller
      * @param  string  $slug
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function postDeleteCharacterLink(Request $request, LinkService $service) 
+    public function postDeleteCharacterLink(Request $request, CharacterLinkService $service) 
     {
         $data = $request->only(['chara_1', 'chara_2']);
         if($service->deleteLink($data)) {

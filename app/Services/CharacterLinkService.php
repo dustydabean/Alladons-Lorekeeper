@@ -11,7 +11,7 @@ use App\Models\Character\Character;
 use App\Models\Character\CharacterRelation;
 use App\Models\User\User;
 
-class LinkService extends Service
+class CharacterLinkService extends Service
 {
     /*
     |--------------------------------------------------------------------------
@@ -36,11 +36,10 @@ class LinkService extends Service
 
         if(CharacterRelation::where('chara_1', $chara1)->where('chara_2', $chara2)->exists() || CharacterRelation::where('chara_1', $chara2)->where('chara_2', $chara1)->exists()) 
         {
-            flash("A relation already exists between one or more of these characters.")->error();
-            throw new \Exception;
+            throw new \Exception("A relation already exists between one or more of these characters.");
         }
 
-        if($owner == True) {
+        if($owner) {
             CharacterRelation::create([
                 'chara_1' => $chara1,
                 'chara_2' => $chara2,
@@ -79,16 +78,6 @@ class LinkService extends Service
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);
-    }
-
-    public function approveLink() 
-    {
-        // when a user approves a link
-    }
-
-    public function denyLink()
-    {
-        // when a user rejects a link
     }
 
     /**

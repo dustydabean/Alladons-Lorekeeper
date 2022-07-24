@@ -14,7 +14,7 @@ use App\Models\User\User;
 use App\Models\Character\Character;
 use App\Models\Character\CharacterRelation;
 
-use App\Services\LinkService;
+use App\Services\CharacterLinkService;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Users\AccountController;

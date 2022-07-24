@@ -1325,13 +1325,13 @@ class CharacterManager extends Service
 
         try {
 
-            $service = new LinkService;
+            $service = new CharacterLinkService;
 
             $isOwner = ($character->user_id == Auth::user()->id);
 
-            if($character->is_links_open == 0) throw new \Exception("One or more character's links are closed to requests.");
+            if(!$character->is_links_open) throw new \Exception("One or more character's links are closed to requests.");
 
-            if($isAdmin !== true && !$isOwner)
+            if(!$isAdmin && !$isOwner)
             {
                 throw new \Exception("You cannot edit this character.");
             }
@@ -1343,7 +1343,7 @@ class CharacterManager extends Service
                 $chara1 = $character->id;
                 $chara2 = $link->id;
 
-                if($link->is_links_open == 0) throw new \Exception("One or more character's links are closed to requests.");
+                if(!$link->is_links_open) throw new \Exception("One or more character's links are closed to requests.");
 
                 if($user->id == $requested->id ) {
                     // Create a relation with the character 
@@ -1351,6 +1351,9 @@ class CharacterManager extends Service
                         flash('Link created succesfully!')->success();
                     }
                     else {
+                        foreach($service->getErrors() as $error) {
+                            flash($error)->error();
+                        }
                         throw new \Exception("An error occured creating the link.");
                     }
                 }
@@ -1362,6 +1365,9 @@ class CharacterManager extends Service
                             flash('Link request created succesfully!')->success();
                         }
                         else {
+                            foreach($service->getErrors() as $error) {
+                                flash($error)->error();
+                            }
                             throw new \Exception("An error occured requesting the link.");
                         }
                 }
