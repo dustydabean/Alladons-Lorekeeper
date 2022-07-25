@@ -1351,7 +1351,7 @@ class CharacterManager extends Service
                         flash('Link created succesfully!')->success();
                     }
                     else {
-                        foreach($service->getErrors() as $error) {
+                        foreach ($service->errors()->getMessages()['error'] as $error) {
                             flash($error)->error();
                         }
                         throw new \Exception("An error occured creating the link.");
@@ -1365,7 +1365,7 @@ class CharacterManager extends Service
                             flash('Link request created succesfully!')->success();
                         }
                         else {
-                            foreach($service->getErrors() as $error) {
+                            foreach ($service->errors()->getMessages()['error'] as $error) {
                                 flash($error)->error();
                             }
                             throw new \Exception("An error occured requesting the link.");
