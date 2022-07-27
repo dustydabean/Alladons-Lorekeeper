@@ -422,4 +422,18 @@ return [
         'message' => '<a href="{sender_url}">{sender}</a> has added you as a participant on a gallery submission. (<a href="{url}">View Submission</a>)',
         'url'     => 'gallery/view/{submission_id}',
     ],
+
+    // FRIEND_REQUEST_SENT
+    516 => [
+        'name'    => 'Friend Request Sent',
+        'message' => '<a href="{sender_url}">{sender}</a> has sent you a friend request. (<a href="{url}">View Request.</a>)',
+        'url'     => 'friends/requests',
+    ],
+
+    // FRIEND_REQUEST_ACCEPTED
+    517 => [
+        'name'    => 'Friend Request Accepted',
+        'message' => '<a href="{sender_url}">{sender}</a> has accepted your friend request. (<a href="{url}">View Friend List.</a>)',
+        'url'     => 'friends',
+    ],
 ];

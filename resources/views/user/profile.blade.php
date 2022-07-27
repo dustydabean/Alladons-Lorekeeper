@@ -22,8 +22,27 @@
     </div>
 @endif
 
-@if(!$user->is_deactivated || Auth::check() && Auth::user()->isStaff)
+@if(Auth::check() && $user->isBlocked(Auth::user()))
+    <div class="alert alert-danger">You have blocked this user.</div>
+    {!! Form::open(['url' => 'friends/block/'.$user->id]) !!}
+        {!! Form::button('Unblock', ['class' => 'btn badge badge-danger mr-2 float-right', 'data-toggle' => 'tooltip', 'title' => 'Blocking this user will prevent them from viewing your profile or comments.', 'type' => 'submit']) !!}
+    {!! Form::close() !!}
+@elseif(Auth::check() && Auth::user()->isBlocked($user))
+    <div class="alert alert-danger">This user has blocked you.</div>
+    {!! Form::open(['url' => 'friends/block/'.$user->id]) !!}
+        {!! Form::button('Block', ['class' => 'btn badge badge-danger mr-2 float-right', 'data-toggle' => 'tooltip', 'title' => 'Blocking this user will prevent them from viewing your profile or comments.', 'type' => 'submit']) !!}
+    {!! Form::close() !!}
+@elseif(!$user->is_deactivated || Auth::check() && Auth::user()->isStaff)
     @include('user._profile_content', ['user' => $user, 'deactivated' => $user->is_deactivated])
 @endif
 
+@endsection
+@section('scripts')
+<script>
+        const id = '{{ $user->id }}';
+        $('.add-friend').on('click', function(e) {
+            e.preventDefault();
+            loadModal("{{ url('friends/requests') }}/" + id);
+        });
+</script>
 @endsection

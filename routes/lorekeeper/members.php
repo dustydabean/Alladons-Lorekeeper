@@ -206,3 +206,17 @@ Route::group(['prefix' => 'comments', 'namespace' => 'Comments'], function () {
     Route::post('/{id}/like/{action}', 'CommentController@like')->name('comments.like');
     Route::get('/liked', 'CommentController@getLikedComments');
 });
+
+/**************************************************************************************************
+    Friends
+**************************************************************************************************/
+Route::group(['prefix' => 'friends', 'namespace' => 'Users'], function () {
+    Route::get('/', 'FriendController@getIndex');
+    Route::get('requests', 'FriendController@getFriendRequests');
+    Route::post('requests/{id}', 'FriendController@sendFriendRequest');
+    Route::post('requests/{id}/{accept}', 'FriendController@postAcceptRequest');
+    // remove friend
+    Route::post('remove/{id}', 'FriendController@postRemoveFriend');
+    // block friend
+    Route::post('block/{id}', 'FriendController@postBlockUser');
+});

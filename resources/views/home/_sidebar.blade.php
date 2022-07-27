@@ -2,6 +2,8 @@
     <li class="sidebar-header"><a href="{{ url('/') }}" class="card-link">Home</a></li>
     <li class="sidebar-section">
         <div class="sidebar-section-header">Inventory</div>
+        <div class="sidebar-item"><a href="{{ url('friends') }}" class="{{ set_active('friends') }}">My Friends</a></div>
+        <div class="sidebar-item"><a href="{{ url('friends/requests') }}" class="{{ set_active('friends/requests') }}">My Friend Requests</a></div>
         <div class="sidebar-item"><a href="{{ url('characters') }}" class="{{ set_active('characters') }}">My Characters</a></div>
         <div class="sidebar-item"><a href="{{ url('characters/myos') }}" class="{{ set_active('characters/myos') }}">My MYO Slots</a></div>
         <div class="sidebar-item"><a href="{{ url('inventory') }}" class="{{ set_active('inventory*') }}">Inventory</a></div>

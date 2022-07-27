@@ -201,6 +201,15 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany('App\Models\CommentLike');
     }
 
+    /**
+     * Gets all of the user's friends.
+     */
+    public function getFriendsAttribute()
+    {
+        // return this has many where initiator_id matches this id or where recipient_id matches this id
+        return UserFriend::where('recipient_approved', 1)->where('initiator_id', $this->id)->orWhere('recipient_id', $this->id)->get();
+    }
+
     /**********************************************************************************************
 
         SCOPES
@@ -649,5 +658,38 @@ class User extends Authenticatable implements MustVerifyEmail
     public function hasBookmarked($character)
     {
         return CharacterBookmark::where('user_id', $this->id)->where('character_id', $character->id)->first();
+    }
+
+    /**
+     * Checks if a user is blocked by another user.
+     */
+    public function isBlocked($user)
+    {
+        return UserBlock::where('user_id', $user->id)->where('blocked_id', $this->id)->exists();
+    }
+
+    /**
+     * Checks if a user is friends with another user.
+     */
+    public function isFriendsWith($user)
+    {
+        // check both initiator_id, recipient_id for this user and the other user
+        return UserFriend::where('recipient_approved', 1)
+            ->where('initiator_id', $this->id)->where('recipient_id', $user->id)
+            ->orWhere('initiator_id', $user->id)->where('recipient_id', $this->id)->exists();
+    }
+
+    /**
+     * Checks if a user has a pending request with another user.
+     */
+    public function isPendingFriendsWith($user)
+    {
+        // check both initiator_id, recipient_id for this user and the other user
+        if($this->isFriendsWith($user)) {
+            return false;
+        }
+        return UserFriend::where('recipient_approved', 0)
+            ->where('initiator_id', $this->id)->where('recipient_id', $user->id)
+            ->orWhere('initiator_id', $user->id)->where('recipient_id', $this->id)->exists();
     }
 }
