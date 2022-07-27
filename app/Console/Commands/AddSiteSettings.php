@@ -86,6 +86,8 @@ class AddSiteSettings extends Command
 
         $this->addSiteSetting('comment_dislikes_enabled', 0, '0: Dislikes disabled, 1: Dislikes enabled.');
 
+        $this->addSiteSetting('allow_blocked_transfers', 1, '0: Users cannot send to users they have been blocked by, 1: Unrestricted.');
+
         $this->line("\nSite settings up to date!");
     }
 
