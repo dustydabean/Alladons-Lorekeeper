@@ -2,10 +2,8 @@
 
 namespace App\Models\User;
 
-use Auth;
-use Config;
-use Carbon\Carbon;
 use App\Models\Model;
+use Carbon\Carbon;
 
 class UserBlock extends Model
 {
@@ -15,7 +13,7 @@ class UserBlock extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id', 'blocked_id'
+        'user_id', 'blocked_id',
     ];
 
     /**

@@ -662,6 +662,8 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * Checks if a user is blocked by another user.
+     *
+     * @param mixed $user
      */
     public function isBlocked($user)
     {
@@ -670,6 +672,8 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * Checks if a user is friends with another user.
+     *
+     * @param mixed $user
      */
     public function isFriendsWith($user)
     {
@@ -681,13 +685,16 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * Checks if a user has a pending request with another user.
+     *
+     * @param mixed $user
      */
     public function isPendingFriendsWith($user)
     {
         // check both initiator_id, recipient_id for this user and the other user
-        if($this->isFriendsWith($user)) {
+        if ($this->isFriendsWith($user)) {
             return false;
         }
+
         return UserFriend::where('recipient_approved', 0)
             ->where('initiator_id', $this->id)->where('recipient_id', $user->id)
             ->orWhere('initiator_id', $user->id)->where('recipient_id', $this->id)->exists();

@@ -1,17 +1,13 @@
-<?php namespace App\Services;
+<?php
 
-use Carbon\Carbon;
-use App\Services\Service;
+namespace App\Services;
 
-use DB;
-use Auth;
-use Config;
-use Notifications;
-
-use Illuminate\Support\Arr;
 use App\Models\User\User;
-use App\Models\User\UserFriend;
 use App\Models\User\UserBlock;
+use App\Models\User\UserFriend;
+use Carbon\Carbon;
+use DB;
+use Notifications;
 
 class InteractionService extends Service
 {
@@ -34,10 +30,10 @@ class InteractionService extends Service
         try {
 
             // check if the user is already friends with the other user
-            if($initiator->isPendingFriendsWith($recipient)) {
+            if ($initiator->isPendingFriendsWith($recipient)) {
                 throw new \Exception('You have a pending friend request with this user.');
             }
-            if($initiator->isFriendsWith($recipient)) {
+            if ($initiator->isFriendsWith($recipient)) {
                 throw new \Exception('You are already friends with this user.');
             }
 
@@ -45,15 +41,14 @@ class InteractionService extends Service
             $friend_request = UserFriend::create([
                 'initiator_id' => $initiator->id,
                 'recipient_id' => $recipient->id,
-                'created_at' => Carbon::now(),
+                'created_at'   => Carbon::now(),
             ]);
 
             // send a notification to the recipient
             Notifications::create('FRIEND_REQUEST_SENT', $recipient, [
                 'sender_url' => $initiator->url,
-                'sender' => $initiator->name,
+                'sender'     => $initiator->name,
             ]);
-        
 
             return $this->commitReturn(true);
         } catch (\Exception $e) {
@@ -65,6 +60,9 @@ class InteractionService extends Service
 
     /**
      * Accepts or rejects a friend request.
+     *
+     * @param mixed $request_id
+     * @param mixed $accept
      */
     public function editFriendRequest($request_id, $accept)
     {
@@ -74,7 +72,9 @@ class InteractionService extends Service
 
             // find pending request
             $friend_request = UserFriend::find($request_id);
-            if(!$friend_request) throw new \Exception('Friend request not found.');
+            if (!$friend_request) {
+                throw new \Exception('Friend request not found.');
+            }
 
             if ($accept) {
                 // set the friend request as accepted
@@ -84,7 +84,7 @@ class InteractionService extends Service
 
                 Notifications::create('FRIEND_REQUEST_ACCEPTED', $friend_request->initiator, [
                     'sender_url' => $friend_request->recipient->url,
-                    'sender' => $friend_request->recipient->name,
+                    'sender'     => $friend_request->recipient->name,
                 ]);
             } else {
                 // delete the friend request
@@ -100,7 +100,9 @@ class InteractionService extends Service
     }
 
     /**
-     * removes a friend
+     * removes a friend.
+     *
+     * @param mixed $id
      */
     public function removeFriend($id)
     {
@@ -110,7 +112,9 @@ class InteractionService extends Service
 
             // find pending request
             $friend = UserFriend::find($id);
-            if(!$friend) throw new \Exception('Friend not found.');
+            if (!$friend) {
+                throw new \Exception('Friend not found.');
+            }
 
             // delete the friend request
             $friend->delete();
@@ -124,7 +128,10 @@ class InteractionService extends Service
     }
 
     /**
-     * block or unblock a user
+     * block or unblock a user.
+     *
+     * @param mixed $user
+     * @param mixed $blocked
      */
     public function blockUser($user, $blocked)
     {
@@ -133,22 +140,21 @@ class InteractionService extends Service
         try {
 
             // check if they are already blocked
-            if($blocked->isBlocked($user)) {
+            if ($blocked->isBlocked($user)) {
                 // delete userblock record
                 $userblock = UserBlock::where('user_id', $user->id)->where('blocked_id', $blocked->id)->first();
                 $userblock->delete();
-            }
-            else {
+            } else {
                 // remove any friend requests / friendships
                 $friend_request = UserFriend::
                     where('initiator_id', $user->id)->where('recipient_id', $blocked->id)
                     ->orWhere('initiator_id', $blocked->id)->where('recipient_id', $user->id)->first();
-                if($friend_request) {
+                if ($friend_request) {
                     $friend_request->delete();
                 }
                 // create a new UserBlock record
                 $block = UserBlock::create([
-                    'user_id' => $user->id,
+                    'user_id'    => $user->id,
                     'blocked_id' => $blocked->id,
                 ]);
             }
