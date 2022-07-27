@@ -29,6 +29,12 @@ class InteractionService extends Service
 
         try {
 
+            if ($recipient->isBlocked($initiator)) {
+                throw new \Exception('You cannot send a friend request to a user who has blocked you.');
+            }
+            if ($initiator->isBlocked($recipient)) {
+                throw new \Exception('You cannot send a friend request to a user who has blocked you.');
+            }
             // check if the user is already friends with the other user
             if ($initiator->isPendingFriendsWith($recipient)) {
                 throw new \Exception('You have a pending friend request with this user.');
