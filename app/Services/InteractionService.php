@@ -28,7 +28,6 @@ class InteractionService extends Service
         DB::beginTransaction();
 
         try {
-
             if ($recipient->isBlocked($initiator)) {
                 throw new \Exception('You cannot send a friend request to a user who has blocked you.');
             }
