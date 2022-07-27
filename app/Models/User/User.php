@@ -16,10 +16,10 @@ use App\Traits\Commenter;
 use Auth;
 use Carbon\Carbon;
 use Config;
-use Settings;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Settings;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -702,22 +702,22 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
-     * gets userOptions for the user divided by friends and all
+     * gets userOptions for the user divided by friends and all.
      */
     public function getUserOptionsAttribute()
     {
         $userOptions = [];
         $friends = [];
-        foreach($this->friends as $friend) {
+        foreach ($this->friends as $friend) {
             $friends[] = $friend->other($this->id)->id;
         }
         $blocked = [];
-        if(!Settings::get('allow_blocked_transfers')) {
+        if (!Settings::get('allow_blocked_transfers')) {
             $blocked = UserBlock::where('blocked_id', $this->id)->pluck('user_id')->toArray();
             $friends = array_diff($friends, $blocked);
         }
-        $userOptions['Friends'] = User::visible()->where('id', '!=', $this->id)->whereIn('id', $friends)->orderBy('name')->pluck('name', 'id')->toArray();
-        $userOptions['All Users'] = User::visible()->where('id', '!=', $this->id)->whereNotIn('id', $friends)
+        $userOptions['Friends'] = self::visible()->where('id', '!=', $this->id)->whereIn('id', $friends)->orderBy('name')->pluck('name', 'id')->toArray();
+        $userOptions['All Users'] = self::visible()->where('id', '!=', $this->id)->whereNotIn('id', $friends)
             ->whereNotIn('id', $blocked)
             ->orderBy('name')->pluck('name', 'id')->toArray();
 
