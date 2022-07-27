@@ -2,11 +2,8 @@
 
 namespace App\Models\User;
 
-use Auth;
-use Config;
-use Carbon\Carbon;
-
 use App\Models\Model;
+use Carbon\Carbon;
 
 class UserFriend extends Model
 {
@@ -16,7 +13,7 @@ class UserFriend extends Model
      * @var array
      */
     protected $fillable = [
-        'initiator_id', 'recipient_id', 'recipient_approval', 'created_at', 'accepted_at'
+        'initiator_id', 'recipient_id', 'recipient_approval', 'created_at', 'accepted_at',
     ];
 
     /**
@@ -56,6 +53,8 @@ class UserFriend extends Model
 
     /**
      * gets the opposite of the user passed in.
+     *
+     * @param mixed $id
      */
     public function other($id)
     {

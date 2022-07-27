@@ -8,8 +8,6 @@ class AddFriendTables extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up()
     {
@@ -28,13 +26,10 @@ class AddFriendTables extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('blocked_id');
         });
-
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down()
     {
