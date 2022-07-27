@@ -692,4 +692,20 @@ class User extends Authenticatable implements MustVerifyEmail
             ->where('initiator_id', $this->id)->where('recipient_id', $user->id)
             ->orWhere('initiator_id', $user->id)->where('recipient_id', $this->id)->exists();
     }
+
+    /**
+     * gets userOptions for the user divided by friends and all
+     */
+    public function getUserOptionsAttribute()
+    {
+        $userOptions = [];
+        $friends = [];
+        foreach($this->friends as $friend) {
+            $friends[] = $friend->other($this->id)->id;
+        }
+        $userOptions['Friends'] = User::visible()->where('id', '!=', $this->id)->whereIn('id', $friends)->orderBy('name')->pluck('name', 'id')->toArray();
+        $userOptions['All Users'] = User::visible()->where('id', '!=', $this->id)->whereNotIn('id', $friends)->orderBy('name')->pluck('name', 'id')->toArray();
+
+        return $userOptions;
+    }
 }

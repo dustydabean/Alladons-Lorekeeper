@@ -215,7 +215,7 @@ class UserController extends Controller
             'user'        => $this->user,
             'categories'  => $categories->keyBy('id'),
             'items'       => $items,
-            'userOptions' => User::where('id', '!=', $this->user->id)->orderBy('name')->pluck('name', 'id')->toArray(),
+            'userOptions' => Auth::user()->userOptions,
             'user'        => $this->user,
             'logs'        => $this->user->getItemLogs(),
             'sublists'    => Sublist::orderBy('sort', 'DESC')->get(),
@@ -239,7 +239,7 @@ class UserController extends Controller
             'sublists' => Sublist::orderBy('sort', 'DESC')->get(),
         ] + (Auth::check() && Auth::user()->id == $this->user->id ? [
             'currencyOptions' => Currency::where('allow_user_to_user', 1)->where('is_user_owned', 1)->whereIn('id', UserCurrency::where('user_id', $this->user->id)->pluck('currency_id')->toArray())->orderBy('sort_user', 'DESC')->pluck('name', 'id')->toArray(),
-            'userOptions'     => User::where('id', '!=', Auth::user()->id)->orderBy('name')->pluck('name', 'id')->toArray(),
+            'userOptions' => Auth::user()->userOptions,
         ] : []));
     }
 

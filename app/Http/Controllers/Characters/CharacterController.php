@@ -408,7 +408,7 @@ class CharacterController extends Controller
             'transfer'       => CharacterTransfer::active()->where('character_id', $this->character->id)->first(),
             'cooldown'       => Settings::get('transfer_cooldown'),
             'transfersQueue' => Settings::get('open_transfers_queue'),
-            'userOptions'    => User::visible()->orderBy('name')->pluck('name', 'id')->toArray(),
+            'userOptions'    => Auth::user()->userOptions,
         ]);
     }
 

@@ -30,7 +30,7 @@ class BankController extends Controller
     {
         return view('home.bank', [
             'currencyOptions' => Currency::where('allow_user_to_user', 1)->where('is_user_owned', 1)->whereIn('id', UserCurrency::where('user_id', Auth::user()->id)->pluck('currency_id')->toArray())->orderBy('sort_user', 'DESC')->pluck('name', 'id')->toArray(),
-            'userOptions'     => User::visible()->where('id', '!=', Auth::user()->id)->orderBy('name')->pluck('name', 'id')->toArray(),
+            'userOptions'     => Auth::user()->userOptions,
 
         ]);
     }
