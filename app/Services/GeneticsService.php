@@ -42,6 +42,7 @@ class GeneticsService extends Service
             if (!isset($data['default']) || $data['default'] < 0) $data['default'] = 0;
 
             if (isset($data['description'])) $data['parsed_description'] = parse($data['description']);
+            $data['is_visible'] = isset($data['is_visible']) ? $data['is_visible'] == true : false;
 
             $loci = Loci::create($data);
             return $this->commitReturn($loci);
@@ -84,6 +85,7 @@ class GeneticsService extends Service
             if (!isset($data['default']) || $data['default'] < 0) $data['default'] = 0;
 
             $data['parsed_description'] = isset($data['description']) ? parse($data['description']) : null;
+            $data['is_visible'] = isset($data['is_visible']) ? $data['is_visible'] == true : false;
 
             // Alleles
             if ($category->type == "gene") {
@@ -91,12 +93,16 @@ class GeneticsService extends Service
                 if (isset($data['allele_name'])) foreach($data['allele_name'] as $key => $alleleName) {
                     if($alleleName && $alleleName != "") {
                         $mod = isset($data['modifier'][$key]) ? $data['modifier'][$key] : "";
-                        $dom = isset($data['is_dominant'][$key]) ? $data['is_dominant'][$key] == true : false;
+                        $sum = isset($data['allele_description'][$key]) ? $data['allele_description'][$key] : "";
+                        $dom = $data['is_dominant'][$key] == 1;
+                        $vis = $data['allele_visibility'][$key] == 1;
                         $allele = LociAllele::create([
                             'loci_id' => $category->id,
                             'is_dominant' => $dom,
                             'name' => $alleleName,
                             'modifier' => $mod == "" ? null : $mod,
+                            'summary' => $sum == "" ? null : $sum,
+                            'is_visible' => $vis,
                         ]);
                     }
                 }
@@ -110,17 +116,29 @@ class GeneticsService extends Service
                         $allele = LociAllele::where('id', $s)->first();
                         if (!$allele) throw new \Exception("Trying to edit an allele that does not exist.");
                         if ($allele->loci_id != $category->id) throw new \Exception("Trying to edit an allele that does not belong to this group.");
-                        $isDom = isset($data['edit_allele_dominance'][$key]);
+
+                        $isDom = $data['edit_allele_dominance'][$key] == 1;
+                        $isVis = $data['edit_allele_visibility'][$key] == 1;
+
                         $name = $data['edit_allele_name'][$key];
                         if (!$name || $name == "") throw new \Exception("Allele names cannot be null.");
                         if (strlen($name) > 5) throw new \Exception("One of the allele names is too long.");
+
                         $modifier = isset($data['edit_allele_modifier'][$key]) ? $data['edit_allele_modifier'][$key] : "";
                         if (!$modifier) $modifier = "";
+                        if (strlen($modifier) > 5) throw new \Exception("One of the allele modifiers is too long.");
+
+                        $summary = $data['edit_allele_description'][$key];
+                        if (!$summary) $summary = "";
+                        if (strlen($summary) > 255) throw new \Exception("Allele summaries cannot exceed 255 characters in length.");
+
                         $allele->update([
                             'is_dominant' => $isDom,
                             'sort' => $index,
                             'name' => $name,
-                            'modifier' => $modifier,
+                            'modifier' => $modifier == "" ? null : $modifier,
+                            'summary' => $summary == "" ? null : $summary,
+                            'is_visible' => $isVis,
                         ]);
                     }
                 }

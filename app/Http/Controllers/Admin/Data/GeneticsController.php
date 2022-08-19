@@ -139,6 +139,8 @@ class GeneticsController extends Controller
             'is_dominant', 'allele_name', 'modifier', 'allele_sort',
             'edit_allele_dominance', 'edit_allele_name', 'edit_allele_modifier',
             'description', 'parsed_description', 'is_visible',
+            'allele_visibility', 'allele_description',
+            'edit_allele_visibility', 'edit_allele_description',
         ]);
         if ($id && $service->updateLoci(Loci::find($id), $data, Auth::user())) {
             flash('Category updated successfully.')->success();

@@ -15,8 +15,8 @@ class AddDescriptionToLocis extends Migration
     {
         Schema::table('locis', function (Blueprint $table) {
             # Description of the Gene Group
-            $table->text('description');
-            $table->text('parsed_description');
+            $table->text('description')->nullable()->default(null);
+            $table->text('parsed_description')->nullable()->default(null);
 
             # Determines if the Gene Group is visible in the Encyclopedia
             $table->boolean('is_visible')->default(false);

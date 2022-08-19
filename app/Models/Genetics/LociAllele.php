@@ -19,6 +19,7 @@ class LociAllele extends Model
      */
     protected $fillable = [
         'loci_id', 'is_dominant', 'sort', 'name', 'modifier',
+        'summary', 'is_visible',
     ];
 
     /**
@@ -35,7 +36,7 @@ class LociAllele extends Model
     **********************************************************************************************/
 
     /**
-     * Get the rarity of this feature.
+     * Get the gene group of this loci.
      */
     public function loci()
     {
@@ -59,6 +60,17 @@ class LociAllele extends Model
         return $query->orderBy('is_dominant')->orderBy('sort');
     }
 
+    /**
+     * Scope a query to only include visible.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeVisible($query)
+    {
+        return $query->where('is_visible', 1);
+    }
+
     /**********************************************************************************************
 
         ACCESSORS
@@ -66,7 +78,7 @@ class LociAllele extends Model
     **********************************************************************************************/
 
     /**
-     * Displays the model's name, linked to its encyclopedia page.
+     * Gets the Allele display name for HTML contexts (with superscripted modifier).
      *
      * @return string
      */
@@ -77,7 +89,7 @@ class LociAllele extends Model
     }
 
     /**
-     * Displays the model's name, linked to its encyclopedia page.
+     * Gets the Allele display name for non-HTML contexts (such as dropdown menus).
      *
      * @return string
      */

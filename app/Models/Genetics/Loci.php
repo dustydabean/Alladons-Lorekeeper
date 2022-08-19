@@ -54,6 +54,22 @@ class Loci extends Model
         return $this->hasMany('App\Models\Genetics\LociAllele')->orderBy('is_dominant', 'asc')->orderBy('sort', 'desc');
     }
 
+    /**
+     * Get the alleles of this feature, sorted from MOST to LEAST dominant.
+     */
+    public function visibleAlleles()
+    {
+        return $this->hasMany('App\Models\Genetics\LociAllele')->where('is_visible', 1)->orderBy('is_dominant', 'desc')->orderBy('sort', 'asc');
+    }
+
+    /**
+     * Get the alleles of this feature, sorted from MOST to LEAST dominant.
+     */
+    public function hiddenAlleles()
+    {
+        return $this->hasMany('App\Models\Genetics\LociAllele')->where('is_visible', 0)->orderBy('is_dominant', 'desc')->orderBy('sort', 'asc');
+    }
+
     /**********************************************************************************************
 
         SCOPES
@@ -72,7 +88,7 @@ class Loci extends Model
     }
 
     /**
-     * Scope a query to only include visible characters.
+     * Scope a query to only include visible.
      *
      * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
@@ -95,7 +111,7 @@ class Loci extends Model
      */
     public function getDisplayNameAttribute()
     {
-        return '<a href="'.$this->url.'" class="display-trait">'.$this->name.'</a>';
+        return '<a href="'.$this->url.'">'.$this->name.'</a>';
     }
 
     /**
@@ -105,19 +121,14 @@ class Loci extends Model
      */
     public function getUrlAttribute()
     {
-        return url('world/traits?name='.$this->name);
+        return url('world/genetics?name='.$this->name);
     }
 
     /**
-     * Gets the URL for a masterlist search of characters in this category.
+     * Gets a list of alleles in this loci (as plain array), if there are any.
      *
-     * @return string
+     * @return array
      */
-    public function getSearchUrlAttribute()
-    {
-        return url('masterlist?feature_id[]='.$this->id);
-    }
-
     public function getAlleles()
     {
         if($this->type != "gene") return [];

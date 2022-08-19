@@ -53,7 +53,7 @@
 </div>
 
 <div class="mb-3">
-    <div class="col-md form-group">
+    <div class="form-group">
         {!! Form::checkbox('is_visible', 1, $category->id ? $category->is_visible : 0, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
         {!! Form::label('is_visible', 'Show In Encyclopedia', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If this is off, the genes will still appear in revealed genomes, but this gene group will not appear in the encyclopedia.') !!}
     </div>
@@ -82,34 +82,9 @@
         </p>
         <div class="card mb-3">
             <ul id="sortable" class="sortable list-group list-group-flush">
-                @foreach($category->alleles as $alleles)
-                    <li class="sort-item list-group-item" data-id="{{ $alleles->id }}">
-                        <div class="input-group input-group-sm mb-1">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text bg-info border-primary text-center">
-                                    <a class="fas fa-arrows-alt-v handle" href="#"></a>
-                                </span>
-                                <span class="input-group-text py-0 " id="basic-addon3">
-                                    {!! Form::checkbox('edit_allele_dominance[]', true, $alleles->is_dominant, ['class' => "form-check-input ml-0 mt-0 mb-n1"]) !!}
-                                    {!! Form::label('edit_allele_dominance[]', "Dominant", ['class' => "ml-3 pl-1 form-check-label"]) !!}
-                                </span>
-                            </div>
-                            {!! Form::text('edit_allele_name[]', $alleles->name, ['class' => 'form-control allele-letter-id', 'maxlength' => 5]) !!}
-                            {!! Form::text('edit_allele_modifier[]', $alleles->modifier, ['class' => 'form-control allele-modifier', 'maxlength' => 5]) !!}
-                            <div class="input-group-append">
-                                <span class="input-group-text preview text-monospace pb-0">{!! $alleles->displayName !!}</span>
-                                <span class="input-group-text bg-light font-weight-bold text-monospace pb-0">{!! $alleles->displayName !!}</span>
-                            </div>
-                        </div>
-                        <div class="input-group input-group-sm">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text py-0">
-                                    {!! Form::checkbox('is_visible[]', true, false, ['class' => "form-check-input ml-0 mt-0 mb-n1"]) !!}
-                                    {!! Form::label('is_visible[]', "Visible", ['class' => "ml-3 pl-1 form-check-label"]) !!}
-                                </span>
-                            </div>
-                            {!! Form::text('allele_description[]', null, ['class' => 'form-control', 'placeholder' => "Short summary of allele.", 'maxlength' => 255]) !!}
-                        </div>
+                @foreach($category->alleles as $allele)
+                    <li class="sort-item list-group-item" data-id="{{ $allele->id }}">
+                        @include('admin.genetics._allele_entry', ['allele' => $allele])
                     </li>
                 @endforeach
             </ul>
@@ -157,32 +132,8 @@
 
 {{-- Form Template for Allele creation. --}}
 @if ($category->id && $category->type == 'gene')
-    <div class="allele-creation-row hide mb-2">
-        <div class="input-group input-group-sm mb-1">
-            <div class="input-group-prepend">
-                <span class="input-group-text py-0">
-                    {!! Form::checkbox('is_dominant[]', true, false, ['class' => "form-check-input ml-0 mt-0 mb-n1"]) !!}
-                    {!! Form::label('is_dominant[]', "Dominant", ['class' => "ml-3 pl-1 form-check-label"]) !!}
-                </span>
-            </div>
-            {!! Form::text('allele_name[]', null, ['class' => 'form-control allele-letter-id', 'maxlength' => 5]) !!}
-            {!! Form::text('modifier[]', null, ['class' => 'form-control allele-modifier', 'maxlength' => 5]) !!}
-            <div class="input-group-append">
-                <span class="input-group-text preview text-monospace pb-0"></span>
-            </div>
-        </div>
-        <div class="input-group input-group-sm mb-3">
-            <div class="input-group-prepend">
-                <span class="input-group-text py-0">
-                    {!! Form::checkbox('is_visible[]', true, false, ['class' => "form-check-input ml-0 mt-0 mb-n1"]) !!}
-                    {!! Form::label('is_visible[]', "Visible", ['class' => "ml-3 pl-1 form-check-label"]) !!}
-                </span>
-            </div>
-            {!! Form::text('allele_description[]', null, ['class' => 'form-control', 'placeholder' => "Short summary of allele.", 'maxlength' => 255]) !!}
-            <div class="input-group-append">
-                <button class="btn btn-danger delete-allele-row my-0 py-0" type="button"><i class="fas fa-times"></i></button>
-            </div>
-        </div>
+    <div class="allele-creation-row hide mb-3">
+        @include('admin.genetics._allele_entry', ['allele' => null])
     </div>
 @endif
 
@@ -208,7 +159,6 @@ $( document ).ready(function() {
 
     @if($category->id && $category->type == 'gene')
         $alleleCloneTarget = $('.allele-creation-row');
-        addAlleleListeners($alleleCloneTarget);
         addAlleleListeners($('#sortable'));
         $('.add-allele-button').on('click', function(e) {
             e.preventDefault();
@@ -236,13 +186,30 @@ $( document ).ready(function() {
 
             $inputs = $clone.find('input');
             $inputs.on('change', function(e) {
-                updateAllelePreview($(this).parent());
+                updateAllelePreview($(this).parent().parent());
+            });
+
+            $checks = $clone.find('.hidden-check-toggle');
+            $checks.on('click', function(e) {
+                e.preventDefault();
+                // this=button, parent=input-group-prepend
+                $hidden = $(this).parent().find('input[type=hidden]');
+
+                // If the hidden value is 1 (True aka Dominant/Visible, set to False aka Recessive/Hidden)
+                $newVal = $hidden.val() == 1 ? 0 : 1;
+                $hidden.val($newVal);
+
+                // Update appearances.
+                $(this).removeClass("btn-primary btn-dark");
+                $(this).addClass($newVal == 1 ? "btn-dark" : "btn-primary");
+                $(this).text($(this).data($newVal == 1 ? "true-label" : "false-label"));
+                $hidden.trigger("change");
             });
         }
         function updateAllelePreview($clone)
         {
             $preview = $clone.find('.preview');
-            $isDominant = $clone.find('input[type=checkbox]').is(":checked");
+            $isDominant = $clone.find('input[type=hidden]').val() == 1;
 
             $gene = $clone.find('.allele-letter-id').val();
             $mod = $clone.find('.allele-modifier').val();
