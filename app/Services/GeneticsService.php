@@ -41,6 +41,8 @@ class GeneticsService extends Service
             if (!isset($data['chromosome']) || $data['chromosome'] <= 0) $data['chromosome'] = null;
             if (!isset($data['default']) || $data['default'] < 0) $data['default'] = 0;
 
+            if (isset($data['description'])) $data['parsed_description'] = parse($data['description']);
+
             $loci = Loci::create($data);
             return $this->commitReturn($loci);
         } catch(\Exception $e) {
@@ -80,6 +82,8 @@ class GeneticsService extends Service
 
             // Default
             if (!isset($data['default']) || $data['default'] < 0) $data['default'] = 0;
+
+            $data['parsed_description'] = isset($data['description']) ? parse($data['description']) : null;
 
             // Alleles
             if ($category->type == "gene") {

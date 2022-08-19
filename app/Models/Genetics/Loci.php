@@ -20,6 +20,9 @@ class Loci extends Model
     protected $fillable = [
         'name', 'type', 'length', 'chromosome', 'sort',
         'default',
+        'description',
+        'parsed_description',
+        'is_visible',
     ];
 
     /**
@@ -36,7 +39,7 @@ class Loci extends Model
     **********************************************************************************************/
 
     /**
-     * Get the rarity of this feature.
+     * Get the alleles of this feature, sorted from MOST to LEAST dominant.
      */
     public function alleles()
     {
@@ -44,7 +47,7 @@ class Loci extends Model
     }
 
     /**
-     * Gets the alleles of this feature, sorted by LEAST dominant.
+     * Gets the alleles of this feature, sorted by LEAST to MOST dominant.
      */
     public function allelesReversed()
     {
@@ -66,6 +69,17 @@ class Loci extends Model
     public function scopeSortBySortOrder($query)
     {
         return $query->orderBy('sort');
+    }
+
+    /**
+     * Scope a query to only include visible characters.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeVisible($query)
+    {
+        return $query->where('is_visible', 1);
     }
 
     /**********************************************************************************************

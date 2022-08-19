@@ -45,6 +45,20 @@
     </div>
 </div>
 
+<div class="mb-3">
+    <div class="form-group">
+        {!! Form::label('Description (Optional)') !!}
+        {!! Form::textarea('description', $category->description, ['class' => 'form-control wysiwyg']) !!}
+    </div>
+</div>
+
+<div class="mb-3">
+    <div class="col-md form-group">
+        {!! Form::checkbox('is_visible', 1, $category->id ? $category->is_visible : 0, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
+        {!! Form::label('is_visible', 'Show In Encyclopedia', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If this is off, the genes will still appear in revealed genomes, but this gene group will not appear in the encyclopedia.') !!}
+    </div>
+</div>
+
 @if($category->id && $category->type == 'gene')
     <h3>Create Alleles</h3>
     <p>Add new alleles to this gene group here. The checkbox determines dominance. The first text area determines the identifier and the second is an optional modifier. Use the textbox next to the add allele button to set all the identifiers at once.</p>
@@ -70,7 +84,7 @@
             <ul id="sortable" class="sortable list-group list-group-flush">
                 @foreach($category->alleles as $alleles)
                     <li class="sort-item list-group-item" data-id="{{ $alleles->id }}">
-                        <div class="input-group input-group-sm">
+                        <div class="input-group input-group-sm mb-1">
                             <div class="input-group-prepend">
                                 <span class="input-group-text bg-info border-primary text-center">
                                     <a class="fas fa-arrows-alt-v handle" href="#"></a>
@@ -86,6 +100,15 @@
                                 <span class="input-group-text preview text-monospace pb-0">{!! $alleles->displayName !!}</span>
                                 <span class="input-group-text bg-light font-weight-bold text-monospace pb-0">{!! $alleles->displayName !!}</span>
                             </div>
+                        </div>
+                        <div class="input-group input-group-sm">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text py-0">
+                                    {!! Form::checkbox('is_visible[]', true, false, ['class' => "form-check-input ml-0 mt-0 mb-n1"]) !!}
+                                    {!! Form::label('is_visible[]', "Visible", ['class' => "ml-3 pl-1 form-check-label"]) !!}
+                                </span>
+                            </div>
+                            {!! Form::text('allele_description[]', null, ['class' => 'form-control', 'placeholder' => "Short summary of allele.", 'maxlength' => 255]) !!}
                         </div>
                     </li>
                 @endforeach
@@ -135,7 +158,7 @@
 {{-- Form Template for Allele creation. --}}
 @if ($category->id && $category->type == 'gene')
     <div class="allele-creation-row hide mb-2">
-        <div class="input-group input-group-sm mb-3">
+        <div class="input-group input-group-sm mb-1">
             <div class="input-group-prepend">
                 <span class="input-group-text py-0">
                     {!! Form::checkbox('is_dominant[]', true, false, ['class' => "form-check-input ml-0 mt-0 mb-n1"]) !!}
@@ -146,8 +169,28 @@
             {!! Form::text('modifier[]', null, ['class' => 'form-control allele-modifier', 'maxlength' => 5]) !!}
             <div class="input-group-append">
                 <span class="input-group-text preview text-monospace pb-0"></span>
+            </div>
+        </div>
+        <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text py-0">
+                    {!! Form::checkbox('is_visible[]', true, false, ['class' => "form-check-input ml-0 mt-0 mb-n1"]) !!}
+                    {!! Form::label('is_visible[]', "Visible", ['class' => "ml-3 pl-1 form-check-label"]) !!}
+                </span>
+            </div>
+            {!! Form::text('allele_description[]', null, ['class' => 'form-control', 'placeholder' => "Short summary of allele.", 'maxlength' => 255]) !!}
+            <div class="input-group-append">
                 <button class="btn btn-danger delete-allele-row my-0 py-0" type="button"><i class="fas fa-times"></i></button>
             </div>
+        </div>
+    </div>
+@endif
+
+@if($category->id)
+    <h3 class="mt-3">Preview</h3>
+    <div class="card mb-3">
+        <div class="card-body">
+            @include('world._gene_entry', [ 'loci' => $category ])
         </div>
     </div>
 @endif
@@ -188,7 +231,7 @@ $( document ).ready(function() {
         {
             $button = $clone.find('.delete-allele-row');
             $button.on('click', function(e) {
-                $(this).parent().parent().remove();
+                $(this).parent().parent().parent().remove();
             });
 
             $inputs = $clone.find('input');
