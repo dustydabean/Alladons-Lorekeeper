@@ -4,7 +4,7 @@
             @if (!$loci->is_visible)
                 <i class="fas fa-eye-slash"></i>
             @endif
-            {!! $loci->name !!}
+            {!! $loci->displayName !!}
         </h3>
         @if ($loci->type == "gene")
             <strong>Type</strong>: Standard<br>
