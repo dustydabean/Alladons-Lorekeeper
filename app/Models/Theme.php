@@ -38,7 +38,7 @@ class Theme extends Model
     public static $createRules = [
         'name' => 'required|unique:themes|between:3,100',
         'header' => 'mimes:png,jpg,jpeg,gif,svg',
-        'css' => 'required|mimetypes:text/plain',
+        'css' => 'required',
         'active' => 'nullable|boolean',
         'default' => 'nullable|boolean',
         'creator_name' => 'required',
@@ -53,7 +53,7 @@ class Theme extends Model
     public static $updateRules = [
         'name' => 'required|between:3,100',
         'header' => 'mimes:png,jpg,jpeg,gif,svg',
-        'css' => 'mimetypes:text/plain',
+        'css' => 'nullable',
         'active' => 'nullable|boolean',
         'default' => 'nullable|boolean',
         'creator_name' => 'required',
