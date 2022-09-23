@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 use App\Models\News;
+use App\Models\DevLogs;
 
 class NewsController extends Controller
 {
@@ -28,7 +29,10 @@ class NewsController extends Controller
     public function getIndex()
     {
         if(Auth::check() && Auth::user()->is_news_unread) Auth::user()->update(['is_news_unread' => 0]);
-        return view('news.index', ['newses' => News::visible()->orderBy('updated_at', 'DESC')->paginate(10)]);
+        return view('news.index', [
+            'newses' => News::visible()->orderBy('updated_at', 'DESC')->paginate(10),
+            'devLogses' => DevLogs::visible()->orderBy('updated_at', 'DESC')->paginate(10)
+        ]);
     }
     
     /**

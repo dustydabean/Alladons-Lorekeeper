@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 use App\Models\DevLogs;
+use App\Models\News;
 
 class DevLogsController extends Controller
 {
@@ -28,7 +29,10 @@ class DevLogsController extends Controller
     public function getIndex()
     {
         if(Auth::check() && Auth::user()->is_dev_logs_unread) Auth::user()->update(['is_dev_logs_unread' => 0]);
-        return view('logs.index', ['devLogses' => DevLogs::visible()->orderBy('updated_at', 'DESC')->paginate(10)]);
+        return view('logs.index', [
+            'newses' => News::visible()->orderBy('updated_at', 'DESC')->paginate(10),
+            'devLogses' => DevLogs::visible()->orderBy('updated_at', 'DESC')->paginate(10)
+        ]);
     }
     
     /**

@@ -2,6 +2,10 @@
 
 @section('title') Site News @endsection
 
+@section('sidebar')
+    @include('news._sidebar')
+@endsection
+
 @section('content')
 {!! breadcrumbs(['Site News' => 'news']) !!}
 <h1>Site News</h1>
