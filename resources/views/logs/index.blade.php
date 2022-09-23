@@ -2,8 +2,12 @@
 
 @section('title') Dev Log @endsection
 
+@section('sidebar')
+    @include('news._sidebar')
+@endsection
+
 @section('content')
-{!! breadcrumbs(['Dev Log' => 'logs']) !!}
+{!! breadcrumbs(['Site News' => 'news', 'Dev Log' => 'logs']) !!}
 <h1>Dev Logs</h1>
 @if(count($devLogses))
     {!! $devLogses->render() !!}

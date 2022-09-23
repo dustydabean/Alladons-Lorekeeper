@@ -3,7 +3,7 @@
 @section('title') {{ $devLogs->title }} @endsection
 
 @section('content')
-    {!! breadcrumbs(['Dev Logs' => 'logs', $devLogs->title => $devLogs->url]) !!}
+    {!! breadcrumbs(['Site News' => 'news', 'Dev Logs' => 'logs', $devLogs->title => $devLogs->url]) !!}
     @include('logs._logs', ['logs' => $devLogs, 'page' => TRUE])
 <hr>
 <br><br>
