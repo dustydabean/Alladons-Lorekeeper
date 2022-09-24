@@ -148,6 +148,17 @@ class UserService extends Service
     }
 
     /**
+     * Updates user's dev log notification setting
+     */
+    public function updateLogNotif($data, $user)
+    {
+        $user->settings->dev_log_notif = $data;
+        $user->settings->save();
+
+        return true;
+    }
+
+    /**
      * Updates the user's avatar. 
      *
      * @param  array                  $data

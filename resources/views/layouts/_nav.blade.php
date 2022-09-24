@@ -17,7 +17,7 @@
                         <a class="nav-link" href="{{ url('news') }}">News</a>
                     @endif
                 </li>
-                @if(Auth::check() && Auth::user()->is_dev_logs_unread && Config::get('lorekeeper.extensions.navbar_news_notif'))
+                @if(Auth::check() && Auth::user()->is_dev_logs_unread && Auth::user()->settings->dev_log_notif && Config::get('lorekeeper.extensions.navbar_news_notif'))
                     <li class="nav-item">
                         <a class="nav-link d-flex text-warning" href="{{ url('logs') }}"><strong>Devlog</strong><i class="fas fa-bell"></i></a>
                     </li>
