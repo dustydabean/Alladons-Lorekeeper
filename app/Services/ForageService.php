@@ -54,7 +54,7 @@ class ForageService extends Service
             }
             else $data['has_image'] = 0;
 
-            $table = Forage::create(array_only($data, ['name', 'display_name', 'is_active']));
+            $table = Forage::create(array_only($data, ['name', 'display_name', 'is_active', 'has_image']));
 
             if ($image) $this->handleImage($image, $table->imagePath, $table->imageFileName);
 
