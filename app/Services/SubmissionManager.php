@@ -482,6 +482,23 @@ class SubmissionManager extends Service
                 'submission_id' => $submission->id,
             ]);
 
+            if($submission->characters->count()) {
+                // Send a notification to included characters' owners now that the submission is accepted
+                // but not for the submitting user's own characters
+                foreach($submission->characters as $character) {
+                    if($character->character->user->id != $submission->user->id) {
+                        Notifications::create('GIFT_SUBMISSION_RECEIVED', $character->character->user, [
+                            'sender' => $submission->user->name,
+                            'sender_url' => $submission->user->url,
+                            'character_url' => $character->character->url,
+                            'character' => isset($character->character->name) ? $character->character->fullName : $character->character->slug,
+                            'submission_id' => $submission->id,
+                        ]);
+                    }
+                }
+                flash('Owner(s) have been notified that their character was included in this submission!')->success();
+            }
+
             return $this->commitReturn($submission);
         } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());

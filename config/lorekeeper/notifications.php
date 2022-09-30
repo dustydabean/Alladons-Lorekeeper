@@ -407,4 +407,11 @@ return [
         'message' => '<a href="{sender_url}">{sender}</a> has added you as a participant on a gallery submission. (<a href="{url}">View Submission</a>)',
         'url' => 'gallery/view/{submission_id}'
     ],
+
+    // GIFT_SUBMISSION_RECEIVED
+    1002 => [
+        'name' => 'Gift Submission Received',
+        'message' => 'Your character (<a href="{character_url}">{character}</a>) has been included in a submission by <a href="{sender_url}">{sender}</a>. (<a href="{url}">View Submission</a>)',
+        'url' => 'submissions/view/{submission_id}'
+    ],
 ];
