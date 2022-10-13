@@ -246,8 +246,10 @@ class CurrencyManager extends Service
                         }
                     }
 
-                    // Likewise for if teams are enabled and the user has joined a team
-                    if(Settings::get('event_teams') && isset($recipient->settings->team_id)) {
+                    // Likewise for if teams are enabled
+                    if(Settings::get('event_teams')) {
+                        if(!isset($recipient->settings->team_id)) throw new \Exception('This user is not currently part of a team!');
+
                         $team = EventTeam::where('id', $recipient->settings->team_id)->first();
                         if(!$team) throw new \Exception('Invalid event team selected.');
 
