@@ -66,6 +66,8 @@
 
 <h2 class="mt-4">Team Settings</h2>
 
+<p>Teams are currently <strong>{{ Settings::get('event_teams') ? 'enabled' : 'disabled' }}</strong>.
+
 <p>
     Here you can set teams that users may join as part of an event. Note that teams <strong>must be enabled</strong> for this to have any effect, but you may still adjust these settings, e.g. to perform setup, with the setting disabled. Teams can optionally have a logo image.<br/>
     Much like with event score, a team's score will increase when one of its members gains event currency (by the amount of currency gained). Additionally, once a team is created, its raw score can be adjusted. If weighting is enabled, the weighted score will also be displayed.
