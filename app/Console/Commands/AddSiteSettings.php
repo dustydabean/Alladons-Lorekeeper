@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class AddSiteSettings extends Command
 {
@@ -34,10 +34,10 @@ class AddSiteSettings extends Command
 
     /**
      * Add a site setting.
-     * 
+     *
      * Example usage:
      * $this->addSiteSetting("site_setting_key", 1, "0: does nothing. 1: does something.");
-     * 
+     *
      * @param  string  $key
      * @param  int     $value
      * @param  string  $description
@@ -103,44 +103,15 @@ class AddSiteSettings extends Command
 
         $this->addSiteSetting('group_currency', 1, 'ID of the group currency to award from gallery submissions (if enabled).');
 
-        if(!DB::table('site_settings')->where('key', 'event_currency')->exists()) {
-            DB::table('site_settings')->insert([
-                [
-                    'key' => 'event_currency',
-                    'value' => 1,
-                    'description' => 'ID of the currency used for events.'
-                ]
+        $this->addSiteSetting('event_currency', 1, 'ID of the currency used for events.');
 
-            ]);
-            $this->info("Added:   event_currency / Default: 1");
-        }
-        else $this->line("Skipped: event_currency");
+        $this->addSiteSetting('event_global_score', 0, '0: Event currency is only tracked individually, 1: A global tally of all event currency is also kept.');
 
-        if(!DB::table('site_settings')->where('key', 'global_event_score')->exists()) {
-            DB::table('site_settings')->insert([
-                [
-                    'key' => 'global_event_score',
-                    'value' => 0,
-                    'description' => '0: Event currency is only tracked individually, 1: A global tally of all event currency is also kept.'
-                ]
+        $this->addSiteSetting('event_global_goal', 0, 'Goal for global event score. Has no effect if global event score is not 1 and/or if set to 0.');
 
-            ]);
-            $this->info("Added:   global_event_score / Default: 0");
-        }
-        else $this->line("Skipped: global_event_score");
+        $this->addSiteSetting('event_teams', 0, '0: Teams are not enabled, even if set. 1: Teams are enabled.');
 
-        if(!DB::table('site_settings')->where('key', 'global_event_goal')->exists()) {
-            DB::table('site_settings')->insert([
-                [
-                    'key' => 'global_event_goal',
-                    'value' => 0,
-                    'description' => 'Goal for global event score. Has no effect if global event score is not 1 and/or if set to 0.'
-                ]
-
-            ]);
-            $this->info("Added:   global_event_goal / Default: 0");
-        }
-        else $this->line("Skipped: global_event_goal");
+        $this->addSiteSetting('event_weighting', 0, '0: Score is not weighted depending on number of team members, 1: Score is weighted. Does not impact raw currency amounts.');
 
         $this->line("\nSite settings up to date!");
 

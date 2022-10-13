@@ -179,6 +179,10 @@ Route::group(['prefix' => 'designs', 'namespace' => 'Characters'], function() {
     Route::post('{id}/delete', 'DesignController@postDelete');
 });
 
+Route::group(['prefix' => 'event-tracking'], function() {
+    Route::post('team/{id}', 'EventController@postJoinTeam');
+});
+
 /**************************************************************************************************
     Shops
 **************************************************************************************************/

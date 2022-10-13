@@ -95,8 +95,8 @@ return [
                 'url' => 'admin/grants/items'
             ],
             [
-                'name' => 'Event Currency',
-                'url' => 'admin/grants/event-currency'
+                'name' => 'Event Settings',
+                'url' => 'admin/event-settings'
             ],
         ]
     ],
