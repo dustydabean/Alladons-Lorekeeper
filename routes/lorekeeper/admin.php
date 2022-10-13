@@ -287,7 +287,7 @@ Route::group(['prefix' => 'grants', 'namespace' => 'Users', 'middleware' => 'pow
 
 # EVENT SETTINGS
 Route::group(['prefix' => 'event-settings', 'middleware' => 'power:edit_inventories'], function() {
-    Route::get('/', 'EventController@getEventCurrency');
+    Route::get('/', 'EventController@getEventSettings');
     Route::get('clear', 'EventController@getClearEventCurrency');
     Route::post('clear', 'EventController@postClearEventCurrency');
     Route::post('teams', 'EventController@postEventTeams');

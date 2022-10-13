@@ -15,11 +15,11 @@ use App\Services\EventService;
 class EventController extends Controller
 {
     /**
-     * Show the event currency info page.
+     * Show the event settings page.
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getEventCurrency()
+    public function getEventSettings()
     {
         $total = UserCurrency::where('user_id', Settings::get('admin_user'))->where('currency_id', Settings::get('event_currency'))->first();
 
