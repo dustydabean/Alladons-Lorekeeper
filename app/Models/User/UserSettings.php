@@ -2,6 +2,7 @@
 
 namespace App\Models\User;
 
+use App\Models\EventTeam;
 use App\Models\Model;
 
 class UserSettings extends Model
@@ -49,5 +50,13 @@ class UserSettings extends Model
     public function user()
     {
         return $this->belongsTo('App\Models\User\User');
+    }
+
+    /**
+     * Get the team this set of settings belongs to.
+     */
+    public function team()
+    {
+        return $this->belongsTo(EventTeam::class, 'team_id');
     }
 }

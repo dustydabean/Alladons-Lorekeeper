@@ -19,27 +19,37 @@
         <span class="badge badge-success float-right" data-toggle="tooltip" title="This user has not owned any characters from this world before.">FTO</span>
     @endif
 </h1>
-<div class="mb-4">
-    <div class="row">
-        <div class="row col-md-6">
-            <div class="col-md-2 col-4"><h5>Alias</h5></div>
-            <div class="col-md-10 col-8">{!! $user->displayAlias !!}</div>
-        </div>
-        <div class="row col-md-6">
-            <div class="col-md-2 col-4"><h5>Joined</h5></div>
-            <div class="col-md-10 col-8">{!! format_date($user->created_at, false) !!} ({{ $user->created_at->diffForHumans() }})</div>
-        </div>
-        <div class="row col-md-6">
-            <div class="col-md-2 col-4"><h5>Rank</h5></div>
-            <div class="col-md-10 col-8">{!! $user->rank->displayName !!} {!! add_help($user->rank->parsed_description) !!}</div>
-        </div>
-        @if($user->birthdayDisplay && isset($user->birthday))
+<div class="row">
+    <div class="col-md mb-4">
+        <div class="row">
             <div class="row col-md-6">
-                <div class="col-md-2 col-4"><h5>Birthday</h5></div>
-                <div class="col-md-10 col-8">{!! $user->birthdayDisplay !!}</div>
+                <div class="col-md-2 col-4"><h5>Alias</h5></div>
+                <div class="col-md-10 col-8">{!! $user->displayAlias !!}</div>
             </div>
-        @endif
+            <div class="row col-md-6">
+                <div class="col-md-2 col-4"><h5>Joined</h5></div>
+                <div class="col-md-10 col-8">{!! format_date($user->created_at, false) !!} ({{ $user->created_at->diffForHumans() }})</div>
+            </div>
+            <div class="row col-md-6">
+                <div class="col-md-2 col-4"><h5>Rank</h5></div>
+                <div class="col-md-10 col-8">{!! $user->rank->displayName !!} {!! add_help($user->rank->parsed_description) !!}</div>
+            </div>
+            @if($user->birthdayDisplay && isset($user->birthday))
+                <div class="row col-md-6">
+                    <div class="col-md-2 col-4"><h5>Birthday</h5></div>
+                    <div class="col-md-10 col-8">{!! $user->birthdayDisplay !!}</div>
+                </div>
+            @endif
+        </div>
     </div>
+    @if(Settings::get('event_teams') && $user->settings->team)
+        <div class="col-md-2 text-center">
+            @if($user->settings->team->has_image)
+                <img src="{{ $user->settings->team->imageUrl }}" class="mw-100"/>
+            @endif
+            <h5>{{ $user->settings->team->name }}</h5>
+        </div>
+    @endif
 </div>
 
 @if(isset($user->profile->parsed_text))
