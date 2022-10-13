@@ -41,7 +41,7 @@ class EventController extends Controller
 
         return view('events.event_tracking', [
             'currency' => Currency::find(Settings::get('event_currency')),
-            'total' => $total ?? $total,
+            'total' => isset($total) ? $total : null,
             'progress' => isset($total) && $total ? ($total->quantity < Settings::get('event_global_goal') ? ($total->quantity/Settings::get('event_global_goal'))*100 : 100) : 0,
             'inverseProgress' => isset($total) && $total ? ($total->quantity < Settings::get('event_global_goal') ? 100-(($total->quantity/Settings::get('event_global_goal'))*100) : 0) : 100,
             'teams' => EventTeam::all(),
