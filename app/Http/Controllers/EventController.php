@@ -62,6 +62,11 @@ class EventController extends Controller
             abort (404);
         }
 
+        if(Auth::user()->settings->team_id != null) {
+            flash ('You are already part of a team!')->error();
+            return redirect()->back();
+        }
+
         if(Auth::user()->settings->update(['team_id' => $team->id])) {
             flash('Team joined successfully!')->success();
         }
