@@ -17,9 +17,12 @@ class CriterionController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getCriterionGuide($id) {
+        $criterion = Criterion::where('id', $id)->first();
+        
+        if(!$criterion->is_guide_active) abort(404);
         
         return view('criteria.guide',[
-            'criterion' => Criterion::where('id', $id)->first(),
+            'criterion' => $criterion,
         ]);
     }
     
