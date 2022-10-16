@@ -28,7 +28,7 @@
 <div class="row align-items-end">
     <div class="form-group col-6">
         {!! Form::label('Base Amount (Optional)') !!} {!! add_help('This is the base reward going into calculation steps.') !!}
-        {!! Form::text('base_value', $criterion->base_value, ['class' => 'form-control selectize']) !!}
+        {!! Form::text('base_value', $criterion->base_value, ['class' => 'form-control']) !!}
     </div>
     <div class="form-group col-6">
         {!! Form::label('Currency') !!} {!! add_help('This is the type of currency that this criterion awards.') !!}
