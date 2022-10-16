@@ -108,36 +108,39 @@ class Criterion extends Model
     public function calculateReward($stepResults) {
         
         $total = $this->base_value ?? 0;
-        foreach($this->steps->where('is_active', 1) as $step) {
-            $subTotal = 0;
-            // Get our subtotal from the step type and options
-            if($step->type === 'boolean' && isset($stepResults[$step->id])) {
-                $subTotal = $step->options->first()->amount;
-            } else if ($step->type === 'input') {
-                $subTotal = $step->options->first()->amount;
-                $input = floatval($stepResults[$step->id]);
-                if($step->input_calc_type === 'additive') {
-                    $subTotal += $input;
-                } else if($step->input_calc_type === 'multiplicative') {
-                    $isDivision = $input < 0;
-                    if(!$isDivision) $subTotal *= $input;
-                    elseif ($input === 0 && $isDivision) throw new \Exception ("Criterion attempted to divide by zero.");
-                    else $subTotal /= $input;
+        
+        if(isset($stepResults)) {
+            foreach($this->steps->where('is_active', 1) as $step) {
+                $subTotal = 0;
+                // Get our subtotal from the step type and options
+                if($step->type === 'boolean' && isset($stepResults[$step->id])) {
+                    $subTotal = $step->options->first()->amount;
+                } else if ($step->type === 'input') {
+                    $subTotal = $step->options->first()->amount;
+                    $input = floatval($stepResults[$step->id]);
+                    if($step->input_calc_type === 'additive') {
+                        $subTotal += $input;
+                    } else if($step->input_calc_type === 'multiplicative') {
+                        $isDivision = $input < 0;
+                        if(!$isDivision) $subTotal *= $input;
+                        elseif ($input === 0 && $isDivision) throw new \Exception ("Criterion attempted to divide by zero.");
+                        else $subTotal /= $input;
+                    }
+                } else if($step->type === 'options') {
+                    $optionId = $stepResults[$step->id];
+                    $subTotal = $step->options()->where('id', $optionId)->first()->amount;
                 }
-            } else if($step->type === 'options') {
-                $optionId = $stepResults[$step->id];
-                $subTotal = $step->options()->where('id', $optionId)->first()->amount;
-            }
-            
-            // Apply subtotal to running total based on calc type
-            if($step->calc_type === 'additive') {
-                $total += $subTotal;
-            } else if($step->calc_type === 'multiplicative') {
-                $isDivision = $subTotal < 0;
-                // makes sure we don't zero out the equation if we have an unset multiplicative boolean
-                if(!$isDivision) $total *= max($subTotal, 1);
-                elseif ($subTotal === 0 && $isDivision) throw new \Exception ("Criterion attempted to divide by zero.");
-                else $total /= $subTotal;
+                
+                // Apply subtotal to running total based on calc type
+                if($step->calc_type === 'additive') {
+                    $total += $subTotal;
+                } else if($step->calc_type === 'multiplicative') {
+                    $isDivision = $subTotal < 0;
+                    // makes sure we don't zero out the equation if we have an unset multiplicative boolean
+                    if(!$isDivision) $total *= max($subTotal, 1);
+                    elseif ($subTotal === 0 && $isDivision) throw new \Exception ("Criterion attempted to divide by zero.");
+                    else $total /= $subTotal;
+                }
             }
         }
         

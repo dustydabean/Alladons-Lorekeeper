@@ -4,7 +4,7 @@
 <div id="calc-{{ isset($id) ? $id : $criterion->id }}" class="ml-5 steps">
     <h5>
         {{ isset($title) ? $title : 'Minimum Requirements' }}
-        <span class="mr-2 text-secondary"> - will reward <span class="reward">{!! isset($finalValues) ? $criterion->currency->display($criterion->calculateReward($finalValues)) : 0 !!}</span>
+        <span class="mr-2 text-secondary"> - will reward <span class="reward">{!! $criterion->currency->display($criterion->calculateReward($finalValues)) ?? 0 !!}</span>
     </h5>
     @foreach($criterion->steps->where('is_active', 1) as $step)
     <div class="form-group">
