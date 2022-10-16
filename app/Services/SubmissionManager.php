@@ -1,5 +1,6 @@
 <?php namespace App\Services;
 
+use App\Models\Criteria\Criterion;
 use App\Services\Service;
 
 use Carbon\Carbon;
@@ -117,6 +118,7 @@ class SubmissionManager extends Service
                 }
             }
             $promptRewards = mergeAssetsArrays($promptRewards, $this->processRewards($data, false));
+            
             $submission = Submission::create([
                 'user_id' => $user->id,
                 'url' => isset($data['url']) ? $data['url'] : null,
@@ -124,7 +126,8 @@ class SubmissionManager extends Service
                 'comments' => $data['comments'],
                 'data' => json_encode([
                     'user' => Arr::only(getDataReadyAssets($userAssets), ['user_items','currencies']),
-                    'rewards' => getDataReadyAssets($promptRewards)
+                    'rewards' => getDataReadyAssets($promptRewards),
+                    'criterion' => $data['criterion'],
                     ]) // list of rewards and addons
             ] + ($isClaim ? [] : ['prompt_id' => $prompt->id,]));
 
@@ -404,6 +407,15 @@ class SubmissionManager extends Service
             // Distribute user rewards
             if(!$rewards = fillUserAssets($rewards, $user, $submission->user, $promptLogType, $promptData)) throw new \Exception("Failed to distribute rewards to user.");
 
+            // Distribute currency from criteria
+            $service = new CurrencyManager;
+            
+            foreach($submission->data['criterion'] as $key => $criterionData) {
+                $criterion = Criterion::where('id', $criterionData['id'])->first();
+                if(!$service->creditCurrency($user, $submission->user, $promptLogType, $promptData['data'], $criterion->currency, $criterion->calculateReward($criterionData))) throw new \Exception("Failed to distribute criterion rewards to user.");
+            }
+        
+            
             // Retrieve all reward IDs for characters
             $currencyIds = []; $itemIds = []; $tableIds = [];
             if(isset($data['character_currency_id'])) {
@@ -472,7 +484,8 @@ class SubmissionManager extends Service
                 'status' => 'Approved',
                 'data' => json_encode([
                     'user' => $addonData,
-                    'rewards' => getDataReadyAssets($rewards)
+                    'rewards' => getDataReadyAssets($rewards),
+                    'criterion' => $submission->data['criterion']
                     ]) // list of rewards
             ]);
 
