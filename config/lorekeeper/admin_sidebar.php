@@ -177,7 +177,7 @@ return [
                 'url' => 'admin/data/items'
             ],
             [
-                'name' => 'Reward Criteria',
+                'name' => 'Criteria Rewards',
                 'url' => 'admin/data/criteria'
             ]
         ]

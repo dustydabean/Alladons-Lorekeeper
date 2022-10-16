@@ -82,7 +82,7 @@
     </div>
 </div>
 
-<h3 class="mt-5">Reward Criteria <button class="btn btn-primary float-right add-calc" type="button">+ Criterion</a></h3>
+<h3 class="mt-5">Criteria Rewards <button class="btn btn-primary float-right add-calc" type="button">+ Criterion</a></h3>
 <p>Criteria can be used to reward users with currency for the art they submit. They can be created under the "criterion" section of the admin panel,
 and allow for dynamic reward amounts to be generated based on user / admin selected criteria like the type of art, or the number of words.</p>
 <div id="criteria">

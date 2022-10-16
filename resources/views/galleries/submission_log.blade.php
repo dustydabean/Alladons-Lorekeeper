@@ -25,7 +25,7 @@
                                 <p>Adjust the criteria submitted and other options as needed for what the submitter, collaborators, and/or participants, should receive.</p>
                                 {!! Form::open(['url' => 'admin/gallery/edit/'.$submission->id.'/value']) !!}
                                    @if(isset($submission->data['criterion']))
-                                        <h2 class="mt-5">Reward Criteria</h2>
+                                        <h2 class="mt-5">Criteria Rewards</h2>
                                         @foreach($submission->data['criterion'] as $key => $criterionData)
                                             <div class="card p-3 mb-2">
                                             @php $criterion = \App\Models\Criteria\Criterion::where('id', $criterionData['id'])->first() @endphp

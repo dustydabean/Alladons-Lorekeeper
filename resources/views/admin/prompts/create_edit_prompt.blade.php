@@ -102,7 +102,7 @@
 <p>You can add loot tables containing any kind of currencies (both user- and character-attached), but be sure to keep track of which are being distributed! Character-only currencies cannot be given to users.</p>
 @include('widgets._loot_select', ['loots' => $prompt->rewards, 'showLootTables' => true, 'showRaffles' => true])
 
-<h3 class="mt-5">Reward Criteria <button class="btn btn-primary float-right add-calc" type="button">+ Criterion</a></h3>
+<h3 class="mt-5">Criteria Rewards <button class="btn btn-primary float-right add-calc" type="button">+ Criterion</a></h3>
 <p>Criteria can be used in addition to or in replacment of rewards. They can be created under the "criterion" section of the admin panel,
 and allow for dynamic reward amounts to be generated based on user / admin selected criteria like the type of art, or the number of words.</p>
 <div id="criteria">
