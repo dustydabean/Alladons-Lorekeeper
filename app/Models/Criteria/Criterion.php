@@ -117,7 +117,7 @@ class Criterion extends Model
                     $subTotal = $step->options->first()->amount;
                 } else if ($step->type === 'input') {
                     $subTotal = $step->options->first()->amount;
-                    $input = floatval($stepResults[$step->id]);
+                    $input = floatval($stepResults[$step->id] ?? 0);
                     if($step->input_calc_type === 'additive') {
                         $subTotal += $input;
                     } else if($step->input_calc_type === 'multiplicative') {
@@ -127,10 +127,10 @@ class Criterion extends Model
                         else $subTotal /= $input;
                     }
                 } else if($step->type === 'options') {
-                    $optionId = $stepResults[$step->id];
+                    $optionId = $stepResults[$step->id] ?? null;
                     $option = $step->options()->where('id', $optionId)->first();
                     $subTotal = isset($option) ? $option->amount : 0;
-                }
+                } 
                 
                 // Apply subtotal to running total based on calc type
                 if($step->calc_type === 'additive') {
