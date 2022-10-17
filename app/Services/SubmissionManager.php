@@ -59,6 +59,16 @@ class SubmissionManager extends Service
                 if(!$prompt) throw new \Exception("Invalid prompt selected.");
             }
             else $prompt = null;
+            
+            $noCriteriaSelected = isset($data['criterion']) ? array_filter($data['criterion'], function($obj){
+                if (isset($obj->admins)) {
+                    foreach ($obj->admins as $admin) {
+                        if ($admin->member == 11) return false;
+                    }
+                }
+                return true;
+            }) : false;
+            if($noCriteriaSelected) throw new \Exception("Please select a prompt.");
 
             // The character identification comes in both the slug field and as character IDs
             // that key the reward ID/quantity arrays.
@@ -410,9 +420,11 @@ class SubmissionManager extends Service
             // Distribute currency from criteria
             $service = new CurrencyManager;
             
-            foreach($submission->data['criterion'] as $key => $criterionData) {
-                $criterion = Criterion::where('id', $criterionData['id'])->first();
-                if(!$service->creditCurrency($user, $submission->user, $promptLogType, $promptData['data'], $criterion->currency, $criterion->calculateReward($criterionData))) throw new \Exception("Failed to distribute criterion rewards to user.");
+            if(isset($submission->data['criterion'])) {
+                foreach($submission->data['criterion'] as $key => $criterionData) {
+                    $criterion = Criterion::where('id', $criterionData['id'])->first();
+                    if(!$service->creditCurrency($user, $submission->user, $promptLogType, $promptData['data'], $criterion->currency, $criterion->calculateReward($criterionData))) throw new \Exception("Failed to distribute criterion rewards to user.");
+                }
             }
         
             
@@ -485,7 +497,7 @@ class SubmissionManager extends Service
                 'data' => json_encode([
                     'user' => $addonData,
                     'rewards' => getDataReadyAssets($rewards),
-                    'criterion' => $submission->data['criterion']
+                    'criterion' => isset($submission->data['criterion']) ? $submission->data['criterion'] : null
                     ]) // list of rewards
             ]);
 

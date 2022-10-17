@@ -22,9 +22,10 @@
                     @if($submission->status == 'Accepted')
                         @if(!$submission->is_valued)
                             @if(Auth::user()->hasPower('manage_submissions'))
-                                <p>Adjust the criteria submitted and other options as needed for what the submitter, collaborators, and/or participants, should receive.</p>
                                 {!! Form::open(['url' => 'admin/gallery/edit/'.$submission->id.'/value']) !!}
-                                   @if(isset($submission->data['criterion']))
+                                @if(isset($submission->data['criterion']))
+                                     <p>Adjust the criteria submitted and other options as needed for what the submitter, collaborators, and/or participants, should receive.</p>
+                                
                                         <h2 class="mt-5">Criteria Rewards</h2>
                                         @foreach($submission->data['criterion'] as $key => $criterionData)
                                             <div class="card p-3 mb-2">
@@ -34,27 +35,30 @@
                                             @include('criteria._minimum_requirements', ['criterion' => $criterion, 'values' => $criterionData, 'minRequirements' => $submission->gallery->criteria->where('criterion_id', $criterionData['id'])->first()->minRequirements, 'title' => 'Selections', 'limitByMinReq' => true, 'id' => $key])
                                             </div>
                                         @endforeach
+                                        
+                                    @else
+                                        <p>This submission didn't have any criteria specified for rewards. Hitting submit will confirm this and clear it from the queue.</p>
                                     @endif
-                                    
-                                    {{-- TODO: Cover the commissioned participant case
-                                                -- current thought is to expose ability to add criterion to apply specifically to the commissioned person
-                                                -- expectation is that person who uploaded image would have selected the right criterion for their own rewards
-                                    @if($submission->participants->count())
-                                        @foreach($submission->participants as $key=>$participant)
-                                            <div class="form-group">
-                                                {!! Form::label($participant->user->name.' ('.$participant->displayType.')') !!}:
-                                                {!! Form::number('value[participant]['.$participant->user->id.']', isset($submission->data['total']) ? ($participant->type == 'Comm' ? round(($submission->characters->count() ? round($submission->data['total'] * $submission->characters->count()) : $submission->data['total']) / ($submission->collaborators->count() ? $submission->collaborators->count() : '1')/2) : 0) : 0, ['class' => 'form-control']) !!}
-                                            </div>
-                                        @endforeach
-                                    @endif --}}
-                                    <div class="form-group">
-                                        {!! Form::checkbox('ineligible', 1, false, ['class' => 'form-check-input', 'data-toggle' => 'toggle', 'data-onstyle' => 'danger']) !!}
-                                        {!! Form::label('ineligible', 'Inelegible/Award No Currency', ['class' => 'form-check-label ml-3']) !!} {!! add_help('When on, this will mark the submission as valued, but will not award currency to any of the users listed.') !!}
-                                    </div>
-                                    <div class="text-right">
-                                        {!! Form::submit('Submit', ['class' => 'btn btn-primary']) !!}
-                                    </div>
-                                {!! Form::close() !!}
+                                        
+                                        {{-- TODO: Cover the commissioned participant case
+                                                    -- current thought is to expose ability to add criterion to apply specifically to the commissioned person
+                                                    -- expectation is that person who uploaded image would have selected the right criterion for their own rewards
+                                        @if($submission->participants->count())
+                                            @foreach($submission->participants as $key=>$participant)
+                                                <div class="form-group">
+                                                    {!! Form::label($participant->user->name.' ('.$participant->displayType.')') !!}:
+                                                    {!! Form::number('value[participant]['.$participant->user->id.']', isset($submission->data['total']) ? ($participant->type == 'Comm' ? round(($submission->characters->count() ? round($submission->data['total'] * $submission->characters->count()) : $submission->data['total']) / ($submission->collaborators->count() ? $submission->collaborators->count() : '1')/2) : 0) : 0, ['class' => 'form-control']) !!}
+                                                </div>
+                                            @endforeach
+                                        @endif --}}
+                                        <div class="form-group">
+                                            {!! Form::checkbox('ineligible', 1, false, ['class' => 'form-check-input', 'data-toggle' => 'toggle', 'data-onstyle' => 'danger']) !!}
+                                            {!! Form::label('ineligible', 'Inelegible/Award No Currency', ['class' => 'form-check-label ml-3']) !!} {!! add_help('When on, this will mark the submission as valued, but will not award currency to any of the users listed.') !!}
+                                        </div>
+                                        <div class="text-right">
+                                            {!! Form::submit('Submit', ['class' => 'btn btn-primary']) !!}
+                                        </div>
+                                    {!! Form::close() !!}
                             @else
                                 <p>This submission hasn't been evaluated yet. You'll receive a notification once it has!</p>
                             @endif
@@ -63,6 +67,7 @@
                             @if(isset($submission->data['ineligible']) && $submission->data['ineligible'] == 1)
                                 <p>This submission has been evaluated as ineligible for rewards.</p>
                             @else
+                                @if(isset($totals) && count($totals) > 0)
                                     @foreach($totals as $total)
                                         <h5>{{ $total['name'] }} Criterion</h5>
                                         <div class="row">
@@ -90,15 +95,20 @@
                                         @endif --}}
                                         </div>
                                     @endforeach
+                                @else
+                                    <p>This submission didn't have any criteria specified for rewards</p>
+                                @endif
                             @endif
                         @endif
                     @else
                         <p>This submission is not eligible for currency awards{{ $submission->status == 'Pending' ? ' yet-- it must be accepted first' : '' }}.</p>
                     @endif
-                    <hr/>
-                    <div id="totals">
-                        @include('galleries._submission_totals', ['totals' => $totals, 'collaboratorsCount' => $collaboratorsCount])
-                    </div>
+                    @if(isset($totals) && count($totals) > 0)
+                        <hr/>
+                        <div id="totals">
+                            @include('galleries._submission_totals', ['totals' => $totals, 'collaboratorsCount' => $collaboratorsCount])
+                        </div>
+                    @endif
                 </div>
             </div>
         @endif

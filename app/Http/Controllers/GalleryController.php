@@ -167,14 +167,16 @@ class GalleryController extends Controller
         if(!$isMod && !$isOwner && !$isCollaborator) abort(404);
         
         $totals = [];
-        foreach($submission->data['criterion'] as $key => $criterionData) {
-            $criterion = Criterion::where('id', $criterionData['id'])->first();
-            $totals[$key] = [
-                'value' => $criterion->calculateReward($criterionData),
-                'name' => $criterion->name,
-                'currency' => $criterion->currency
-            ];
-        } 
+        if(isset($submission->data['criterion'])) {
+            foreach($submission->data['criterion'] as $key => $criterionData) {
+                $criterion = Criterion::where('id', $criterionData['id'])->first();
+                $totals[$key] = [
+                    'value' => $criterion->calculateReward($criterionData),
+                    'name' => $criterion->name,
+                    'currency' => $criterion->currency
+                ];
+            }
+        }
 
         return view('galleries.submission_log', [
             'submission' => $submission,
