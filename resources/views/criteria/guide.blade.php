@@ -32,7 +32,7 @@
             
                 @if($step->type === 'options')<h3 class="mt-2">Options:</h3>@endif
         </div>
-        <div class="mt-2" style="background-image: url({{ $step->imageUrl }}); background-repeat: no-repeat; background-size: contain; flex: 1;background-position-x: right;"></div>
+        @if($step->has_image) <div class="mt-2" style="background-image: url({{ $step->imageUrl }}); background-repeat: no-repeat; background-size: contain; flex: 1;background-position-x: right;"></div> @endif
     </div>
     
     @if($step->type === 'options')
