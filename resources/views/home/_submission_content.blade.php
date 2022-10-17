@@ -72,7 +72,8 @@
         <div class="d-flex">
             <span class="mr-1 text-secondary">{{ $step->name }}:</span>
             @if($step->type === 'options')
-                <span>{{ $step->options->where('id', $criterionData[$step->id])->first()->name }}</span>
+                @php $stepOption = $step->options->where('id', $criterionData[$step->id])->first() @endphp
+                <span>{{ isset($stepOption) ? $stepOption->name : 'Not Selected' }}</span>
             @elseif($step->type === 'boolean')
                 <span>{{ isset($criterionData[$step->id]) ? 'On' : 'Off' }}
             @elseif($step->type === 'input')
