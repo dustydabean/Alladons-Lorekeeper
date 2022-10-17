@@ -13,7 +13,8 @@
 
 <div class="form-group">
     {!! Form::label('description') !!} {!! add_help('This is used for the criterion\'s guide.') !!}
-    {!! Form::textarea('description', $option->description, ['class' => 'form-control wysiwyg', 'id' => 'option-description']) !!}
+    {{-- uniqid helps keep tinymce from being upset that we keep adding the same id'd textarea to it --}}
+    {!! Form::textarea('description', $option->description, ['class' => 'form-control wysiwyg', 'id' => uniqid("description-", true)]) !!}
 </div>
 
 <div class="row align-items-end">
