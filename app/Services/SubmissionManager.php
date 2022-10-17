@@ -127,7 +127,7 @@ class SubmissionManager extends Service
                 'data' => json_encode([
                     'user' => Arr::only(getDataReadyAssets($userAssets), ['user_items','currencies']),
                     'rewards' => getDataReadyAssets($promptRewards),
-                    'criterion' => $data['criterion'],
+                    'criterion' => isset($data['criterion']) ? $data['criterion'] : null,
                     ]) // list of rewards and addons
             ] + ($isClaim ? [] : ['prompt_id' => $prompt->id,]));
 
