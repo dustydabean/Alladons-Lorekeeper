@@ -82,7 +82,7 @@ class CriterionStep extends Model
      */
     public function getImageDirectoryAttribute()
     {
-        return 'images/data/species';
+        return 'images/data/criteria';
     }
 
     /**
