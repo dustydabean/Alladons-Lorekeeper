@@ -62,7 +62,7 @@
                 </h4>
                 <span class="text-secondary">{{ ucfirst($step->type) }} · {{ ucfirst($step->calc_type) }} · {{ $step->summary }}</span>
             </div>
-            <div>
+            <div style="flex: 0 0 auto;">
                 <a href="{{ url('admin/data/criteria/'.$criterion->id.'/step/'.$step->id) }}" class="btn btn-info text-white mr-2"><i class="fas fa-pencil-alt"></i></a>
                 <button class="btn btn-danger delete-step" type="button" data-id="{{ $step->id }}"><i class="fas fa-trash"></i></button>
             </div>

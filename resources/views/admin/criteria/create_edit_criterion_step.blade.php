@@ -75,7 +75,7 @@
                 </h4>
                 <span class="text-secondary">{!! $step->criterion->currency->display($option->amount) !!} · {{ $option->summary }}</span>
             </div>
-            <div>
+            <div style="flex: 0 0 auto;">
                 <button class="option-edit btn btn-info text-white mr-2" data-id="{{ $option->id }}" type="button"><i class="fas fa-pencil-alt"></i></button>
                 <button class="btn btn-danger option-delete" data-id="{{ $option->id }}" type="button"><i class="fas fa-trash"></i></button>
             </div>
