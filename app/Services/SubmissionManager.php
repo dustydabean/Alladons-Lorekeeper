@@ -60,15 +60,11 @@ class SubmissionManager extends Service
             }
             else $prompt = null;
             
-            $noCriteriaSelected = isset($data['criterion']) ? array_filter($data['criterion'], function($obj){
-                if (isset($obj->admins)) {
-                    foreach ($obj->admins as $admin) {
-                        if ($admin->member == 11) return false;
-                    }
-                }
-                return true;
-            }) : false;
-            if($noCriteriaSelected) throw new \Exception("Please select a prompt.");
+            $withCriteriaSelected = isset($data['criterion']) ? array_filter($data['criterion'], function($obj){
+                return isset($obj['id']);
+            }) : [];
+            if(count($withCriteriaSelected) > 0) $data['criterion'] = $withCriteriaSelected;
+            else $data['criterion'] = null;
 
             // The character identification comes in both the slug field and as character IDs
             // that key the reward ID/quantity arrays.
