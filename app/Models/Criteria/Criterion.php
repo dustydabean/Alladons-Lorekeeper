@@ -61,7 +61,7 @@ class Criterion extends Model
      */
     public function steps()
     {
-        return $this->hasMany('App\Models\Criteria\CriterionStep', 'criterion_id');
+        return $this->hasMany('App\Models\Criteria\CriterionStep', 'criterion_id')->orderBy('order');
     }
     
     /**********************************************************************************************
