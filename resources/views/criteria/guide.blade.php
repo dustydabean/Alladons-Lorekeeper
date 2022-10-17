@@ -43,7 +43,12 @@
                 <span class="mx-1"> · </span>
                 <div class="text-secondary">{!! $criterion->currency->display($option->amount) !!}</div>
             </div>
-            <div class="parsed-text pl-2 ml-3 py-2" style="border-left: 4px solid lightgrey">{!! $option->parsed_description !!}</div>
+            {{-- Only display the summary if we don't have a full description --}}
+            @if($option->parsed_description)
+                <div class="parsed-text pl-2 ml-3 py-2" style="border-left: 4px solid lightgrey">{!! $option->parsed_description !!}</div>
+            @elseif($option->summary)
+                <div class="parsed-text pl-2 ml-3 py-2" style="border-left: 4px solid lightgrey">{!! $option->summary !!}</div>
+            @endif
         @endforeach
     </div>
     @endif     
