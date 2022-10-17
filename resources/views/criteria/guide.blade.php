@@ -20,7 +20,7 @@
                 @if($step->type === 'boolean')<span class="mx-1"> · </span>{!! $criterion->currency->display($firstOption->amount) !!}@endif
             </div>
             {{-- Extra info about the input is only needed if it's not multiplying by one --}}
-            @if($step->type === 'input' && !($firstOption->amount === 1 && $firstOption->type === 'multiplicative'))
+            @if($step->type === 'input' && !($firstOption->amount === 1 && $step->input_calc_type === 'multiplicative'))
                 <div class="text-secondary">Input value is {{ $firstOption->type === 'additive' ? 'added to ' : 'multiplied by ' }}{!! $criterion->currency->display($firstOption->amount)  !!}</div>
             @endif
             {{-- Only display the summary if we don't have a full description --}}
