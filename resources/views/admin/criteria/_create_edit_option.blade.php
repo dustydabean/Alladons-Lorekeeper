@@ -13,7 +13,7 @@
 
 <div class="form-group">
     {!! Form::label('description') !!} {!! add_help('This is used for the criterion\'s guide.') !!}
-    {!! Form::textarea('description', $option->description, ['class' => 'form-control wysiwyg']) !!}
+    {!! Form::textarea('description', $option->description, ['class' => 'form-control wysiwyg', 'id' => 'option-description']) !!}
 </div>
 
 <div class="row align-items-end">
@@ -36,3 +36,9 @@
 </div>
 
 {!! Form::close() !!}
+
+<script>
+    $(document).ready(function() {
+        @include('js._modal_wysiwyg')
+    });
+</script>
