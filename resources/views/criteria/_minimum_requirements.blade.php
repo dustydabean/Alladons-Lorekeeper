@@ -13,7 +13,7 @@
             {!! Form::number('criterion['.(isset($id) ? $id : $criterion->id).']['.$step->id.']', $finalValues[$step->id] ?? null, ['class' => 'form-control', 'min' => isset($limitByMinReq)  ? $minRequirements[$step->id] : null]) !!}
         @elseif($step->type === 'options')
             @php 
-                $finalOptions = isset($limitByMinReq) ? $step->options($minRequirements[$step->id])->where('is_active', 1)->pluck('name', 'id') : $step->options->where('is_active', 1)->pluck('name', 'id');
+                $finalOptions = isset($limitByMinReq) && isset($minRequirements) ? $step->options($minRequirements[$step->id])->where('is_active', 1)->pluck('name', 'id') : $step->options->where('is_active', 1)->pluck('name', 'id');
             @endphp
             {!! Form::select('criterion['.(isset($id) ? $id : $criterion->id).']['.$step->id.']', $finalOptions, $finalValues[$step->id] ?? null, ['class' => 'form-control selectize', 'placeholder' => 'Select an Option']) !!}
         @elseif($step->type === 'boolean')
@@ -30,7 +30,6 @@
         disabledInputs.prop('disabled', false);
         formObj = {};
         let formData = $('#calc-' + calcId).closest('form').serializeArray();
-        console.log(formData);
         disabledInputs.prop('disabled', true);
         formObj['_token'] = formData[0].value;
         formData = formData.filter((item) => item.name.includes('criterion[' + calcId + ']'));

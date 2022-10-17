@@ -47,9 +47,9 @@ class CriterionController extends Controller
      public function getCriterionForm($entity = null, $id, $entity_id = null, $form_id = null) {
         if($entity_id && $entity) {
             if($entity === 'prompt') {
-                $entityCriteria = PromptCriterion::where('prompt_id', $entity_id)->first();
+                $entityCriteria = PromptCriterion::where('prompt_id', $entity_id)->where('criterion_id', $id)->first();
             } else if ($entity === 'gallery') {
-                $entityCriteria = GalleryCriterion::where('gallery_id', $entity_id)->first();
+                $entityCriteria = GalleryCriterion::where('gallery_id', $entity_id)->where('criterion_id', $id)->first();
             }
         }
         

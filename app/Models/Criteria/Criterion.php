@@ -128,7 +128,8 @@ class Criterion extends Model
                     }
                 } else if($step->type === 'options') {
                     $optionId = $stepResults[$step->id];
-                    $subTotal = $step->options()->where('id', $optionId)->first()->amount;
+                    $option = $step->options()->where('id', $optionId)->first();
+                    $subTotal = isset($option) ? $option->amount : 0;
                 }
                 
                 // Apply subtotal to running total based on calc type
