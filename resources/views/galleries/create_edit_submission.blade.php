@@ -143,7 +143,7 @@
                                         <div class="mb-2">
                                             <div class="d-flex">{!! Form::select('participant_id[]', $users, $participant->user_id, ['class' => 'form-control mr-2 participant-select original', 'placeholder' => 'Select User']) !!}</div>
                                             <div class="d-flex">
-                                                {!! Form::select('participant_type[]', ['Gift' => 'Gift For', 'Trade' => 'Traded For', 'Comm' => 'Commissioned', 'Comm (Currency)' => 'Commissioned ('.$currency->name.')'], $participant->type, ['class' => 'form-control mr-2', 'placeholder' => 'Select Role']) !!}
+                                                {!! Form::select('participant_type[]', ['Gift' => 'Gift For', 'Trade' => 'Traded For', 'Comm' => 'Commissioned'], $participant->type, ['class' => 'form-control mr-2', 'placeholder' => 'Select Role']) !!}
                                                 <a href="#" class="remove-participant btn btn-danger mb-2">×</a>
                                             </div>
                                         </div>
