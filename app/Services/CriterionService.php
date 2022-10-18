@@ -55,6 +55,9 @@ class CriterionService extends Service
         try {
             if(isset($data['sort'])) $this->handleSort($data['sort'], CriterionStep::class);
             $this->handleActive(isset($data['is_active']), $criterion);
+            if(isset($data['is_guide_active'])) $criterion->is_guide_active = 1;
+            else $criterion->is_guide_active = 0;
+            
             $criterion->update($data);
             $criterion->save();
             
