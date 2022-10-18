@@ -1,3 +1,4 @@
+@if($criterion)
 <p>{{ $criterion->summary }}{!! $criterion->is_guide_active ? ' - <a href="'.url('/criteria/guide/'.$criterion->id).'">Go To Guide</a>' : '' !!}</p>
 
 @php $finalValues = $values ?? $minRequirements @endphp
@@ -37,3 +38,6 @@
         $(`#calc-${calcId} .reward`).load('{{ url('criteria/rewards/'.$criterion->id) }}', formObj);
     });
 </script>
+@else
+<div>This Criterion no longer exists</div>
+@endif
