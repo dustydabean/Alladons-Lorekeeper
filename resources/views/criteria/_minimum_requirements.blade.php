@@ -11,7 +11,7 @@
     <div class="form-group">
         <div>{!! Form::label($step->name) !!} {!! $step->summary ? add_help($step->summary) : '' !!}</div>
         @if($step->type === 'input')
-            {!! Form::number('criterion['.(isset($id) ? $id : $criterion->id).']['.$step->id.']', $finalValues[$step->id] ?? null, ['class' => 'form-control', 'min' => isset($limitByMinReq)  ? $minRequirements[$step->id] : null]) !!}
+            {!! Form::number('criterion['.(isset($id) ? $id : $criterion->id).']['.$step->id.']', $finalValues[$step->id] ?? null, ['class' => 'form-control', 'min' => isset($limitByMinReq)  ? $minRequirements[$step->id] ?? null : null]) !!}
         @elseif($step->type === 'options')
             @php 
                 $finalOptions = isset($limitByMinReq) && isset($minRequirements) ? $step->options($minRequirements[$step->id])->where('is_active', 1)->pluck('name', 'id') : $step->options->where('is_active', 1)->pluck('name', 'id');
