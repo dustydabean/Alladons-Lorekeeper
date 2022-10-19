@@ -77,7 +77,7 @@
             @elseif($step->type === 'boolean')
                 <span>{{ isset($criterionData[$step->id]) ? 'On' : 'Off' }}
             @elseif($step->type === 'input')
-                <span> {{ $criterionData[$step->id] }}</span>
+                <span> {{ $criterionData[$step->id] ?? 0 }}</span>
             @endif
         </div>
     @endforeach
