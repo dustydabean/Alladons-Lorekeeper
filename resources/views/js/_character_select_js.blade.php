@@ -75,6 +75,7 @@
         function updateRewardNames(node, id) {
             node.find('.character-rewardable-type').attr('name', 'character_rewardable_type[' + id + '][]');
             node.find('.character-rewardable-quantity').attr('name', 'character_rewardable_quantity[' + id + '][]');
+            node.find('.character-notify-owner').attr('name', 'character_notify_owner[' + id + ']');
             node.find('.character-currency-id').attr('name', 'character_rewardable_id[' + id + '][]');
             node.find('.character-item-id').attr('name', 'character_rewardable_id[' + id + '][]');
             node.find('.character-table-id').attr('name', 'character_rewardable_id[' + id + '][]');

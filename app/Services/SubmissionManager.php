@@ -169,7 +169,8 @@ class SubmissionManager extends Service
                 SubmissionCharacter::create([
                     'character_id' => $c->id,
                     'submission_id' => $submission->id,
-                    'data' => json_encode(getDataReadyAssets($assets))
+                    'data' => json_encode(getDataReadyAssets($assets)),
+                    'notify_owner' => isset($data['character_notify_owner']) && $data['character_notify_owner'][$c->id] ? $data['character_notify_owner'][$c->id] : 0,
                 ]);
             }
 
@@ -447,7 +448,8 @@ class SubmissionManager extends Service
                 SubmissionCharacter::create([
                     'character_id' => $c->id,
                     'submission_id' => $submission->id,
-                    'data' => json_encode(getDataReadyAssets($assets))
+                    'data' => json_encode(getDataReadyAssets($assets)),
+                    'notify_owner' => isset($data['character_notify_owner']) && $data['character_notify_owner'][$c->id] ? $data['character_notify_owner'][$c->id] : 0,
                 ]);
             }
 
