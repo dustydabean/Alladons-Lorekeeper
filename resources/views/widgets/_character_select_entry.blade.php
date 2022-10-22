@@ -18,8 +18,8 @@
                 </div>
                 @if(isset($submission))
                     <div class="form-group col-6">
-                        {!! Form::label('character_is_focus['.$character->character->id.']', 'Focus Character?', ['class' => 'mr-2']) !!}
-                        {!! Form::select('character_is_focus['.$character->character->id.']', [0 => 'No' , 1 => 'Yes' ], $character->is_focus, ['class' => 'form-control character-is-focus']) !!}
+                        {!! Form::label('character_notify_owner['.$character->character->id.']', 'Notify Owner of Gift Submission?', ['class' => 'mr-2']) !!}
+                        {!! Form::select('character_notify_owner['.$character->character->id.']', [0 => 'No' , 1 => 'Yes' ], $character->notify_owner, ['class' => 'form-control character-notify-owner']) !!}
                     </div>
                 @endif
                 <div class="character-rewards">
