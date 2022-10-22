@@ -11,6 +11,15 @@ return [
     //     ]),
     //     'version' => '1.0.0',
     // ],
+
+    'gift_art_notifs' => [
+        'key' => 'gift_art_notifs',
+        'wiki_key' => 'Gift_Art_Notifs',
+            'creators' => json_encode([
+            'AnimatedCritter' => 'https://github.com/animatedcritter/',
+        ]),
+        'version' => '1.0.0',
+    ],
     
 
 ];
