@@ -17,7 +17,7 @@
                     {!! Form::text('slug[]', $character->character->slug, ['class' => 'form-control character-code']) !!}
                 </div>
                 @if(isset($submission))
-                    <div class="form-group col-6">
+                    <div class="form-group col-6 gift-notifs">
                         {!! Form::label('character_notify_owner['.$character->character->id.']', 'Notify the Owner of a Gift Submission?', ['class' => 'mr-2']) !!}
                         {!! Form::select('character_notify_owner['.$character->character->id.']', [0 => 'No' , 1 => 'Yes' ], $character->notify_owner, ['class' => 'form-control character-notify-owner']) !!}
                     </div>

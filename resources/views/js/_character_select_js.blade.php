@@ -25,6 +25,7 @@
                 $parent.find('.character-image-loaded').load('{{ url('submissions/new/character') }}/'+$(this).val(), function(response, status, xhr) {
                     $parent.find('.character-image-blank').addClass('hide');
                     $parent.find('.character-image-loaded').removeClass('hide');
+                    $parent.find('.gift-notifs').removeClass('hide');
                     $parent.find('.character-rewards').removeClass('hide');
                     updateRewardNames(node, node.find('.character-info').data('id'));
                 });
