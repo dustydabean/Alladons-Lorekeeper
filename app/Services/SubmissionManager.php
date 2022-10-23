@@ -501,7 +501,6 @@ class SubmissionManager extends Service
                         ]);
                     }
                 }
-                flash('Owner(s) have been notified that their character was included in this submission!')->success();
             }
 
             return $this->commitReturn($submission);
