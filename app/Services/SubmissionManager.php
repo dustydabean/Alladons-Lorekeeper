@@ -484,10 +484,13 @@ class SubmissionManager extends Service
                 'submission_id' => $submission->id,
             ]);
 
-            if($submission->characters->count()) {
+            // Get included characters that are set to notify
+            $notifiableCharacter = $submission->characters->where('notify_owner', true);
+
+            if($notifiableCharacter->count()) {
                 // Send a notification to included characters' owners now that the submission is accepted
                 // but not for the submitting user's own characters
-                foreach($submission->characters as $character) {
+                foreach($notifiableCharacter as $character) {
                     if($character->character->user->id != $submission->user->id) {
                         Notifications::create($submission->prompt_id ? 'GIFT_SUBMISSION_RECEIVED' : 'GIFT_CLAIM_RECEIVED', $character->character->user, [
                             'sender' => $submission->user->name,
