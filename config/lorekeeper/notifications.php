@@ -414,4 +414,11 @@ return [
         'message' => 'Your character (<a href="{character_url}">{character}</a>) has been included in a submission by <a href="{sender_url}">{sender}</a>. (<a href="{url}">View Submission</a>)',
         'url' => 'submissions/view/{submission_id}'
     ],
+
+    // GIFT_CLAIM_RECEIVED
+    1003 => [
+        'name' => 'Gift Claim Received',
+        'message' => 'Your character (<a href="{character_url}">{character}</a>) has been included in a claim by <a href="{sender_url}">{sender}</a>. (<a href="{url}">View Claim</a>)',
+        'url' => 'claims/view/{submission_id}'
+    ],
 ];

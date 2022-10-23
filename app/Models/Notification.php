@@ -160,4 +160,5 @@ class Notification extends Model
     const GALLERY_SUBMISSION_EDITED         = 514;
     const GALLERY_SUBMISSION_PARTICIPANT    = 515;
     const GIFT_SUBMISSION_RECEIVED          = 1002;
+    const GIFT_CLAIM_RECEIVED               = 1003;
 }

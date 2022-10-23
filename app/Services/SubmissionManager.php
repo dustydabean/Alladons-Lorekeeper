@@ -489,7 +489,7 @@ class SubmissionManager extends Service
                 // but not for the submitting user's own characters
                 foreach($submission->characters as $character) {
                     if($character->character->user->id != $submission->user->id) {
-                        Notifications::create('GIFT_SUBMISSION_RECEIVED', $character->character->user, [
+                        Notifications::create($submission->prompt_id ? 'GIFT_SUBMISSION_RECEIVED' : 'GIFT_CLAIM_RECEIVED', $character->character->user, [
                             'sender' => $submission->user->name,
                             'sender_url' => $submission->user->url,
                             'character_url' => $character->character->url,
