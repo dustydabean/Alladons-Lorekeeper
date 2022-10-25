@@ -148,6 +148,7 @@
                             {!! Form::text('slug[]', null, ['class' => 'form-control character-code']) !!}
                         </div>
                         <div class="form-group col-6 gift-notifs hide">
+                            <div class="character-gift-permissions"></div>
                             {!! Form::label('character-notify-owner[]', 'Notify the Owner of a Gift Submission?', ['class' => 'form-check-label '] ) !!}
                             {!! Form::select('character-notify-owner[]', [0 => 'No' , 1 => 'Yes' ], 0, ['class' => 'form-control character-notify-owner']) !!}
                         </div>

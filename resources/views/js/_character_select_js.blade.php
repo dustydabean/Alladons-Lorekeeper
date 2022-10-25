@@ -29,6 +29,7 @@
                     $parent.find('.character-rewards').removeClass('hide');
                     updateRewardNames(node, node.find('.character-info').data('id'));
                 });
+                $parent.find('.character-gift-permissions').load('{{ url('submissions/new/character-permissions') }}/'+$(this).val());
             });
             node.find('.remove-character').on('click', function(e) {
                 e.preventDefault();

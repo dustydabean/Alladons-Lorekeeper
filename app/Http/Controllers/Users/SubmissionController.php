@@ -124,6 +124,25 @@ class SubmissionController extends Controller
     }
 
     /**
+     * Shows character gift art/writing permissions.
+     *
+     * @param  string  $slug
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCharacterPermissions($slug)
+    {
+        $character = Character::visible()->where('slug', $slug)->first();
+        $allowArt = $character->is_gift_art_allowed;
+        $allowWriting = $character->is_gift_writing_allowed;
+
+        return view('home._character_gift_permissions', [
+            'character' => $character,
+            'allowArt' => $allowArt,
+            'allowWriting' => $allowWriting,
+        ]);
+    }
+
+    /**
      * Shows prompt information.
      *
      * @param  int  $id

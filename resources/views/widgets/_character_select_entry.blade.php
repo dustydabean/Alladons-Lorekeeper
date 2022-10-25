@@ -18,6 +18,11 @@
                 </div>
                 @if(isset($submission))
                     <div class="form-group col-6 gift-notifs">
+                        <!-- character gift status badges -->
+                        <div class="">
+                            <span class="btn {{ $character->character->is_gift_writing_allowed == 1 ? 'badge-success' : ($character->character->is_gift_writing_allowed == 2 ? 'badge-warning text-light' : 'badge-danger') }}" data-toggle="tooltip" data-placement="top" title="{{$character->character->is_gift_writing_allowed == 1 ? 'OPEN for gift writing.' : ($character->character->is_gift_writing_allowed == 2 ? 'PLEASE ASK before gift writing.' : 'CLOSED for gift writing.') }}"><i class="fas fa-file-alt"></i></span>
+                            <span class="btn {{ $character->character->is_gift_art_allowed == 1 ? 'badge-success' : ($character->character->is_gift_art_allowed == 2 ? 'badge-warning text-light' : 'badge-danger') }} ml-2" data-toggle="tooltip" data-placement="top" title="{{ $character->character->is_gift_art_allowed == 1 ? 'OPEN for gift art.' : ($character->character->is_gift_art_allowed == 2 ? 'PLEASE ASK before gift art.' : 'CLOSED for gift art.') }}"><i class="fas fa-pencil-ruler"></i></span>
+                        </div>
                         {!! Form::label('character_notify_owner['.$character->character->id.']', 'Notify the Owner of a Gift Submission?', ['class' => 'mr-2']) !!}
                         {!! Form::select('character_notify_owner['.$character->character->id.']', [0 => 'No' , 1 => 'Yes' ], $character->notify_owner, ['class' => 'form-control character-notify-owner']) !!}
                     </div>
