@@ -15,10 +15,12 @@
                         {!! Form::label('slug[]', 'Character Code') !!}
                         {!! Form::text('slug[]', null, ['class' => 'form-control character-code']) !!}
                     </div>
-                    <div class="form-group col-6 gift-notifs hide">
-                        <div class="character-gift-permissions"></div>
-                        {!! Form::label('character-notify-owner[]', 'Notify the Owner of a Gift Submission?', ['class' => 'form-check-label mr-2 character-notify-owner']) !!}
-                        {!! Form::select('character-notify-owner[]', [0 => 'No' , 1 => 'Yes' ], 0, ['class' => 'form-control character-notify-owner']) !!}
+                    <div class="form-group gift-notifs hide">
+                        <h4>Notify Owner?</h4>
+                        <div class="row">
+                            {!! Form::select('character-notify-owner[]', [0 => 'No' , 1 => 'Yes' ], 0, ['class' => 'form-control ml-lg-3 col-5 col-md-9 character-notify-owner']) !!}
+                            <div class="col character-gift-permissions"></div>
+                        </div>
                     </div>
                     <div class="character-rewards hide">
                         <h4>Character Rewards</h4>
