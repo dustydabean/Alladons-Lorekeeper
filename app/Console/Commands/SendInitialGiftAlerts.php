@@ -4,11 +4,9 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 
-use App;
 use DB;
-use Carbon\Carbon;
 use Notifications;
-use App\Services\Service;
+
 use App\Models\Character\Character;
 use App\Models\Submission\Submission;
 use App\Models\Submission\SubmissionCharacter;
