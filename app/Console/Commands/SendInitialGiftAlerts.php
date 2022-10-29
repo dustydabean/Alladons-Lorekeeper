@@ -9,6 +9,9 @@ use DB;
 use Carbon\Carbon;
 use Notifications;
 use App\Services\Service;
+use App\Models\Character\Character;
+use App\Models\Submission\Submission;
+use App\Models\Submission\SubmissionCharacter;
 use App\Models\User\User;
 
 class SendInitialGiftAlerts extends Command
@@ -50,13 +53,13 @@ class SendInitialGiftAlerts extends Command
         $this->info('*****************************'."\n");
 
         $this->line('Retriveing Submission Characters...');
-        $submissionCharacters = DB::table('submission_characters')->distinct()->pluck('character_id');
+        $submissionCharacters = SubmissionCharacter::distinct()->pluck('character_id');
 
 
         $this->line('Creating Notifications...'."\n");
         //run to check and create for each character
         foreach($submissionCharacters as $submissionCharacter) {
-            $characterOwnerId = DB::table('characters')->where('id', $submissionCharacter)->pluck('user_id');
+            $characterOwnerId = Character::where('id', $submissionCharacter)->pluck('user_id');
             //get owners' Initial Gift Alert notification(s)
             $notificationData = DB::table('notifications')->where('user_id', $characterOwnerId)->where('notification_type_id', 1004)->pluck('data');
 
@@ -68,10 +71,10 @@ class SendInitialGiftAlerts extends Command
                 $notificationFor[] = $dataPhp->character_id;
             }
 
-            $submissionIds = DB::table('submission_characters')->where('character_id', $submissionCharacter)->pluck('submission_id');
+            $submissionIds = SubmissionCharacter::where('character_id', $submissionCharacter)->pluck('submission_id');
             $count = 0;
             foreach ($submissionIds as $id) {
-                $add = DB::table('submissions')->where('id', $id)->where('user_id', '!=' , $characterOwnerId)->where('status', 'Approved')->count();
+                $add = Submission::where('id', $id)->where('user_id', '!=' , $characterOwnerId)->where('status', 'Approved')->count();
                 $count += $add;
             }
 
@@ -79,7 +82,7 @@ class SendInitialGiftAlerts extends Command
             if(!in_array($submissionCharacter, $notificationFor) && $count != 0) {
                 //submissionCharacter only accesses submission_character table 
                 //we now need to access submissionCharacter on the character table
-                $characterDetails = DB::table('characters')->where('id', $submissionCharacter)->first();
+                $characterDetails = Character::where('id', $submissionCharacter)->first();
 
                 $characterOwnerData = User::where('id', $characterOwnerId)->first();
 
