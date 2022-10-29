@@ -66,9 +66,7 @@ class SendInitialGiftAlerts extends Command
             //put all characters the user's notificiations are for into an array
             $notificationFor = array();
             foreach($notificationData as $data) {
-                $dataPhp = json_decode($data);
-                //get staff_name and add to array
-                $notificationFor[] = $dataPhp->character_id;
+                $notificationFor[] = json_decode($data)->character_id;
             }
 
             $submissionIds = SubmissionCharacter::where('character_id', $submissionCharacter)->pluck('submission_id');
