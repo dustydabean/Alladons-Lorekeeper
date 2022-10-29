@@ -57,18 +57,17 @@ class SendInitialGiftAlerts extends Command
 
 
         $this->line('Creating Notifications...'."\n");
-        //run to check and create for each character
         foreach($submissionCharacters as $submissionCharacter) {
             $characterOwnerId = Character::where('id', $submissionCharacter)->pluck('user_id');
-            //get owners' Initial Gift Alert notification(s)
             $notificationData = DB::table('notifications')->where('user_id', $characterOwnerId)->where('notification_type_id', 1004)->pluck('data');
 
-            //put all characters the user's notificiations are for into an array
+            //get the character each notif is for
             $notificationCharacter = array();
             foreach($notificationData as $data) {
                 $notificationCharacter[] = json_decode($data)->character_id;
             }
 
+            //get only gift submissions
             $submissionIds = SubmissionCharacter::where('character_id', $submissionCharacter)->pluck('submission_id');
             $giftSubmissionCount = 0;
             foreach ($submissionIds as $id) {
@@ -76,11 +75,9 @@ class SendInitialGiftAlerts extends Command
                 $giftSubmissionCount += $add;
             }
 
-            //now we're actually creating or skipping the notification creation
-                //submissionCharacter only accesses submission_character table 
-                //we now need to access submissionCharacter on the character table
             $excludesSubmissionCharacter = !in_array($submissionCharacter, $notificationCharacter);
 
+            //create or skip notification
             if($excludesSubmissionCharacter && $giftSubmissionCount != 0) {
                 $characterDetails = Character::where('id', $submissionCharacter)->first();
                 $characterOwnerData = User::where('id', $characterOwnerId)->first();
