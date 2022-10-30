@@ -12,9 +12,9 @@ return [
     //     'version' => '1.0.0',
     // ],
 
-    'gift_art_notifs' => [
-        'key' => 'gift_art_notifs',
-        'wiki_key' => 'Gift_Art_Notifs',
+    'gift_art_notifications' => [
+        'key' => 'gift_art_notifications',
+        'wiki_key' => 'Gift_Art_Notifications',
             'creators' => json_encode([
             'AnimatedCritter' => 'https://github.com/animatedcritter/',
         ]),
