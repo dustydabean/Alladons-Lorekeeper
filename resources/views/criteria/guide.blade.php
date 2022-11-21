@@ -2,12 +2,29 @@
 
 @section('world-title') {{ $criterion->name }} Criterion @endsection
 
+@php
+$placeValue = [
+    1 => 'whole',
+    2 => 'tenth',
+    3 => 'hundredth',
+    4 => 'thousandth',
+    5 => 'ten thousandth',
+    6 => 'hundred thousandth', 
+    7 =>  'millionth'
+]
+@endphp
+
+
 @section('world-content')
     {!! breadcrumbs(['World' => url('world'), $criterion->name.' Criterion' => 'criteria/guide/'.$criterion->id]) !!}
     
     <h1 class="mb-0">{{ $criterion->name }} Criterion </h1>
     <div class="text-secondary">{!! isset($criterion->summary) ? $criterion->summary : '' !!}</div>
-    <div class="text-secondary mb-4">Rewards {!! $criterion->currency->displayName !!}{!! isset($criterion->base_value) ? '<span class="mx-1"> · </span>Base Reward: '.$criterion->currency->display($criterion->base_value) : '' !!}</div>
+    <div class="text-secondary mb-4">
+        Rewards {!! $criterion->currency->displayName !!}
+        {!! isset($criterion->base_value) ? '<span class="mx-1"> · </span>Base Reward: '.$criterion->currency->display($criterion->base_value) : '' !!}
+        {!! $criterion->rounding !== 'No Rounding' ? '<span class="mx-1"> · </span>'.$criterion->rounding.' to the nearest '.$placeValue[$criterion->round_precision].' value.' : '' !!}
+    </div>
     
     <p>When using this guide to calculate amounts, keep in mind that all Criterion apply onto a running total from the step before. If the criterion does not have a base reward listed above, then it starts from zero.</p>
     @foreach($criterion->steps->where('is_active', 1) as $step)

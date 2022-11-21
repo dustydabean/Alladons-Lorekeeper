@@ -37,11 +37,22 @@
 </div>
 
 <div class="row align-items-end">
+    <div class="form-group col-4">
+        {!! Form::label('Rounding') !!} {!! add_help('Whether the Criterion rounds fractional values to whole values.') !!}
+        {!! Form::select('rounding', ['No Rounding' => 'No Rounding', 'Traditional Rounding' => 'Traditional Rounding', 'Always Rounds Up' => 'Always Rounds Up', 'Always Rounds Down' => 'Always Rounds Down'], $criterion->rounding, ['class' => 'form-control selectize', 'placeholder' => 'Select a Currency']) !!}
+    </div>
     <div class="form-group col-6">
+        {!! Form::label('Rounding Precision') !!} {!! add_help('The place value to round to, ie 1 = whole values, 2 = the nearest 10th value, 3 = the nearest 100th value, etc.') !!}
+        {!! Form::text('round_precision', $criterion->round_precision, ['class' => 'form-control']) !!}
+    </div>
+</div>
+
+<div class="row align-items-end">
+    <div class="form-group col-4">
         {!! Form::checkbox('is_active', 1, $criterion->is_active === 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
         {!! Form::label('is_active', 'Is Active', ['class' => 'form-check-label ml-3']) !!} {!! add_help('Criteria that are not active will be hidden from view.') !!}
     </div>
-    <div class="form-group col-6">
+    <div class="form-group col-4">
         {!! Form::checkbox('is_guide_active', 1, $criterion->is_guide_active, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
         {!! Form::label('is_guide_active', 'Is Guide Active', ['class' => 'form-check-label ml-3']) !!} {!! add_help('Toggles whether the guide page for this criterion is accessible.') !!}
     </div>
