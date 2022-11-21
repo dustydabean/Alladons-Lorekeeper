@@ -39,7 +39,7 @@
 <div class="row align-items-end">
     <div class="form-group col-4">
         {!! Form::label('Rounding') !!} {!! add_help('Whether the Criterion rounds fractional values to whole values.') !!}
-        {!! Form::select('rounding', ['No Rounding' => 'No Rounding', 'Traditional Rounding' => 'Traditional Rounding', 'Always Rounds Up' => 'Always Rounds Up', 'Always Rounds Down' => 'Always Rounds Down'], $criterion->rounding, ['class' => 'form-control selectize', 'placeholder' => 'Select a Currency']) !!}
+        {!! Form::select('rounding', ['No Rounding' => 'No Rounding', 'Traditional Rounding' => 'Traditional Rounding', 'Always Rounds Up' => 'Always Rounds Up', 'Always Rounds Down' => 'Always Rounds Down'], $criterion->rounding, ['class' => 'form-control selectize', 'placeholder' => 'Select Rounding']) !!}
     </div>
     <div class="form-group col-6">
         {!! Form::label('Rounding Precision') !!} {!! add_help('The place value to round to, ie 1 = whole values, 2 = the nearest 10th value, 3 = the nearest 100th value, etc.') !!}
