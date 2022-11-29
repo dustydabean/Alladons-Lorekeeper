@@ -66,6 +66,17 @@ body {
     height: auto !important;
 }
 
+#ace-code-editor-wrapper .editor-btn {
+    background: white;
+    font-size: 14px;
+    height: 34px;
+    width: 34px;
+}
+
+#ace-code-editor-wrapper .editor-btn:hover {
+    background: buttonface;
+}
+
 /**************************************************************************************************
     
     Layout
