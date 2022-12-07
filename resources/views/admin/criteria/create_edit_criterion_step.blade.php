@@ -50,7 +50,7 @@
 <div class="row align-items-end">
     <div class="form-group col-6">
         {!! Form::label('Type') !!} {!! add_help('This is the type of form element presented to the user. Input is an number input, options is a select, and boolean is a checkbox') !!}
-        {!! Form::select('type', ['options' => 'Select From Options', 'input' => 'Number Input', 'boolean' => 'Boolean'], $step->type, ['class' => 'form-control selectize']) !!}
+        {!! Form::select('type', ['options' => 'Dropdown Input / Select from Options', 'input' => 'Number Input', 'boolean' => 'Boolean'], $step->type, ['class' => 'form-control selectize']) !!}
     </div>
     <div class="form-group col-6">
         {!! Form::label('Calculation Type') !!} {!! add_help('This is the type of calculation done with the amount calculated from the selected option. If multiplicative, negative amounts will be divided.') !!}
