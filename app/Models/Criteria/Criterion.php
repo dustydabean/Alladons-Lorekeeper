@@ -118,7 +118,7 @@ class Criterion extends Model {
                     } else if ($step->input_calc_type === 'multiplicative') {
                         $isDivision = $subTotal < 0;
 
-                        if (!$isDivision) $subTotal *= max($input, 1);
+                        if (!$isDivision) $subTotal *= $input;
                         elseif ($input === 0 && $isDivision) throw new \Exception("Criterion attempted to divide by zero.");
                         else $subTotal = $input / -$subTotal;
                     }
