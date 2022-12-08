@@ -116,10 +116,11 @@ class Criterion extends Model {
                     if ($step->input_calc_type === 'additive') {
                         $subTotal += $input;
                     } else if ($step->input_calc_type === 'multiplicative') {
-                        $isDivision = $input < 0;
-                        if (!$isDivision) $subTotal *= $input;
+                        $isDivision = $subTotal < 0;
+
+                        if (!$isDivision) $subTotal *= max($input, 1);
                         elseif ($input === 0 && $isDivision) throw new \Exception("Criterion attempted to divide by zero.");
-                        else $subTotal /= -$input;
+                        else $subTotal = $input / -$subTotal;
                     }
                 } else if ($step->type === 'options') {
                     $optionId = $stepResults[$step->id] ?? null;
