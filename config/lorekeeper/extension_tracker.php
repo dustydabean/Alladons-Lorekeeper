@@ -18,6 +18,6 @@ return [
         'creators' => json_encode([
             'Mercury' => 'https://github.com/itinerare/',
         ]),
-        'version' => '1.1.1',
+        'version' => '1.2.0',
     ],
 ];
