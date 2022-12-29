@@ -104,18 +104,22 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
+                                {!! Form::label('Rarity') !!}
+                                {!! Form::select('alt[rarity_id]['.$altType->id.']', $rarities, $altType->rarity_id, ['class' => 'form-control']) !!}
+                            </div>
+                        </div>
+                        <div class="form-group">
                                 {!! Form::label('Display Mode') !!} {!! add_help("This controls how this alternate type's name will be displayed around the site. 'Name' refers to this type's name, whereas 'Parent Name' refers to the parent trait's name. Other values refer to this type's settings.") !!}
                                 {!! Form::select('alt[display_mode]['.$altType->id.']', [
                                         0 => 'Name', 1 => 'Name (Species)',
                                         2 => 'Name (Subtype)', 3 => 'Parent Name (Name)',
                                         4 => 'Name Parent Name',
                                     ], $altType->display_mode, ['class' => 'form-control']) !!}
-                            </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                {!! Form::label('Rarity') !!}
-                                {!! Form::select('alt[rarity_id]['.$altType->id.']', $rarities, $altType->rarity_id, ['class' => 'form-control']) !!}
+                                {!! Form::label('Trait Category (Optional)') !!}
+                                {!! Form::select('alt[feature_category_id]['.$altType->id.']', $categories, $altType->feature_category_id, ['class' => 'form-control']) !!}
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -186,35 +190,39 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             {!! Form::label('Name') !!}
-                            {!! Form::text('alt[name][]', null, ['class' => 'form-control']) !!}
+                            {!! Form::text('alt[name][]', $feature->name, ['class' => 'form-control']) !!}
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
+                            {!! Form::label('Rarity') !!}
+                            {!! Form::select('alt[rarity_id][]', $rarities, $feature->rarity_id, ['class' => 'form-control']) !!}
+                        </div>
+                    </div>
+                    <div class="form-group">
                             {!! Form::label('Display Mode') !!} {!! add_help("This controls how this alternate type's name will be displayed around the site. 'Name' refers to this type's name, whereas 'Parent Name' refers to the parent trait's name. Other values refer to this type's settings.") !!}
                             {!! Form::select('alt[display_mode][]', [
                                 0 => 'Name', 1 => 'Name (Species)',
                                 2 => 'Name (Subtype)', 3 => 'Parent Name (Name)',
                                 4 => 'Name Parent Name',
                             ], 0, ['class' => 'form-control']) !!}
-                        </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            {!! Form::label('Rarity') !!}
-                            {!! Form::select('alt[rarity_id][]', $rarities, null, ['class' => 'form-control']) !!}
+                            {!! Form::label('Trait Category (Optional)') !!}
+                            {!! Form::select('alt[feature_category_id][]', $categories, $feature->feature_category_id, ['class' => 'form-control']) !!}
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             {!! Form::label('Species Restriction (Optional)') !!}
-                            {!! Form::select('alt[species_id][]', $specieses, null, ['class' => 'form-control']) !!}
+                            {!! Form::select('alt[species_id][]', $specieses, $feature->species_id, ['class' => 'form-control']) !!}
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             {!! Form::label('Subtype (Optional)') !!} {!! add_help('This is cosmetic and does not limit choice of traits in selections.') !!}
-                            {!! Form::select('alt[subtype_id][]', $subtypes, null, ['class' => 'form-control']) !!}
+                            {!! Form::select('alt[subtype_id][]', $subtypes, $feature->subtype_id, ['class' => 'form-control']) !!}
                         </div>
                     </div>
                 </div>
