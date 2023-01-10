@@ -10,7 +10,7 @@ use App\Models\ScavengerHunt\HuntParticipant;
 use App\Models\User\User;
 use App\Models\Item\Item;
 
-class HuntManager extends Service 
+class HuntManager extends Service
 {
     /*
     |--------------------------------------------------------------------------
@@ -40,25 +40,25 @@ class HuntManager extends Service
             if(!$hunt->isActive) throw new \Exception ("This target\'s hunt isn\'t active.");
 
             // Log that the user found this particular target
-            $participantLog = HuntParticipant::where([
-                ['user_id', '=', $user->id],
-                ['hunt_id', '=', $hunt->id],
-            ])->first();
-            if(isset($particpantLog) && isset($participantLog[$target->targetField])) throw new \Exception ('You have already claimed this target.'); 
-            
-            if(!$participantLog)
-                $participantLog = HuntParticipant::create(['user_id' => $user->id, 'hunt_id' => $hunt->id]);
+            $participantLog = $hunt->participants()->where('user_id', $user->id)->first();
+            if($participantLog && isset($participantLog[$target->targetField])) throw new \Exception ('You have already claimed this target.');
+
+            if(!$participantLog) {
+                $participantLog = $hunt->participants()->create([
+                    'user_id' => $user->id,
+                ]);
+            }
             $participantLog[$target->targetField] = Carbon::now();
             $participantLog->save();
-            
+
             // Give the user the item(s)
             if(!(new InventoryManager)->creditItem(null, $user, 'Prize', [
-                'data' => $participantLog->itemData, 
+                'data' => $participantLog->itemData,
                 'notes' => 'Claimed ' . format_date($participantLog[$target->targetField])
             ], $target->item, $target->quantity)) throw new \Exception("Failed to claim item.");
 
             return $this->commitReturn($target);
-        } catch(\Exception $e) { 
+        } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);
