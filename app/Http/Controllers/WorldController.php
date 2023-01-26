@@ -20,6 +20,8 @@ use App\Models\Shop\Shop;
 use App\Models\Shop\ShopStock;
 use App\Models\User\User;
 
+use App\Models\Collection\Collection;
+
 class WorldController extends Controller
 {
     /*
@@ -388,6 +390,62 @@ class WorldController extends Controller
         return view('world.prompts', [
             'prompts' => $query->paginate(20)->appends($request->query()),
             'categories' => ['none' => 'Any Category'] + PromptCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray()
+        ]);
+    }
+
+    /**
+     * Shows the items page.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCollections(Request $request)
+    {
+        $query = Collection::query();
+        $data = $request->only(['name', 'sort']);
+        if(isset($data['name']))
+            $query->where('name', 'LIKE', '%'.$data['name'].'%');
+
+        if(isset($data['sort']))
+        {
+            switch($data['sort']) {
+                case 'alpha':
+                    $query->sortAlphabetical();
+                    break;
+                case 'alpha-reverse':
+                    $query->sortAlphabetical(true);
+                    break;
+                case 'newest':
+                    $query->sortNewest();
+                    break;
+                case 'oldest':
+                    $query->sortOldest();
+                    break;
+            }
+        }
+        else $query->sortNewest();
+
+        return view('world.collections.collections', [
+            'collections' => $query->paginate(20)->appends($request->query()),
+        ]);
+    }
+
+    /**
+     * Shows an individual collection;ss page.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCollection($id)
+    {
+        $collection = Collection::where('id', $id)->first();
+        if(!$collection) abort(404);
+
+        return view('world.collections._collection_page', [
+            'collection' => $collection,
+            'imageUrl' => $collection->imageUrl,
+            'name' => $collection->displayName,
+            'description' => $collection->parsed_description,
         ]);
     }
 }

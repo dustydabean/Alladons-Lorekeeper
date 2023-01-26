@@ -226,6 +226,15 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('prompts/create', 'PromptController@postCreateEditPrompt');
     Route::post('prompts/edit/{id?}', 'PromptController@postCreateEditPrompt');
     Route::post('prompts/delete/{id}', 'PromptController@postDeletePrompt');
+
+    # COLLECTIONS
+    Route::get('collections', 'CollectionController@getCollectionIndex');
+    Route::get('collections/create', 'CollectionController@getCreateCollection');
+    Route::get('collections/edit/{id}', 'CollectionController@getEditCollection');
+    Route::get('collections/delete/{id}', 'CollectionController@getDeleteCollection');
+    Route::post('collections/create', 'CollectionController@postCreateEditCollection');
+    Route::post('collections/edit/{id?}', 'CollectionController@postCreateEditCollection');
+    Route::post('collections/delete/{id}', 'CollectionController@postDeleteCollection');
 });
 
 

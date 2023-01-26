@@ -565,4 +565,58 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return CharacterBookmark::where('user_id', $this->id)->where('character_id', $character->id)->first();
     }
+
+
+    /**
+     * Get the user's collection logs.
+     *
+     * @param  int  $limit
+     * @return \Illuminate\Support\Collection|\Illuminate\Pagination\LengthAwarePaginator
+     */
+    public function getCollectionLogs($limit = 10)
+    {
+        $user = $this;
+        $query = UserCollectionLog::with('collection')->where(function($query) use ($user) {
+            $query->with('sender')->where('sender_id', $user->id)->whereNotIn('log_type', ['Staff Grant', 'Prompt Rewards', 'Claim Rewards']);
+        })->orWhere(function($query) use ($user) {
+            $query->with('recipient')->where('recipient_id', $user->id)->where('log_type', '!=', 'Staff Removal');
+        })->orderBy('id', 'DESC');
+        if($limit) return $query->take($limit)->get();
+        else return $query->paginate(30);
+    }
+
+     /**
+     * Checks if the user has the named collection
+     *
+     * @return bool
+     */
+    public function hasCollection($collection_id)
+    {
+        $collection = Collection::find($collection_id);
+        $user_has = $this->collections->contains($collection);
+        $default = !$collection->needs_unlocking;
+        return $default ? true : $user_has;
+    }
+
+
+    /**
+     * Returned collections listed that are completed
+     * Reversal simply
+     *
+     * @return object
+     */
+    public function ownedCollections($ids, $reverse = false)
+    {
+        $collections = Collection::find($ids); $collectionCollection = [];
+        foreach($collections as $collection)
+        {
+            if($reverse) {
+                if(!$this->collections->contains($collection)) $collectionCollection[] = $collection;
+            }
+            else {
+                if($this->collections->contains($collection)) $collectionCollection[] = $collection;
+            }
+        }
+        return $collectionCollection;
+    }
 }

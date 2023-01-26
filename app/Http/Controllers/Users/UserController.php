@@ -339,4 +339,20 @@ class UserController extends Controller
             'sublists' => Sublist::orderBy('sort', 'DESC')->get()
         ]);
     }
+
+    /**
+     * Shows a user's collection logs.
+     *
+     * @param  string  $name
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getUserCollectionLogs($name)
+    {
+        $user = $this->user;
+        return view('user.collection_logs', [
+            'user' => $this->user,
+            'logs' => $this->user->getCollectionLogs(0),
+            'sublists' => Sublist::orderBy('sort', 'DESC')->get()
+        ]);
+    }
 }
