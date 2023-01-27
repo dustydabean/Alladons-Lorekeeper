@@ -47,6 +47,8 @@ class CollectionController extends Controller
         $data = $request->only(['name', 'collection_category_id', 'is_visible']);
         if(isset($data['collection_category_id']) && $data['collection_category_id'] != 'none')
             $query->where('collection_category_id', $data['collection_category_id']);
+        if(isset($data['is_visible']) && $data['is_visible'] != 'none') 
+            $query->where('is_visible', $data['is_visible']);
         if(isset($data['name'])) 
             $query->where('name', 'LIKE', '%'.$data['name'].'%');
         return view('admin.collections.collections', [

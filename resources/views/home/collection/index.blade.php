@@ -33,7 +33,7 @@
         @endforeach
     </div>
 @else
-    You haven't unlocked any collections!
+    You haven't completed any collections!
 @endif
 <div class="text-right mb-4">
     <a href="{{ url(Auth::user()->url.'/collection-logs') }}">View logs...</a>

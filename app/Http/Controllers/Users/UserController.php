@@ -26,6 +26,7 @@ use App\Models\Character\CharacterCategory;
 use App\Models\Character\CharacterImage;
 use App\Models\Character\Character;
 use App\Models\Character\Sublist;
+use App\Models\Collection\CollectionCategory;
 
 use App\Http\Controllers\Controller;
 
@@ -69,6 +70,7 @@ class UserController extends Controller
         return view('user.profile', [
             'user' => $this->user,
             'items' => $this->user->items()->where('count', '>', 0)->orderBy('user_items.updated_at', 'DESC')->take(4)->get(),
+            'collections' => $this->user->collections()->orderBy('user_collections.updated_at', 'DESC')->take(4)->get(),
             'sublists' => Sublist::orderBy('sort', 'DESC')->get(),
             'characters' => $characters,
         ]);
@@ -349,10 +351,26 @@ class UserController extends Controller
     public function getUserCollectionLogs($name)
     {
         $user = $this->user;
+        $categories = CollectionCategory::orderBy('sort', 'DESC')->get();
+        $collections = count($categories) ?
+        $user->collections()
+            ->orderByRaw('FIELD(collection_category_id,'.implode(',', $categories->pluck('id')->toArray()).')')
+            ->orderBy('name')
+            ->orderBy('updated_at')
+            ->get()
+            ->groupBy(['collection_category_id', 'id']) :
+        $user->collections()
+            ->orderBy('name')
+            ->orderBy('updated_at')
+            ->get()
+            ->groupBy(['collection_category_id', 'id']);
         return view('user.collection_logs', [
             'user' => $this->user,
             'logs' => $this->user->getCollectionLogs(0),
+            'categories' => $categories->keyBy('id'),
+            'collections' => $collections,
             'sublists' => Sublist::orderBy('sort', 'DESC')->get()
         ]);
     }
+
 }

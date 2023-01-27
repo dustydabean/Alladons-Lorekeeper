@@ -47,7 +47,7 @@
     {!! Form::textarea('description', $collection->description, ['class' => 'form-control wysiwyg']) !!}
 </div>
 
-<h3>Collection Ingredients</h3>
+<h3>Collection Requirements</h3>
 @include('widgets._collection_ingredient_select', ['ingredients' => $collection->ingredients])
 
 <hr>
