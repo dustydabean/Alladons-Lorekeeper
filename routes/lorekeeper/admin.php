@@ -235,6 +235,16 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('collections/create', 'CollectionController@postCreateEditCollection');
     Route::post('collections/edit/{id?}', 'CollectionController@postCreateEditCollection');
     Route::post('collections/delete/{id}', 'CollectionController@postDeleteCollection');
+
+    # categories
+    Route::get('collections/collection-categories', 'CollectionController@getCollectionCategoryIndex');
+    Route::get('collections/collection-categories/create', 'CollectionController@getCreateCollectionCategory');
+    Route::get('collections/collection-categories/edit/{id}', 'CollectionController@getEditCollectionCategory');
+    Route::get('collections/collection-categories/delete/{id}', 'CollectionController@getDeleteCollectionCategory');
+    Route::post('collections/collection-categories/create', 'CollectionController@postCreateEditCollectionCategory');
+    Route::post('collections/collection-categories/edit/{id?}', 'CollectionController@postCreateEditCollectionCategory');
+    Route::post('collections/collection-categories/delete/{id}', 'CollectionController@postDeleteCollectionCategory');
+    Route::post('collections/collection-categories/sort', 'CollectionController@postSortCollectionCategory');
 });
 
 

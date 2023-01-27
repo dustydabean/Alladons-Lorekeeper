@@ -115,6 +115,7 @@ Route::group(['prefix' => 'world'], function() {
 
     Route::get('collections', 'WorldController@getCollections');
     Route::get('collections/{id}', 'WorldController@getCollection');
+    Route::get('collection-categories', 'WorldController@getCollectionCategories');
 });
 
 Route::group(['prefix' => 'prompts'], function() {

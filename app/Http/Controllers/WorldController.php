@@ -21,6 +21,7 @@ use App\Models\Shop\ShopStock;
 use App\Models\User\User;
 
 use App\Models\Collection\Collection;
+use App\Models\Collection\CollectionCategory;
 
 class WorldController extends Controller
 {
@@ -401,10 +402,12 @@ class WorldController extends Controller
      */
     public function getCollections(Request $request)
     {
-        $query = Collection::query();
-        $data = $request->only(['name', 'sort']);
+        $query = Collection::visible();
+        $data = $request->only(['name', 'sort', 'collection_category_id']);
         if(isset($data['name']))
             $query->where('name', 'LIKE', '%'.$data['name'].'%');
+        if(isset($data['collection_category_id']) && $data['collection_category_id'] != 'none') 
+            $query->where('collection_category_id', $data['collection_category_id']);
 
         if(isset($data['sort']))
         {
@@ -427,6 +430,7 @@ class WorldController extends Controller
 
         return view('world.collections.collections', [
             'collections' => $query->paginate(20)->appends($request->query()),
+            'categories' => ['none' => 'Any Category'] + CollectionCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
         ]);
     }
 
@@ -438,7 +442,8 @@ class WorldController extends Controller
      */
     public function getCollection($id)
     {
-        $collection = Collection::where('id', $id)->first();
+        $collection = Collection::visible()->where('id', $id)->first();
+        $categories = CollectionCategory::orderBy('sort', 'DESC')->get();
         if(!$collection) abort(404);
 
         return view('world.collections._collection_page', [
@@ -446,6 +451,23 @@ class WorldController extends Controller
             'imageUrl' => $collection->imageUrl,
             'name' => $collection->displayName,
             'description' => $collection->parsed_description,
+        ]);
+    }
+
+     /**
+     * Shows the collection categories page.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCollectionCategories(Request $request)
+    {
+        $query = CollectionCategory::query();
+        $data = $request->only(['name']);
+        if(isset($data['name'])) 
+            $query->where('name', 'LIKE', '%'.$data['name'].'%');
+        return view('world.collection_categories', [  
+            'categories' => $query->orderBy('sort', 'DESC')->paginate(20)->appends($request->query())
         ]);
     }
 }

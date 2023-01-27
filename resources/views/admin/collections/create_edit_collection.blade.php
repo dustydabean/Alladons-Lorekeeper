@@ -32,6 +32,15 @@
     @endif
 </div>
 
+<div class="form-group">
+            {!! Form::label('Collection Category (Optional)') !!}
+            {!! Form::select('collection_category_id', $collectioncategories, $collection->collection_category_id, ['class' => 'form-control selectize']) !!}
+</div>
+
+<div class="form-group">
+    {!! Form::checkbox('is_visible', 1, $collection->id ? $collection->is_visible : 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
+    {!! Form::label('is_visible', 'Is Visible', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If turned off, the collection will not be visible.') !!}
+</div>
 
 <div class="form-group">
     {!! Form::label('Description (Optional)') !!}

@@ -14,7 +14,7 @@ class Collection extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'has_image','description', 'parsed_description', 'reference_url', 'artist_alias' ,'artist_url'
+        'name', 'has_image','description', 'parsed_description', 'reference_url', 'artist_alias' ,'artist_url', 'is_visible', 'collection_category_id'
     ];
 
     protected $appends = ['image_url'];
@@ -35,6 +35,7 @@ class Collection extends Model
         'name' => 'required|unique:collections',
         'description' => 'nullable',
         'image' => 'mimes:png',
+        'collection_category_id' => 'nullable',
     ];
 
     /**
@@ -46,6 +47,7 @@ class Collection extends Model
         'name' => 'required',
         'description' => 'nullable',
         'image' => 'mimes:png',
+        'collection_category_id' => 'nullable',
     ];
 
     /**********************************************************************************************
@@ -68,6 +70,13 @@ class Collection extends Model
         return $this->belongsToMany('App\Models\User\User', 'user_collections')->withPivot('id');
     }
 
+    /**
+     * Get the category the collection belongs to.
+     */
+    public function category()
+    {
+        return $this->belongsTo('App\Models\Collection\CollectionCategory', 'collection_category_id');
+    }
 
 
     /**********************************************************************************************
@@ -106,6 +115,30 @@ class Collection extends Model
     public function scopeSortOldest($query)
     {
         return $query->orderBy('id');
+    }
+
+        /**
+     * Scope a query to sort gears in category order.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSortCategory($query)
+    {
+        $ids = CollectionCategory::orderBy('sort', 'DESC')->pluck('id')->toArray();
+        return count($ids) ? $query->orderByRaw(DB::raw('FIELD(collection_category_id, '.implode(',', $ids).')')) : $query;
+    }
+
+    /**
+     * Scope a query to show only visible collections.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeVisible($query, $withHidden = 0)
+    {
+        if($withHidden) return $query;
+        return $query->where('is_visible', 1);
     }
 
 
@@ -261,4 +294,24 @@ class Collection extends Model
         }
         else return false;
    }
+
+   /**
+     * Gets the admin edit URL.
+     *
+     * @return string
+     */
+    public function getAdminUrlAttribute()
+    {
+        return url('admin/data/collections/edit/'.$this->id);
+    }
+
+    /**
+     * Gets the power required to edit this model.
+     *
+     * @return string
+     */
+    public function getAdminPowerAttribute()
+    {
+        return 'edit_data';
+    }
 }

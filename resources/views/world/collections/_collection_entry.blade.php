@@ -12,6 +12,12 @@
                         {!! $collection->displayName !!} @if(Auth::check() && Auth::user()->hasCollection($collection->id))
                         <i class="fas fa-check" data-toggle="tooltip" title="You've completed this collection."></i>@endif
                     </h1>
+
+                    @if(isset($collection->category) && $collection->category)
+                <div class="col-md">
+                    <p><strong>Category:</strong> <a href="{{  $collection->category->searchUrl }}">{!! $collection->category->name !!}</a></p>
+                </div>
+            @endif
                     <div class="world-entry-text">
                         {!! $collection->description !!}
                     </div>
