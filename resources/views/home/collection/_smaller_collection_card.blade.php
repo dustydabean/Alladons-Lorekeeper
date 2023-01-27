@@ -7,7 +7,14 @@
                 @endif
                 <h4 class="mb-0 mt-0 d-inline col-form-label">{!! $collection->displayName !!}</h4>
             </div>
-            <div class="col-auto mx-2 text-right"><a class="btn btn-secondary btn-sm ml-2 btn-craft w-100" style="line-height:1;" href="">Complete or View</a></div>
+            @if(Auth::check() && Auth::user()->hasCollection($collection->id))
+            <div class="col-auto mx-2 text-right"><a class="btn btn-secondary btn-sm ml-2 btn-craft w-100" style="line-height:1;" href="">View</a></div>
+            @else
+            <div class="col-auto mx-2 text-right"><a class="btn btn-secondary btn-sm ml-2 btn-craft w-100" style="line-height:1;" href="">Complete</a></div>
+            @endif
         </div>
     </div>
 </div>
+
+
+

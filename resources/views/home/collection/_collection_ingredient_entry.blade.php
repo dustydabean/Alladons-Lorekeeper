@@ -1,5 +1,33 @@
-@switch($ingredient->ingredient_type)
-    @case('Item')
-        {{ $ingredient->quantity }} @if(isset($ingredient->ingredient->image_url))<img class="small-icon" src="{{ $ingredient->ingredient->image_url }}">@endif<span>{!! $ingredient->ingredient->displayName !!}</span>
-        @break
-@endswitch
+
+
+<div class="card-body tab-content">
+    <div>
+        <div class="row mb-3">
+@foreach($collection->ingredients as $ingredient)
+    @switch($ingredient->ingredient_type)
+        @case('Item')
+            <div class="col-sm-3 col-6 text-center inventory-item">
+                <div class="mb-1">
+                @php 
+                $user = Auth::user();
+                $userOwned = \App\Models\User\UserItem::where('user_id', $user->id)->where('item_id', $ingredient->ingredient->id)->where('count', '>', 0)->get();
+                $userOwned->pluck('count')->sum();
+
+                @endphp
+                
+                @if($userOwned->count() || Auth::check() && Auth::user()->hasCollection($collection->id)) <img src="{{ $ingredient->ingredient->image_url }}" />
+                @elseif(Auth::check() && !Auth::user()->hasCollection($collection->id))   <img class="collectionnotunlocked" src="{{ $ingredient->ingredient->image_url }}" /> @endif
+                </div>
+                    <div>{!! $ingredient->ingredient->displayName !!} 
+                        @if($userOwned->count() || Auth::check() && Auth::user()->hasCollection($collection->id))
+                        <i class="fas fa-check"></i>
+                        @else 
+                        ({{ $ingredient->quantity }})
+                        @endif</div>
+            </div>
+    @endswitch
+@endforeach
+        </div>
+    </div>
+</div>
+

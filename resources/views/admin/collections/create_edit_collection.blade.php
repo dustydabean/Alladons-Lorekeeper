@@ -59,7 +59,7 @@
     <h3>Preview</h3>
     <div class="card mb-3">
         <div class="card-body">
-            @include('world._entry', ['imageUrl' => $collection->imageUrl, 'name' => $collection->displayName, 'description' => $collection->parsed_description, 'searchUrl' => $collection->searchUrl])
+        @include('world.collections._collection_entry', ['collection' => $collection, 'imageUrl' => $collection->imageUrl, 'name' => $collection->displayName, 'description' => $collection->parsed_description])
         </div>
     </div>
 @endif

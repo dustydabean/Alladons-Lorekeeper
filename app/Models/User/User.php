@@ -24,6 +24,10 @@ use App\Models\Gallery\GallerySubmission;
 use App\Models\Gallery\GalleryCollaborator;
 use App\Models\Gallery\GalleryFavorite;
 use App\Traits\Commenter;
+use App\Models\Item\Item;
+
+use App\Models\Collection\Collection;
+use App\Models\User\UserCollectionLog;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -380,6 +384,16 @@ class User extends Authenticatable implements MustVerifyEmail
         if(!$bday || $bday->diffInYears(carbon::now()) < 13) return false;
         else return true;
     }
+
+     /**
+     * Get the user's completed collections.
+     */
+    public function collections()
+    {
+        return $this->belongsToMany('App\Models\Collection\Collection', 'user_collections')->withPivot('id');
+    }
+
+ 
     /**********************************************************************************************
 
         OTHER FUNCTIONS
@@ -594,10 +608,9 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $collection = Collection::find($collection_id);
         $user_has = $this->collections->contains($collection);
-        $default = !$collection->needs_unlocking;
-        return $default ? true : $user_has;
+        return $user_has;
     }
-
+    
 
     /**
      * Returned collections listed that are completed

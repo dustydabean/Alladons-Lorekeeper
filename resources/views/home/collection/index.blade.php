@@ -6,13 +6,13 @@
 {!! breadcrumbs(['Collection' => 'collection']) !!}
 
 <h1>
-    My Collection Gallery
+    Collection Gallery
 </h1>
-<p> This is a list of collections, as well as your completed collections. </p>
+<p> This is a list of all collections, as well as your completed collections. </p>
 
 <hr>
 
-<h3>Free Collections</h3>
+<h3>Incomplete Collections</h3>
 @if($collections->count())
     <div class="row mx-0">
         @foreach($collections as $collection)
@@ -20,13 +20,21 @@
         @endforeach
     </div>
 @else
-    There are no free collections.
+    You've completed all collections!
 @endif
 
 <hr>
 
 <h3>Your Completed Collections</h3>
-dsaggds
+@if(Auth::user()->collections->count())
+    <div class="row mx-0">
+        @foreach(Auth::user()->collections as $collection)
+            @include('home.collection._smaller_collection_card', ['collection' => $collection])
+        @endforeach
+    </div>
+@else
+    You haven't unlocked any collections!
+@endif
 <div class="text-right mb-4">
     <a href="{{ url(Auth::user()->url.'/collection-logs') }}">View logs...</a>
 </div>

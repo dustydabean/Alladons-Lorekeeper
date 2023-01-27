@@ -39,6 +39,7 @@ class CollectionController extends Controller
     {
         return view('home.collection.index', [
             'collections' => Collection::get(),
+            'collection' => Collection::get(),
         ]);
     }
 

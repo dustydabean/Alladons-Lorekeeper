@@ -85,21 +85,21 @@ class CollectionManager extends Service
                 if(!$plucked) throw new \Exception('Insufficient ingredients selected.');
 
                 // Debit the ingredients
-                $service = new InventoryManager();
-                foreach($plucked as $id => $quantity) {
-                    $stack = UserItem::find($id);
-                    if(!$service->debitStack($user, 'Collection', ['data' => 'Used in '.$collection->name.' Collection'], $stack, $quantity)) throw new \Exception('Items could not be removed.');
-                }
+                //$service = new InventoryManager();
+               // foreach($plucked as $id => $quantity) {
+                   // $stack = UserItem::find($id);
+                   // if(!$service->debitStack($user, 'Collection', ['data' => 'Used in '.$collection->name.' Collection'], $stack, $quantity)) throw new \Exception('Items could not be removed.');
+               // }
             } else {
                 $items = $collection->ingredients->where('ingredient_type', 'Item');
                 if (count($items) > 0) throw new \Exception('Insufficient ingredients selected.');
             }
 
             // Debit the currency
-            $service = new CurrencyManager();
-            foreach($currency_ingredients as $ingredient) {
-                if(!$service->debitCurrency($user, null, 'Collection', 'Used in '.$collection->name.' Collection', Currency::find($ingredient->data[0]), $ingredient->quantity)) throw new \Exception('Currency could not be debited.');
-            }
+           // $service = new CurrencyManager();
+           // foreach($currency_ingredients as $ingredient) {
+                //if(!$service->debitCurrency($user, null, 'Collection', 'Used in '.$collection->name.' Collection', Currency::find($ingredient->data[0]), $ingredient->quantity)) throw new \Exception('Currency could not be debited.');
+           // }
 
             // Credit rewards
             $logType = 'Collection Reward';
@@ -110,8 +110,12 @@ class CollectionManager extends Service
             if(!fillUserAssets($collection->rewardItems, null, $user, $logType, $collectionData)) throw new \Exception("Failed to distribute rewards to user.");
 
             // Credit rewards
-            $servicetwo = new CollectionService();
-            if(!$servicetwo->creditCollection(null, $user, 'Completed '.$collection->name.' Collection', $collection, $collection)) throw new \Exception('Collection could not be completed.');
+            $servicetwo = new \App\Services\CollectionService;
+            $logTypetwo = 'Collection Completed';
+            $collectionDatatwo = [
+                'data' => 'Completed '. $collection->displayName .' collection'
+            ];
+            if(!$servicetwo->creditCollection(null, $user, null, $logTypetwo, $collectionDatatwo, $collection)) throw new \Exception('Failed to create collection log.');
 
 
 

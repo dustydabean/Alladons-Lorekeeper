@@ -252,40 +252,10 @@ class CollectionService extends Service
 
 
 
-
-    /**
-     * Creates an collection log.
-     *
-     * @param  int     $senderId
-     * @param  string  $senderType
-     * @param  int     $recipientId
-     * @param  string  $recipientType
-     * @param  int     $userCollectionId
-     * @param  string  $data
-     * @param  int     $collectionId
-     * @return  int
-     */
-    public function createLog($senderId, $recipientId, $characterId, $data, $collectionId)
-    {
-        return DB::table('user_collections_log')->insert(
-            [
-                'sender_id' => $senderId,
-                'recipient_id' => $recipientId,
-                'character_id' => $characterId,
-                'collection_id' => $collectionId,
-                'log' => $type . ($data ? ' (' . $data . ')' : ''),
-                'data' => $data, // this should be just a string
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
-            ]
-        );
-    }
-
-
     // my brain is too small to think of a way to keep users from completing a collection only once so we're "granting" one when a user completes a collection
 
 
-    /**
+        /**
      * Credits collection to a user or character.
      *
      * @param  \App\Models\User\User                        $sender
@@ -297,14 +267,17 @@ class CollectionService extends Service
      * @param  int                                          $quantity
      * @return  bool
      */
-    public function creditCollection($sender, $recipient, $character, $data, $collection)
+    public function creditCollection($sender, $recipient, $character, $type, $data, $collection)
     {
         DB::beginTransaction();
 
         try {
             if(is_numeric($collection)) $collection = Collection::find($collection);
 
-            
+            if($recipient->collections->contains($collection)) {
+                flash($recipient->name." already completed the collection ".$collection->displayName, 'warning');
+                return $this->commitReturn(false);
+            }
 
             $record = UserCollection::where('user_id', $recipient->id)->where('collection_id', $collection->id)->first();
             if($record) {
@@ -316,7 +289,7 @@ class CollectionService extends Service
             }
 
             if($type && !$this->createLog($sender ? $sender->id : null, $recipient ? $recipient->id : null,
-            $character ? $character->id : null,$data['data'], $collection->id)) throw new \Exception("Failed to create log.");
+            $character ? $character->id : null, $type, $data['data'], $collection->id)) throw new \Exception("Failed to create log.");
 
             return $this->commitReturn(true);
         } catch(\Exception $e) { 
@@ -324,4 +297,36 @@ class CollectionService extends Service
         }
         return $this->rollbackReturn(false);
     }
+
+    
+    /**
+     * Creates an collection log.
+     *
+     * @param  int     $senderId
+     * @param  string  $senderType
+     * @param  int     $recipientId
+     * @param  string  $recipientType
+     * @param  int     $userCollectionId
+     * @param  string  $type 
+     * @param  string  $data
+     * @param  int     $collectionId
+     * @return  int
+     */
+    public function createLog($senderId, $recipientId, $characterId, $type, $data, $collectionId)
+    {
+        return DB::table('user_collections_log')->insert(
+            [
+                'sender_id' => $senderId,
+                'recipient_id' => $recipientId,
+                'character_id' => $characterId,
+                'collection_id' => $collectionId,
+                'log' => $type . ($data ? ' (' . $data . ')' : ''),
+                'log_type' => $type,
+                'data' => $data, // this should be just a string
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ]
+        );
+    }
 }
+
