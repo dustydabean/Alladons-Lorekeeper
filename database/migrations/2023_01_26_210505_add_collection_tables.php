@@ -27,11 +27,11 @@ class AddCollectionTables extends Migration
         });
 
 
-        Schema::create('collection_items', function (Blueprint $table) {
+        Schema::create('collection_ingredients', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->unsignedInteger('collection_id')->nullable(false);
-            $table->enum('item_type', ['Item'])->nullable(false);
-            $table->string('item_data', 1024)->nullable(false);
+            $table->enum('ingredient_type', ['Item'])->nullable(false);
+            $table->string('ingredient_data', 1024)->nullable(false);
             $table->unsignedInteger('quantity')->nullable(false);
         });
 
@@ -80,7 +80,7 @@ class AddCollectionTables extends Migration
     public function down()
     {
         Schema::dropIfExists('collections');
-        Schema::dropIfExists('collection_items');
+        Schema::dropIfExists('collection_ingredient');
         Schema::dropIfExists('collection_rewards');
         Schema::dropIfExists('user_collections_log');
         Schema::dropIfExists('user_collections');
