@@ -52,6 +52,8 @@ class CollectionService extends Service
             if(isset($data['collection_category_id']) && $data['collection_category_id'] == 'none') $data['collection_category_id'] = null;
             if((isset($data['collection_category_id']) && $data['collection_category_id']) && !CollectionCategory::where('id', $data['collection_category_id'])->exists()) throw new \Exception("The selected collection category is invalid.");
 
+            if(isset($data['parent_id']) && $data['parent_id'] == 'none') $data['parent_id'] = null;
+            if((isset($data['parent_id']) && $data['parent_id']) && !Collection::where('id', $data['parent_id'])->exists()) throw new \Exception("The selected collection is invalid.");
 
             $data = $this->populateData($data);
 
@@ -116,6 +118,9 @@ class CollectionService extends Service
             
             if(!isset($data['ingredient_type'])) throw new \Exception('Please add at least one ingredient.');
             if(!isset($data['rewardable_type'])) throw new \Exception('Please add at least one reward to the collection.');
+
+            if(isset($data['parent_id']) && $data['parent_id'] == 'none') $data['parent_id'] = null;
+            if((isset($data['parent_id']) && $data['parent_id']) && !Collection::where('id', $data['parent_id'])->exists()) throw new \Exception("The selected collection is invalid.");
 
             $data = $this->populateData($data);
             $this->populateIngredients($collection, $data);
@@ -243,13 +248,11 @@ class CollectionService extends Service
         try {
             // Check first if the collection is currently owned or if some other site feature uses it
             if(DB::table('user_collections')->where('collection_id', $collection->id)->exists()) throw new \Exception("At least one user currently owns this collection. Please remove the collection(s) before deleting it.");
-            if(DB::table('loots')->where('rewardable_type', 'Collection')->where('rewardable_id', $collection->id)->exists()) throw new \Exception("A loot table currently distributes this collection as a potential reward. Please remove the collection before deleting it.");
-            if(DB::table('prompt_rewards')->where('rewardable_type', 'Collection')->where('rewardable_id', $collection->id)->exists()) throw new \Exception("A prompt currently distributes this collection as a reward. Please remove the collection before deleting it.");
-            // FIXME if(DB::table('shop_stock')->where('collection_id', $collection->id)->exists()) throw new \Exception("A shop currently stocks this collection. Please remove the collection before deleting it.");
+            if(Collection::where('parent_id', $prompt->id)->exists()) throw new \Exception("A prompt currently has this prompt as its parent.");
+
 
             DB::table('user_collections_log')->where('collection_id', $collection->id)->delete();
             DB::table('user_collections')->where('collection_id', $collection->id)->delete();
-            // FIXME $collection->tags()->delete();
             if($collection->has_image) $this->deleteImage($collection->imagePath, $collection->imageFileName); 
             $collection->delete();
 

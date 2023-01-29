@@ -72,7 +72,7 @@ class CollectionController extends Controller
             'currencies' => Currency::where('is_user_owned', 1)->orderBy('name')->pluck('name', 'id'),
             'tables' => LootTable::orderBy('name')->pluck('name', 'id'),
             'raffles' => Raffle::where('rolled_at', null)->where('is_active', 1)->orderBy('name')->pluck('name', 'id'),
-            'collections'=> Collection::orderBy('name')->pluck('name', 'id'),
+            'collections' => ['none' => 'No parent'] + Collection::visible()->pluck('name', 'id')->toArray(),
             'collectioncategories' => ['none' => 'No category'] + CollectionCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
         ]);
     }
@@ -94,7 +94,7 @@ class CollectionController extends Controller
             'currencies' => Currency::where('is_user_owned', 1)->orderBy('name')->pluck('name', 'id'),
             'tables' => LootTable::orderBy('name')->pluck('name', 'id'),
             'raffles' => Raffle::where('rolled_at', null)->where('is_active', 1)->orderBy('name')->pluck('name', 'id'),
-            'collections'=> Collection::orderBy('name')->pluck('name', 'id'),
+            'collections' => ['none' => 'No parent'] + Collection::visible()->where('id', '!=', $collection->id)->pluck('name', 'id')->toArray(),
             'collectioncategories' => ['none' => 'No category'] + CollectionCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
         ]);
     }
@@ -113,7 +113,8 @@ class CollectionController extends Controller
         $data = $request->only([
             'name', 'description', 'image', 'remove_image', 'is_visible',
             'ingredient_type', 'ingredient_data', 'ingredient_quantity',
-            'rewardable_type', 'rewardable_id', 'reward_quantity', 'collection_category_id'
+            'rewardable_type', 'rewardable_id', 'reward_quantity', 'collection_category_id',
+            'parent_id'
         ]);
         if($id && $service->updateCollection(Collection::find($id), $data, Auth::user())) {
             flash('Collection updated successfully.')->success();

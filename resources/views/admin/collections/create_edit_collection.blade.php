@@ -31,15 +31,26 @@
         </div>
     @endif
 </div>
-
+<div class="row">
+    <div class="col-md-8">
 <div class="form-group">
             {!! Form::label('Collection Category (Optional)') !!}
             {!! Form::select('collection_category_id', $collectioncategories, $collection->collection_category_id, ['class' => 'form-control selectize']) !!}
 </div>
-
 <div class="form-group">
     {!! Form::checkbox('is_visible', 1, $collection->id ? $collection->is_visible : 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
     {!! Form::label('is_visible', 'Is Visible', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If turned off, the collection will not be visible.') !!}
+</div>
+</div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="form-group">
+            {!! Form::label('Collection Parent (Optional)') !!} {!! add_help('A parent collection means the user will be required to complete the parent before they can complete this collection.') !!}
+            {!! Form::select('parent_id', $collections, $collection->parent_id, ['class' => 'form-control']) !!}
+        </div>
+    </div>
 </div>
 
 <div class="form-group">

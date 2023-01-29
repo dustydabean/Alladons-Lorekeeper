@@ -41,28 +41,12 @@ class CollectionManager extends Service
 
         try {
             // Check user has all limits
-            if($collection->is_limited)
-            {
-                foreach($collection->limits as $limit)
+            
+            if($collection->parent_id)
                 {
-                    $limitType = $limit->limit_type;
-                    $check = NULL;
-                    switch($limitType)
-                    {
-                        case 'Item':
-                            $check = UserItem::where('item_id', $limit->reward->id)->where('user_id', $user->id)->where('count', '>=', $limit->quantity)->first();
-                            break;
-                        case 'Currency':
-                            $check = UserCurrency::where('currency_id', $limit->reward->id)->where('user_id', $user->id)->where('quantity', '>=', $limit->quantity)->first();
-                            break;
-                        case 'Collection':
-                            $check = UserCollection::where('collection_id', $limit->reward->id)->where('user_id', $user->id)->first();
-                            break;
-                    }
-
-                    if(!$check) throw new \Exception('You require ' . $limit->reward->name . ' x '. $limit->quantity . ' to complete this');
+                    $completed = UserCollection::where('user_id', $user->id)->where('collection_id', $collection->parent_id)->count();    
+                    if(!$completed) throw new \Exception('Please complete the prerequisite first.');
                 }
-            }
             // Check for sufficient currencies
             $user_currencies = $user->getCurrencies(true);
             $currency_ingredients = $collection->ingredients->where('ingredient_type', 'Currency');

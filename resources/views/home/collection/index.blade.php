@@ -12,6 +12,7 @@
 
 <hr>
 
+
 <h3>Incomplete Collections</h3>
 @if($collections->count())
     <div class="row mx-0">

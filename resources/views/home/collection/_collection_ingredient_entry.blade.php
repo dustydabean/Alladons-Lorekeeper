@@ -19,11 +19,14 @@
                 @elseif(Auth::check() && !Auth::user()->hasCollection($collection->id))   <img class="collectionnotunlocked" src="{{ $ingredient->ingredient->image_url }}" /> @endif
                 </div>
                     <div>{!! $ingredient->ingredient->displayName !!} 
-                        @if($userOwned->count() || Auth::check() && Auth::user()->hasCollection($collection->id))
-                        <i class="fas fa-check"></i>
-                        @else 
-                        ({{ $ingredient->quantity }})
-                        @endif</div>
+                        @if(Auth::check() && !Auth::user()->hasCollection($collection->id))
+                            @if($userOwned->count())
+                            <i class="fas fa-check"></i>
+                            @else 
+                            ({{ $ingredient->quantity }})
+                            @endif
+                        @endif
+                    </div>
             </div>
     @endswitch
 @endforeach

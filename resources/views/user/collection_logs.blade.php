@@ -25,7 +25,7 @@
                     @foreach($chunk as $collectionId=>$stack)
                         <div class="col-sm-3 col-6 text-center inventory-Collection" data-id="{{ $stack->first()->pivot->id }}" data-name="{{ $user->name }}'s {{ $stack->first()->name }}">
                             <div class="mb-1">
-                                <img src="{{ $stack->first()->imageUrl }}" alt="{{ $stack->first()->name }}" />
+                                <a href="{{ $stack->first()->idUrl }}"><img src="{{ $stack->first()->imageUrl }}" alt="{{ $stack->first()->name }}" /></a>
                             </div>
                             <div>
                                 {!! $stack->first()->displayName !!}</a>

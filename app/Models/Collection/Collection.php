@@ -14,7 +14,7 @@ class Collection extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'has_image','description', 'parsed_description', 'reference_url', 'artist_alias' ,'artist_url', 'is_visible', 'collection_category_id'
+        'name', 'has_image','description', 'parsed_description', 'reference_url', 'artist_alias' ,'artist_url', 'is_visible', 'collection_category_id', 'parent_id'
     ];
 
     protected $appends = ['image_url'];
@@ -76,6 +76,22 @@ class Collection extends Model
     public function category()
     {
         return $this->belongsTo('App\Models\Collection\CollectionCategory', 'collection_category_id');
+    }
+
+      /**
+     * Get the prompts parent
+     */
+    public function parent()
+    {
+        return $this->belongsTo('App\Models\Collection\Collection', 'parent_id');
+    }
+
+    /**
+     * Get the prompts children
+     */
+    public function children()
+    {
+        return $this->hasMany('App\Models\Collection\Collection', 'parent_id');
     }
 
 
