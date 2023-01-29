@@ -27,6 +27,7 @@ use App\Traits\Commenter;
 use App\Models\Item\Item;
 
 use App\Models\Collection\Collection;
+use App\Models\User\UserCollection;
 use App\Models\User\UserCollectionLog;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -392,6 +393,13 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->belongsToMany('App\Models\Collection\Collection', 'user_collections')->withPivot('id');
     }
+
+    public function getIncompletedCollectionsAttribute()
+    { 
+        return Collection::whereNotIn('id', UserCollection::where('user_id',$this->id)->pluck('collection_id')->unique());
+
+    }
+
 
  
     /**********************************************************************************************

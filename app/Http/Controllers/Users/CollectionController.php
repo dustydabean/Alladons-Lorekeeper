@@ -38,7 +38,7 @@ class CollectionController extends Controller
     public function getIndex(Request $request)
     {
         return view('home.collection.index', [
-            'collections' => Collection::get(),
+            'collections' => Collection::visible()->get(),
         ]);
     }
 
