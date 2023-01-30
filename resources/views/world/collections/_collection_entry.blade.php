@@ -36,7 +36,9 @@
                                                     @else
                                                         <div class="alert alert-success">You've completed {!! $collection->parent->displayName !!} and can complete this collection!</div>
                                                     @endif
-                                    @endif   
+                                    @elseif(!Auth::check() && $collection->parent_id)  
+                                    <div class="alert alert-danger">This collection requires you to have completed {!! $collection->parent->displayName !!} before you can complete it.</div>
+                                    @endif
                                 </div>
                         </div>
                             <h5>Rewards</h5>
@@ -59,7 +61,17 @@
                                     @endforeach
                                     
                                 </div>
-                            @endif
+                            @else
+                            <h4 class="mt-2">Unlocks</h4>
+                                    This collection unlocks the following collections:
+                                <br>
+                                <div class="alert alert-secondary">
+                                    @foreach($collection->children as $children)
+                                        {!! $children->displayname !!}
+                                    @endforeach
+                                    
+                                </div>
+                                @endif
                         @endif
                     </div>
     </div>
