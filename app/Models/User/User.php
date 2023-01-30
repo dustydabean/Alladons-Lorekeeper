@@ -396,7 +396,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function getIncompletedCollectionsAttribute()
     { 
-        return Collection::visible()->whereNotIn('id', UserCollection::where('user_id',$this->id)->pluck('collection_id')->unique())->get();
+        return Collection::visible()->whereNotIn('id', UserCollection::where('user_id',$this->id)->pluck('collection_id')->unique());
 
     }
 

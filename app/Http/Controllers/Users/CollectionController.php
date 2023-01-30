@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 use App\Models\Collection\Collection;
+use App\Models\Collection\CollectionCategory;
 use App\Models\User\UserCollection;
 use App\Models\Item\ItemCategory;
 use App\Models\Item\Item;
@@ -36,9 +37,16 @@ class CollectionController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getIndex(Request $request)
-    {
+    { $incompleted = Auth::user()->incompletedCollections;
+        $categories = CollectionCategory::orderBy('sort', 'DESC')->get();
+        $collections = count($categories) ? Auth::user()->collections()->orderByRaw('FIELD(collection_category_id,'.implode(',', $categories->pluck('id')->toArray()).')')->orderBy('name')->get()->groupBy('collection_category_id') : Auth::user()->collections()->orderBy('name')->get()->groupBy('collection_category_id');
+        $incomplete = count($categories) ? $incompleted->orderByRaw('FIELD(collection_category_id,'.implode(',', $categories->pluck('id')->toArray()).')')->orderBy('name')->get()->groupBy('collection_category_id') : $incompleted->orderBy('name')->get()->groupBy('collection_category_id');
+
+
         return view('home.collection.index', [
-            'collections' => Collection::visible()->get(),
+            'categories' => $categories->keyBy('id'),
+            'collections' => $collections,
+            'incomplete' => $incomplete,
         ]);
     }
 
