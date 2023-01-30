@@ -14,9 +14,9 @@
 
 
 <h3>Incomplete Collections</h3>
-@if($collections->count())
+@if(Auth::user()->incompletedCollections->count())
     <div class="row mx-0">
-        @foreach($collections as $collection)
+        @foreach(Auth::user()->incompletedCollections as $collection)
             @include('home.collection._smaller_collection_card', ['collection' => $collection])
         @endforeach
     </div>

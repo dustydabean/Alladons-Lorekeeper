@@ -25,8 +25,8 @@
                                 <div class="alert alert-secondary">
                                     @include('home.collection._collection_ingredient_entry', ['ingredient' => $collection->ingredient])
 
-                                    @if($collection->parent_id && Auth::check() && Auth::user()->hasCollection($collection->id))
-                                        @if(Auth::check() && !Auth::user()->hasCollection($collection->id))
+                                    @if($collection->parent_id && Auth::check() && !Auth::user()->hasCollection($collection->id))
+                                        
                                             <h4> Prerequisite </h4>
                                                 @php 
                                                     if(Auth::check()) $completed = DB::table('user_collections')->where('user_id', Auth::user()->id)->where('collection_id', $collection->parent_id)->count();    
@@ -36,7 +36,6 @@
                                                     @else
                                                         <div class="alert alert-success">You've completed {!! $collection->parent->displayName !!} and can complete this collection!</div>
                                                     @endif
-                                        @endif
                                     @endif   
                                 </div>
                         </div>
