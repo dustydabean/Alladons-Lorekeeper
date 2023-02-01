@@ -248,7 +248,7 @@ class CollectionService extends Service
         try {
             // Check first if the collection is currently owned or if some other site feature uses it
             if(DB::table('user_collections')->where('collection_id', $collection->id)->exists()) throw new \Exception("At least one user currently owns this collection. Please remove the collection(s) before deleting it.");
-            if(Collection::where('parent_id', $prompt->id)->exists()) throw new \Exception("A prompt currently has this prompt as its parent.");
+            if(Collection::where('parent_id', $collection->id)->exists()) throw new \Exception("A collection currently has this collection as its parent.");
 
 
             DB::table('user_collections_log')->where('collection_id', $collection->id)->delete();
