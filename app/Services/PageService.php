@@ -32,8 +32,9 @@ class PageService extends Service
         try {
             if(isset($data['text']) && $data['text']) $data['parsed_text'] = parse($data['text']);
             $data['user_id'] = $user->id;
-            if(!isset($data['is_visible'])) $data['is_visible'] = 0;
-            if(!isset($data['admin_only'])) $data['admin_only'] = 0;
+            if(!isset($data['is_visible'])) $data['is_visible']     = 0;
+            if(!isset($data['admin_only'])) $data['admin_only']     = 0;
+            if(!isset($data['can_comment'])) $data['can_comment']   = 0;
 
             $page = SitePage::create($data);
 
@@ -62,8 +63,9 @@ class PageService extends Service
 
             if(isset($data['text']) && $data['text']) $data['parsed_text'] = parse($data['text']);
             $data['user_id'] = $user->id;
-            if(!isset($data['is_visible'])) $data['is_visible'] = 0;
-            if(!isset($data['admin_only'])) $data['admin_only'] = 0;
+            if(!isset($data['is_visible'])) $data['is_visible']     = 0;
+            if(!isset($data['admin_only'])) $data['admin_only']     = 0;
+            if(!isset($data['can_comment'])) $data['can_comment']   = 0;
 
             $page->update($data);
 
