@@ -39,8 +39,8 @@ class update_timed_stock extends Command
      */
     public function handle()
     { 
-        $hidestock = ShopStock::where('is_timed_stock', 1)->where('is_visible', 1)->where('start_at', '>', Carbon::now())->where('end_at', '<', Carbon::now())->get();
-        $showstock = ShopStock::where('is_timed_stock', 1)->where('is_visible', 0)->where('start_at', '<', Carbon::now())->where('end_at', '>', Carbon::now())->get();
+        $hidestock = ShopStock::where('is_timed_stock', 1)->where('is_visible', 1)->where('start_at', '<=', Carbon::now())->where('end_at', '<=', Carbon::now())->get();
+        $showstock = ShopStock::where('is_timed_stock', 1)->where('is_visible', 0)->where('start_at', '<=', Carbon::now())->where('end_at', '>=', Carbon::now())->get();
         //set stock that should be active to active
         foreach($showstock as $showstock) { 
             $showstock->is_visible = 1;
