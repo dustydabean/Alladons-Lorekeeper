@@ -100,6 +100,29 @@
             {!! Form::select('purchase_limit_timeframe', ["lifetime" => "Lifetime", "yearly" => "Yearly", "monthly" => "Monthly", "weekly" => "Weekly", "daily" => "Daily"] , $stock ? $stock->purchase_limit_timeframe : 0, ['class' => 'form-control stock-field', 'data-name' => 'purchase_limit_timeframe']) !!}
         </div>
     </div>
+<br>
+<div class="pl-4">
+    <div class="form-group">
+            {!! Form::checkbox('is_timed_stock', 1, $stock->is_timed_stock ?? 0, ['class' => 'form-check-input stock-timed stock-toggle stock-field', 'id' => 'is_timed_stock']) !!}
+            {!! Form::label('is_timed_stock', 'Set Timed Stock', ['class' => 'form-check-label ml-3']) !!} {!! add_help('Sets the stock as timed between the chosen dates.') !!}
+        </div>
+    <div class="stock-timed-quantity {{ $stock->is_timed_stock ? '' : 'hide' }}">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    {!! Form::label('start_at', 'Start Time') !!} {!! add_help('Stock will cycle in at this date.') !!}
+                    {!! Form::text('start_at', $stock->start_at, ['class' => 'form-control datepicker']) !!}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    {!! Form::label('end_at', 'End Time') !!} {!! add_help('Stock will cycle out at this date.') !!}
+                    {!! Form::text('end_at', $stock->end_at, ['class' => 'form-control datepicker']) !!}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="text-right mt-1">
     {!! Form::submit($stock->id ? 'Edit' : 'Create', ['class' => 'btn btn-primary']) !!}
@@ -122,6 +145,29 @@
             }
             else {
                 $('.stock-limited-quantity').addClass('hide');
+            }
+        });
+        // is_timed_stock change
+        $('#is_timed_stock').change(function() {
+            if ($(this).is(':checked')) {
+                $('.stock-timed-quantity').removeClass('hide');
+            }
+            else {
+                $('.stock-timed-quantity').addClass('hide');
+            }
+        });
+
+        $(".datepicker").datetimepicker({
+            dateFormat: "yy-mm-dd",
+            timeFormat: 'HH:mm:ss',
+            beforeShow: function (input, inst) {
+                const box = inst.input[0].getBoundingClientRect();
+                setTimeout(function () {
+                    inst.dpDiv.css({
+                        top: box.top - inst.dpDiv[0].offsetHeight,
+                        left: box.left
+                    });
+                }, 0);
             }
         });
     });

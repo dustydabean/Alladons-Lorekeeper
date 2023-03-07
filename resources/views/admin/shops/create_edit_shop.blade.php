@@ -121,7 +121,10 @@
                         <div><a href="{{ $stock->item->idUrl }}"><strong>{{ $stock->item->name }} - {{ $stock->stock_type }}</strong></a></div>
                         <div><strong>Cost: </strong> {!! $stock->currency->display($stock->cost) !!}</div>
                     </div>
-                    @if(!$stock->is_visible)<div class="col-2"> <i class="fas fa-eye-slash"></i></div>@endif
+                    <div class="row">
+                        @if(!$stock->is_visible)<div class="col-2"> <i class="fas fa-eye-slash"></i></div>@endif
+                        @if($stock->is_timed_stock)<div class="col-2"> <i class="fas fa-clock"></i></div>@endif
+                    </div>
                 </div>
                 @if($stock->is_limited_stock) <div>Stock: {{ $stock->quantity }}</div> @endif
                 @if($stock->is_limited_stock) <div>Restock: {!! $stock->restock ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-danger"></i>' !!}</div> @endif
