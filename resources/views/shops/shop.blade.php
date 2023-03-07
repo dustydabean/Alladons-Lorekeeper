@@ -9,11 +9,22 @@
     {{ $shop->name }}
 </h1>
 
+@if($shop->use_coupons)
+    <div class="alert alert-success">You can use coupons in this store!</div>
+    @if($shop->allowed_coupons && count(json_decode($shop->allowed_coupons, 1)))
+        <div class="alert alert-info">You can use the following coupons: @foreach($shop->allAllowedCoupons as $coupon) {!! $coupon->displayName !!}{{$loop->last ? '' : ','}} @endforeach</div>
+    @endif
+@endif
+
 <div class="text-center">
     <img src="{{ $shop->shopImageUrl }}" style="max-width:100%" alt="{{ $shop->name }}" />
     <p>{!! $shop->parsed_description !!}</p>
 </div>
 
+@if(count($items))<h3>Items</h3>@endif
+@if(Settings::get('shop_type'))
+    @include('shops._tab', ['items' => $items, 'shop' => $shop])
+@else
 @foreach($items as $categoryId=>$categoryItems)
     <div class="card mb-3 inventory-category">
         <h5 class="card-header inventory-header">
@@ -29,9 +40,10 @@
                             </div>
                             <div>
                                 <a href="#" class="inventory-stack inventory-stack-name"><strong>{{ $item->name }}</strong></a>
-                                <div><strong>Cost: </strong> {!! $currencies[$item->pivot->currency_id]->display($item->pivot->cost) !!}</div>
+                                <div><strong>Cost: </strong> {!! $currencies[$item->pivot->currency_id]->display((int)$item->pivot->cost) !!}</div>
                                 @if($item->pivot->is_limited_stock) <div>Stock: {{ $item->pivot->quantity }}</div> @endif
-                                @if($item->pivot->purchase_limit) <div class="text-danger">Max {{ $item->pivot->purchase_limit }} per user</div> @endif
+                                @if($item->pivot->purchase_limit) <div class="text-danger">Max {{ $item->pivot->purchase_limit }} @if($item->pivot->purchase_limit_timeframe !== 'lifetime') {{ $item->pivot->purchase_limit_timeframe }} @endif per user</div> @endif
+                                @if($item->pivot->disallow_transfer) <div class="text-danger">Cannot be transferred after purchase</div> @endif
                             </div>
                         </div>
                     @endforeach
@@ -40,7 +52,7 @@
         </div>
     </div>
 @endforeach
-
+@endif
 @endsection
 
 @section('scripts')
