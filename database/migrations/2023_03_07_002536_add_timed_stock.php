@@ -14,7 +14,7 @@ class AddTimedStock extends Migration
     public function up()
     {
         Schema::table('shop_stock', function (Blueprint $table){
-        $table->boolean('is_timed_stock')->default(true);
+        $table->boolean('is_timed_stock')->default(false);
         $table->timestamps();
         $table->timestamp('start_at')->nullable()->default(null);
         $table->timestamp('end_at')->nullable()->default(null);
