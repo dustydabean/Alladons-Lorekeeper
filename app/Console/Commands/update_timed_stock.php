@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\Shop\ShopStock;
+use App\Models\Shop\Shop;
 use Carbon\Carbon;
 
 class update_timed_stock extends Command
@@ -20,7 +21,7 @@ class update_timed_stock extends Command
      *
      * @var string
      */
-    protected $description = 'Hides timed stock when expired, or sets it active if ready.';
+    protected $description = 'Hides timed stock or shops when expired, or sets it active if ready.';
 
     /**
      * Create a new command instance.
@@ -50,6 +51,20 @@ class update_timed_stock extends Command
         foreach($hidestock as $hidestock) { 
                 $hidestock->is_visible = 0;
                 $hidestock->save();
+            } 
+
+        //also activate or deactivate the shops
+        $hideshop = Shop::where('is_timed_shop', 1)->where('is_active', 1)->where('start_at', '<=', Carbon::now())->where('end_at', '<=', Carbon::now())->get();
+        $showshop = Shop::where('is_timed_shop', 1)->where('is_active', 0)->where('start_at', '<=', Carbon::now())->where('end_at', '>=', Carbon::now())->get();
+        //set shop that should be active to active
+        foreach($showshop as $showshop) { 
+            $showshop->is_active = 1;
+            $showshop->save();
+        } 
+        //hide shop that should be hidden now
+        foreach($hideshop as $hideshop) { 
+                $hideshop->is_active = 0;
+                $hideshop->save();
             } 
     }
 }

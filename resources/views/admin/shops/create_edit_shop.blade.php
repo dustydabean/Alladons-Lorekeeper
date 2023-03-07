@@ -64,6 +64,30 @@
     {!! Form::label('is_fto', 'FTO Only?', ['class' => 'form-check-label ml-3']) !!} {!! add_help('Only users who are currently FTO and staff can enter.') !!}
 </div>
 
+<br>
+<div class="pl-4">
+    <div class="form-group">
+            {!! Form::checkbox('is_timed_shop', 1, $shop->is_timed_shop ?? 0, ['class' => 'form-check-input shop-timed shop-toggle shop-field', 'id' => 'is_timed_shop']) !!}
+            {!! Form::label('is_timed_shop', 'Set Timed Shop', ['class' => 'form-check-label ml-3']) !!} {!! add_help('Sets the shop as timed between the chosen dates.') !!}
+        </div>
+    <div class="shop-timed-quantity {{ $shop->is_timed_shop ? '' : 'hide' }}">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    {!! Form::label('start_at', 'Start Time') !!} {!! add_help('The shop will cycle in at this date.') !!}
+                    {!! Form::text('start_at', $shop->start_at, ['class' => 'form-control', 'id' => 'datepicker2']) !!}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    {!! Form::label('end_at', 'End Time') !!} {!! add_help('The shop will cycle out at this date.') !!}
+                    {!! Form::text('end_at', $shop->end_at, ['class' => 'form-control', 'id' => 'datepicker3']) !!}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div class="text-right">
     {!! Form::submit($shop->id ? 'Edit' : 'Create', ['class' => 'btn btn-primary']) !!}
@@ -158,6 +182,26 @@
 @section('scripts')
 @parent
 <script>
+
+        $('#is_timed_shop').change(function() {
+            if ($(this).is(':checked')) {
+                $('.shop-timed-quantity').removeClass('hide');
+            }
+            else {
+                $('.shop-timed-quantity').addClass('hide');
+            }
+        });
+
+        $("#datepicker2").datetimepicker({
+            dateFormat: "yy-mm-dd",
+            timeFormat: 'HH:mm:ss',
+        });
+
+        $("#datepicker3").datetimepicker({
+            dateFormat: "yy-mm-dd",
+            timeFormat: 'HH:mm:ss',
+        });
+
     // edit stock function
     function editStock(id) {
         loadModal("{{ url('admin/data/shops/stock/edit') }}/" + id, 'Edit Stock');

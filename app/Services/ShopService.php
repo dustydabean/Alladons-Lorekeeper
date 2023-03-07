@@ -49,6 +49,8 @@ class ShopService extends Service
             }
             else $data['has_image'] = 0;
 
+            $data['is_timed_shop'] = isset($data['is_timed_shop']);
+
             $shop = Shop::create($data);
 
             if ($image) $this->handleImage($image, $shop->shopImagePath, $shop->shopImageFileName);
@@ -84,6 +86,8 @@ class ShopService extends Service
                 $image = $data['image'];
                 unset($data['image']);
             }
+
+            $data['is_timed_shop'] = isset($data['is_timed_shop']);
 
             $shop->update($data);
 
