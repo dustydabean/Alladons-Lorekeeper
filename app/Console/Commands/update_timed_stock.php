@@ -40,8 +40,8 @@ class update_timed_stock extends Command
      */
     public function handle()
     { 
-        $hidestock = ShopStock::where('is_timed_stock', 1)->where('is_visible', 1)->where('start_at', '<=', Carbon::now())->where('end_at', '<=', Carbon::now())->get();
-        $showstock = ShopStock::where('is_timed_stock', 1)->where('is_visible', 0)->where('start_at', '<=', Carbon::now())->where('end_at', '>=', Carbon::now())->get();
+        $hidestock = ShopStock::where('is_timed_stock', 1)->where('is_visible', 1)->where('start_at', '<=', Carbon::now())->where('end_at', '<=', Carbon::now())->orWhere('is_timed_stock', 1)->where('is_visible', 1)->whereNull('start_at')->where('end_at', '<=', Carbon::now())->get();
+        $showstock = ShopStock::where('is_timed_stock', 1)->where('is_visible', 0)->where('start_at', '<=', Carbon::now())->where('end_at', '>=', Carbon::now())->orWhere('is_timed_stock', 1)->where('is_visible', 0)->where('start_at', '<=', Carbon::now())->whereNull('end_at')->get();
         //set stock that should be active to active
         foreach($showstock as $showstock) { 
             $showstock->is_visible = 1;
@@ -54,8 +54,8 @@ class update_timed_stock extends Command
             } 
 
         //also activate or deactivate the shops
-        $hideshop = Shop::where('is_timed_shop', 1)->where('is_active', 1)->where('start_at', '<=', Carbon::now())->where('end_at', '<=', Carbon::now())->get();
-        $showshop = Shop::where('is_timed_shop', 1)->where('is_active', 0)->where('start_at', '<=', Carbon::now())->where('end_at', '>=', Carbon::now())->get();
+        $hideshop = Shop::where('is_timed_shop', 1)->where('is_active', 1)->where('start_at', '<=', Carbon::now())->where('end_at', '<=', Carbon::now())->orWhere('is_timed_shop', 1)->where('is_active', 0)->whereNull('start_at')->where('end_at', '>=', Carbon::now())->get();
+        $showshop = Shop::where('is_timed_shop', 1)->where('is_active', 0)->where('start_at', '<=', Carbon::now())->where('end_at', '>=', Carbon::now())->orWhere('is_timed_shop', 1)->where('is_active', 0)->where('start_at', '<=', Carbon::now())->whereNull('end_at')->get();
         //set shop that should be active to active
         foreach($showshop as $showshop) { 
             $showshop->is_active = 1;
