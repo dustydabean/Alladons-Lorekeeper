@@ -37,6 +37,10 @@
     {!! Form::close() !!}
 </div>
 
+@if(Auth::user()->isStaff)
+    @include('account._staff_profile_form')
+@endif
+
 <div class="card p-3 mb-2">
     <h3>Birthday Publicity</h3>
     {!! Form::open(['url' => 'account/dob']) !!}

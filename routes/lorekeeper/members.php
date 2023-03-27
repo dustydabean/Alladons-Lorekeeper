@@ -23,6 +23,7 @@ Route::group(['prefix' => 'notifications', 'namespace' => 'Users'], function() {
 Route::group(['prefix' => 'account', 'namespace' => 'Users'], function() {
     Route::get('settings', 'AccountController@getSettings');
     Route::post('profile', 'AccountController@postProfile');
+    Route::post('staff-profile', 'AccountController@postStaffProfile');
     Route::post('password', 'AccountController@postPassword');
     Route::post('email', 'AccountController@postEmail');
     Route::post('avatar', 'AccountController@postAvatar');

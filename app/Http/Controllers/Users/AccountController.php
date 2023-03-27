@@ -8,6 +8,7 @@ use Image;
 
 use App\Models\User\User;
 use App\Models\User\UserAlias;
+use App\Models\User\StaffProfile;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -65,6 +66,24 @@ class AccountController extends Controller
             'parsed_text' => parse($request->get('text'))
         ]);
         flash('Profile updated successfully.')->success();
+        return redirect()->back();
+    }
+    
+    /**
+     * Edits the user's staff profile.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postStaffProfile(Request $request, UserService $service)
+    {
+        $request->validate(staffProfile::$createRules);
+        if($service->updateStaffProfile($request->only(['text']), Auth::user())) {
+            flash('Staff profile updated successfully.')->success();
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
         return redirect()->back();
     }
 
