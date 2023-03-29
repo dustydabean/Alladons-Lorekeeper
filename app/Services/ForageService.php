@@ -157,6 +157,10 @@ class ForageService extends Service
         return $this->rollbackReturn(false);
     }
 
+    /*****************************************************************************************
+     * FORAGING RELATED FUNCTIONS
+     *****************************************************************************************/
+
     // initaliases forage
     public function initForage($id, $user)
     {
@@ -172,11 +176,11 @@ class ForageService extends Service
 
             if($user->foraging->stamina < 1) throw new \Exception('You have exhausted yourself already! Come back tomorrow.');
             
-            $user->foraging->last_forage_id = $id; // set id so we can distribute after an hour
-            $user->foraging->last_foraged_at = carbon::now(); // set time, this is useless and just for funsies
-            $user->foraging->distribute_at = carbon::now()->addMinutes(60); // set time to allow the user to claim, we can technically calculate this
+            $user->foraging->forage_id = $id; // set id so we can distribute after an hour
+            $user->foraging->foraged_at = carbon::now(); // set time, this is useless and just for funsies
+            $user->foraging->distribute_at = carbon::now()->addMinutes(Config::get('lorekeeper.foraging.forage_time')); // set time to allow the user to claim, we can technically calculate this
                                                                             // but i set it up like this so it's staying like this
-            $user->foraging->stamina -= 1;
+            $user->foraging->stamina -= $user->foraging->forage->stamina_cost;
             $user->foraging->save();
 
             return $this->commitReturn(true);
@@ -195,8 +199,14 @@ class ForageService extends Service
 
         try {
 
-            $forage = Forage::find($user->foraging->last_forage_id);
+            $forage = $user->foraging->forage;
             if(!$forage) throw new \Exception('Error finding forage.');
+
+            // check it's been forage_time since forage started
+            $now = carbon::now();
+            // add forage time to foraged_at
+            $distribute = $user->foraging->foraged_at->addMinutes(Config::get('lorekeeper.foraging.forage_time'));
+            if($now->lt($distribute)) throw new \Exception('You must wait until the forage is complete before claiming your rewards.');
 
             $rewards = $this->processRewards($forage, true);
 
@@ -207,8 +217,7 @@ class ForageService extends Service
 
             if(!$rewards = fillUserAssets($rewards, $user, $user, $logType, $data)) throw new \Exception("Failed to distribute rewards.");
 
-            $user->foraging->last_forage_id = null;
-            $user->foraging->distribute_at = null;
+            $user->foraging->forage_id = null;
             $user->foraging->save();
 
             flash($this->getRewardsString($rewards))->success();

@@ -14,7 +14,7 @@ class UserForaging extends Model
      * @var array
      */
      protected $fillable = [
-        'user_id', 'last_forage_id', 'last_foraged_at', 'distribute_at', 'reset_at'
+        'user_id', 'forage_id', 'foraged_at', 'character_id'
     ];
 
     /**
@@ -29,7 +29,7 @@ class UserForaging extends Model
      *
      * @var array
      */
-     public $dates = ['last_foraged_at', 'distribute_at', 'reset_at'];
+     public $dates = ['foraged_at'];
 
     /**********************************************************************************************
     
@@ -42,7 +42,7 @@ class UserForaging extends Model
      */
      public function user() 
      {
-         return $this->belongsTo('App\Models\User\User');
+        return $this->belongsTo('App\Models\User\User');
      }
 
      /**
@@ -50,7 +50,14 @@ class UserForaging extends Model
       */
     public function forage() 
     {
-        if($this->last_forage_id) 
-            return $this->belongsTo('App\Models\Foraging\Forage', 'last_forage_id');
+        return $this->belongsTo('App\Models\Foraging\Forage');
+    }
+
+    /**
+     * Get the selected character for this foraging session.
+     */
+    public function character()
+    {
+        return $this->belongsTo('App\Models\Character\Character');
     }
 }

@@ -41,10 +41,9 @@ class ResetForaging extends Command
     {
         //
         // update all user models with foraging stamina
-        $users = UserForaging::all();
-        foreach ($users as $user) {
-            $user->stamina = Settings::get('foraging_stamina');
-            $user->save();
-        }
+        UserForaging::all()->each(function($userForaging) {
+            $userForaging->stamina = Settings::get('foraging_stamina');
+            $userForaging->save();
+        });
     }
 }

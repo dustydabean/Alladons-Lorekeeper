@@ -45,9 +45,19 @@
     @endif
 </div>
 
-<div class="form-group">
-    {!! Form::checkbox('is_active', 1, $table->is_active, ['class' => 'form-check-input mr-2', 'data-toggle' => 'toggle']) !!}
-    {!! Form::label('s_active', 'Active (visible to users)', ['class' => 'form-check-label ml-3']) !!}
+<div class="row">
+    <div class="col-md">
+        <div class="form-group">
+            {!! Form::checkbox('is_active', 1, $table->is_active, ['class' => 'form-check-input mr-2', 'data-toggle' => 'toggle']) !!}
+            {!! Form::label('is_active', 'Active (visible to users)', ['class' => 'form-check-label ml-3']) !!}
+        </div>      
+    </div>
+    <div class="col-md">
+        <div class="form-group">
+            {!! Form::timestamp('active_until', 1, $table->is_active, ['class' => 'form-check-input mr-2', 'data-toggle' => 'toggle']) !!}
+            {!! Form::label('s_active', 'Active (visible to users)', ['class' => 'form-check-label ml-3']) !!}
+        </div>
+    </div>
 </div>
 
 <h3>Loot</h3>

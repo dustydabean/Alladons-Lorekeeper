@@ -13,7 +13,7 @@ class Forage extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'display_name', 'is_active', 'has_image'
+        'name', 'display_name', 'is_active', 'has_image', 'active_until', 'stamina_cost', 'has_cost', 'currency_id', 'currency_quantity'
     ];
 
     /**
@@ -50,11 +50,19 @@ class Forage extends Model
     **********************************************************************************************/
 
     /**
-     * Get the loot data for this loot table.
+     * Get the loot data for this forage table.
      */
     public function loot() 
     {
         return $this->hasMany('App\Models\Foraging\ForageReward');
+    }
+
+    /**
+     * Get the currency for this forage table.
+     */
+    public function currency()
+    {
+        return $this->belongsTo('App\Models\Currency\Currency', 'currency_id');
     }
 
     /**********************************************************************************************
@@ -138,37 +146,6 @@ class Forage extends Model
      */
     public function roll($quantity = 1) 
     {
-        $rewards = createAssetsArray();
-
-        $loot = $this->loot;
-        $totalWeight = 0;
-        foreach($loot as $l) $totalWeight += $l->weight;
-
-        for($i = 0; $i < $quantity; $i++)
-        {
-            $roll = mt_rand(0, $totalWeight - 1); 
-            $result = null;
-            $prev = null;
-            $count = 0;
-            foreach($loot as $l)
-            { 
-                $count += $l->weight;
-
-                if($roll < $count)
-                {
-                    $result = $l;
-                    break;
-                }
-                $prev = $l;
-            }
-            if(!$result) $result = $prev;
-
-            if($result) {
-                // If this is chained to another loot table, roll on that table
-                if($result->rewardable_type == 'LootTable') $rewards = mergeAssetsArrays($rewards, $result->reward->roll($result->quantity));
-                else addAsset($rewards, $result->reward, $result->quantity);
-            }
-        }
-        return $rewards;
+        return rollRewards($this->loot, $quantity);
     }
 }
