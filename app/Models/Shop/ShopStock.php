@@ -14,7 +14,7 @@ class ShopStock extends Model
      */
     protected $fillable = [
         'shop_id', 'item_id', 'currency_id', 'cost', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'sort', 'purchase_limit', 'purchase_limit_timeframe', 'is_fto', 'stock_type', 'is_visible',
-        'restock', 'restock_quantity', 'restock_interval', 'range', 'disallow_transfer'
+        'restock', 'restock_quantity', 'restock_interval', 'range', 'disallow_transfer','is_timed_stock', 'start_at', 'end_at'
     ];
 
     /**
