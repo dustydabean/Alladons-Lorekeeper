@@ -37,9 +37,32 @@ class ForagingController extends Controller
             ]);
         }
         
+        $characters = Auth::user()->characters()->pluck('slug', 'id');
+        if (!count($characters)) {
+            if (Config::get('lorekeeper.foraging.npcs.enabled')) {
+                // check if we're using ids or category/rarity
+                if (Config::get('lorekeeper.foraging.npcs.use_ids')) {
+                    $characters = Character::whereIn('id', Config::get('lorekeeper.foraging.npcs.ids'))->pluck('slug', 'id');
+                } else {
+                    $characters = Character::where(Config::get('lorekeeper.foraging.npcs.category_or_rarity'), Config::get('lorekeeper.foraging.npcs.code'))->pluck('slug', 'id');
+                }
+                // if after all that there's still no characters
+                if (!count($characters)) {
+                    flash('You must have at least one character to forage.')->error();
+
+                    return redirect()->back();
+                }
+            } else {
+                flash('You must have at least one character to forage.')->error();
+
+                return redirect()->back();
+            }
+        }
+
         return view('foraging.index', [
             'user' => Auth::user(),
-            'tables' => Forage::visible(Auth::check() && Auth::user()->isStaff)->orderBy('name')->get()
+            'tables' => Forage::visible(Auth::check() && Auth::user()->isStaff)->orderBy('name')->get(),
+            'characters' => $characters
         ]);
     }
 
@@ -74,6 +97,22 @@ class ForagingController extends Controller
         }
 
         return redirect()->back();
-        
+    }
+
+    /**
+     * edits the selected character for foraging
+     * 
+     */
+    public function postEditCharacter(Request $request, ForageService $service) {
+        $id = $request->input('character_id');
+        if ($service->editSelectedCharacter(Auth::user(), $id)) {
+            flash('Character selected successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->to('foraging');
     }
 }

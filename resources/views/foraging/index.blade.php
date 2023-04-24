@@ -11,13 +11,43 @@
 
 <p>Welcome to foraging! Here you can choose an area to check for goodies.</p>
 <p>Goods will be claimable after you return from scavenging! Usually, about an hour is the amount of time it takes to check out an area.</p>
-@if($user->foraging->foraged_at)
-    <p>
-        Last Foraged: {!! pretty_date($user->foraging->foraged_at) !!}
-    <br>
-        Foraging Stamina Left: {{ $user->foraging->stamina }}
-    </p> 
-@endif
+<div class="row">
+    <div class="col-md-6">
+        @if($user->foraging->foraged_at)
+            <p>
+                Last Foraged: {!! pretty_date($user->foraging->foraged_at) !!}
+            <br>
+                Foraging Stamina Left: {{ $user->foraging->stamina }}
+            </p> 
+        @endif
+    </div>
+    @if(Config::get('lorekeeper.foraging.use_characters') && !$user->foraging->distribute_at)
+        <div class="col-md-6 justify-content-center text-center">
+            <h3>Current Character</h3>
+            @if (!$user->foraging->character)
+                <p>No character selected!</p>
+            @else
+                <div>
+                    <a href="{{ $user->foraging->character->url }}">
+                        <img src="{{ $user->foraging->character->image->thumbnailUrl }}" style="width: 150px;" class="img-thumbnail" />
+                    </a>
+                </div>
+                <div class="mt-1">
+                    <a href="{{ $user->foraging->character->url }}" class="h5 mb-0">
+                        @if (!$user->foraging->character->is_visible)
+                            <i class="fas fa-eye-slash"></i>
+                        @endif {{ $user->foraging->character->fullName }}
+                    </a>
+                </div>
+            @endif
+            {!! Form::open(['url' => 'foraging/edit/character']) !!}
+                {!! Form::select('character_id', $characters, $user->foraging->character_id, ['class' => 'form-control m-1', 'placeholder' => 'None Selected']) !!}
+                {!! Form::submit('Select Character', ['class' => 'btn btn-primary mb-2']) !!}
+            {!! Form::close() !!}
+        </div>
+    @endif
+</div>
+
 <hr class="w-50 ml-auto mr-auto" />
 
 @php
@@ -81,6 +111,11 @@
         if(!isSafari) setInterval(timeCount(timeLeft), 1000);
     </script>
     <div class="container text-center">
+        <div class="mb-2">
+            <a href="{{ $user->foraging->character->url }}">
+                <img src="{{ $user->foraging->character->image->thumbnailUrl }}" style="width: 150px;" class="img-thumbnail" />
+            </a>
+        </div>
         <div id="time">Foraging complete in {{ $diff < 1 ? 'less than a minute' : $diff }}</div>
         <p>Started {!! pretty_date($user->foraging->foraged_at)!!}
     </div>
@@ -88,9 +123,16 @@
 @elseif($user->foraging->distribute_at <= $now && $user->foraging->forage_id)
     {{-- When foraging is done and we can claim --}}
     <div class="container text-center">
+        <div class="mb-1">
+            <a href="{{ $user->foraging->character->url }}">
+                <img src="{{ $user->foraging->character->image->thumbnailUrl }}" style="width: 150px;" class="img-thumbnail" />
+            </a>
+        </div>
         {!! Form::open(['url' => 'foraging/claim' ]) !!}
-            <img src="{{ $user->foraging->forage->imageUrl }}" class="mb-2" style="max-width: 30%;"/>
-            <br>
+            @if($user->foraging->forage->imageUr)
+                <img src="{{ $user->foraging->forage->imageUrl }}" class="mb-2" style="max-width: 30%;"/>
+                <br>
+            @endif
             {!! $user->foraging->forage->fancyDisplayName !!}
             <br>
             {!! Form::submit('Claim Reward' , ['class' => 'btn btn-primary m-2']) !!}
@@ -108,7 +150,10 @@
 
                     <img src="{{ $table->imageUrl }}" class="img-fluid mb-2"/>
                     {!! Form::button(($table->isVisible ? '' : '<i class="fas fa-crown"></i> ') . 'Forage in the ' . $table->display_name , ['class' => 'btn btn-primary m-2', 'type' => 'submit']) !!}
-
+                    
+                    @if($table->has_cost)
+                        <div class="alert alert-info">This forage costs {!! $table->currency->display($table->currency_quantity) !!}</div>
+                    @endif
                 {!! Form::close() !!}
             </div>
         @endforeach

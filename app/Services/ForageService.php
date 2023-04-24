@@ -12,8 +12,11 @@ use App\Models\Foraging\Forage;
 use App\Models\Foraging\ForageReward;
 use App\Models\User\UserForaging;
 
+use App\Models\Character\Character;
+
 use App\Models\Currency\Currency;
 use App\Services\CurrencyManager;
+
 
 class ForageService extends Service
 {
@@ -213,19 +216,34 @@ class ForageService extends Service
                     throw new \Exception('Could not debit currency.');
             }
             
+            if(Config::get('lorekeeper.foraging.use_characters') && !$user->foraging->character_id) throw new \Exception('Please select a character.');
+            
             $user->foraging->forage_id = $id;
             $user->foraging->foraged_at = carbon::now();
             $user->foraging->distribute_at = carbon::now()->addMinutes(Config::get('lorekeeper.foraging.forage_time'));
             
-            // USER_STAMINA_DECREMENT
-            if (config::get('lorekeeper.foraging.use_foraging_stamina')) {
-                $user->foraging->stamina -= $user->foraging->forage->stamina_cost;
-                $user->foraging->save();
+            // CHARACTER_STAMINA_DECREMENT
+            if(Config::get('lorekeeper.foraging.use_characters')) {
+                if (Config::get('lorekeeper.foraging.use_foraging_stamina')) {
+                    $user->foraging->stamina -= $user->foraging->forage->stamina_cost;
+                    $user->foraging->save();
+                }
+                else {
+                    // put in stamina stat shit here if you want
+                    throw new \Exception('Please ensure the decrement stamina area has been appropriately edited.');
+                }
             }
             else {
-                // if you dont want a forage to take stamina set the stamina to 0 on the edit page
-                // dont use this here
-                throw new \Exception('Please ensure the decrement stamina area has been appropriately editted.');
+                // USER_STAMINA_DECREMENT
+                if (Config::get('lorekeeper.foraging.use_foraging_stamina')) {
+                    $user->foraging->stamina -= $user->foraging->forage->stamina_cost;
+                    $user->foraging->save();
+                }
+                else {
+                    // if you dont want a forage to take stamina set the stamina to 0 on the edit page
+                    // dont use this here
+                    throw new \Exception('Please ensure the decrement stamina area has been appropriately edited.');
+                }
             }
 
             return $this->commitReturn(true);
@@ -272,7 +290,9 @@ class ForageService extends Service
             $user->foraging->distribute_at = null; // we can check against this to stop multi window claims
             $user->foraging->save();
 
-            flash($this->getRewardsString($rewards))->success();
+            if(Config::get('lorekeeper.foraging.use_characters')) $name = $user->foraging->character->fullName;
+
+            flash($this->getRewardsString($rewards, $name ?? null))->success();
 
             return $this->commitReturn(true);
         } catch(\Exception $e) { 
@@ -296,9 +316,11 @@ class ForageService extends Service
     /**
      * Returns a string of the rewards so the user can see what they have received.
      */
-    private function getRewardsString($rewards)
+    private function getRewardsString($rewards, $character_name = null)
     {
-        $results = "You have received: ";
+        if(Config::get('lorekeeper.foraging.use_characters')) 
+            $results = $character_name . " has found: ";
+        else $results = "You have received: ";
         $result_elements = [];
         foreach($rewards as $assetType)
         {
@@ -311,5 +333,38 @@ class ForageService extends Service
             }
         }
         return $results.implode(', ', $result_elements);
+    }
+
+    /**
+     * Selects character for dungeon.
+     *
+     * @param int $id
+     *
+     * @return int $user->foraging->character_id
+     */
+    public function editSelectedCharacter($user, $id) {
+        DB::beginTransaction();
+
+        try {
+            if (!$id) {
+                throw new \Exception('Please select a character.');
+            }
+            $character = Character::find($id);
+            if (!$character) {
+                throw new \Exception('Invalid character.');
+            }
+            if ($character->user_id != $user->id && !Config::get('lorekeeper.foraging.npcs.enabled')) {
+                throw new \Exception('You are not this characters owner.');
+            }
+
+            $user->foraging->character_id = $id;
+            $user->foraging->save();
+
+            return $this->commitReturn($user);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
     }
 }

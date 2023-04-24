@@ -206,4 +206,5 @@ Route::group(['prefix' => 'foraging', 'namespace' => 'Users'], function() {
     Route::get('/', 'ForagingController@getIndex');
     Route::post('/forage/{id}', 'ForagingController@postForage');
     Route::post('/claim', 'ForagingController@postClaim');
+    Route::post('edit/character', 'ForagingController@postEditCharacter');
 });
