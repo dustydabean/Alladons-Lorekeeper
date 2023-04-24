@@ -7,7 +7,7 @@ use Config;
 use Settings;
 
 use Carbon\Carbon;
-
+use Illuminate\Support\Arr;
 use App\Models\Foraging\Forage;
 use App\Models\Foraging\ForageReward;
 use App\Models\User\UserForaging;
@@ -128,12 +128,16 @@ class ForageService extends Service
                 $data['currency_id'] = null;
                 $data['currency_quantity'] = null;
             }
+            
+            if ($table->has_image && !$image) {
+                $data['has_image'] = 1;
+            }
 
-            $table->update(array_only($data, ['name', 'display_name', 'is_active', 'has_image', 'stamina_cost', 'active_until', 'has_cost', 'currency_id', 'currency_quantity']));
+            $table->update(Arr::only($data, ['name', 'display_name', 'is_active', 'has_image', 'stamina_cost', 'active_until', 'has_cost', 'currency_id', 'currency_quantity']));
 
             if ($image) $this->handleImage($image, $table->imagePath, $table->imageFileName);
 
-            $this->populateForage($table, array_only($data, ['rewardable_type', 'rewardable_id', 'quantity', 'weight']));
+            $this->populateForage($table, Arr::only($data, ['rewardable_type', 'rewardable_id', 'quantity', 'weight']));
 
             return $this->commitReturn($table);
         } catch(\Exception $e) { 

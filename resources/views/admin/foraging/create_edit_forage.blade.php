@@ -37,12 +37,6 @@
     {!! Form::label('Page Image (Optional)') !!} {!! add_help('Displays above the forage button.') !!}
     <div>{!! Form::file('image') !!}</div>
     <div class="text-muted">Recommended size: 100px x 100px</div>
-    @if($table->has_image)
-        <div class="form-check">
-            {!! Form::checkbox('remove_image', 1, false, ['class' => 'form-check-input']) !!}
-            {!! Form::label('remove_image', 'Remove current image', ['class' => 'form-check-label']) !!}
-        </div>
-    @endif
 </div>
 
 <div class="form-group">
