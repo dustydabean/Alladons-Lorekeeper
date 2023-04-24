@@ -148,12 +148,17 @@
             <div class="col-md-4">
                 {!! Form::open(['url' => 'foraging/forage/'.$table->id ]) !!}
 
-                    <img src="{{ $table->imageUrl }}" class="img-fluid mb-2"/>
-                    {!! Form::button(($table->isVisible ? '' : '<i class="fas fa-crown"></i> ') . 'Forage in the ' . $table->display_name , ['class' => 'btn btn-primary m-2', 'type' => 'submit']) !!}
-                    
-                    @if($table->has_cost)
-                        <div class="alert alert-info">This forage costs {!! $table->currency->display($table->currency_quantity) !!}</div>
-                    @endif
+                    <div><img src="{{ $table->imageUrl }}" class="img-fluid mb-2"/></div>
+                    <div>{!! Form::button(($table->isVisible ? '' : '<i class="fas fa-crown"></i> ') . 'Forage in the ' . $table->display_name , ['class' => 'btn btn-primary m-2', 'type' => 'submit']) !!}</div>
+                        
+                        <div class="alert alert-info pb-0">
+                            <ul>
+                                <li>This forage costs {{$table->stamina_cost}} stamina.</li>
+                                @if($table->has_cost)
+                                    <li>This forage costs {!! $table->currency->display($table->currency_quantity) !!}.</li>
+                                @endif
+                            </ul>
+                        </div>
                 {!! Form::close() !!}
             </div>
         @endforeach
