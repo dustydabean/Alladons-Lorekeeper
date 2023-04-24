@@ -24,23 +24,28 @@ use App\Http\Controllers\Controller;
 
 class ForagingController extends Controller
 {
-
+    /**
+     * gets index
+     */
     public function getIndex()
     {
         $userForage = DB::table('user_foraging')->where('user_id', Auth::user()->id )->first();
 
-            if(!$userForage) {
-                $userForage = UserForaging::create([
-                    'user_id' => Auth::user()->id,
-                ]);
-            }
+        if(!$userForage) {
+            $userForage = UserForaging::create([
+                'user_id' => Auth::user()->id,
+            ]);
+        }
         
         return view('foraging.index', [
             'user' => Auth::user(),
-            'tables' => Forage::where('is_active', 1)->orderBy('name')->get(),
+            'tables' => Forage::visible(Auth::check() && Auth::user()->isStaff)->orderBy('name')->get()
         ]);
     }
 
+    /**
+     * adds data to userforage table to start the timer
+     */
     public function postForage($id, ForageService $service)
     {
         if($service->initForage($id, Auth::user())) 
@@ -55,6 +60,9 @@ class ForagingController extends Controller
 
     }
 
+    /**
+     * when the time is up and the user can claim
+     */
     public function postClaim(ForageService $service)
     {
         if($service->claimReward(Auth::user())) 

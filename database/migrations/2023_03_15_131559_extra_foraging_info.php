@@ -28,8 +28,8 @@ return new class extends Migration
             // change last_forage_id column to forage_id
             $table->renameColumn('last_forage_id', 'forage_id');
             $table->renameColumn('last_foraged_at', 'foraged_at');
-            // remove distribute_at column
-            $table->dropColumn('distribute_at');
+            // // remove distribute_at column
+            // $table->dropColumn('distribute_at');
 
             // add character id column
             $table->integer('character_id')->nullable()->default(null);
@@ -55,7 +55,7 @@ return new class extends Migration
         Schema::table('user_foraging', function (Blueprint $table) {
             $table->renameColumn('forage_id', 'last_forage_id');
             $table->renameColumn('foraged_at', 'last_foraged_at');
-            $table->timestamp('distribute_at')->nullable()->default(null);
+            // $table->timestamp('distribute_at')->nullable()->default(null);
             $table->dropColumn('character_id');
         });
     }

@@ -45,6 +45,8 @@
     @endif
 </div>
 
+<hr />
+
 <div class="row">
     <div class="col-md">
         <div class="form-group">
@@ -54,10 +56,15 @@
     </div>
     <div class="col-md">
         <div class="form-group">
-            {!! Form::timestamp('active_until', 1, $table->is_active, ['class' => 'form-check-input mr-2', 'data-toggle' => 'toggle']) !!}
-            {!! Form::label('s_active', 'Active (visible to users)', ['class' => 'form-check-label ml-3']) !!}
+            {!! Form::label('active_until', 'Active Until (Optional)') !!}
+            {!! Form::text('active_until', $table->active_until, ['class' => 'form-control mr-2 datepicker']) !!}
         </div>
     </div>
+</div>
+
+<div class="form-group">
+    {!! Form::label('Stamina Cost') !!}
+    {!! Form::number('stamina_cost', $table->stamina_cost, ['class' => 'form-control']) !!}
 </div>
 
 <h3>Loot</h3>
@@ -155,6 +162,11 @@ $( document ).ready(function() {
     var $currencySelect = $('#lootRowData').find('.currency-select');
     var $tableSelect = $('#lootRowData').find('.table-select');
     var $noneSelect = $('#lootRowData').find('.none-select');
+
+    $( ".datepicker" ).datetimepicker({
+        dateFormat: "yy-mm-dd",
+        timeFormat: 'HH:mm:ss',
+    });
 
     refreshChances();
     $('#lootTableBody .selectize').selectize();

@@ -175,13 +175,24 @@ class ForageService extends Service
             }
 
             if($user->foraging->stamina < 1) throw new \Exception('You have exhausted yourself already! Come back tomorrow.');
+
+            // check if a distribute_at already exists
+            if ($user->foraging->distribute_at) throw new \Exception('You have already begun foraging.');
             
-            $user->foraging->forage_id = $id; // set id so we can distribute after an hour
-            $user->foraging->foraged_at = carbon::now(); // set time, this is useless and just for funsies
-            $user->foraging->distribute_at = carbon::now()->addMinutes(Config::get('lorekeeper.foraging.forage_time')); // set time to allow the user to claim, we can technically calculate this
-                                                                            // but i set it up like this so it's staying like this
-            $user->foraging->stamina -= $user->foraging->forage->stamina_cost;
-            $user->foraging->save();
+            $user->foraging->forage_id = $id;
+            $user->foraging->foraged_at = carbon::now();
+            $user->foraging->distribute_at = carbon::now()->addMinutes(Config::get('lorekeeper.foraging.forage_time'));
+            
+            // USER_STAMINA_DECREMENT
+            if (config::get('lorekeeper.foraging.use_foraging_stamina')) {
+                $user->foraging->stamina -= $user->foraging->forage->stamina_cost;
+                $user->foraging->save();
+            }
+            else {
+                // if you dont want a forage to take stamina set the stamina to 0 on the edit page
+                // dont use this here
+                throw new \Exception('Please ensure the decrement stamina area has been appropriately editted.');
+            }
 
             return $this->commitReturn(true);
         } catch(\Exception $e) { 
@@ -202,10 +213,16 @@ class ForageService extends Service
             $forage = $user->foraging->forage;
             if(!$forage) throw new \Exception('Error finding forage.');
 
+            if (!$user->foraging->forage_id) throw new \Exception('You have not started a forage yet.');
+            if (!$user->foraging->distribute_at) throw new \Exception('You have not started a forage yet.');
+
             // check it's been forage_time since forage started
             $now = carbon::now();
             // add forage time to foraged_at
             $distribute = $user->foraging->foraged_at->addMinutes(Config::get('lorekeeper.foraging.forage_time'));
+            if($now->lt($distribute)) throw new \Exception('You must wait until the forage is complete before claiming your rewards.');
+            // check distribute_at also
+            $distribute = $user->foraging->distribute_at;
             if($now->lt($distribute)) throw new \Exception('You must wait until the forage is complete before claiming your rewards.');
 
             $rewards = $this->processRewards($forage, true);
@@ -218,6 +235,7 @@ class ForageService extends Service
             if(!$rewards = fillUserAssets($rewards, $user, $user, $logType, $data)) throw new \Exception("Failed to distribute rewards.");
 
             $user->foraging->forage_id = null;
+            $user->foraging->distribute_at = null; // we can check against this to stop multi window claims
             $user->foraging->save();
 
             flash($this->getRewardsString($rewards))->success();

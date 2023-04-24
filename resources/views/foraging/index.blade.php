@@ -11,13 +11,14 @@
 
 <p>Welcome to foraging! Here you can choose an area to check for goodies.</p>
 <p>Goods will be claimable after you return from scavenging! Usually, about an hour is the amount of time it takes to check out an area.</p>
-@if($user->foraging->last_foraged_at)
+@if($user->foraging->foraged_at)
     <p>
-        Last Foraged: {!! pretty_date($user->foraging->last_foraged_at) !!}
+        Last Foraged: {!! pretty_date($user->foraging->foraged_at) !!}
     <br>
         Foraging Stamina Left: {{ $user->foraging->stamina }}
     </p> 
 @endif
+<hr class="w-50 ml-auto mr-auto" />
 
 @php
     // getting a php static var for safari because it sucks
@@ -44,7 +45,9 @@
             var minutes = time.getUTCMinutes();
             if(minutes < 10) minutes = "0" + minutes;
 
-            if(seconds == '00' && minutes == '00') {
+            var hours = now.getUTCHours();
+
+            if((seconds == '00' && minutes == '00' && hours >= date.getUTCHours()) || hours > date.getUTCHours()) {
                 // reload page
                 location.reload();
             }
@@ -53,6 +56,7 @@
             $("#time").text(text);
         }, 1000);
     }
+
     function getServerTime()
     {
         // ajax get call to get the time
@@ -76,10 +80,12 @@
         // if not safari, set off the loop!
         if(!isSafari) setInterval(timeCount(timeLeft), 1000);
     </script>
-
-    <div id="time">Foraging complete in {{ $diff < 1 ? 'less than a minute' : $diff }}</div>
-    <p>Started {!! pretty_date($user->foraging->last_foraged_at)!!}
-@elseif($user->foraging->distribute_at <= $now && $user->foraging->last_forage_id)
+    <div class="container text-center">
+        <div id="time">Foraging complete in {{ $diff < 1 ? 'less than a minute' : $diff }}</div>
+        <p>Started {!! pretty_date($user->foraging->foraged_at)!!}
+    </div>
+    
+@elseif($user->foraging->distribute_at <= $now && $user->foraging->forage_id)
     {{-- When foraging is done and we can claim --}}
     <div class="container text-center">
         {!! Form::open(['url' => 'foraging/claim' ]) !!}
@@ -101,7 +107,7 @@
                 {!! Form::open(['url' => 'foraging/forage/'.$table->id ]) !!}
 
                     <img src="{{ $table->imageUrl }}" class="img-fluid mb-2"/>
-                    {!! Form::submit('Forage in the ' . $table->display_name , ['class' => 'btn btn-primary m-2']) !!}
+                    {!! Form::button(($table->isVisible ? '' : '<i class="fas fa-crown"></i> ') . 'Forage in the ' . $table->display_name , ['class' => 'btn btn-primary m-2', 'type' => 'submit']) !!}
 
                 {!! Form::close() !!}
             </div>

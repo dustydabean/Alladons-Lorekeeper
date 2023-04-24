@@ -66,6 +66,24 @@ class Forage extends Model
     }
 
     /**********************************************************************************************
+
+        SCOPES
+
+    **********************************************************************************************/
+
+    /**
+     * scopes all active forages that are within the active_until timestamp, unless a user is staff
+     */
+    public function scopeVisible($query, $isStaff = false)
+    {
+        if ($isStaff) return $query;
+        else return $query->where('is_active', 1)
+        ->where(function($query) {
+            $query->whereNull('active_until')->orWhere('active_until', '>', Carbon::now());
+        });
+    }
+
+    /**********************************************************************************************
     
         ACCESSORS
 
@@ -130,6 +148,17 @@ class Forage extends Model
     public function getAssetTypeAttribute()
     {
         return 'loot_tables';
+    }
+
+    /**
+     * returns if the table is visible or not (bool)
+     */
+    public function getIsVisibleAttribute()
+    {
+        if (!$this->is_active) return false;
+        // check if active_until is passed
+        if ($this->active_until && $this->active_until < Carbon::now()) return false;
+        return true;
     }
 
     /**********************************************************************************************

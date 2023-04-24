@@ -14,7 +14,7 @@ class UserForaging extends Model
      * @var array
      */
      protected $fillable = [
-        'user_id', 'forage_id', 'foraged_at', 'character_id'
+        'user_id', 'forage_id', 'foraged_at', 'character_id', 'distribute_at'
     ];
 
     /**
@@ -29,7 +29,7 @@ class UserForaging extends Model
      *
      * @var array
      */
-     public $dates = ['foraged_at'];
+     public $dates = ['foraged_at', 'distribute_at'];
 
     /**********************************************************************************************
     
