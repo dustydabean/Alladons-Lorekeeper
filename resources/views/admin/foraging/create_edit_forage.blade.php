@@ -45,6 +45,31 @@
     @endif
 </div>
 
+<div class="form-group">
+    {!! Form::label('Stamina Cost') !!}
+    {!! Form::number('stamina_cost', $table->stamina_cost, ['class' => 'form-control']) !!}
+</div>
+
+<div class="form-group">
+    {!! Form::checkbox('has_cost', 1, $table->has_cost, ['class' => 'form-check-input mr-2 has-cost', 'data-toggle' => 'toggle']) !!}
+    {!! Form::label('has_cost', 'Has Cost (Currency)', ['class' => 'form-check-label ml-3']) !!}
+</div>
+
+<div class="row {{ $table->has_cost ? '' : 'hide'}}" id="cost">
+    <div class="col-md">
+        <div class="form-group">
+            {!! Form::label('Currency') !!}
+            {!! Form::select('currency_id', $forage_currencies, $table->currency_id, ['class' => 'form-control']) !!}
+        </div>      
+    </div>
+    <div class="col-md">
+        <div class="form-group">
+            {!! Form::label('Quantity') !!}
+            {!! Form::number('currency_quantity', $table->currency_quantity ?? 1, ['class' => 'form-control']) !!}
+        </div>
+    </div>
+</div>
+
 <hr />
 
 <div class="row">
@@ -60,11 +85,6 @@
             {!! Form::text('active_until', $table->active_until, ['class' => 'form-control mr-2 datepicker']) !!}
         </div>
     </div>
-</div>
-
-<div class="form-group">
-    {!! Form::label('Stamina Cost') !!}
-    {!! Form::number('stamina_cost', $table->stamina_cost, ['class' => 'form-control']) !!}
 </div>
 
 <h3>Loot</h3>
@@ -166,6 +186,15 @@ $( document ).ready(function() {
     $( ".datepicker" ).datetimepicker({
         dateFormat: "yy-mm-dd",
         timeFormat: 'HH:mm:ss',
+    });
+
+    // .has-cost on change remove / add hide class #cost
+    $('.has-cost').on('change', function() {
+        if($(this).is(':checked')) {
+            $('#cost').removeClass('hide');
+        } else {
+            $('#cost').addClass('hide');
+        }
     });
 
     refreshChances();

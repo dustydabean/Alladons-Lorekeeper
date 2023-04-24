@@ -50,6 +50,7 @@ class ForageController extends Controller
             'items' => Item::orderBy('name')->pluck('name', 'id'),
             'currencies' => Currency::orderBy('name')->pluck('name', 'id'),
             'tables' => LootTable::orderBy('name')->pluck('name', 'id'),
+            'forage_currencies' => ['None' => 'None'] + Currency::orderBy('name')->pluck('name', 'id')->toArray(),
         ]);
     }
     
@@ -68,6 +69,7 @@ class ForageController extends Controller
             'items' => Item::orderBy('name')->pluck('name', 'id'),
             'currencies' => Currency::orderBy('name')->pluck('name', 'id'),
             'tables' => LootTable::orderBy('name')->pluck('name', 'id'),
+            'forage_currencies' => ['None' => 'None'] + Currency::orderBy('name')->pluck('name', 'id')->toArray(),
         ]);
     }
 
@@ -84,7 +86,7 @@ class ForageController extends Controller
         $id ? $request->validate(Forage::$updateRules) : $request->validate(Forage::$createRules);
         $data = $request->only([
             'name', 'display_name', 'rewardable_type', 'rewardable_id', 'quantity', 'weight', 'is_active', 'image',
-            'is_active', 'active_until'
+            'is_active', 'active_until', 'stamina_cost', 'has_cost', 'currency_id', 'currency_quantity'
         ]);
         if($id && $service->updateForage(Forage::find($id), $data)) {
             flash('Forage updated successfully.')->success();

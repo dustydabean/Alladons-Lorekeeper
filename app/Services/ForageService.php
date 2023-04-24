@@ -12,6 +12,9 @@ use App\Models\Foraging\Forage;
 use App\Models\Foraging\ForageReward;
 use App\Models\User\UserForaging;
 
+use App\Models\Currency\Currency;
+use App\Services\CurrencyManager;
+
 class ForageService extends Service
 {
     /*
@@ -54,7 +57,19 @@ class ForageService extends Service
             }
             else $data['has_image'] = 0;
 
-            $table = Forage::create(array_only($data, ['name', 'display_name', 'is_active', 'has_image']));
+            if (!isset($data['has_cost']) || !$data['has_cost']) {
+                // set currency_id and currency_quantity to null
+                $data['currency_id'] = null;
+                $data['currency_quantity'] = null;
+            }
+
+            if ($data['currency_id'] == 'None') {
+                $data['has_cost'] = 0;
+                $data['currency_id'] = null;
+                $data['currency_quantity'] = null;
+            }
+
+            $table = Forage::create(array_only($data, ['name', 'display_name', 'is_active', 'has_image', 'stamina_cost', 'active_until', 'has_cost', 'currency_id', 'currency_quantity']));
 
             if ($image) $this->handleImage($image, $table->imagePath, $table->imageFileName);
 
@@ -99,7 +114,19 @@ class ForageService extends Service
             }
             else $data['has_image'] = 0;
 
-            $table->update(array_only($data, ['name', 'display_name', 'is_active', 'has_image']));
+            if (!isset($data['has_cost']) || !$data['has_cost']) {
+                // set currency_id and currency_quantity to null
+                $data['currency_id'] = null;
+                $data['currency_quantity'] = null;
+            }
+
+            if ($data['currency_id'] == 'None') {
+                $data['has_cost'] = 0;
+                $data['currency_id'] = null;
+                $data['currency_quantity'] = null;
+            }
+
+            $table->update(array_only($data, ['name', 'display_name', 'is_active', 'has_image', 'stamina_cost', 'active_until', 'has_cost', 'currency_id', 'currency_quantity']));
 
             if ($image) $this->handleImage($image, $table->imagePath, $table->imageFileName);
 
@@ -178,6 +205,13 @@ class ForageService extends Service
 
             // check if a distribute_at already exists
             if ($user->foraging->distribute_at) throw new \Exception('You have already begun foraging.');
+
+            // check if the forage has a cost and decrement currency accordingly
+            $forage = Forage::findOrFail($id);
+            if ($forage->has_cost && $forage->currency_id && $forage->currency_quantity > 0) {
+                if(!(new CurrencyManager)->debitCurrency($user, null, 'Foraging Cost', 'Cost to Forage in the ' . $forage->display_name, Currency::find($forage->currency_id), $forage->currency_quantity))
+                    throw new \Exception('Could not debit currency.');
+            }
             
             $user->foraging->forage_id = $id;
             $user->foraging->foraged_at = carbon::now();

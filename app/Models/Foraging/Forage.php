@@ -4,6 +4,7 @@ namespace App\Models\Foraging;
 
 use Config;
 use App\Models\Model;
+use Carbon\Carbon;
 
 class Forage extends Model
 {
