@@ -144,7 +144,7 @@
         <p>No active forages. Come back soon!</p>
     @else
     <div class="row text-center">
-        @foreach($tables as $table)
+        @foreach($tables->sortByDesc('is_visible') as $table)
             <div class="col-md-4">
                 {!! Form::open(['url' => 'foraging/forage/'.$table->id ]) !!}
 
