@@ -152,7 +152,7 @@
                     <div>{!! Form::button(($table->isVisible ? '' : '<i class="fas fa-crown"></i> ') . 'Forage in the ' . $table->display_name , ['class' => 'btn btn-primary m-2', 'type' => 'submit']) !!}</div>
                         
                         <div class="alert alert-info pb-0">
-                            <ul>
+                            <ul style="list-style: none;">
                                 <li>This forage costs {{$table->stamina_cost}} stamina.</li>
                                 @if($table->has_cost)
                                     <li>This forage costs {!! $table->currency->display($table->currency_quantity) !!}.</li>
