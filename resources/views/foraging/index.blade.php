@@ -123,11 +123,13 @@
 @elseif($user->foraging->distribute_at <= $now && $user->foraging->forage_id)
     {{-- When foraging is done and we can claim --}}
     <div class="container text-center">
+        @if (Config::get('lorekeeper.foraging.use_characters'))
         <div class="mb-1">
             <a href="{{ $user->foraging->character->url }}">
                 <img src="{{ $user->foraging->character->image->thumbnailUrl }}" style="width: 150px;" class="img-thumbnail" />
             </a>
         </div>
+        @endif
         {!! Form::open(['url' => 'foraging/claim' ]) !!}
             @if($user->foraging->forage->imageUr)
                 <img src="{{ $user->foraging->forage->imageUrl }}" class="mb-2" style="max-width: 30%;"/>
