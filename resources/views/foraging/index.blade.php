@@ -111,11 +111,13 @@
         if(!isSafari) setInterval(timeCount(timeLeft), 1000);
     </script>
     <div class="container text-center">
-        <div class="mb-2">
-            <a href="{{ $user->foraging->character->url }}">
-                <img src="{{ $user->foraging->character->image->thumbnailUrl }}" style="width: 150px;" class="img-thumbnail" />
-            </a>
-        </div>
+        @if (Config::get('lorekeeper.foraging.use_characters') && $user->foraging->character)
+            <div class="mb-1">
+                <a href="{{ $user->foraging->character->url }}">
+                    <img src="{{ $user->foraging->character->image->thumbnailUrl }}" style="width: 150px;" class="img-thumbnail" />
+                </a>
+            </div>
+        @endif
         <div id="time">Foraging complete in {{ $diff < 1 ? 'less than a minute' : $diff }}</div>
         <p>Started {!! pretty_date($user->foraging->foraged_at)!!}
     </div>
@@ -123,12 +125,12 @@
 @elseif($user->foraging->distribute_at <= $now && $user->foraging->forage_id)
     {{-- When foraging is done and we can claim --}}
     <div class="container text-center">
-        @if (Config::get('lorekeeper.foraging.use_characters'))
-        <div class="mb-1">
-            <a href="{{ $user->foraging->character->url }}">
-                <img src="{{ $user->foraging->character->image->thumbnailUrl }}" style="width: 150px;" class="img-thumbnail" />
-            </a>
-        </div>
+        @if (Config::get('lorekeeper.foraging.use_characters') && $user->foraging->character)
+            <div class="mb-1">
+                <a href="{{ $user->foraging->character->url }}">
+                    <img src="{{ $user->foraging->character->image->thumbnailUrl }}" style="width: 150px;" class="img-thumbnail" />
+                </a>
+            </div>
         @endif
         {!! Form::open(['url' => 'foraging/claim' ]) !!}
             @if($user->foraging->forage->imageUr)
