@@ -6,7 +6,7 @@ use Auth;
 use File;
 use Image;
 use DB;
-
+use Config;
 use Carbon\Carbon;
 
 use Illuminate\Http\Request;
