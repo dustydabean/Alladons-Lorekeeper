@@ -50,7 +50,10 @@ class AccountController extends Controller
      */
     public function getSettings()
     {
-        return view('account.settings');
+        $links = StaffProfile::where('user_id', Auth::user()->id)->first()->get();
+        return view('account.settings', [
+            'links' => $links
+        ]);
     }
     
     /**
@@ -80,6 +83,24 @@ class AccountController extends Controller
         $request->validate(staffProfile::$createRules);
         if($service->updateStaffProfile($request->only(['text']), Auth::user())) {
             flash('Staff profile updated successfully.')->success();
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back();
+    }
+    
+    /**
+     * Edits the user's staff contacts/links.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postStaffLinks(Request $request, UserService $service)
+    {
+        $request->validate(staffProfile::$createRules);
+        if($service->updateStaffLinks($request->only(['site', 'url']), Auth::user())) {
+            flash('Staff links updated successfully.')->success();
         }
         else {
             foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();

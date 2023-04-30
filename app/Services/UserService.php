@@ -227,6 +227,43 @@ class UserService extends Service
     }
 
     /**
+     * Updates or creates a user's staff links
+     */
+    public function updateStaffLinks($data, $user)
+    {
+        DB::beginTransaction();
+
+        try {
+            if(!$user->isStaff) throw new \Exception("You must be a current staff member to update your staff links.");
+
+            $staffProfile = StaffProfile::find($user->id);
+
+            if($staffProfile) {
+                $staffProfile->update([
+                    'contacts' => json_encode([
+                        'site' => $data['site'],
+                        'url' =>  $data['url']
+                    ])
+                ]);
+            }
+            else {
+                $staffProfile = StaffProfile::create([
+                    'user_id' => $user->id,
+                    'contacts' => json_encode([
+                        'site' => $data['site'],
+                        'url' =>  $data['url']
+                    ])
+                ]);
+            }
+            
+            return $this->commitReturn($staffProfile);
+        } catch(\Exception $e) { 
+            $this->setError('error', $e->getMessage());
+        }
+        return $this->rollbackReturn(false);
+    }
+
+    /**
      * Bans a user. 
      *
      * @param  array                  $data

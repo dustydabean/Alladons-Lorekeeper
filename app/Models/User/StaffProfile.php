@@ -70,4 +70,14 @@ class StaffProfile extends Model
     {
         return $this->belongsTo('App\Models\User\User');
     }
+
+    /**
+     * Get the contacts attribute as an associative array.
+     *
+     * @return array
+     */
+    public function getContactsAttribute()
+    {
+        return json_decode($this->attributes['contacts'], true);
+    }
 }

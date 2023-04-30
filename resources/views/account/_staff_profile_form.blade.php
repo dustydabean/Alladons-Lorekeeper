@@ -11,3 +11,11 @@
         </div>
     {!! Form::close() !!}
 </div>
+<div class="card p-3 mb-2">
+    <h3>Staff-Profile Contacts</h3>
+    <p>These are the websites you wish for users to contact you at, should they need moderation assistance.</p>
+    {!! Form::open(['url' => 'account/staff-links']) !!}
+        @include('widgets._website_links')
+    {!! Form::close() !!}
+        @include('widgets._website_link_row')
+</div>

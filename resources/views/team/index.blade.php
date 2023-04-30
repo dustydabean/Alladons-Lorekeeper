@@ -17,17 +17,9 @@
 	@foreach($staffRanks->chunk(4) as $chunk)
 	<div class="row justify-content-center">
 		@foreach($chunk as $user)
-		<div class="col-12 col-md-6 mb-3">
-	    <img src="/images/avatars/{{ $user->avatar }}" class="float-left rounded-circle mr-3" style="width:100px; height:100px;" alt="{{ $user->name }}" >
-			<div class="card">
-				<h5 class="card-header">
-				    {!! $user->displayName !!}
-				</h5>
-				<div class="card-body">
-					{!! $user->staffProfile ? $user->staffProfile->text : '<i>No profile found.</i>' !!}
-				</div>
+			<div class="col-12 col-md-6 mb-3">
+        		@include('team._staff_listing_content')
 			</div>
-		</div>
 		@endforeach
 	</div>
 @endforeach
