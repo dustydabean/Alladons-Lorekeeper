@@ -213,7 +213,6 @@ class UserController extends Controller
         $logData = ['old_profile' => $user->staffProfile->text] + ['new_profile' => $request['text']];
 
         if($service->updateStaffProfile($request->only(['text']), $user)) {
-            dd($logData);
             UserUpdateLog::create(['staff_id' => Auth::user()->id, 'user_id' => $user->id, 'data' => json_encode($logData), 'type' => 'Staff Profile Update']);
             flash($name.'\'s staff profile updated successfully!')->success();
         }
