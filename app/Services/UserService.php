@@ -240,7 +240,7 @@ class UserService extends Service
 
             if($staffProfile) {
                 $staffProfile->update([
-                    'contacts' => json_encode([
+                    'contacts' => !$data ? null : json_encode([
                         'site' => $data['site'],
                         'url' =>  $data['url']
                     ])
@@ -249,7 +249,7 @@ class UserService extends Service
             else {
                 $staffProfile = StaffProfile::create([
                     'user_id' => $user->id,
-                    'contacts' => json_encode([
+                    'contacts' => !$data ? null : json_encode([
                         'site' => $data['site'],
                         'url' =>  $data['url']
                     ])

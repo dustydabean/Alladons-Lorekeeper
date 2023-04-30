@@ -230,10 +230,11 @@ class UserController extends Controller
         }
 
         $service = new UserService;
-        $oldData = $user->staffProfile ? implode(", ", $user->staffProfile->contacts['url']) : '';
+        $oldData = $user->staffProfile && $user->staffProfile->contacts ? implode(", ", $user->staffProfile->contacts['url']) : '';
+        $newData = $request['url'] ? implode (", ", $request['url']) : '';
 
         if($service->updateStaffLinks($request->only(['site', 'url']), $user)) {
-            $logData = ['old_urls' => $oldData] + ['new_urls' => implode (", ", $request['url'])];
+            $logData = ['old_urls' => $oldData] + ['new_urls' => $newData];
             UserUpdateLog::create(['staff_id' => Auth::user()->id, 'user_id' => $user->id, 'data' => json_encode($logData), 'type' => 'Staff Links Update']);
             flash($name.'\'s staff profile links updated successfully!')->success();
         }
