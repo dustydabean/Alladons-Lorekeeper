@@ -18,7 +18,7 @@ return [
         'creators' => json_encode([
             'Newt' => 'https://github.com/ne-wt/',
         ]),
-        'version' => '1.0.3',
+        'version' => '1.0.4',
     ],
 
 
