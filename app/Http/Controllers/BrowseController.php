@@ -86,7 +86,7 @@ class BrowseController extends Controller
         $staffRanks->push(Settings::get('admin_user'));
         $staff = User::whereIn('rank_id', $staffRanks)->get()->groupBy('rank_id');
         $ranks = Rank::orderBy('id')->get();
-        return view('team.index', [
+        return view('browse.team_index', [
             'staff' => $staff,
             'ranks' => $ranks
         ]);

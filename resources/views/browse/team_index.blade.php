@@ -18,7 +18,7 @@
 	<div class="row justify-content-center">
 		@foreach($chunk as $user)
 			<div class="col-12 col-md-6 mb-3">
-        		@include('team._staff_listing_content')
+        		@include('browse._staff_listing_content')
 			</div>
 		@endforeach
 	</div>
