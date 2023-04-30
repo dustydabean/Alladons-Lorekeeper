@@ -38,7 +38,7 @@
 </div>
 
 @if(Auth::user()->isStaff)
-    @include('account._staff_profile_form')
+    @include('account._staff_profile_form', ['adminView' => 0])
 @endif
 
 <div class="card p-3 mb-2">
