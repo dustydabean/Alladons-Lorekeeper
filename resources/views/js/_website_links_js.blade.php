@@ -22,5 +22,13 @@
                 $(this).parent().parent().remove();
             });
         }
+
+        $('.handle').on('click', function(e) {
+            e.preventDefault();
+        });
+        $linkTable.sortable({
+            prompts: '.link-row',
+            handle: ".handle"
+        });
     });
 </script>
