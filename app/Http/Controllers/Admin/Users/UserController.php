@@ -81,7 +81,7 @@ class UserController extends Controller
 
         if(!$user) abort(404);
 
-        $links = StaffProfile::where('user_id', Auth::user()->id)->first();
+        $links = StaffProfile::where('user_id', $user->id)->first();
 
         return view('admin.users.user', [
             'user' => $user,

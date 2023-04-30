@@ -78,7 +78,7 @@
     {!! Form::close() !!}
 </div>
 
-@include('account._staff_profile_form', ['adminView' => 1])
+@include('account._staff_profile_form', ['user' => $user, 'adminView' => 1])
 
 <div class="card p-3 mb-2">
     <h3>Birthdate</h3>
