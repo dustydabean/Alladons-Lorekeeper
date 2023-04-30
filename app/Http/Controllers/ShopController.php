@@ -61,6 +61,10 @@ class ShopController extends Controller
         }
 
         if($shop->is_restricted) {
+            if(!Auth::check()) {
+                flash('You must be logged in to enter this shop.')->error();
+                return redirect()->to('/shops');
+            }
             foreach($shop->limits as $limit)
             {
                 $item = $limit->item_id;
