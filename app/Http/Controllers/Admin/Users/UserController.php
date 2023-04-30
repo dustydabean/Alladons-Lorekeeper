@@ -81,12 +81,12 @@ class UserController extends Controller
 
         if(!$user) abort(404);
 
-        $links = StaffProfile::where('user_id', Auth::user()->id)->first()->get();
+        $links = StaffProfile::where('user_id', Auth::user()->id)->first();
 
         return view('admin.users.user', [
             'user' => $user,
             'ranks' => Rank::orderBy('ranks.sort')->pluck('name', 'id')->toArray(),
-            'links' => $links
+            'links' => $links ? $links->get() : null
         ]);
     }
 
@@ -210,7 +210,7 @@ class UserController extends Controller
         }
 
         $service = new UserService;
-        $logData = ['old_profile' => $user->staffProfile->text] + ['new_profile' => $request['text']];
+        $logData = ['old_profile' => $user->staffProfile ? $user->staffProfile->text : ''] + ['new_profile' => $request['text']];
 
         if($service->updateStaffProfile($request->only(['text']), $user)) {
             UserUpdateLog::create(['staff_id' => Auth::user()->id, 'user_id' => $user->id, 'data' => json_encode($logData), 'type' => 'Staff Profile Update']);
@@ -230,10 +230,10 @@ class UserController extends Controller
         }
 
         $service = new UserService;
-        $oldData = $user->staffProfile->contacts['url'];
+        $oldData = $user->staffProfile ? implode(", ", $user->staffProfile->contacts['url']) : '';
 
         if($service->updateStaffLinks($request->only(['site', 'url']), $user)) {
-            $logData = ['old_urls' => implode (", ", $oldData)] + ['new_urls' => implode (", ", $request['url'])];
+            $logData = ['old_urls' => $oldData] + ['new_urls' => implode (", ", $request['url'])];
             UserUpdateLog::create(['staff_id' => Auth::user()->id, 'user_id' => $user->id, 'data' => json_encode($logData), 'type' => 'Staff Links Update']);
             flash($name.'\'s staff profile links updated successfully!')->success();
         }

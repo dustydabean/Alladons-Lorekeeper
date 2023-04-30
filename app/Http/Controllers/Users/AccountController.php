@@ -50,9 +50,9 @@ class AccountController extends Controller
      */
     public function getSettings()
     {
-        $links = StaffProfile::where('user_id', Auth::user()->id)->first()->get();
+        $links = StaffProfile::where('user_id', Auth::user()->id)->first();
         return view('account.settings', [
-            'links' => $links
+            'links' => $links ? $links->get() : null
         ]);
     }
     

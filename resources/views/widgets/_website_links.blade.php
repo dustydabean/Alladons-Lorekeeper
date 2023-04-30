@@ -8,7 +8,8 @@
     </thead>
     <tbody id="linkTable" class="sortable">
         @if($links)
-            @foreach($links as $link)
+        @foreach($links as $link)
+            @if($link->contacts)
                 @foreach($link->contacts['site'] as $key=>$contact)
                     <tr class="link-row">
                         <td>
@@ -25,7 +26,8 @@
                         </td>
                     </tr>
                 @endforeach
-            @endforeach
+            @endif
+        @endforeach
         @endif
     </tbody>
 </table>
