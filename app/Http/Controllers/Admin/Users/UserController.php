@@ -86,7 +86,7 @@ class UserController extends Controller
         return view('admin.users.user', [
             'user' => $user,
             'ranks' => Rank::orderBy('ranks.sort')->pluck('name', 'id')->toArray(),
-            'links' => $links ? $links->get() : null
+            'links' => $links ? $links : null
         ]);
     }
 
