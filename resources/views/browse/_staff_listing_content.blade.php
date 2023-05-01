@@ -4,7 +4,7 @@
 	    {!! $user->displayName !!}
 	</h5>
 	<div class="card-body">
-		{!! $user->staffProfile ? $user->staffProfile->text : '<i>No profile found.</i>' !!}
+		{!! isset($user->staffProfile->text) ? $user->staffProfile->text : '<i>No profile found.</i>' !!}
 
 		@if(isset($user->staffProfile->contacts))
 			<br>
