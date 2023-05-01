@@ -7,7 +7,7 @@
         </tr>
     </thead>
     <tbody id="linkTable" class="sortable">
-        @if($links->contacts)
+        @if(isset($links->contacts))
             @foreach($links->contacts['site'] as $key=>$contact)
                 <tr class="link-row">
                     <td>
