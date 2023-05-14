@@ -37,7 +37,7 @@
         @include('character._image_info', ['image' => $character->image])
     </div>
 
-    @if($character->image->has_transformation)
+    @if ($character->image->has_transformation)
         <div class="card-deck mb-4 profile-assets" style="clear:both;">
             <div class="card profile-currencies profile-assets-card">
                 <div class="card-body text-center">

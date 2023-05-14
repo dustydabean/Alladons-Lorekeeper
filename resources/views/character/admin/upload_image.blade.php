@@ -116,10 +116,10 @@
         {!! Form::label('Subtype (Optional)') !!}
         {!! Form::select('subtype_id', $subtypes, old('subtype_id') ?: $character->image->subtype_id, ['class' => 'form-control', 'id' => 'subtype']) !!}
     </div>
-    
+
     <div class="form-group" id="transformations">
         {!! Form::label('Transformation (Optional)') !!}
-        {!! Form::select('transformation_id', $transformations, old('transformation_id') ? : $character->image->transformation_id, ['class' => 'form-control', 'id' => 'transformation']) !!}
+        {!! Form::select('transformation_id', $transformations, old('transformation_id') ?: $character->image->transformation_id, ['class' => 'form-control', 'id' => 'transformation']) !!}
     </div>
 
     <div class="form-group">
