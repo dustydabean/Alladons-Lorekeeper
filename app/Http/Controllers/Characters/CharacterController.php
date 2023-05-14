@@ -8,11 +8,11 @@ use App\Models\Character\CharacterCurrency;
 use App\Models\Character\CharacterItem;
 use App\Models\Character\CharacterProfile;
 use App\Models\Character\CharacterTransfer;
+use App\Models\Character\CharacterTransformation as Transformation;
 use App\Models\Currency\Currency;
 use App\Models\Gallery\GallerySubmission;
 use App\Models\Item\Item;
 use App\Models\Item\ItemCategory;
-use App\Models\Character\CharacterTransformation as Transformation;
 use App\Models\User\User;
 use App\Models\User\UserCurrency;
 use App\Models\User\UserItem;
@@ -220,9 +220,9 @@ class CharacterController extends Controller {
         $query = $character->images->whereNull('transformation_id');
 
         return view('character.images', [
-            'user'           => Auth::check() ? Auth::user() : null,
-            'character'      => $this->character,
-            'regular_images' => $query,
+            'user'                  => Auth::check() ? Auth::user() : null,
+            'character'             => $this->character,
+            'regular_images'        => $query,
             'extPrevAndNextBtnsUrl' => '/images',
         ]);
     }
@@ -239,9 +239,9 @@ class CharacterController extends Controller {
         $query = $character->images->whereNotNull('transformation_id');
 
         return view('character.transformation_images', [
-            'user'        => Auth::check() ? Auth::user() : null,
-            'character'   => $this->character,
-            'form_images' => $query,
+            'user'                  => Auth::check() ? Auth::user() : null,
+            'character'             => $this->character,
+            'form_images'           => $query,
             'extPrevAndNextBtnsUrl' => '/tranformations',
         ]);
     }

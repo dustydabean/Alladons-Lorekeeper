@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Character\CharacterCategory;
+use App\Models\Character\CharacterTransformation as Transformation;
 use App\Models\Currency\Currency;
 use App\Models\Feature\Feature;
 use App\Models\Feature\FeatureCategory;
@@ -15,7 +16,6 @@ use App\Models\Shop\Shop;
 use App\Models\Shop\ShopStock;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
-use App\Models\Character\CharacterTransformation as Transformation;
 use App\Models\User\User;
 use Auth;
 use Config;

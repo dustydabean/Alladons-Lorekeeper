@@ -3,9 +3,9 @@
 namespace App\Services;
 
 use App\Models\Character\CharacterImage;
+use App\Models\Character\CharacterTransformation as Transformation;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
-use App\Models\Character\CharacterTransformation as Transformation;
 use DB;
 
 class SpeciesService extends Service {
@@ -408,7 +408,7 @@ class SpeciesService extends Service {
     }
 
     /**
- * Processes user input for creating/updating a species.
+     * Processes user input for creating/updating a species.
      *
      * @param array                       $data
      * @param \App\Models\Species\Species $species

@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Admin\Data;
 
 use App\Http\Controllers\Controller;
+use App\Models\Character\CharacterTransformation as Transformation;
 use App\Models\Character\Sublist;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
-use App\Models\Character\CharacterTransformation as Transformation;
 use App\Services\SpeciesService;
 use Auth;
 use Illuminate\Http\Request;

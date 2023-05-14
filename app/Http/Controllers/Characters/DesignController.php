@@ -5,13 +5,13 @@ namespace App\Http\Controllers\Characters;
 use App\Http\Controllers\Controller;
 use App\Models\Character\Character;
 use App\Models\Character\CharacterDesignUpdate;
+use App\Models\Character\CharacterTransformation as Transformation;
 use App\Models\Feature\Feature;
 use App\Models\Item\Item;
 use App\Models\Item\ItemCategory;
 use App\Models\Rarity;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
-use App\Models\Character\CharacterTransformation as Transformation;
 use App\Models\User\User;
 use App\Models\User\UserItem;
 use App\Services\DesignUpdateManager;
@@ -222,12 +222,12 @@ class DesignController extends Controller {
         }
 
         return view('character.design.features', [
-            'request'   => $r,
-            'specieses' => ['0' => 'Select Species'] + Species::visible()->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'subtypes'  => ['0' => 'No Subtype'] + Subtype::visible()->where('species_id', '=', $r->species_id)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'rarities'  => ['0' => 'Select Rarity'] + Rarity::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'request'         => $r,
+            'specieses'       => ['0' => 'Select Species'] + Species::visible()->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'subtypes'        => ['0' => 'No Subtype'] + Subtype::visible()->where('species_id', '=', $r->species_id)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'rarities'        => ['0' => 'Select Rarity'] + Rarity::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'transformations' => ['0' => 'Select Transformation'] + Transformation::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'features'  => Feature::getDropdownItems(),
+            'features'        => Feature::getDropdownItems(),
         ]);
     }
 

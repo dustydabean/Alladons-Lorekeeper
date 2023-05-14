@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use Config;
 use DB;
 use Illuminate\Console\Command;
 

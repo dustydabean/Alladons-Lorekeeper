@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Character\CharacterCategory;
 use App\Models\Character\CharacterDesignUpdate;
-use App\Services\CharacterManager;
 use App\Services\DesignUpdateManager;
 use Auth;
 use Illuminate\Http\Request;
