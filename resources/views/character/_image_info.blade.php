@@ -51,9 +51,11 @@
                     </div>
                 @endif
 
-                @if($image->transformation_id)
+                @if ($image->transformation_id)
                     <div class="row">
-                        <div class="col-lg-4 col-md-6 col-4"><h5>Form {!! add_help('The main image is always the active image') !!}</h5></div>
+                        <div class="col-lg-4 col-md-6 col-4">
+                            <h5>Form {!! add_help('The main image is always the active image') !!}</h5>
+                        </div>
                         <div class="col-lg-8 col-md-6 col-8">{!! $image->transformation_id ? $image->transformation->displayName : 'None' !!}</div>
                     </div>
                 @endif
