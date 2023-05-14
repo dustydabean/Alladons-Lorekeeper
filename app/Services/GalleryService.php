@@ -46,6 +46,10 @@ class GalleryService extends Service {
 
             $gallery = Gallery::create($data);
 
+            if (!$this->logAdminAction($user, 'Created Gallery', 'Created '.$gallery->displayName)) {
+                throw new \Exception('Failed to log admin action.');
+            }
+
             return $this->commitReturn($gallery);
         } catch (\Exception $e) {
             $this->setError('error', $e->getMessage());
@@ -88,6 +92,10 @@ class GalleryService extends Service {
                 $data['prompt_selection'] = 0;
             }
 
+            if (!$this->logAdminAction($user, 'Updated Gallery', 'Updated '.$gallery->displayName)) {
+                throw new \Exception('Failed to log admin action.');
+            }
+
             $gallery->update($data);
 
             return $this->commitReturn($gallery);
@@ -102,16 +110,20 @@ class GalleryService extends Service {
      * Deletes a gallery.
      *
      * @param \App\Models\Gallery $gallery
+     * @param mixed               $user
      *
      * @return bool
      */
-    public function deleteGallery($gallery) {
+    public function deleteGallery($gallery, $user) {
         DB::beginTransaction();
 
         try {
             // Check first if submissions exist in this gallery, or the gallery has children
             if (GallerySubmission::where('gallery_id', $gallery->id)->exists() || Gallery::where('parent_id', $gallery->id)->exists()) {
                 throw new \Exception("A gallery or submissions in this gallery exist. Consider setting the gallery's submissions to closed instead.");
+            }
+            if (!$this->logAdminAction($user, 'Deleted Gallery', 'Deleted '.$gallery->name)) {
+                throw new \Exception('Failed to log admin action.');
             }
 
             $gallery->delete();

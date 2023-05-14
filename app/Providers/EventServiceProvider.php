@@ -14,7 +14,7 @@ class EventServiceProvider extends ServiceProvider {
      * @var array
      */
     protected $listen = [
-        Registered::class => [
+        Registered::class                                     => [
             SendEmailVerificationNotification::class,
         ],
 
@@ -25,6 +25,7 @@ class EventServiceProvider extends ServiceProvider {
             'SocialiteProviders\\Tumblr\\TumblrExtendSocialite@handle',
             'SocialiteProviders\\Imgur\\ImgurExtendSocialite@handle',
             'SocialiteProviders\\Twitch\\TwitchExtendSocialite@handle',
+            'SocialiteProviders\\Discord\\DiscordExtendSocialite@handle',
         ],
     ];
 

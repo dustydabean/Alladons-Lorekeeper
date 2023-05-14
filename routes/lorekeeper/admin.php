@@ -11,6 +11,12 @@
 
 Route::get('/', 'HomeController@getIndex');
 
+Route::get('logs', 'HomeController@getLogs');
+Route::group(['middleware' => 'admin'], function () {
+    Route::get('staff-reward-settings', 'HomeController@getStaffRewardSettings');
+    Route::post('staff-reward-settings/{key}', 'HomeController@postEditStaffRewardSetting');
+});
+
 Route::group(['prefix' => 'users', 'namespace' => 'Users'], function () {
     // USER LIST
     Route::group(['middleware' => 'power:edit_user_info'], function () {
@@ -22,11 +28,18 @@ Route::group(['prefix' => 'users', 'namespace' => 'Users'], function () {
         Route::post('{name}/account', 'UserController@postUserAccount');
         Route::post('{name}/birthday', 'UserController@postUserBirthday');
         Route::get('{name}/updates', 'UserController@getUserUpdates');
+
         Route::get('{name}/ban', 'UserController@getBan');
         Route::get('{name}/ban-confirm', 'UserController@getBanConfirmation');
         Route::post('{name}/ban', 'UserController@postBan');
         Route::get('{name}/unban-confirm', 'UserController@getUnbanConfirmation');
         Route::post('{name}/unban', 'UserController@postUnban');
+
+        Route::get('{name}/deactivate', 'UserController@getDeactivate');
+        Route::get('{name}/deactivate-confirm', 'UserController@getDeactivateConfirmation');
+        Route::post('{name}/deactivate', 'UserController@postDeactivate');
+        Route::get('{name}/reactivate-confirm', 'UserController@getReactivateConfirmation');
+        Route::post('{name}/reactivate', 'UserController@postReactivate');
     });
 
     // RANKS

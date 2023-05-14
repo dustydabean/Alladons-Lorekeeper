@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Raffle\Raffle;
 use App\Models\Raffle\RaffleGroup;
 use App\Models\Raffle\RaffleTicket;
+use App\Models\User\User;
 use App\Services\RaffleManager;
 use App\Services\RaffleService;
 use Illuminate\Http\Request;
@@ -64,7 +65,7 @@ class RaffleController extends Controller {
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postCreateEditRaffle(Request $request, RaffleService $service, $id = null) {
-        $data = $request->only(['name', 'is_active', 'winner_count', 'group_id', 'order']);
+        $data = $request->only(['name', 'is_active', 'winner_count', 'group_id', 'order', 'ticket_cap']);
         $raffle = null;
         if (!$id) {
             $raffle = $service->createRaffle($data);
@@ -148,6 +149,7 @@ class RaffleController extends Controller {
         return view('admin.raffle.ticket_index', [
             'raffle'  => $raffle,
             'tickets' => $raffle->tickets()->orderBy('id')->paginate(200),
+            'users'   => User::visible()->orderBy('name')->pluck('name', 'id')->toArray(),
             'page'    => $request->get('page') ? $request->get('page') - 1 : 0,
         ]);
     }
@@ -161,7 +163,8 @@ class RaffleController extends Controller {
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postCreateRaffleTickets(Request $request, RaffleManager $service, $id) {
-        $data = $request->get('names');
+        $request->validate(RaffleTicket::$createRules);
+        $data = $request->only('user_id', 'alias', 'ticket_count');
         if ($count = $service->addTickets(Raffle::find($id), $data)) {
             flash($count.' tickets added!')->success();
 

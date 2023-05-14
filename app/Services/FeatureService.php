@@ -49,6 +49,10 @@ class FeatureService extends Service {
 
             $category = FeatureCategory::create($data);
 
+            if (!$this->logAdminAction($user, 'Created Feature Category', 'Created '.$category->displayName)) {
+                throw new \Exception('Failed to log admin action.');
+            }
+
             if ($image) {
                 $this->handleImage($image, $category->categoryImagePath, $category->categoryImageFileName);
             }
@@ -90,6 +94,14 @@ class FeatureService extends Service {
 
             $category->update($data);
 
+            if (!$this->logAdminAction($user, 'Updated Feature Category', 'Updated '.$category->displayName)) {
+                throw new \Exception('Failed to log admin action.');
+            }
+
+            if (!$this->logAdminAction($user, 'Updated Feature Category', 'Updated '.$category->displayName)) {
+                throw new \Exception('Failed to log admin action.');
+            }
+
             if ($category) {
                 $this->handleImage($image, $category->categoryImagePath, $category->categoryImageFileName);
             }
@@ -106,16 +118,21 @@ class FeatureService extends Service {
      * Delete a category.
      *
      * @param \App\Models\Feature\FeatureCategory $category
+     * @param mixed                               $user
      *
      * @return bool
      */
-    public function deleteFeatureCategory($category) {
+    public function deleteFeatureCategory($category, $user) {
         DB::beginTransaction();
 
         try {
             // Check first if the category is currently in use
             if (Feature::where('feature_category_id', $category->id)->exists()) {
                 throw new \Exception('A trait with this category exists. Please change its category first.');
+            }
+
+            if (!$this->logAdminAction($user, 'Deleted Feature Category', 'Deleted '.$category->name)) {
+                throw new \Exception('Failed to log admin action.');
             }
 
             if ($category->has_image) {
@@ -214,6 +231,10 @@ class FeatureService extends Service {
 
             $feature = Feature::create($data);
 
+            if (!$this->logAdminAction($user, 'Created Feature', 'Created '.$feature->displayName)) {
+                throw new \Exception('Failed to log admin action.');
+            }
+
             if ($image) {
                 $this->handleImage($image, $feature->imagePath, $feature->imageFileName);
             }
@@ -280,6 +301,10 @@ class FeatureService extends Service {
 
             $feature->update($data);
 
+            if (!$this->logAdminAction($user, 'Updated Feature', 'Updated '.$feature->displayName)) {
+                throw new \Exception('Failed to log admin action.');
+            }
+
             if ($feature) {
                 $this->handleImage($image, $feature->imagePath, $feature->imageFileName);
             }
@@ -296,16 +321,21 @@ class FeatureService extends Service {
      * Deletes a feature.
      *
      * @param \App\Models\Feature\Feature $feature
+     * @param mixed                       $user
      *
      * @return bool
      */
-    public function deleteFeature($feature) {
+    public function deleteFeature($feature, $user) {
         DB::beginTransaction();
 
         try {
             // Check first if the feature is currently in use
             if (DB::table('character_features')->where('feature_id', $feature->id)->exists()) {
                 throw new \Exception('A character with this trait exists. Please remove the trait first.');
+            }
+
+            if (!$this->logAdminAction($user, 'Deleted Feature', 'Deleted '.$feature->name)) {
+                throw new \Exception('Failed to log admin action.');
             }
 
             if ($feature->has_image) {
@@ -362,6 +392,9 @@ class FeatureService extends Service {
         }
         if (isset($data['feature_category_id']) && $data['feature_category_id'] == 'none') {
             $data['feature_category_id'] = null;
+        }
+        if (!isset($data['is_visible'])) {
+            $data['is_visible'] = 0;
         }
         if (isset($data['remove_image'])) {
             if ($feature && $feature->has_image && $data['remove_image']) {

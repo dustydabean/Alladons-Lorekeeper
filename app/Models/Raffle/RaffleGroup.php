@@ -20,7 +20,6 @@ class RaffleGroup extends Model {
      * @var string
      */
     protected $table = 'raffle_groups';
-
     /**
      * Whether the model contains timestamps to be saved and updated.
      *

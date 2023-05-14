@@ -4,7 +4,6 @@ namespace App\Models\Prompt;
 
 use App\Models\Model;
 use Carbon\Carbon;
-use DB;
 
 class Prompt extends Model {
     /**
@@ -15,7 +14,7 @@ class Prompt extends Model {
     protected $fillable = [
         'prompt_category_id', 'name', 'summary', 'description', 'parsed_description', 'is_active',
         'start_at', 'end_at', 'hide_before_start', 'hide_after_end', 'has_image', 'prefix',
-        'hide_submissions',
+        'hide_submissions', 'staff_only',
     ];
 
     /**
@@ -24,7 +23,6 @@ class Prompt extends Model {
      * @var string
      */
     protected $table = 'prompts';
-
     /**
      * Dates on the model to convert to Carbon instances.
      *
@@ -107,6 +105,50 @@ class Prompt extends Model {
     }
 
     /**
+     * Scope a query to open or closed prompts.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param bool                                  $isOpen
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeOpen($query, $isOpen) {
+        if ($isOpen) {
+            $query->where(function ($query) {
+                $query->whereNull('end_at')->where('start_at', '<', Carbon::now());
+            })->orWhere(function ($query) {
+                $query->whereNull('start_at')->where('end_at', '>', Carbon::now());
+            })->orWhere(function ($query) {
+                $query->where('start_at', '<', Carbon::now())->where('end_at', '>', Carbon::now());
+            })->orWhere(function ($query) {
+                $query->whereNull('end_at')->whereNull('start_at');
+            });
+        } else {
+            $query->where(function ($query) {
+                $query->whereNull('end_at')->where('start_at', '>', Carbon::now());
+            })->orWhere(function ($query) {
+                $query->whereNull('start_at')->where('end_at', '<', Carbon::now());
+            })->orWhere('start_at', '>', Carbon::now())->orWhere('end_at', '<', Carbon::now());
+        }
+    }
+
+    /**
+     * Scope a query to include or exclude staff-only prompts.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \App\Models\User\User                 $user
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeStaffOnly($query, $user) {
+        if ($user && $user->isStaff) {
+            return $query;
+        }
+
+        return $query->where('staff_only', 0);
+    }
+
+    /**
      * Scope a query to sort prompts in alphabetical order.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
@@ -126,9 +168,11 @@ class Prompt extends Model {
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeSortCategory($query) {
-        $ids = PromptCategory::orderBy('sort', 'DESC')->pluck('id')->toArray();
+        if (PromptCategory::all()->count()) {
+            return $query->orderBy(PromptCategory::select('sort')->whereColumn('prompts.prompt_category_id', 'prompt_categories.id'), 'DESC');
+        }
 
-        return count($ids) ? $query->orderByRaw(DB::raw('FIELD(prompt_category_id, '.implode(',', $ids).')')) : $query;
+        return $query;
     }
 
     /**
@@ -248,5 +292,23 @@ class Prompt extends Model {
      */
     public function getAssetTypeAttribute() {
         return 'prompts';
+    }
+
+    /**
+     * Gets the admin edit URL.
+     *
+     * @return string
+     */
+    public function getAdminUrlAttribute() {
+        return url('admin/data/prompts/edit/'.$this->id);
+    }
+
+    /**
+     * Gets the power required to edit this model.
+     *
+     * @return string
+     */
+    public function getAdminPowerAttribute() {
+        return 'edit_data';
     }
 }

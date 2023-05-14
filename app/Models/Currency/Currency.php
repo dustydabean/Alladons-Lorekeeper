@@ -23,7 +23,6 @@ class Currency extends Model {
      * @var string
      */
     protected $table = 'currencies';
-
     /**
      * Validation rules for creation.
      *
@@ -167,6 +166,24 @@ class Currency extends Model {
      */
     public function getAssetTypeAttribute() {
         return 'currencies';
+    }
+
+    /**
+     * Gets the admin edit URL.
+     *
+     * @return string
+     */
+    public function getAdminUrlAttribute() {
+        return url('admin/data/currencies/edit/'.$this->id);
+    }
+
+    /**
+     * Gets the power required to edit this model.
+     *
+     * @return string
+     */
+    public function getAdminPowerAttribute() {
+        return 'edit_data';
     }
 
     /**********************************************************************************************

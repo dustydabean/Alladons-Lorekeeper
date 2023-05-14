@@ -13,7 +13,7 @@ class SitePage extends Model {
      * @var array
      */
     protected $fillable = [
-        'key', 'title', 'text', 'parsed_text', 'is_visible', 'can_comment',
+        'key', 'title', 'text', 'parsed_text', 'is_visible', 'can_comment', 'allow_dislikes',
     ];
 
     /**
@@ -68,5 +68,23 @@ class SitePage extends Model {
      */
     public function getDisplayNameAttribute() {
         return '<a href="'.$this->url.'">'.$this->title.'</a>';
+    }
+
+    /**
+     * Gets the admin edit URL.
+     *
+     * @return string
+     */
+    public function getAdminUrlAttribute() {
+        return url('admin/pages/edit/'.$this->id);
+    }
+
+    /**
+     * Gets the power required to edit this model.
+     *
+     * @return string
+     */
+    public function getAdminPowerAttribute() {
+        return 'edit_pages';
     }
 }

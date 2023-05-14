@@ -15,7 +15,7 @@ use App\Models\Feature\Feature;
 use App\Models\Rarity;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
-use App\Models\Species\Transformation;
+use App\Models\Character\CharacterTransformation as Transformation;
 use App\Models\User\User;
 use App\Models\User\UserItem;
 use Carbon\Carbon;
@@ -174,6 +174,10 @@ class CharacterManager extends Service {
                 ));
             }
 
+            if (!$this->logAdminAction($user, 'Created Character', 'Created '.$character->displayName)) {
+                throw new \Exception('Failed to log admin action.');
+            }
+
             return $this->commitReturn($character);
         } catch (\Exception $e) {
             $this->setError('error', $e->getMessage());
@@ -267,6 +271,10 @@ class CharacterManager extends Service {
             $character->character_image_id = $image->id;
             $character->save();
 
+            if (!$this->logAdminAction($user, 'Created Image', 'Created character image <a href="'.$character->url.'">#'.$image->id.'</a>')) {
+                throw new \Exception('Failed to log admin action.');
+            }
+
             // Add a log for the character
             // This logs all the updates made to the character
             $this->createLog($user->id, null, $character->user_id, ($character->user_id ? null : $character->owner_url), $character->id, 'Character Image Uploaded', '[#'.$image->id.']', 'character');
@@ -315,6 +323,13 @@ class CharacterManager extends Service {
                 if (!$subtype || $subtype->species_id != $data['species_id']) {
                     throw new \Exception('Selected subtype invalid or does not match species.');
                 }
+<<<<<<< HEAD
+=======
+            }
+
+            if (!$this->logAdminAction($user, 'Updated Image', 'Updated character image features on <a href="'.$image->character->url.'">#'.$image->id.'</a>')) {
+                throw new \Exception('Failed to log admin action.');
+>>>>>>> b42da34f101bac1ba5fe338ec816a4d914ebe0c3
             }
 
             // Log old features
@@ -388,6 +403,10 @@ class CharacterManager extends Service {
             $image->parsed_description = parse($data['description']);
             $image->save();
 
+            if (!$this->logAdminAction($user, 'Updated Image Notes', 'Updated image <a href="'.$image->character->url.'">#'.$image->id.'</a>')) {
+                throw new \Exception('Failed to log admin action.');
+            }
+
             // Add a log for the character
             // This logs all the updates made to the character
             $this->createLog($user->id, null, null, null, $image->character_id, 'Image Notes Updated', '[#'.$image->id.']', 'character', true, $old, $image->parsed_description);
@@ -413,24 +432,38 @@ class CharacterManager extends Service {
         DB::beginTransaction();
 
         try {
+            if (!$this->logAdminAction($user, 'Updated Image Credits', 'Updated character image credits on <a href="'.$image->character->url.'">#'.$image->id.'</a>')) {
+                throw new \Exception('Failed to log admin action.');
+            }
+
             $old = $this->generateCredits($image);
 
             // Clear old artists/designers
             $image->creators()->delete();
 
             // Check if entered url(s) have aliases associated with any on-site users
+<<<<<<< HEAD
             foreach ($data['designer_url'] as $key=>$url) {
+=======
+            $designers = array_filter($data['designer_url']); // filter null values
+            foreach ($designers as $key=> $url) {
+>>>>>>> b42da34f101bac1ba5fe338ec816a4d914ebe0c3
                 $recipient = checkAlias($url, false);
                 if (is_object($recipient)) {
                     $data['designer_id'][$key] = $recipient->id;
-                    $data['designer_url'][$key] = null;
+                    $designers[$key] = null;
                 }
             }
+<<<<<<< HEAD
             foreach ($data['artist_url'] as $key=>$url) {
+=======
+            $artists = array_filter($data['artist_url']);  // filter null values
+            foreach ($artists as $key=> $url) {
+>>>>>>> b42da34f101bac1ba5fe338ec816a4d914ebe0c3
                 $recipient = checkAlias($url, false);
                 if (is_object($recipient)) {
                     $data['artist_id'][$key] = $recipient->id;
-                    $data['artist_url'][$key] = null;
+                    $artists[$key] = null;
                 }
             }
 
@@ -499,6 +532,7 @@ class CharacterManager extends Service {
         DB::beginTransaction();
 
         try {
+<<<<<<< HEAD
             if (Config::get('lorekeeper.settings.masterlist_image_format') != null) {
                 // Remove old versions so that images in various filetypes don't pile up
                 unlink($image->imagePath.'/'.$image->imageFileName);
@@ -506,6 +540,25 @@ class CharacterManager extends Service {
                     unlink($image->imagePath.'/'.$image->fullsizeFileName);
                 }
                 unlink($image->imagePath.'/'.$image->thumbnailFileName);
+=======
+            if (!$this->logAdminAction($user, 'Reuploaded Image', 'Reuploaded character image <a href="'.$image->character->url.'">#'.$image->id.'</a>')) {
+                throw new \Exception('Failed to log admin action.');
+            }
+
+            if (Config::get('lorekeeper.settings.masterlist_image_format') != null) {
+                // Remove old versions so that images in various filetypes don't pile up
+                if (file_exists($image->imagePath.'/'.$image->imageFileName)) {
+                    unlink($image->imagePath.'/'.$image->imageFileName);
+                }
+                if (isset($image->fullsize_hash) ? file_exists(public_path($image->imageDirectory.'/'.$image->fullsizeFileName)) : false) {
+                    if (file_exists($image->imagePath.'/'.$image->fullsizeFileName)) {
+                        unlink($image->imagePath.'/'.$image->fullsizeFileName);
+                    }
+                }
+                if (file_exists($image->imagePath.'/'.$image->thumbnailFileName)) {
+                    unlink($image->imagePath.'/'.$image->thumbnailFileName);
+                }
+>>>>>>> b42da34f101bac1ba5fe338ec816a4d914ebe0c3
 
                 // Set the image's extension in the DB as defined in settings
                 $image->extension = Config::get('lorekeeper.settings.masterlist_image_format');
@@ -549,6 +602,7 @@ class CharacterManager extends Service {
      *
      * @param \App\Models\Character\CharacterImage $image
      * @param \App\Models\User\User                $user
+<<<<<<< HEAD
      *
      * @return bool
      */
@@ -557,6 +611,21 @@ class CharacterManager extends Service {
 
         try {
             if ($image->character->character_image_id == $image->id) {
+=======
+     * @param bool                                 $forceDelete
+     *
+     * @return bool
+     */
+    public function deleteImage($image, $user, $forceDelete = false) {
+        DB::beginTransaction();
+
+        try {
+            if (!$this->logAdminAction($user, 'Deleted Image', 'Deleted character image <a href="'.$image->character->url.'">#'.$image->id.'</a>')) {
+                throw new \Exception('Failed to log admin action.');
+            }
+
+            if (!$forceDelete && $image->character->character_image_id == $image->id) {
+>>>>>>> b42da34f101bac1ba5fe338ec816a4d914ebe0c3
                 throw new \Exception("Cannot delete a character's active image.");
             }
 
@@ -565,11 +634,25 @@ class CharacterManager extends Service {
             $image->delete();
 
             // Delete the image files
+<<<<<<< HEAD
             unlink($image->imagePath.'/'.$image->imageFileName);
             if (isset($image->fullsize_hash) ? file_exists(public_path($image->imageDirectory.'/'.$image->fullsizeFileName)) : false) {
                 unlink($image->imagePath.'/'.$image->fullsizeFileName);
             }
             unlink($image->imagePath.'/'.$image->thumbnailFileName);
+=======
+            if (file_exists($image->imagePath.'/'.$image->imageFileName)) {
+                unlink($image->imagePath.'/'.$image->imageFileName);
+            }
+            if (isset($image->fullsize_hash) ? file_exists(public_path($image->imageDirectory.'/'.$image->fullsizeFileName)) : false) {
+                if (file_exists($image->imagePath.'/'.$image->fullsizeFileName)) {
+                    unlink($image->imagePath.'/'.$image->fullsizeFileName);
+                }
+            }
+            if (file_exists($image->imagePath.'/'.$image->thumbnailFileName)) {
+                unlink($image->imagePath.'/'.$image->thumbnailFileName);
+            }
+>>>>>>> b42da34f101bac1ba5fe338ec816a4d914ebe0c3
 
             // Add a log for the character
             // This logs all the updates made to the character
@@ -596,6 +679,13 @@ class CharacterManager extends Service {
         DB::beginTransaction();
 
         try {
+<<<<<<< HEAD
+=======
+            if (!$this->logAdminAction($user, 'Updated Image', 'Updated character image settings on <a href="'.$image->character->url.'">#'.$image->id.'</a>')) {
+                throw new \Exception('Failed to log admin action.');
+            }
+
+>>>>>>> b42da34f101bac1ba5fe338ec816a4d914ebe0c3
             if ($image->character->character_image_id == $image->id && !isset($data['is_visible'])) {
                 throw new \Exception("Cannot hide a character's active image.");
             }
@@ -628,6 +718,13 @@ class CharacterManager extends Service {
         DB::beginTransaction();
 
         try {
+<<<<<<< HEAD
+=======
+            if (!$this->logAdminAction($user, 'Updated Image', 'Set image <a href="'.$image->character->url.'">#'.$image->id.'</a> to active image')) {
+                throw new \Exception('Failed to log admin action.');
+            }
+
+>>>>>>> b42da34f101bac1ba5fe338ec816a4d914ebe0c3
             if ($image->character->character_image_id == $image->id) {
                 return true;
             }
@@ -745,6 +842,13 @@ class CharacterManager extends Service {
         DB::beginTransaction();
 
         try {
+<<<<<<< HEAD
+=======
+            if (!$this->logAdminAction($user, 'Updated Stats', 'Updated character stats on '.$character->displayname)) {
+                throw new \Exception('Failed to log admin action.');
+            }
+
+>>>>>>> b42da34f101bac1ba5fe338ec816a4d914ebe0c3
             if (!$character->is_myo_slot && Character::where('slug', $data['slug'])->where('id', '!=', $character->id)->exists()) {
                 throw new \Exception('Character code must be unique.');
             }
@@ -844,6 +948,10 @@ class CharacterManager extends Service {
         DB::beginTransaction();
 
         try {
+            if (!$this->logAdminAction($user, 'Updated Character Description', 'Updated character description on '.$character->displayname)) {
+                throw new \Exception('Failed to log admin action.');
+            }
+
             $old = $character->parsed_description;
 
             // Update the image's notes
@@ -876,6 +984,10 @@ class CharacterManager extends Service {
         DB::beginTransaction();
 
         try {
+            if (!$this->logAdminAction($user, 'Updated Character Settings', 'Updated character settings on '.$character->displayname)) {
+                throw new \Exception('Failed to log admin action.');
+            }
+
             $old = ['is_visible' => $character->is_visible];
 
             $character->is_visible = isset($data['is_visible']);
@@ -932,6 +1044,10 @@ class CharacterManager extends Service {
                 $character->is_gift_writing_allowed = isset($data['is_gift_writing_allowed']) && $data['is_gift_writing_allowed'] <= 2 ? $data['is_gift_writing_allowed'] : 0;
                 $character->is_trading = isset($data['is_trading']);
                 $character->save();
+            } else {
+                if (!$this->logAdminAction($user, 'Updated Character Profile', 'Updated character profile on '.$character->displayname)) {
+                    throw new \Exception('Failed to log admin action.');
+                }
             }
 
             // Update the character's profile
@@ -991,6 +1107,13 @@ class CharacterManager extends Service {
             if ($character->user_id) {
                 $character->user->settings->save();
             }
+<<<<<<< HEAD
+=======
+
+            if (!$this->logAdminAction($user, 'Deleted Character', 'Deleted character '.$character->slug)) {
+                throw new \Exception('Failed to log admin action.');
+            }
+>>>>>>> b42da34f101bac1ba5fe338ec816a4d914ebe0c3
 
             // Delete associated bookmarks
             CharacterBookmark::where('character_id', $character->id)->delete();
@@ -1061,7 +1184,11 @@ class CharacterManager extends Service {
             // deletes any pending design drafts
             foreach ($character->designUpdate as $update) {
                 if ($update->status == 'Draft') {
+<<<<<<< HEAD
                     if (!$this->rejectRequest('Cancelled by '.$user->displayName.' in order to transfer character to another user', $update, $user, true, false)) {
+=======
+                    if (!(new DesignUpdateManager)->rejectRequest('Cancelled by '.$user->displayName.' in order to transfer character to another user', $update, $user, true, false)) {
+>>>>>>> b42da34f101bac1ba5fe338ec816a4d914ebe0c3
                         throw new \Exception('Could not cancel pending request.');
                     }
                 }
@@ -1077,7 +1204,11 @@ class CharacterManager extends Service {
                 'status'       => 'Pending',
 
                 // if the queue is closed, all transfers are auto-approved
+<<<<<<< HEAD
                 'is_approved' => !$queueOpen,
+=======
+                'is_approved'  => !$queueOpen,
+>>>>>>> b42da34f101bac1ba5fe338ec816a4d914ebe0c3
             ]);
 
             if (!$queueOpen) {
@@ -1118,9 +1249,21 @@ class CharacterManager extends Service {
                 if ($character->user_id == $recipient->id) {
                     throw new \Exception('Cannot transfer a character to the same user.');
                 }
+<<<<<<< HEAD
             } elseif (isset($data['recipient_url']) && $data['recipient_url']) {
                 // Transferring to an off-site user
                 $recipient = checkAlias($data['recipient_url']);
+=======
+                if (!$this->logAdminAction($user, 'Admin Transfer', 'Admin transferred '.$character->displayname.' to '.$recipient->displayName)) {
+                    throw new \Exception('Failed to log admin action.');
+                }
+            } elseif (isset($data['recipient_url']) && $data['recipient_url']) {
+                // Transferring to an off-site user
+                $recipient = checkAlias($data['recipient_url']);
+                if (!$this->logAdminAction($user, 'Admin Transfer', 'Admin transferred '.$character->displayname.' to '.$recipient)) {
+                    throw new \Exception('Failed to log admin action.');
+                }
+>>>>>>> b42da34f101bac1ba5fe338ec816a4d914ebe0c3
             } else {
                 throw new \Exception('Please enter a recipient for the transfer.');
             }
@@ -1135,7 +1278,11 @@ class CharacterManager extends Service {
             // deletes any pending design drafts
             foreach ($character->designUpdate as $update) {
                 if ($update->status == 'Draft') {
+<<<<<<< HEAD
                     if (!$this->rejectRequest('Cancelled by '.$user->displayName.' in order to transfer character to another user', $update, $user, true, false)) {
+=======
+                    if (!(new DesignUpdateManager)->rejectRequest('Cancelled by '.$user->displayName.' in order to transfer character to another user', $update, $user, true, false)) {
+>>>>>>> b42da34f101bac1ba5fe338ec816a4d914ebe0c3
                         throw new \Exception('Could not cancel pending request.');
                     }
                 }
@@ -1307,6 +1454,12 @@ class CharacterManager extends Service {
 
                 // Process the character move if the recipient has already accepted the transfer
                 if ($transfer->status == 'Accepted') {
+<<<<<<< HEAD
+=======
+                    if (!$this->logAdminAction($user, 'Approved Transfer', 'Approved transfer of '.$transfer->character->displayname.' to '.$transfer->recipient->displayname)) {
+                        throw new \Exception('Failed to log admin action.');
+                    }
+>>>>>>> b42da34f101bac1ba5fe338ec816a4d914ebe0c3
                     $this->moveCharacter($transfer->character, $transfer->recipient, 'User Transfer', $data['cooldown'] ?? -1);
 
                     // Notify both parties of the successful transfer
@@ -1323,6 +1476,13 @@ class CharacterManager extends Service {
                         'sender_url'     => $user->url,
                     ]);
                 } else {
+<<<<<<< HEAD
+=======
+                    if (!$this->logAdminAction($user, 'Approved Transfer', 'Approved transfer of '.$transfer->character->displayname.' to '.$transfer->recipient->displayname)) {
+                        throw new \Exception('Failed to log admin action.');
+                    }
+
+>>>>>>> b42da34f101bac1ba5fe338ec816a4d914ebe0c3
                     // Still pending a response from the recipient
                     Notifications::create('CHARACTER_TRANSFER_ACCEPTABLE', $transfer->recipient, [
                         'character_name' => $transfer->character->slug,
@@ -1332,6 +1492,13 @@ class CharacterManager extends Service {
                     ]);
                 }
             } else {
+<<<<<<< HEAD
+=======
+                if (!$this->logAdminAction($user, 'Rejected Transfer', 'Rejected transfer of '.$transfer->character->displayname.' to '.$transfer->recipient->displayname)) {
+                    throw new \Exception('Failed to log admin action.');
+                }
+
+>>>>>>> b42da34f101bac1ba5fe338ec816a4d914ebe0c3
                 $transfer->status = 'Rejected';
                 $transfer->reason = $data['reason'] ?? null;
                 $transfer->data = json_encode([
@@ -1448,8 +1615,9 @@ class CharacterManager extends Service {
     }
 
     /**
-     * Creates a character design update request (or a MYO design approval request).
+     * Handles character data.
      *
+<<<<<<< HEAD
      * @param \App\Models\Character\Character $character
      * @param \App\Models\User\User           $user
      *
@@ -1503,16 +1671,66 @@ class CharacterManager extends Service {
             }
 
             return $this->commitReturn($request);
+=======
+     * @param array $data
+     * @param bool  $isMyo
+     *
+     * @return \App\Models\Character\Character|bool
+     */
+    private function handleCharacter($data, $isMyo = false) {
+        try {
+            if ($isMyo) {
+                $data['character_category_id'] = null;
+                $data['number'] = null;
+                $data['slug'] = null;
+                $data['species_id'] = isset($data['species_id']) && $data['species_id'] ? $data['species_id'] : null;
+                $data['subtype_id'] = isset($data['subtype_id']) && $data['subtype_id'] ? $data['subtype_id'] : null;
+                $data['rarity_id'] = isset($data['rarity_id']) && $data['rarity_id'] ? $data['rarity_id'] : null;
+            }
+
+            $characterData = Arr::only($data, [
+                'character_category_id', 'rarity_id', 'user_id',
+                'number', 'slug', 'description',
+                'sale_value', 'transferrable_at', 'is_visible',
+            ]);
+
+            $characterData['name'] = ($isMyo && isset($data['name'])) ? $data['name'] : null;
+            $characterData['owner_url'] = isset($characterData['user_id']) ? null : $data['owner_url'];
+            $characterData['is_sellable'] = isset($data['is_sellable']);
+            $characterData['is_tradeable'] = isset($data['is_tradeable']);
+            $characterData['is_giftable'] = isset($data['is_giftable']);
+            $characterData['is_visible'] = isset($data['is_visible']);
+            $characterData['sale_value'] = $data['sale_value'] ?? 0;
+            $characterData['is_gift_art_allowed'] = 0;
+            $characterData['is_gift_writing_allowed'] = 0;
+            $characterData['is_trading'] = 0;
+            $characterData['parsed_description'] = parse($data['description']);
+            if ($isMyo) {
+                $characterData['is_myo_slot'] = 1;
+            }
+
+            $character = Character::create($characterData);
+
+            // Create character profile row
+            $character->profile()->create([]);
+
+            return $character;
+>>>>>>> b42da34f101bac1ba5fe338ec816a4d914ebe0c3
         } catch (\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
 
+<<<<<<< HEAD
         return $this->rollbackReturn(false);
+=======
+        return false;
+>>>>>>> b42da34f101bac1ba5fe338ec816a4d914ebe0c3
     }
 
     /**
-     * Saves the comment section of a character design update request.
+     * Handles character image data.
      *
+<<<<<<< HEAD
      * @param array                                       $data
      * @param \App\Models\Character\CharacterDesignUpdate $request
      *
@@ -1580,11 +1798,65 @@ class CharacterManager extends Service {
                     $imageData['has_image'] = true;
                 }
                 $request->update($imageData);
+=======
+     * @param array $data
+     * @param bool  $isMyo
+     * @param mixed $character
+     *
+     * @return \App\Models\Character\Character           $character
+     * @return \App\Models\Character\CharacterImage|bool
+     */
+    private function handleCharacterImage($data, $character, $isMyo = false) {
+        try {
+            if ($isMyo) {
+                $data['species_id'] = (isset($data['species_id']) && $data['species_id']) ? $data['species_id'] : null;
+                $data['subtype_id'] = isset($data['subtype_id']) && $data['subtype_id'] ? $data['subtype_id'] : null;
+                $data['rarity_id'] = (isset($data['rarity_id']) && $data['rarity_id']) ? $data['rarity_id'] : null;
+
+                // Use default images for MYO slots without an image provided
+                if (!isset($data['image'])) {
+                    $data['image'] = asset('images/myo.png');
+                    $data['thumbnail'] = asset('images/myo-th.png');
+                    $data['extension'] = 'png';
+                    $data['default_image'] = true;
+                    unset($data['use_cropper']);
+                }
             }
+            $imageData = Arr::only($data, [
+                'species_id', 'subtype_id', 'rarity_id', 'use_cropper',
+                'x0', 'x1', 'y0', 'y1',
+            ]);
+            $imageData['use_cropper'] = isset($data['use_cropper']);
+            $imageData['description'] = $data['image_description'] ?? null;
+            $imageData['parsed_description'] = parse($imageData['description']);
+            $imageData['hash'] = randomString(10);
+            $imageData['fullsize_hash'] = randomString(15);
+            $imageData['sort'] = 0;
+            $imageData['is_valid'] = isset($data['is_valid']);
+            $imageData['is_visible'] = isset($data['is_visible']);
+            $imageData['extension'] = (Config::get('lorekeeper.settings.masterlist_image_format') ? Config::get('lorekeeper.settings.masterlist_image_format') : ($data['extension'] ?? $data['image']->getClientOriginalExtension()));
+            $imageData['character_id'] = $character->id;
 
-            $request->designers()->delete();
-            $request->artists()->delete();
+            $image = CharacterImage::create($imageData);
 
+            // Check if entered url(s) have aliases associated with any on-site users
+            $designers = array_filter($data['designer_url']); // filter null values
+            foreach ($designers as $key=> $url) {
+                $recipient = checkAlias($url, false);
+                if (is_object($recipient)) {
+                    $data['designer_id'][$key] = $recipient->id;
+                    $designers[$key] = null;
+                }
+            }
+            $artists = array_filter($data['artist_url']);  // filter null values
+            foreach ($artists as $key=> $url) {
+                $recipient = checkAlias($url, false);
+                if (is_object($recipient)) {
+                    $data['artist_id'][$key] = $recipient->id;
+                    $artists[$key] = null;
+                }
+>>>>>>> b42da34f101bac1ba5fe338ec816a4d914ebe0c3
+            }
             // Check that users with the specified id(s) exist on site
             foreach ($data['designer_id'] as $id) {
                 if (isset($id) && $id) {
@@ -1599,6 +1871,7 @@ class CharacterManager extends Service {
                     $user = $user = User::find($id);
                     if (!$user) {
                         throw new \Exception('One or more artists is invalid.');
+<<<<<<< HEAD
                     }
                 }
             }
@@ -1742,10 +2015,13 @@ class CharacterManager extends Service {
                         } else {
                             addAsset($characterAssets, $currency, $data['currency_quantity'][$holderKey][$key]);
                         }
+=======
+>>>>>>> b42da34f101bac1ba5fe338ec816a4d914ebe0c3
                     }
                 }
             }
 
+<<<<<<< HEAD
             $request->has_addons = 1;
             $request->data = json_encode([
                 'user'      => Arr::only(getDataReadyAssets($userAssets), ['user_items', 'currencies']),
@@ -1836,16 +2112,68 @@ class CharacterManager extends Service {
             $request->save();
 
             return $this->commitReturn(true);
+=======
+            // Attach artists/designers
+            foreach ($data['designer_id'] as $key => $id) {
+                if ($id || $data['designer_url'][$key]) {
+                    DB::table('character_image_creators')->insert([
+                        'character_image_id' => $image->id,
+                        'type'               => 'Designer',
+                        'url'                => $data['designer_url'][$key],
+                        'user_id'            => $id,
+                    ]);
+                }
+            }
+            foreach ($data['artist_id'] as $key => $id) {
+                if ($id || $data['artist_url'][$key]) {
+                    DB::table('character_image_creators')->insert([
+                        'character_image_id' => $image->id,
+                        'type'               => 'Artist',
+                        'url'                => $data['artist_url'][$key],
+                        'user_id'            => $id,
+                    ]);
+                }
+            }
+
+            // Save image
+            $this->handleImage($data['image'], $image->imageDirectory, $image->imageFileName, null, isset($data['default_image']));
+
+            // Save thumbnail first before processing full image
+            if (isset($data['use_cropper'])) {
+                $this->cropThumbnail(Arr::only($data, ['x0', 'x1', 'y0', 'y1']), $image, $isMyo);
+            } else {
+                $this->handleImage($data['thumbnail'], $image->imageDirectory, $image->thumbnailFileName, null, isset($data['default_image']));
+            }
+
+            // Process and save the image itself
+            if (!$isMyo) {
+                $this->processImage($image);
+            }
+
+            // Attach features
+            foreach ($data['feature_id'] as $key => $featureId) {
+                if ($featureId) {
+                    $feature = CharacterFeature::create(['character_image_id' => $image->id, 'feature_id' => $featureId, 'data' => $data['feature_data'][$key]]);
+                }
+            }
+
+            return $image;
+>>>>>>> b42da34f101bac1ba5fe338ec816a4d914ebe0c3
         } catch (\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
 
+<<<<<<< HEAD
         return $this->rollbackReturn(false);
+=======
+        return false;
+>>>>>>> b42da34f101bac1ba5fe338ec816a4d914ebe0c3
     }
 
     /**
-     * Submit a character design update request to the approval queue.
+     * Generates a list of features for displaying.
      *
+<<<<<<< HEAD
      * @param \App\Models\Character\CharacterDesignUpdate $request
      *
      * @return bool
@@ -1878,11 +2206,25 @@ class CharacterManager extends Service {
         }
 
         return $this->rollbackReturn(false);
+=======
+     * @param \App\Models\Character\CharacterImage $image
+     *
+     * @return string
+     */
+    private function generateFeatureList($image) {
+        $result = '';
+        foreach ($image->features as $feature) {
+            $result .= '<div>'.($feature->feature->category ? '<strong>'.$feature->feature->category->displayName.':</strong> ' : '').$feature->feature->displayName.'</div>';
+        }
+
+        return $result;
+>>>>>>> b42da34f101bac1ba5fe338ec816a4d914ebe0c3
     }
 
     /**
-     * Approves a character design update request and processes it.
+     * Generates a list of image credits for displaying.
      *
+<<<<<<< HEAD
      * @param array                                       $data
      * @param \App\Models\Character\CharacterDesignUpdate $request
      * @param \App\Models\User\User                       $user
@@ -2352,6 +2694,22 @@ class CharacterManager extends Service {
         }
 
         return $this->rollbackReturn(false);
+=======
+     * @param \App\Models\Character\CharacterImage $image
+     *
+     * @return string
+     */
+    private function generateCredits($image) {
+        $result = ['designers' => '', 'artists' => ''];
+        foreach ($image->designers as $designer) {
+            $result['designers'] .= '<div>'.$designer->displayLink().'</div>';
+        }
+        foreach ($image->artists as $artist) {
+            $result['artists'] .= '<div>'.$artist->displayLink().'</div>';
+        }
+
+        return $result;
+>>>>>>> b42da34f101bac1ba5fe338ec816a4d914ebe0c3
     }
 
     /**
@@ -2643,124 +3001,126 @@ class CharacterManager extends Service {
      * @param mixed                                $isMyo
      */
     private function cropThumbnail($points, $characterImage, $isMyo = false) {
-        $image = Image::make($characterImage->imagePath.'/'.$characterImage->imageFileName);
+        // Trim transparent parts of image.
+        $image = Image::make($characterImage->imagePath.'/'.$characterImage->imageFileName)->trim('transparent');
 
-        if (Config::get('lorekeeper.settings.masterlist_image_format') != 'png' && Config::get('lorekeeper.settings.masterlist_image_format') != null && Config::get('lorekeeper.settings.masterlist_image_background') != null) {
-            $canvas = Image::canvas($image->width(), $image->height(), Config::get('lorekeeper.settings.masterlist_image_background'));
-            $image = $canvas->insert($image, 'center');
-            $trimColor = true;
-        }
-
-        if (Config::get('lorekeeper.settings.watermark_masterlist_thumbnails') == 1 && !$isMyo) {
-            // Trim transparent parts of image.
-            $image->trim(isset($trimColor) && $trimColor ? 'top-left' : 'transparent');
-
-            if (Config::get('lorekeeper.settings.masterlist_image_automation') == 1) {
-                // Make the image be square
-                $imageWidth = $image->width();
-                $imageHeight = $image->height();
-
-                if ($imageWidth > $imageHeight) {
-                    // Landscape
-                    $canvas = Image::canvas($image->width(), $image->width());
-                    $image = $canvas->insert($image, 'center');
-                } else {
-                    // Portrait
-                    $canvas = Image::canvas($image->height(), $image->height());
-                    $image = $canvas->insert($image, 'center');
-                }
-            }
-
-            $cropWidth = Config::get('lorekeeper.settings.masterlist_thumbnails.width');
-            $cropHeight = Config::get('lorekeeper.settings.masterlist_thumbnails.height');
-
-            $imageWidthOld = $image->width();
-            $imageHeightOld = $image->height();
-
-            $trimOffsetX = $imageWidthOld - $image->width();
-            $trimOffsetY = $imageHeightOld - $image->height();
-
-            if (Config::get('lorekeeper.settings.watermark_masterlist_images') == 1) {
-                // Resize image if desired, so that the watermark is applied to the correct size of image
-                if (Config::get('lorekeeper.settings.masterlist_image_dimension') != 0) {
-                    $imageWidth = $image->width();
-                    $imageHeight = $image->height();
-
-                    if ($imageWidth > $imageHeight) {
-                        // Landscape
-                        $image->resize(null, Config::get('lorekeeper.settings.masterlist_image_dimension'), function ($constraint) {
-                            $constraint->aspectRatio();
-                            $constraint->upsize();
-                        });
-                    } else {
-                        // Portrait
-                        $image->resize(Config::get('lorekeeper.settings.masterlist_image_dimension'), null, function ($constraint) {
-                            $constraint->aspectRatio();
-                            $constraint->upsize();
-                        });
-                    }
-                }
-                // Watermark the image
-                $watermark = Image::make('images/watermark.png');
-                $image->insert($watermark, 'center');
-            }
-            // Now shrink the image
-
+        if (Config::get('lorekeeper.settings.masterlist_image_automation') == 1) {
+            // Make the image be square
             $imageWidth = $image->width();
             $imageHeight = $image->height();
 
             if ($imageWidth > $imageHeight) {
                 // Landscape
-                $image->resize(null, $cropWidth, function ($constraint) {
+                $canvas = Image::canvas($image->width(), $image->width());
+                $image = $canvas->insert($image, 'center');
+            } else {
+                // Portrait
+                $canvas = Image::canvas($image->height(), $image->height());
+                $image = $canvas->insert($image, 'center');
+            }
+        }
+
+        if (Config::get('lorekeeper.settings.masterlist_image_format') != 'png' && Config::get('lorekeeper.settings.masterlist_image_format') != null && Config::get('lorekeeper.settings.masterlist_image_background') != null) {
+            $canvas = Image::canvas($image->width(), $image->height(), Config::get('lorekeeper.settings.masterlist_image_background'));
+            $image = $canvas->insert($image, 'center');
+        }
+
+        if (Config::get('lorekeeper.settings.store_masterlist_fullsizes') == 1) {
+            // Generate fullsize hash if not already generated,
+            // then save the full-sized image
+            if (!$characterImage->fullsize_hash) {
+                $characterImage->fullsize_hash = randomString(15);
+                $characterImage->save();
+            }
+
+            if (Config::get('lorekeeper.settings.masterlist_fullsizes_cap') != 0) {
+                $imageWidth = $image->width();
+                $imageHeight = $image->height();
+
+                if ($imageWidth > $imageHeight) {
+                    // Landscape
+                    $image->resize(Config::get('lorekeeper.settings.masterlist_fullsizes_cap'), null, function ($constraint) {
+                        $constraint->aspectRatio();
+                        $constraint->upsize();
+                    });
+                } else {
+                    // Portrait
+                    $image->resize(null, Config::get('lorekeeper.settings.masterlist_fullsizes_cap'), function ($constraint) {
+                        $constraint->aspectRatio();
+                        $constraint->upsize();
+                    });
+                }
+            }
+
+            // Save the processed image
+            $image->save($characterImage->imagePath.'/'.$characterImage->fullsizeFileName, 100, Config::get('lorekeeper.settings.masterlist_image_format'));
+        } else {
+            // Delete fullsize if it was previously created.
+            if (isset($characterImage->fullsize_hash) ? file_exists(public_path($characterImage->imageDirectory.'/'.$characterImage->fullsizeFileName)) : false) {
+                unlink($characterImage->imagePath.'/'.$characterImage->fullsizeFileName);
+            }
+        }
+
+        // Resize image if desired
+        if (Config::get('lorekeeper.settings.masterlist_image_dimension') != 0) {
+            $imageWidth = $image->width();
+            $imageHeight = $image->height();
+
+            if ($imageWidth > $imageHeight) {
+                // Landscape
+                $image->resize(null, Config::get('lorekeeper.settings.masterlist_image_dimension'), function ($constraint) {
                     $constraint->aspectRatio();
                     $constraint->upsize();
                 });
             } else {
                 // Portrait
-                $image->resize($cropHeight, null, function ($constraint) {
+                $image->resize(Config::get('lorekeeper.settings.masterlist_image_dimension'), null, function ($constraint) {
                     $constraint->aspectRatio();
                     $constraint->upsize();
                 });
             }
+        }
+        // Watermark the image if desired
+        if (Config::get('lorekeeper.settings.watermark_masterlist_images') == 1) {
+            $watermark = Image::make('images/watermark.png');
 
-            if (Config::get('lorekeeper.settings.masterlist_image_automation') == 0) {
-                $xOffset = 0 + (($points['x0'] - $trimOffsetX) > 0 ? ($points['x0'] - $trimOffsetX) : 0);
-                if (($xOffset + $cropWidth) > $image->width()) {
-                    $xOffsetNew = $cropWidth - ($image->width() - $xOffset);
-                }
-                if (isset($xOffsetNew)) {
-                    if (($xOffsetNew + $cropWidth) > $image->width()) {
-                        $xOffsetNew = $image->width() - $cropWidth;
-                    }
-                }
-                $yOffset = 0 + (($points['y0'] - $trimOffsetY) > 0 ? ($points['y0'] - $trimOffsetY) : 0);
-                if (($yOffset + $cropHeight) > $image->height()) {
-                    $yOffsetNew = $cropHeight - ($image->height() - $yOffset);
-                }
-                if (isset($yOffsetNew)) {
-                    if (($yOffsetNew + $cropHeight) > $image->height()) {
-                        $yOffsetNew = $image->height() - $cropHeight;
-                    }
+            if (Config::get('lorekeeper.settings.watermark_resizing') == 1) {
+                $imageWidth = $image->width();
+                $imageHeight = $image->height();
+
+                $wmWidth = $watermark->width();
+                $wmHeight = $watermark->height();
+
+                $wmScale = Config::get('lorekeeper.settings.watermark_percent');
+
+                //Assume Landscape by Default
+                $maxSize = $imageWidth * $wmScale;
+
+                if ($imageWidth > $imageHeight) {
+                    //Landscape
+                    $maxSize = $imageWidth * $wmScale;
+                } else {
+                    // Portrait
+                    $maxSize = $imageHeight * $wmScale;
                 }
 
-                // Crop according to the selected area
-                $image->crop($cropWidth, $cropHeight, $xOffsetNew ?? $xOffset, $yOffsetNew ?? $yOffset);
+                if ($wmWidth > $wmHeight) {
+                    //Landscape
+                    $watermark->resize($maxSize, null, function ($constraint) {
+                        $constraint->aspectRatio();
+                    });
+                } else {
+                    // Portrait
+                    $watermark->resize(null, $maxSize, function ($constraint) {
+                        $constraint->aspectRatio();
+                    });
+                }
             }
-        } else {
-            $cropWidth = $points['x1'] - $points['x0'];
-            $cropHeight = $points['y1'] - $points['y0'];
-
-            if (Config::get('lorekeeper.settings.masterlist_image_automation') == 0) {
-                // Crop according to the selected area
-                $image->crop($cropWidth, $cropHeight, $points['x0'], $points['y0']);
-            }
-
-            // Resize to fit the thumbnail size
-            $image->resize(Config::get('lorekeeper.settings.masterlist_thumbnails.width'), Config::get('lorekeeper.settings.masterlist_thumbnails.height'));
+            $image->insert($watermark, 'center');
         }
 
-        // Save the thumbnail
-        $image->save($characterImage->thumbnailPath.'/'.$characterImage->thumbnailFileName, 100, Config::get('lorekeeper.settings.masterlist_image_format'));
+        // Save the processed image
+        $image->save($characterImage->imagePath.'/'.$characterImage->imageFileName, 100, Config::get('lorekeeper.settings.masterlist_image_format'));
     }
 
     /**

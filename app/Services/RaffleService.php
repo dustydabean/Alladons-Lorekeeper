@@ -48,7 +48,7 @@ class RaffleService extends Service {
         if (!isset($data['is_active'])) {
             $data['is_active'] = 0;
         }
-        $raffle->update(Arr::only($data, ['name', 'is_active', 'winner_count', 'group_id', 'order']));
+        $raffle->update(Arr::only($data, ['name', 'is_active', 'winner_count', 'group_id', 'order', 'ticket_cap']));
         DB::commit();
 
         return $raffle;

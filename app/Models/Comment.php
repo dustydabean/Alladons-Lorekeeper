@@ -66,21 +66,28 @@ class Comment extends Model {
      * The model that was commented upon.
      */
     public function commentable() {
-        return $this->morphTo();
+        return $this->morphTo()->withTrashed();
     }
 
     /**
      * Returns all comments that this comment is the parent of.
      */
     public function children() {
-        return $this->hasMany('App\Models\Comment', 'child_id');
+        return $this->hasMany('App\Models\Comment', 'child_id')->withTrashed();
     }
 
     /**
      * Returns the comment to which this comment belongs to.
      */
     public function parent() {
-        return $this->belongsTo('App\Models\Comment', 'child_id');
+        return $this->belongsTo('App\Models\Comment', 'child_id')->withTrashed();
+    }
+
+    /**
+     * Gets the likes for this comment.
+     */
+    public function likes() {
+        return $this->hasMany('App\Models\CommentLike');
     }
 
     /**

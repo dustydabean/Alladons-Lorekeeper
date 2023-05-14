@@ -11,10 +11,10 @@ use App\Models\Item\ItemCategory;
 use App\Models\Rarity;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
-use App\Models\Species\Transformation;
+use App\Models\Character\CharacterTransformation as Transformation;
 use App\Models\User\User;
 use App\Models\User\UserItem;
-use App\Services\CharacterManager;
+use App\Services\DesignUpdateManager;
 use Auth;
 use Illuminate\Http\Request;
 
@@ -78,12 +78,12 @@ class DesignController extends Controller {
     /**
      * Edits a design update request's comments section.
      *
-     * @param App\Services\CharacterManager $service
-     * @param int                           $id
+     * @param App\Services\DesignUpdateManager $service
+     * @param int                              $id
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postComments(Request $request, CharacterManager $service, $id) {
+    public function postComments(Request $request, DesignUpdateManager $service, $id) {
         $r = CharacterDesignUpdate::find($id);
         if (!$r) {
             abort(404);
@@ -125,12 +125,12 @@ class DesignController extends Controller {
     /**
      * Edits a design update request's image upload section.
      *
-     * @param App\Services\CharacterManager $service
-     * @param int                           $id
+     * @param App\Services\DesignUpdateManager $service
+     * @param int                              $id
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postImage(Request $request, CharacterManager $service, $id) {
+    public function postImage(Request $request, DesignUpdateManager $service, $id) {
         $r = CharacterDesignUpdate::find($id);
         if (!$r) {
             abort(404);
@@ -183,12 +183,12 @@ class DesignController extends Controller {
     /**
      * Edits a design update request's addons section.
      *
-     * @param App\Services\CharacterManager $service
-     * @param int                           $id
+     * @param App\Services\DesignUpdateManager $service
+     * @param int                              $id
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postAddons(Request $request, CharacterManager $service, $id) {
+    public function postAddons(Request $request, DesignUpdateManager $service, $id) {
         $r = CharacterDesignUpdate::find($id);
         if (!$r) {
             abort(404);
@@ -222,12 +222,12 @@ class DesignController extends Controller {
         }
 
         return view('character.design.features', [
-            'request'         => $r,
-            'specieses'       => ['0' => 'Select Species'] + Species::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'subtypes'        => ['0' => 'No Subtype'] + Subtype::where('species_id', '=', $r->species_id)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'rarities'        => ['0' => 'Select Rarity'] + Rarity::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'request'   => $r,
+            'specieses' => ['0' => 'Select Species'] + Species::visible()->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'subtypes'  => ['0' => 'No Subtype'] + Subtype::visible()->where('species_id', '=', $r->species_id)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'rarities'  => ['0' => 'Select Rarity'] + Rarity::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'transformations' => ['0' => 'Select Transformation'] + Transformation::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'features'        => Feature::orderBy('name')->pluck('name', 'id')->toArray(),
+            'features'  => Feature::getDropdownItems(),
         ]);
     }
 
@@ -241,7 +241,7 @@ class DesignController extends Controller {
         $id = $request->input('id');
 
         return view('character.design._features_subtype', [
-            'subtypes' => ['0' => 'Select Subtype'] + Subtype::where('species_id', '=', $species)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'subtypes' => ['0' => 'Select Subtype'] + Subtype::visible()->where('species_id', '=', $species)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'subtype'  => $id,
         ]);
     }
@@ -263,12 +263,12 @@ class DesignController extends Controller {
     /**
      * Edits a design update request's features section.
      *
-     * @param App\Services\CharacterManager $service
-     * @param int                           $id
+     * @param App\Services\DesignUpdateManager $service
+     * @param int                              $id
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postFeatures(Request $request, CharacterManager $service, $id) {
+    public function postFeatures(Request $request, DesignUpdateManager $service, $id) {
         $r = CharacterDesignUpdate::find($id);
         if (!$r) {
             abort(404);
@@ -309,12 +309,12 @@ class DesignController extends Controller {
     /**
      * Submits a design update request for approval.
      *
-     * @param App\Services\CharacterManager $service
-     * @param int                           $id
+     * @param App\Services\DesignUpdateManager $service
+     * @param int                              $id
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postSubmit(CharacterManager $service, $id) {
+    public function postSubmit(DesignUpdateManager $service, $id) {
         $r = CharacterDesignUpdate::find($id);
         if (!$r) {
             abort(404);
@@ -355,12 +355,12 @@ class DesignController extends Controller {
     /**
      * Deletes a design update request.
      *
-     * @param App\Services\CharacterManager $service
-     * @param int                           $id
+     * @param App\Services\DesignUpdateManager $service
+     * @param int                              $id
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postDelete(CharacterManager $service, $id) {
+    public function postDelete(DesignUpdateManager $service, $id) {
         $r = CharacterDesignUpdate::find($id);
         if (!$r) {
             abort(404);

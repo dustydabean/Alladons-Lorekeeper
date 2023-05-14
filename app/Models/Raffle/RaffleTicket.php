@@ -28,6 +28,17 @@ class RaffleTicket extends Model {
      */
     protected $dates = ['created_at'];
 
+    /**
+     * Validation rules for creation.
+     *
+     * @var array
+     */
+    public static $createRules = [
+        'user_id.*'      => 'required_without:alias.*',
+        'alias.*'        => 'required_without:user_id.*',
+        'ticket_count.*' => 'required',
+    ];
+
     /**********************************************************************************************
 
         RELATIONS
@@ -82,6 +93,6 @@ class RaffleTicket extends Model {
             return $this->user->displayName;
         }
 
-        return '<a href="http://'.$this->alias.'.deviantart.com">'.$this->alias.'@dA</a>';
+        return $this->alias.' (Off-site user)';
     }
 }

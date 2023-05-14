@@ -150,15 +150,16 @@ class FileController extends Controller {
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postUploadFile(Request $request, FileManager $service) {
-        $request->validate(['file' => 'required|file']);
+        $request->validate(['files.*' => 'file|required']);
         $dir = $request->get('folder');
-        $file = $request->file('file');
-
-        if ($service->uploadFile($file, $dir, $file->getClientOriginalName())) {
-            flash('File uploaded successfully.')->success();
-        } else {
-            foreach ($service->errors()->getMessages()['error'] as $error) {
-                flash($error)->error();
+        $files = $request->file('files');
+        foreach ($files as $file) {
+            if ($service->uploadFile($file, $dir, $file->getClientOriginalName())) {
+                flash('File uploaded successfully.')->success();
+            } else {
+                foreach ($service->errors()->getMessages()['error'] as $error) {
+                    flash($error)->error();
+                }
             }
         }
 

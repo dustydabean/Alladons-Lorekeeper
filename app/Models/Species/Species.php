@@ -11,7 +11,7 @@ class Species extends Model {
      * @var array
      */
     protected $fillable = [
-        'name', 'sort', 'has_image', 'description', 'parsed_description', 'masterlist_sub_id',
+        'name', 'sort', 'has_image', 'description', 'parsed_description', 'masterlist_sub_id', 'is_visible',
     ];
 
     /**
@@ -20,7 +20,6 @@ class Species extends Model {
      * @var string
      */
     protected $table = 'specieses';
-
     /**
      * Validation rules for creation.
      *
@@ -68,6 +67,28 @@ class Species extends Model {
      */
     public function features() {
         return $this->hasMany('App\Models\Feature\Feature');
+    }
+
+    /**********************************************************************************************
+
+        SCOPES
+
+    **********************************************************************************************/
+
+    /**
+     * Scope a query to show only visible species.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param mixed|null                            $user
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeVisible($query, $user = null) {
+        if ($user && $user->hasPower('edit_data')) {
+            return $query;
+        }
+
+        return $query->where('is_visible', 1);
     }
 
     /**********************************************************************************************
@@ -154,5 +175,23 @@ class Species extends Model {
      */
     public function getVisualTraitsUrlAttribute() {
         return url('/world/species/'.$this->id.'/traits');
+    }
+
+    /**
+     * Gets the admin edit URL.
+     *
+     * @return string
+     */
+    public function getAdminUrlAttribute() {
+        return url('admin/data/species/edit/'.$this->id);
+    }
+
+    /**
+     * Gets the power required to edit this model.
+     *
+     * @return string
+     */
+    public function getAdminPowerAttribute() {
+        return 'edit_data';
     }
 }

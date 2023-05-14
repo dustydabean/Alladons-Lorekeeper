@@ -18,6 +18,8 @@ Auth::routes(['verify' => true]);
 // BROWSE
 require_once __DIR__.'/lorekeeper/browse.php';
 
+Route::feeds('feeds');
+
 /**************************************************************************************************
     Routes that require login
 **************************************************************************************************/
@@ -37,8 +39,13 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     // BANNED
     Route::get('banned', 'Users\AccountController@getBanned');
 
+    // DEACTIVATED
+    Route::get('deactivated', 'Users\AccountController@getDeactivated');
+    Route::get('reactivate', 'Users\AccountController@getReactivateConfirmation');
+    Route::post('reactivate', 'Users\AccountController@postReactivate');
+
     /**********************************************************************************************
-        Routes that require having a linked dA account (also includes blocked routes when banned)
+        Routes that require having a linked account (also includes blocked routes when banned)
     **********************************************************************************************/
     Route::group(['middleware' => ['alias']], function () {
         require_once __DIR__.'/lorekeeper/members.php';

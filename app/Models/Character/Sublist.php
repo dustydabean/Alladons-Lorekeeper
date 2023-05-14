@@ -20,7 +20,6 @@ class Sublist extends Model {
      * @var string
      */
     protected $table = 'masterlist_sub';
-
     /**
      * Validation rules for creation.
      *

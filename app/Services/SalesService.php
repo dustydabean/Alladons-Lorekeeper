@@ -177,7 +177,7 @@ class SalesService extends Service {
      * @return bool
      */
     private function processCharacters($sales, $data) {
-        foreach ($data['slug'] as $key=>$slug) {
+        foreach ($data['slug'] as $key=> $slug) {
             $character = Character::myo(0)->visible()->where('slug', $slug)->first();
 
             // Assemble data

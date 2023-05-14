@@ -199,6 +199,34 @@ class InventoryController extends Controller {
     }
 
     /**
+     * Shows the confirmation modal for inventory consolidation.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getConsolidateInventory(Request $request) {
+        return view('home._inventory_consolidate');
+    }
+
+    /**
+     * Consolidates the user's inventory.
+     *
+     * @param App\Services\InventoryManager $service
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postConsolidateInventory(Request $request, InventoryManager $service) {
+        if ($service->consolidateInventory(Auth::user())) {
+            flash('Inventory consolidated.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
+    }
+
+    /**
      * Transfers inventory items to another user.
      *
      * @param App\Services\InventoryManager $service
@@ -218,14 +246,14 @@ class InventoryController extends Controller {
     }
 
     /**
-     * Transfers inventory items to another user.
+     * Transfers inventory items to a character.
      *
      * @param App\Services\InventoryManager $service
      *
      * @return \Illuminate\Http\RedirectResponse
      */
     private function postTransferToCharacter(Request $request, InventoryManager $service) {
-        if ($service->transferCharacterStack(Auth::user(), Character::visible()->where('id', $request->get('character_id'))->first(), UserItem::find($request->get('ids')), $request->get('quantities'))) {
+        if ($service->transferCharacterStack(Auth::user(), Character::visible()->where('id', $request->get('character_id'))->first(), UserItem::find($request->get('ids')), $request->get('quantities'), Auth::user())) {
             flash('Item transferred successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
@@ -244,7 +272,7 @@ class InventoryController extends Controller {
      * @return \Illuminate\Http\RedirectResponse
      */
     private function postDelete(Request $request, InventoryManager $service) {
-        if ($service->deleteStack(Auth::user(), UserItem::find($request->get('ids')), $request->get('quantities'))) {
+        if ($service->deleteStack(Auth::user(), UserItem::find($request->get('ids')), $request->get('quantities'), Auth::user())) {
             flash('Item deleted successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {

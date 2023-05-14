@@ -28,7 +28,6 @@ class Item extends Model {
      * @var string
      */
     protected $table = 'items';
-
     /**
      * Validation rules for creation.
      *
@@ -115,9 +114,11 @@ class Item extends Model {
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeSortCategory($query) {
-        $ids = ItemCategory::orderBy('sort', 'DESC')->pluck('id')->toArray();
+        if (ItemCategory::all()->count()) {
+            return $query->orderBy(ItemCategory::select('sort')->whereColumn('items.item_category_id', 'item_categories.id'), 'DESC');
+        }
 
-        return count($ids) ? $query->orderByRaw(DB::raw('FIELD(item_category_id, '.implode(',', $ids).')')) : $query;
+        return $query;
     }
 
     /**
@@ -364,6 +365,24 @@ class Item extends Model {
         $itemPrompts = $this->data['prompts'];
 
         return Prompt::whereIn('id', $itemPrompts)->get();
+    }
+
+    /**
+     * Gets the admin edit URL.
+     *
+     * @return string
+     */
+    public function getAdminUrlAttribute() {
+        return url('admin/data/items/edit/'.$this->id);
+    }
+
+    /**
+     * Gets the power required to edit this model.
+     *
+     * @return string
+     */
+    public function getAdminPowerAttribute() {
+        return 'edit_data';
     }
 
     /**********************************************************************************************

@@ -10,7 +10,7 @@ use App\Models\Feature\Feature;
 use App\Models\Rarity;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
-use App\Models\Species\Transformation;
+use App\Models\Character\CharacterTransformation as Transformation;
 use App\Models\Trade;
 use App\Models\User\User;
 use App\Models\User\UserItem;
@@ -49,14 +49,14 @@ class CharacterController extends Controller {
      */
     public function getCreateCharacter() {
         return view('admin.masterlist.create_character', [
-            'categories'      => CharacterCategory::orderBy('sort')->get(),
-            'userOptions'     => User::query()->orderBy('name')->pluck('name', 'id')->toArray(),
-            'rarities'        => ['0' => 'Select Rarity'] + Rarity::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'specieses'       => ['0' => 'Select Species'] + Species::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'subtypes'        => ['0' => 'Pick a Species First'],
+            'categories'  => CharacterCategory::orderBy('sort')->get(),
+            'userOptions' => User::query()->orderBy('name')->pluck('name', 'id')->toArray(),
+            'rarities'    => ['0' => 'Select Rarity'] + Rarity::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'specieses'   => ['0' => 'Select Species'] + Species::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'subtypes'    => ['0' => 'Pick a Species First'],
             'transformations' => ['0' => 'Select Transformation'] + Transformation::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'features'        => Feature::orderBy('name')->pluck('name', 'id')->toArray(),
-            'isMyo'           => false,
+            'features'    => Feature::getDropdownItems(1),
+            'isMyo'       => false,
         ]);
     }
 
@@ -67,13 +67,13 @@ class CharacterController extends Controller {
      */
     public function getCreateMyo() {
         return view('admin.masterlist.create_character', [
-            'userOptions'     => User::query()->orderBy('name')->pluck('name', 'id')->toArray(),
-            'rarities'        => ['0' => 'Select Rarity'] + Rarity::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'specieses'       => ['0' => 'Select Species'] + Species::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'subtypes'        => ['0' => 'Pick a Species First'],
+            'userOptions' => User::query()->orderBy('name')->pluck('name', 'id')->toArray(),
+            'rarities'    => ['0' => 'Select Rarity'] + Rarity::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'specieses'   => ['0' => 'Select Species'] + Species::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'subtypes'    => ['0' => 'Pick a Species First'],
             'transformations' => ['0' => 'Select Transformation'] + Transformation::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'features'        => Feature::orderBy('name')->pluck('name', 'id')->toArray(),
-            'isMyo'           => true,
+            'features'    => Feature::getDropdownItems(1),
+            'isMyo'       => true,
         ]);
     }
 
@@ -675,11 +675,11 @@ class CharacterController extends Controller {
 
         $stacks = [];
         foreach ($trades->get() as $trade) {
-            foreach ($trade->data as $side=>$assets) {
+            foreach ($trade->data as $side=> $assets) {
                 if (isset($assets['user_items'])) {
                     $user_items = UserItem::with('item')->find(array_keys($assets['user_items']));
                     $items = [];
-                    foreach ($assets['user_items'] as $id=>$quantity) {
+                    foreach ($assets['user_items'] as $id=> $quantity) {
                         $user_item = $user_items->find($id);
                         $user_item['quantity'] = $quantity;
                         array_push($items, $user_item);

@@ -15,7 +15,7 @@ class PermalinkController extends Controller {
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getComment($id) {
-        $comments = Comment::all();
+        $comments = Comment::withTrashed()->get();
         //$comments = $comments->sortByDesc('created_at');
         $comment = $comments->find($id);
 
@@ -23,6 +23,10 @@ class PermalinkController extends Controller {
             abort(404);
         }
         if (!$comment->commentable) {
+            abort(404);
+        }
+
+        if (isset($comment->commentable->is_visible) && !$comment->commentable->is_visible) {
             abort(404);
         }
 

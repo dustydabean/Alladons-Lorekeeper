@@ -37,6 +37,7 @@ class PageService extends Service {
             }
             if (!isset($data['can_comment'])) {
                 $data['can_comment'] = 0;
+                $data['allow_dislikes'] = 0;
             }
 
             $page = SitePage::create($data);
@@ -76,6 +77,7 @@ class PageService extends Service {
             }
             if (!isset($data['can_comment'])) {
                 $data['can_comment'] = 0;
+                $data['allow_dislikes'] = 0;
             }
 
             $page->update($data);

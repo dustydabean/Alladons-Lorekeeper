@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\Character\CharacterImage;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
-use App\Models\Species\Transformation;
+use App\Models\Character\CharacterTransformation as Transformation;
 use DB;
 
 class SpeciesService extends Service {
@@ -408,7 +408,7 @@ class SpeciesService extends Service {
     }
 
     /**
-     * Processes user input for creating/updating a species.
+ * Processes user input for creating/updating a species.
      *
      * @param array                       $data
      * @param \App\Models\Species\Species $species
@@ -420,6 +420,9 @@ class SpeciesService extends Service {
             $data['parsed_description'] = parse($data['description']);
         }
 
+        if (!isset($data['is_visible'])) {
+            $data['is_visible'] = 0;
+        }
         if (isset($data['remove_image'])) {
             if ($species && $species->has_image && $data['remove_image']) {
                 $data['has_image'] = 0;
@@ -444,6 +447,9 @@ class SpeciesService extends Service {
             $data['parsed_description'] = parse($data['description']);
         }
 
+        if (!isset($data['is_visible'])) {
+            $data['is_visible'] = 0;
+        }
         if (isset($data['remove_image'])) {
             if ($subtype && $subtype->has_image && $data['remove_image']) {
                 $data['has_image'] = 0;

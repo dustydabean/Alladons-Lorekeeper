@@ -22,18 +22,17 @@ class SalesCharacter extends Model {
      * @var string
      */
     protected $table = 'sales_characters';
-
     /**
      * Validation rules.
      *
      * @var array
      */
     public static $rules = [
-        'type' => 'required',
-        'link' => 'nullable|url',
+        'type'          => 'required',
+        'link'          => 'nullable|url',
 
         // Flatsale
-        'price' => 'required_if:sale_type,flat',
+        'price'         => 'required_if:sale_type,flat',
 
         // Auction/XTA
         'starting_bid'  => 'required_if:type,auction',

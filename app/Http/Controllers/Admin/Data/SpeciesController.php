@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Character\Sublist;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
-use App\Models\Species\Transformation;
+use App\Models\Character\CharacterTransformation as Transformation;
 use App\Services\SpeciesService;
 use Auth;
 use Illuminate\Http\Request;
@@ -74,7 +74,7 @@ class SpeciesController extends Controller {
     public function postCreateEditSpecies(Request $request, SpeciesService $service, $id = null) {
         $id ? $request->validate(Species::$updateRules) : $request->validate(Species::$createRules);
         $data = $request->only([
-            'name', 'description', 'image', 'remove_image', 'masterlist_sub_id',
+            'name', 'description', 'image', 'remove_image', 'masterlist_sub_id', 'is_visible',
         ]);
         if ($id && $service->updateSpecies(Species::find($id), $data, Auth::user())) {
             flash('Species updated successfully.')->success();
@@ -198,7 +198,7 @@ class SpeciesController extends Controller {
     public function postCreateEditSubtype(Request $request, SpeciesService $service, $id = null) {
         $id ? $request->validate(Subtype::$updateRules) : $request->validate(Subtype::$createRules);
         $data = $request->only([
-            'species_id', 'name', 'description', 'image', 'remove_image',
+            'species_id', 'name', 'description', 'image', 'remove_image', 'is_visible',
         ]);
         if ($id && $service->updateSubtype(Subtype::find($id), $data, Auth::user())) {
             flash('Subtype updated successfully.')->success();

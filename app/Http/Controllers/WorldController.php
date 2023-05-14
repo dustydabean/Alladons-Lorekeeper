@@ -15,8 +15,9 @@ use App\Models\Shop\Shop;
 use App\Models\Shop\ShopStock;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
-use App\Models\Species\Transformation;
+use App\Models\Character\CharacterTransformation as Transformation;
 use App\Models\User\User;
+use Auth;
 use Config;
 use Illuminate\Http\Request;
 
@@ -88,8 +89,8 @@ class WorldController extends Controller {
 
         return view('world.specieses', [
             'specieses' => $query->with(['subtypes' => function ($query) {
-                $query->orderBy('sort', 'DESC');
-            }])->orderBy('sort', 'DESC')->paginate(20)->appends($request->query()),
+                $query->visible(Auth::check() ? Auth::user() : null)->orderBy('sort', 'DESC');
+            }])->visible(Auth::check() ? Auth::user() : null)->orderBy('sort', 'DESC')->paginate(20)->appends($request->query()),
         ]);
     }
 
@@ -106,7 +107,7 @@ class WorldController extends Controller {
         }
 
         return view('world.subtypes', [
-            'subtypes' => $query->with('species')->orderBy('sort', 'DESC')->paginate(20)->appends($request->query()),
+            'subtypes' => $query->with('species')->visible(Auth::check() ? Auth::user() : null)->orderBy('sort', 'DESC')->paginate(20)->appends($request->query()),
         ]);
     }
 
@@ -167,16 +168,31 @@ class WorldController extends Controller {
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getFeatures(Request $request) {
-        $query = Feature::with('category')->with('rarity')->with('species');
-        $data = $request->only(['rarity_id', 'feature_category_id', 'species_id', 'name', 'sort']);
+        $query = Feature::visible()->with('category')->with('rarity')->with('species');
+        $data = $request->only(['rarity_id', 'feature_category_id', 'species_id', 'subtype_id', 'name', 'sort']);
         if (isset($data['rarity_id']) && $data['rarity_id'] != 'none') {
             $query->where('rarity_id', $data['rarity_id']);
         }
         if (isset($data['feature_category_id']) && $data['feature_category_id'] != 'none') {
-            $query->where('feature_category_id', $data['feature_category_id']);
+            if ($data['feature_category_id'] == 'withoutOption') {
+                $query->whereNull('feature_category_id');
+            } else {
+                $query->where('feature_category_id', $data['feature_category_id']);
+            }
         }
         if (isset($data['species_id']) && $data['species_id'] != 'none') {
-            $query->where('species_id', $data['species_id']);
+            if ($data['species_id'] == 'withoutOption') {
+                $query->whereNull('species_id');
+            } else {
+                $query->where('species_id', $data['species_id']);
+            }
+        }
+        if (isset($data['subtype_id']) && $data['subtype_id'] != 'none') {
+            if ($data['subtype_id'] == 'withoutOption') {
+                $query->whereNull('subtype_id');
+            } else {
+                $query->where('subtype_id', $data['subtype_id']);
+            }
         }
         if (isset($data['name'])) {
             $query->where('name', 'LIKE', '%'.$data['name'].'%');
@@ -202,6 +218,9 @@ class WorldController extends Controller {
                 case 'species':
                     $query->sortSpecies();
                     break;
+                case 'subtypes':
+                    $query->sortSubtype();
+                    break;
                 case 'newest':
                     $query->sortNewest();
                     break;
@@ -216,8 +235,9 @@ class WorldController extends Controller {
         return view('world.features', [
             'features'   => $query->paginate(20)->appends($request->query()),
             'rarities'   => ['none' => 'Any Rarity'] + Rarity::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'specieses'  => ['none' => 'Any Species'] + Species::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'categories' => ['none' => 'Any Category'] + FeatureCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'specieses'  => ['none' => 'Any Species'] + ['withoutOption' => 'Without Species'] + Species::visible(Auth::check() ? Auth::user() : null)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'subtypes'   => ['none' => 'Any Subtype'] + ['withoutOption' => 'Without Subtype'] + Subtype::visible(Auth::check() ? Auth::user() : null)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'categories' => ['none' => 'Any Category'] + ['withoutOption' => 'Without Category'] + FeatureCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
         ]);
     }
 
@@ -231,7 +251,7 @@ class WorldController extends Controller {
     public function getSpeciesFeatures($id) {
         $categories = FeatureCategory::orderBy('sort', 'DESC')->get();
         $rarities = Rarity::orderBy('sort', 'ASC')->get();
-        $species = Species::where('id', $id)->first();
+        $species = Species::visible(Auth::check() ? Auth::user() : null)->where('id', $id)->first();
         if (!$species) {
             abort(404);
         }
@@ -241,17 +261,33 @@ class WorldController extends Controller {
 
         $features = count($categories) ?
             $species->features()
+                ->visible()
                 ->orderByRaw('FIELD(feature_category_id,'.implode(',', $categories->pluck('id')->toArray()).')')
                 ->orderByRaw('FIELD(rarity_id,'.implode(',', $rarities->pluck('id')->toArray()).')')
                 ->orderBy('has_image', 'DESC')
                 ->orderBy('name')
                 ->get()
+                ->filter(function ($feature) {
+                    if ($feature->subtype) {
+                        return $feature->subtype->is_visible;
+                    }
+
+                    return true;
+                })
                 ->groupBy(['feature_category_id', 'id']) :
             $species->features()
+                ->visible()
                 ->orderByRaw('FIELD(rarity_id,'.implode(',', $rarities->pluck('id')->toArray()).')')
                 ->orderBy('has_image', 'DESC')
                 ->orderBy('name')
                 ->get()
+                ->filter(function ($feature) {
+                    if ($feature->subtype) {
+                        return $feature->subtype->is_visible;
+                    }
+
+                    return true;
+                })
                 ->groupBy(['feature_category_id', 'id']);
 
         return view('world.species_features', [
@@ -271,7 +307,11 @@ class WorldController extends Controller {
         $query = Item::with('category')->released();
         $data = $request->only(['item_category_id', 'name', 'sort', 'artist']);
         if (isset($data['item_category_id']) && $data['item_category_id'] != 'none') {
-            $query->where('item_category_id', $data['item_category_id']);
+            if ($data['item_category_id'] == 'withoutOption') {
+                $query->whereNull('item_category_id');
+            } else {
+                $query->where('item_category_id', $data['item_category_id']);
+            }
         }
         if (isset($data['name'])) {
             $query->where('name', 'LIKE', '%'.$data['name'].'%');
@@ -304,7 +344,7 @@ class WorldController extends Controller {
 
         return view('world.items', [
             'items'      => $query->paginate(20)->appends($request->query()),
-            'categories' => ['none' => 'Any Category'] + ItemCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'categories' => ['none' => 'Any Category'] + ['withoutOption' => 'Without Category'] + ItemCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'shops'      => Shop::orderBy('sort', 'DESC')->get(),
             'artists'    => ['none' => 'Any Artist'] + User::whereIn('id', Item::whereNotNull('artist_id')->pluck('artist_id')->toArray())->pluck('name', 'id')->toArray(),
         ]);

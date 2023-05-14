@@ -14,14 +14,14 @@ trait Commentable {
      * Returns all comments for this model.
      */
     public function commentz() {
-        return $this->morphMany('App\Models\Comment', 'commentable');
+        return $this->morphMany('App\Models\Comment', 'commentable')->withTrashed();
     }
 
     /**
      * Returns only approved comments for this model.
      */
     public function approvedComments() {
-        return $this->morphMany('App\Models\Comment', 'commentable')->where('approved', true);
+        return $this->morphMany('App\Models\Comment', 'commentable')->where('approved', true)->withTrashed();
     }
 
     /**

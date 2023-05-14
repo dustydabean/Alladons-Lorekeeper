@@ -22,7 +22,6 @@ class Rank extends Model {
      * @var string
      */
     protected $table = 'ranks';
-
     /**
      * Validation rules for ranks.
      *

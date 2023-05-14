@@ -18,7 +18,6 @@ class Invitation extends Model {
      * @var string
      */
     protected $table = 'invitations';
-
     /**
      * Whether the model contains timestamps to be saved and updated.
      *

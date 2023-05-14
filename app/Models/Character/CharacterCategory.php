@@ -20,7 +20,6 @@ class CharacterCategory extends Model {
      * @var string
      */
     protected $table = 'character_categories';
-
     /**
      * Validation rules for creation.
      *
@@ -133,5 +132,23 @@ class CharacterCategory extends Model {
         } else {
             return url('masterlist?character_category_id='.$this->id);
         }
+    }
+
+    /**
+     * Gets the admin edit URL.
+     *
+     * @return string
+     */
+    public function getAdminUrlAttribute() {
+        return url('admin/data/character-categories/edit/'.$this->id);
+    }
+
+    /**
+     * Gets the power required to edit this model.
+     *
+     * @return string
+     */
+    public function getAdminPowerAttribute() {
+        return 'edit_data';
     }
 }

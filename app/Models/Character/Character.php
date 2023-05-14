@@ -7,7 +7,6 @@ use App\Models\Currency\CurrencyLog;
 use App\Models\Item\Item;
 use App\Models\Item\ItemLog;
 use App\Models\Model;
-
 use App\Models\Submission\Submission;
 use App\Models\Submission\SubmissionCharacter;
 use App\Models\User\User;
@@ -379,11 +378,11 @@ class Character extends Model {
     /**
      * Get the character's held currencies.
      *
-     * @param bool $displayedOnly
+     * @param bool $showAll
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCurrencies($displayedOnly = false) {
+    public function getCurrencies($showAll = false) {
         // Get a list of currencies that need to be displayed
         // On profile: only ones marked is_displayed
         // In bank: ones marked is_displayed + the ones the user has
@@ -391,7 +390,7 @@ class Character extends Model {
         $owned = CharacterCurrency::where('character_id', $this->id)->pluck('quantity', 'currency_id')->toArray();
 
         $currencies = Currency::where('is_character_owned', 1);
-        if ($displayedOnly) {
+        if ($showAll) {
             $currencies->where(function ($query) use ($owned) {
                 $query->where('is_displayed', 1)->orWhereIn('id', array_keys($owned));
             });

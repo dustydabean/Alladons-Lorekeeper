@@ -344,7 +344,7 @@ class CharacterDesignUpdate extends Model {
         }
         $ids = array_keys($currencies);
         $result = Currency::whereIn('id', $ids)->get();
-        foreach ($result as $i=>$currency) {
+        foreach ($result as $i=> $currency) {
             $currency->quantity = $currencies[$currency->id];
         }
 

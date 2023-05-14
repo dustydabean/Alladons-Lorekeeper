@@ -112,7 +112,7 @@ class GalleryController extends Controller {
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postDeleteGallery(Request $request, GalleryService $service, $id) {
-        if ($id && $service->deleteGallery(Gallery::find($id))) {
+        if ($id && $service->deleteGallery(Gallery::find($id), Auth::user())) {
             flash('Gallery deleted successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {

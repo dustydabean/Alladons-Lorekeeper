@@ -21,7 +21,6 @@ class Loot extends Model {
      * @var string
      */
     protected $table = 'loots';
-
     /**
      * Validation rules for creation.
      *

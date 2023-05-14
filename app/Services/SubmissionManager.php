@@ -18,15 +18,6 @@ use Notifications;
 use Settings;
 
 class SubmissionManager extends Service {
-    /*
-    |--------------------------------------------------------------------------
-    | Submission Manager
-    |--------------------------------------------------------------------------
-    |
-    | Handles creation and modification of submission data.
-    |
-    */
-
     /**
      * Creates a new submission.
      *
@@ -55,6 +46,10 @@ class SubmissionManager extends Service {
                 $prompt = Prompt::active()->where('id', $data['prompt_id'])->with('rewards')->first();
                 if (!$prompt) {
                     throw new \Exception('Invalid prompt selected.');
+                }
+
+                if ($prompt->staff_only && !$user->isStaff) {
+                    throw new \Exception('This prompt may only be submitted to by staff members.');
                 }
             } else {
                 $prompt = null;
@@ -95,7 +90,7 @@ class SubmissionManager extends Service {
 
             // Attach currencies.
             if (isset($data['currency_id'])) {
-                foreach ($data['currency_id'] as $holderKey=>$currencyIds) {
+                foreach ($data['currency_id'] as $holderKey=> $currencyIds) {
                     $holder = explode('-', $holderKey);
                     $holderType = $holder[0];
                     $holderId = $holder[1];
@@ -103,7 +98,7 @@ class SubmissionManager extends Service {
                     $holder = User::find($holderId);
 
                     $currencyManager = new CurrencyManager;
-                    foreach ($currencyIds as $key=>$currencyId) {
+                    foreach ($currencyIds as $key=> $currencyId) {
                         $currency = Currency::find($currencyId);
                         if (!$currency) {
                             throw new \Exception('Invalid currency selected.');
@@ -127,7 +122,7 @@ class SubmissionManager extends Service {
                     addAsset($promptRewards, $reward->reward, $reward->quantity);
                 }
             }
-            $promptRewards = mergeAssetsArrays($promptRewards, $this->processRewards($data, false));
+            $promptRewards = mergeAssetsArrays($promptRewards, $this->processRewards($data, false, null, $isClaim));
             $submission = Submission::create([
                 'user_id'  => $user->id,
                 'url'      => $data['url'] ?? null,
@@ -152,7 +147,7 @@ class SubmissionManager extends Service {
             } elseif (isset($data['character_rewardable_id'])) {
                 $data['character_rewardable_id'] = array_map([$this, 'innerNull'], $data['character_rewardable_id']);
                 foreach ($data['character_rewardable_id'] as $ckey => $c) {
-                    foreach ($c as $key => $id) {
+                    foreach ($c as $key                            => $id) {
                         switch ($data['character_rewardable_type'][$ckey][$key]) {
                             case 'Currency': $currencyIds[] = $id;
                                 break;
@@ -237,7 +232,7 @@ class SubmissionManager extends Service {
             // And currencies
             $currencyManager = new CurrencyManager;
             if (isset($addonData['currencies']) && $addonData['currencies']) {
-                foreach ($addonData['currencies'] as $currencyId=>$quantity) {
+                foreach ($addonData['currencies'] as $currencyId=> $quantity) {
                     $currency = Currency::find($currencyId);
                     if (!$currency) {
                         throw new \Exception('Cannot return an invalid currency. ('.$currencyId.')');
@@ -270,6 +265,10 @@ class SubmissionManager extends Service {
                 'staff_name'    => $user->name,
                 'submission_id' => $submission->id,
             ]);
+
+            if (!$this->logAdminAction($user, 'Submission Rejected', 'Rejected submission <a href="'.$submission->viewurl.'">#'.$submission->id.'</a>')) {
+                throw new \Exception('Failed to log admin action.');
+            }
 
             return $this->commitReturn($submission);
         } catch (\Exception $e) {
@@ -318,7 +317,7 @@ class SubmissionManager extends Service {
                 // Workaround for user not being unset after inventory shuffling, preventing proper staff ID assignment
                 $staff = $user;
 
-                foreach ($stacks as $stackId=>$quantity) {
+                foreach ($stacks as $stackId=> $quantity) {
                     $stack = UserItem::find($stackId);
                     $user = User::find($submission->user_id);
                     if (!$inventoryManager->debitStack($user, $submission->prompt_id ? 'Prompt Approved' : 'Claim Approved', ['data' => 'Item used in submission (<a href="'.$submission->viewUrl.'">#'.$submission->id.'</a>)'], $stack, $quantity)) {
@@ -333,7 +332,7 @@ class SubmissionManager extends Service {
             // Log currency removal, etc.
             $currencyManager = new CurrencyManager;
             if (isset($addonData['currencies']) && $addonData['currencies']) {
-                foreach ($addonData['currencies'] as $currencyId=>$quantity) {
+                foreach ($addonData['currencies'] as $currencyId=> $quantity) {
                     $currency = Currency::find($currencyId);
                     if (!$currencyManager->createLog(
                         $submission->user_id,
@@ -390,7 +389,7 @@ class SubmissionManager extends Service {
             } elseif (isset($data['character_rewardable_id'])) {
                 $data['character_rewardable_id'] = array_map([$this, 'innerNull'], $data['character_rewardable_id']);
                 foreach ($data['character_rewardable_id'] as $ckey => $c) {
-                    foreach ($c as $key => $id) {
+                    foreach ($c as $key                            => $id) {
                         switch ($data['character_rewardable_type'][$ckey][$key]) {
                             case 'Currency': $currencyIds[] = $id;
                                 break;
@@ -462,6 +461,10 @@ class SubmissionManager extends Service {
                 'submission_id' => $submission->id,
             ]);
 
+            if (!$this->logAdminAction($user, 'Submission Approved', 'Approved submission <a href="'.$submission->viewurl.'">#'.$submission->id.'</a>')) {
+                throw new \Exception('Failed to log admin action.');
+            }
+
             return $this->commitReturn($submission);
         } catch (\Exception $e) {
             $this->setError('error', $e->getMessage());
@@ -469,7 +472,22 @@ class SubmissionManager extends Service {
 
         return $this->rollbackReturn(false);
     }
+    /*
+    |--------------------------------------------------------------------------
+    | Submission Manager
+    |--------------------------------------------------------------------------
+    |
+    | Handles creation and modification of submission data.
+    |
+    */
 
+    /**
+     * Helper function to remove all empty/zero/falsey values.
+     *
+     * @param array $value
+     *
+     * @return array
+     */
     private function innerNull($value) {
         return array_values(array_filter($value));
     }
@@ -480,10 +498,11 @@ class SubmissionManager extends Service {
      * @param array $data
      * @param bool  $isCharacter
      * @param bool  $isStaff
+     * @param bool  $isClaim
      *
      * @return array
      */
-    private function processRewards($data, $isCharacter, $isStaff = false) {
+    private function processRewards($data, $isCharacter, $isStaff = false, $isClaim = false) {
         if ($isCharacter) {
             $assets = createAssetsArray(true);
 
@@ -535,7 +554,7 @@ class SubmissionManager extends Service {
                             $reward = LootTable::find($data['rewardable_id'][$key]);
                             break;
                         case 'Raffle':
-                            if (!$isStaff) {
+                            if (!$isStaff && !$isClaim) {
                                 break;
                             }
                             $reward = Raffle::find($data['rewardable_id'][$key]);

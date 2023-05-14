@@ -30,6 +30,7 @@ class User extends Authenticatable implements MustVerifyEmail {
      */
     protected $fillable = [
         'name', 'alias', 'rank_id', 'email', 'password', 'is_news_unread', 'is_banned', 'has_alias', 'avatar', 'is_sales_unread', 'birthday',
+        'is_deactivated', 'deactivater_id',
     ];
 
     /**
@@ -91,6 +92,13 @@ class User extends Authenticatable implements MustVerifyEmail {
      */
     public function profile() {
         return $this->hasOne('App\Models\User\UserProfile');
+    }
+
+    /**
+     * Gets the account that deactivated this account.
+     */
+    public function deactivater() {
+        return $this->belongsTo('App\Models\User\User', 'deactivater_id');
     }
 
     /**
@@ -170,6 +178,13 @@ class User extends Authenticatable implements MustVerifyEmail {
         return $this->hasMany('App\Models\Character\CharacterBookmark')->where('user_id', $this->id);
     }
 
+    /**
+     * Gets all of a user's liked / disliked comments.
+     */
+    public function commentLikes() {
+        return $this->hasMany('App\Models\CommentLike');
+    }
+
     /**********************************************************************************************
 
         SCOPES
@@ -184,7 +199,18 @@ class User extends Authenticatable implements MustVerifyEmail {
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeVisible($query) {
-        return $query->where('is_banned', 0);
+        return $query->where('is_banned', 0)->where('is_deactivated', 0);
+    }
+
+    /**
+     * Scope a query to only show deactivated accounts.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeDisabled($query) {
+        return $query->where('is_deactivated', 1);
     }
 
     /**********************************************************************************************
@@ -208,6 +234,10 @@ class User extends Authenticatable implements MustVerifyEmail {
      * @return bool
      */
     public function getHasAliasAttribute() {
+        if (!config('lorekeeper.settings.require_alias')) {
+            return true;
+        }
+
         return $this->attributes['has_alias'];
     }
 
@@ -273,7 +303,7 @@ class User extends Authenticatable implements MustVerifyEmail {
      * @return string
      */
     public function getDisplayNameAttribute() {
-        return ($this->is_banned ? '<strike>' : '').'<a href="'.$this->url.'" class="display-user" '.($this->rank->color ? 'style="color: #'.$this->rank->color.';"' : '').'>'.$this->name.'</a>'.($this->is_banned ? '</strike>' : '');
+        return ($this->is_banned ? '<strike>' : '').'<a href="'.$this->url.'" class="display-user" style="'.($this->rank->color ? 'color: #'.$this->rank->color.';' : '').($this->is_deactivated ? 'opacity: 0.5;' : '').'"><i class="'.($this->rank->icon ? $this->rank->icon : 'fas fa-user').' mr-1" style="opacity: 50%;"></i>'.$this->name.'</a>'.($this->is_banned ? '</strike>' : '');
     }
 
     /**
@@ -282,7 +312,7 @@ class User extends Authenticatable implements MustVerifyEmail {
      * @return string
      */
     public function getCommentDisplayNameAttribute() {
-        return '<small><a href="'.$this->url.'" class="btn btn-primary btn-sm"'.($this->rank->color ? 'style="background-color: #'.$this->rank->color.'!important;color:#000!important;"' : '').'><i class="'.($this->rank->icon ? $this->rank->icon : 'fas fa-user').' mr-1" style="opacity: 50%;"></i>'.$this->name.'</a></small>';
+        return ($this->is_banned ? '<strike>' : '').'<small><a href="'.$this->url.'" class="btn btn-primary btn-sm"'.($this->rank->color ? 'style="background-color: #'.$this->rank->color.'!important;color:#000!important;' : '').($this->is_deactivated ? 'opacity: 0.5;' : '').'"><i class="'.($this->rank->icon ? $this->rank->icon : 'fas fa-user').' mr-1" style="opacity: 50%;"></i>'.$this->name.'</a></small>'.($this->is_banned ? '</strike>' : '');
     }
 
     /**
@@ -291,6 +321,9 @@ class User extends Authenticatable implements MustVerifyEmail {
      * @return string
      */
     public function getDisplayAliasAttribute() {
+        if (!config('lorekeeper.settings.require_alias') && !$this->attributes['has_alias']) {
+            return '(No Alias)';
+        }
         if (!$this->hasAlias) {
             return '(Unverified)';
         }
@@ -327,7 +360,7 @@ class User extends Authenticatable implements MustVerifyEmail {
             return 'N/A';
         }
 
-        if ($bday->format('d M') == carbon::now()->format('d M')) {
+        if ($bday->format('d M') == Carbon::now()->format('d M')) {
             $icon = '<i class="fas fa-birthday-cake ml-1"></i>';
         }
         //
@@ -504,7 +537,7 @@ class User extends Authenticatable implements MustVerifyEmail {
      * Checks if there are characters credited to the user's alias and updates ownership to their account accordingly.
      */
     public function updateCharacters() {
-        if (!$this->hasAlias) {
+        if (!$this->attributes['has_alias']) {
             return;
         }
 
@@ -514,11 +547,11 @@ class User extends Authenticatable implements MustVerifyEmail {
         $count = 0;
         foreach ($this->aliases as $alias) {
             // Find all urls from the same site as this alias
-            foreach ($urlCharacters as $key=>$character) {
+            foreach ($urlCharacters as $key=> $character) {
                 preg_match_all(Config::get('lorekeeper.sites.'.$alias->site.'.regex'), $character, $matches[$key]);
             }
             // Find all alias matches within those, and update the character's owner
-            foreach ($matches as $key=>$match) {
+            foreach ($matches as $key=> $match) {
                 if ($match[1] != [] && strtolower($match[1][0]) == strtolower($alias->alias)) {
                     Character::find($key)->update(['owner_url' => null, 'user_id' => $this->id]);
                     $count += 1;
@@ -537,7 +570,7 @@ class User extends Authenticatable implements MustVerifyEmail {
      * Checks if there are art or design credits credited to the user's alias and credits them to their account accordingly.
      */
     public function updateArtDesignCredits() {
-        if (!$this->hasAlias) {
+        if (!$this->attributes['has_alias']) {
             return;
         }
 
@@ -546,11 +579,11 @@ class User extends Authenticatable implements MustVerifyEmail {
         $matches = [];
         foreach ($this->aliases as $alias) {
             // Find all urls from the same site as this alias
-            foreach ($urlCreators as $key=>$creator) {
+            foreach ($urlCreators as $key=> $creator) {
                 preg_match_all(Config::get('lorekeeper.sites.'.$alias->site.'.regex'), $creator, $matches[$key]);
             }
             // Find all alias matches within those, and update the relevant CharacterImageCreator
-            foreach ($matches as $key=>$match) {
+            foreach ($matches as $key=> $match) {
                 if ($match[1] != [] && strtolower($match[1][0]) == strtolower($alias->alias)) {
                     CharacterImageCreator::find($key)->update(['url' => null, 'user_id' => $this->id]);
                 }

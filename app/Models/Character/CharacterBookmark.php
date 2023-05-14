@@ -20,7 +20,6 @@ class CharacterBookmark extends Model {
      * @var string
      */
     protected $table = 'character_bookmarks';
-
     /**
      * Validation rules for creation.
      *
