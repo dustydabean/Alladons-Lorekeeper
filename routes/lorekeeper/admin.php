@@ -125,6 +125,16 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('subtypes/delete/{id}', 'SpeciesController@postDeleteSubtype');
     Route::post('subtypes/sort', 'SpeciesController@postSortSubtypes');
 
+    Route::get('transformations', 'SpeciesController@getTransformationIndex');
+    Route::get('transformations/create', 'SpeciesController@getCreateTransformation');
+    Route::get('transformations/edit/{id}', 'SpeciesController@getEditTransformation');
+    Route::get('transformations/delete/{id}', 'SpeciesController@getDeleteTransformation');
+    Route::post('transformations/create', 'SpeciesController@postCreateEditTransformation');
+    Route::post('transformations/edit/{id?}', 'SpeciesController@postCreateEditTransformation');
+    Route::post('transformations/delete/{id}', 'SpeciesController@postDeleteTransformation');
+    Route::post('transformations/sort', 'SpeciesController@postSortTransformations');
+
+
     # ITEMS
     Route::get('item-categories', 'ItemController@getIndex');
     Route::get('item-categories/create', 'ItemController@getCreateItemCategory');
@@ -307,6 +317,7 @@ Route::group(['prefix' => 'masterlist', 'namespace' => 'Characters', 'middleware
     Route::post('create-myo', 'CharacterController@postCreateMyo');
 
     Route::get('check-subtype', 'CharacterController@getCreateCharacterMyoSubtype');
+    Route::get('check-transformation', 'CharacterController@getCreateCharacterMyoTransformation');
 });
 Route::group(['prefix' => 'character', 'namespace' => 'Characters', 'middleware' => 'power:edit_inventories'], function() {
     Route::post('{slug}/grant', 'GrantController@postCharacterCurrency');
@@ -317,11 +328,12 @@ Route::group(['prefix' => 'character', 'namespace' => 'Characters', 'middleware'
     # IMAGES
     Route::get('{slug}/image', 'CharacterImageController@getNewImage');
     Route::post('{slug}/image', 'CharacterImageController@postNewImage');
-    Route::get('image/subtype', 'CharacterImageController@getNewImageSubtype');
+    Route::get('image/transformation', 'CharacterImageController@getNewImageTransformation');
 
     Route::get('image/{id}/traits', 'CharacterImageController@getEditImageFeatures');
     Route::post('image/{id}/traits', 'CharacterImageController@postEditImageFeatures');
     Route::get('image/traits/subtype', 'CharacterImageController@getEditImageSubtype');
+    Route::get('image/traits/transformation', 'CharacterImageController@getEditImageTransformation');
 
     Route::get('image/{id}/notes', 'CharacterImageController@getEditImageNotes');
     Route::post('image/{id}/notes', 'CharacterImageController@postEditImageNotes');

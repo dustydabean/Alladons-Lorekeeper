@@ -27,6 +27,16 @@
                 @endif
                 <hr/>
                 <div class="masterlist-search-field">
+                        {!! Form::label('transformation_id', 'Transformation: ') !!}
+                        {!! Form::select('transformation_id', $transformations, Request::get('transformation_id'), ['class' => 'form-control']) !!}
+                    </div>
+                    <div class="masterlist-search-field">
+                        {!! Form::label('has_transformation', 'Has a Transformation: ') !!}
+                        <br>
+                        {!! Form::select('has_transformation', ['0' => '0: No transformation.', '1' => '1: Has a transformation.'], ['class' => 'form-control']) !!}
+                    </div>
+                    <hr>
+                <div class="masterlist-search-field">
                     {!! Form::label('owner', 'Owner Username: ') !!}
                     {!! Form::select('owner', $userOptions, Request::get('owner'), ['class'=> 'form-control mr-2 userselectize', 'style' => 'width: 250px', 'placeholder' => 'Select a User']) !!}
                 </div>

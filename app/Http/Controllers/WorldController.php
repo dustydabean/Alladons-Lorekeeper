@@ -9,6 +9,7 @@ use App\Models\Currency\Currency;
 use App\Models\Rarity;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
+use App\Models\Species\Transformation;
 use App\Models\Item\ItemCategory;
 use App\Models\Item\Item;
 use App\Models\Feature\FeatureCategory;
@@ -105,6 +106,22 @@ class WorldController extends Controller
         if($name) $query->where('name', 'LIKE', '%'.$name.'%');
         return view('world.subtypes', [
             'subtypes' => $query->with('species')->orderBy('sort', 'DESC')->paginate(20)->appends($request->query()),
+        ]);
+    }
+
+    /**
+     * Shows the Transformations page.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getTransformations(Request $request)
+    {
+        $query = Transformation::query();
+        $name = $request->get('name');
+        if($name) $query->where('name', 'LIKE', '%'.$name.'%');
+        return view('world.transformations', [
+            'transformations' => $query->orderBy('sort', 'DESC')->paginate(20)->appends($request->query()),
         ]);
     }
 

@@ -11,6 +11,7 @@ use Settings;
 use App\Models\User\User;
 use App\Models\Character\Character;
 use App\Models\Species\Species;
+use App\Models\Species\Transformation;
 use App\Models\Rarity;
 use App\Models\Feature\Feature;
 use App\Models\Character\CharacterProfile;
@@ -159,9 +160,29 @@ class CharacterController extends Controller
      */
     public function getCharacterImages($slug)
     {
+        $character = $this->character;
+        $query = $character->images->whereNull('transformation_id');
         return view('character.images', [
             'user' => Auth::check() ? Auth::user() : null,
             'character' => $this->character,
+            'regular_images' => $query,
+        ]);
+    }
+
+    /**
+     * Shows a character's transformation images.
+     *
+     * @param  string  $slug
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCharacterTransformationImages($slug)
+    {
+        $character = $this->character;
+        $query = $character->images->whereNotNull('transformation_id');
+        return view('character.transformation_images', [
+            'user' => Auth::check() ? Auth::user() : null,
+            'character' => $this->character,
+            'form_images' => $query,
         ]);
     }
 

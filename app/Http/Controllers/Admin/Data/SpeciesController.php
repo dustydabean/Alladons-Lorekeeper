@@ -8,6 +8,7 @@ use Auth;
 
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
+use App\Models\Species\Transformation;
 use App\Models\Character\Sublist;
 
 use App\Services\SpeciesService;
@@ -262,4 +263,123 @@ class SpeciesController extends Controller
         }
         return redirect()->back();
     }
+
+    /**
+ * Shows the transformation index.
+ *
+ * @return \Illuminate\Contracts\Support\Renderable
+ */
+public function getTransformationIndex()
+{
+    return view('admin.specieses.transformations', [
+        'transformations' => Transformation::orderBy('sort', 'DESC')->get()
+    ]);
+}
+
+/**
+ * Shows the create transformation page.
+ *
+ * @return \Illuminate\Contracts\Support\Renderable
+ */
+public function getCreateTransformation()
+{
+    return view('admin.specieses.create_edit_transformation', [
+        'transformation' => new Transformation,
+        'specieses' => Species::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray()
+    ]);
+}
+
+/**
+ * Shows the edit transformation page.
+ *
+ * @param  int  $id
+ * @return \Illuminate\Contracts\Support\Renderable
+ */
+public function getEditTransformation($id)
+{
+    $transformation = Transformation::find($id);
+    if(!$transformation) abort(404);
+    return view('admin.specieses.create_edit_transformation', [
+        'transformation' => $transformation,
+        'specieses' => Species::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray()
+    ]);
+}
+
+/**
+ * Creates or edits a transformation.
+ *
+ * @param  \Illuminate\Http\Request     $request
+ * @param  App\Services\SpeciesService  $service
+ * @param  int|null                     $id
+ * @return \Illuminate\Http\RedirectResponse
+ */
+public function postCreateEditTransformation(Request $request, SpeciesService $service, $id = null)
+{
+    $id ? $request->validate(Transformation::$updateRules) : $request->validate(Transformation::$createRules);
+    $data = $request->only([
+        'species_id', 'name', 'description', 'image', 'remove_image'
+    ]);
+    if($id && $service->updateTransformation(Transformation::find($id), $data, Auth::user())) {
+        flash('Transformation updated successfully.')->success();
+    }
+    else if (!$id && $transformation = $service->createTransformation($data, Auth::user())) {
+        flash('Transformation created successfully.')->success();
+        return redirect()->to('admin/data/transformations/edit/'.$transformation->id);
+    }
+    else {
+        foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+    }
+    return redirect()->back();
+}
+
+/**
+ * Gets the transformation deletion modal.
+ *
+ * @param  int  $id
+ * @return \Illuminate\Contracts\Support\Renderable
+ */
+public function getDeleteTransformation($id)
+{
+    $transformation = Transformation::find($id);
+    return view('admin.specieses._delete_transformation', [
+        'transformation' => $transformation,
+    ]);
+}
+
+/**
+ * Deletes a transformation.
+ *
+ * @param  \Illuminate\Http\Request     $request
+ * @param  App\Services\SpeciesService  $service
+ * @param  int                          $id
+ * @return \Illuminate\Http\RedirectResponse
+ */
+public function postDeleteTransformation(Request $request, SpeciesService $service, $id)
+{
+    if($id && $service->deleteTransformation(Transformation::find($id))) {
+        flash('Transformation deleted successfully.')->success();
+    }
+    else {
+        foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+    }
+    return redirect()->to('admin/data/transformations');
+}
+
+/**
+ * Sorts transformations.
+ *
+ * @param  \Illuminate\Http\Request     $request
+ * @param  App\Services\SpeciesService  $service
+ * @return \Illuminate\Http\RedirectResponse
+ */
+public function postSortTransformations(Request $request, SpeciesService $service)
+{
+    if($service->sortTransformations($request->get('sort'))) {
+        flash('Transformation order updated successfully.')->success();
+    }
+    else {
+        foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+    }
+    return redirect()->back();
+}
 }

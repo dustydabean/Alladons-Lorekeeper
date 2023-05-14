@@ -8,9 +8,11 @@
 {!! breadcrumbs([($character->category->masterlist_sub_id ? $character->category->sublist->name.' Masterlist' : 'Character masterlist') => ($character->category->masterlist_sub_id ? 'sublist/'.$character->category->sublist->key : 'masterlist' ), $character->fullName => $character->url, 'Images' => $character->url . '/images']) !!}
 
 @include('character._header', ['character' => $character])
+<h3>
+    Transformations</h3>
 
 <div class="tab-content">
-    @foreach($regular_images as $image)
+    @foreach($form_images as $image)
         <div class="tab-pane fade {{ $image->id == $character->character_image_id ? 'show active' : '' }}" id="image-{{ $image->id }}">
             <div class="row mb-3">
                 <div class="col-md-7">
@@ -37,7 +39,7 @@
 </h3>
 
 <ul class="row nav image-nav mb-2" @if($canManage) id="sortable" @endif>
-    @foreach($regular_images as $image)
+    @foreach($form_images as $image)
         <li class="col-md-3 col-6 text-center nav-item sort-item" data-id="{{ $image->id }}">
             <a id="thumbnail-{{ $image->id }}" data-toggle="tab" href="#image-{{ $image->id }}" role="tab" class="{{ $image->id == $character->character_image_id ? 'active' : '' }}"><img src="{{ $image->thumbnailUrl }}" class="img-thumbnail" alt="Thumbnail for {{ $image->character->fullName }}"/></a>
         </li>

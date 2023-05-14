@@ -14,6 +14,7 @@ use App\Models\Character\Character;
 use App\Models\Character\CharacterDesignUpdate;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
+use App\Models\Species\Transformation;
 use App\Models\Rarity;
 use App\Models\Feature\Feature;
 use App\Models\Item\ItemCategory;
@@ -198,6 +199,7 @@ class DesignController extends Controller
             'specieses' => ['0' => 'Select Species'] + Species::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'subtypes' => ['0' => 'No Subtype'] + Subtype::where('species_id','=',$r->species_id)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'rarities' => ['0' => 'Select Rarity'] + Rarity::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'transformations' => ['0' => 'Select Transformation'] + Transformation::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'features' => Feature::orderBy('name')->pluck('name', 'id')->toArray()
         ]);
     }
@@ -217,6 +219,21 @@ class DesignController extends Controller
           'subtype' => $id
       ]);
     }
+
+    /**
+     * Shows the edit image transformation portion of the modal
+     *
+     * @param  Request  $request
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getFeaturesTransformation(Request $request) {
+
+        $id = $request->input('id');
+        return view('character.design._features_transformation', [
+            'transformations' => ['0' => 'Select Transformation'] + Transformation::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'transformation' => $id
+        ]);
+      }
 
     /**
      * Edits a design update request's features section.

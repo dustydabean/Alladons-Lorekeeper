@@ -46,7 +46,7 @@ return [
     ],
 
     // Group Traits By Category - Uri
-    'traits_by_category' => 0,
+    'traits_by_category' => 1,
 
     // Character Reward Expansion - Uri
     'character_reward_expansion' => [

@@ -28,6 +28,18 @@
     @include('character._image_info', ['image' => $character->image])
 </div>
 
+@if($character->image->has_transformation)
+<div class="card-deck mb-4 profile-assets" style="clear:both;">
+    <div class="card profile-currencies profile-assets-card">
+    <div class="card-body text-center">
+    <div class="text-center">
+This character has a <a href="/world/transformations">transformation!</a>
+<br>
+<a href="/character/{{ $character->slug }}/transformation-images">View images...</a>
+</div>
+</div></div></div>
+@endif
+
 {{-- Info --}}
 <div class="card character-bio">
     <div class="card-header">

@@ -88,6 +88,10 @@
         {!! Form::label('is_visible', 'Is Visible', ['class' => 'form-check-label ml-3']) !!} {!! add_help('Turn this off to hide the '.($isMyo ? 'MYO slot' : 'character').'. Only mods with the Manage Masterlist power (that\'s you!) can view it - the owner will also not be able to see the '.($isMyo ? 'MYO slot' : 'character').'\'s page.') !!}
     </div>
 
+    <div class="form-group">
+    {!! Form::select('has_transformation', ['0' => '0: No transformation.', '1' => '1: Enable the transformation modules to display on the profile.'], ['class' => 'form-control']) !!}
+    </div>
+
     <h3>Transfer Information</h3>
 
     <div class="alert alert-info">
@@ -218,6 +222,11 @@
     <div class="form-group" id="subtypes">
         {!! Form::label('Subtype (Optional)') !!} @if($isMyo) {!! add_help('This will lock the slot into a particular subtype. Leave it blank if you would like to give the user a choice, or not select a subtype. The subtype must match the species selected above, and if no species is specified, the subtype will not be applied.') !!} @endif
         {!! Form::select('subtype_id', $subtypes, old('subtype_id'), ['class' => 'form-control disabled', 'id' => 'subtype']) !!}
+    </div>
+
+    <div class="form-group" id="transformations">
+        {!! Form::label('Transformation (Optional)') !!} @if($isMyo) {!! add_help('This will lock the slot into a particular transformation. Leave it blank if you would like to give the user a choice, or not select a transformation.') !!} @endif
+        {!! Form::select('transformation_id', $transformations, old('transformation_id'), ['class' => 'form-control disabled', 'id' => 'transformation']) !!}
     </div>
 
     <div class="form-group">

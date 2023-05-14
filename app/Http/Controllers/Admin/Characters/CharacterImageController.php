@@ -13,6 +13,7 @@ use App\Models\Rarity;
 use App\Models\User\User;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
+use App\Models\Species\Transformation;
 use App\Models\Feature\Feature;
 
 use App\Services\CharacterManager;
@@ -46,6 +47,7 @@ class CharacterImageController extends Controller
             'rarities' => ['0' => 'Select Rarity'] + Rarity::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'specieses' => ['0' => 'Select Species'] + Species::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'subtypes' => ['0' => 'Select Subtype'] + Subtype::where('species_id','=',$this->character->image->species_id)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'transformations' => ['0' => 'Select Transformation'] + Transformation::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'users' => User::query()->orderBy('name')->pluck('name', 'id')->toArray(),
             'features' => Feature::orderBy('name')->pluck('name', 'id')->toArray(),
             'isMyo' => false
@@ -68,6 +70,20 @@ class CharacterImageController extends Controller
     }
 
     /**
+     * Shows the edit image transformation portion of the modal
+     *
+     * @param  Request  $request
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getNewImageTransformation(Request $request) {
+        
+        $id = $request->input('id');
+        return view('character.admin._upload_image_transformation', [
+            'transformations' => ['0' => 'Select Transformation'] + Transformation::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'transformation' => $id
+        ]);
+      }
+    /**
      * Creates a new image for a character.
      *
      * @param  \Illuminate\Http\Request       $request
@@ -78,7 +94,7 @@ class CharacterImageController extends Controller
     public function postNewImage(Request $request, CharacterManager $service, $slug)
     {
         $request->validate(CharacterImage::$createRules);
-        $data = $request->only(['image', 'thumbnail', 'x0', 'x1', 'y0', 'y1', 'use_cropper', 'artist_url', 'artist_id', 'designer_url', 'designer_id', 'species_id', 'subtype_id', 'rarity_id', 'feature_id', 'feature_data', 'is_valid', 'is_visible']);
+        $data = $request->only(['image', 'thumbnail', 'x0', 'x1', 'y0', 'y1', 'use_cropper', 'artist_url', 'artist_id', 'designer_url', 'designer_id', 'species_id', 'subtype_id', 'transformation_id', 'rarity_id', 'feature_id', 'feature_data', 'is_valid', 'is_visible', 'has_transformation']);
         $this->character = Character::where('slug', $slug)->first();
         if(!$this->character) abort(404);
         if($service->createImage($data, $this->character, Auth::user())) {
@@ -106,6 +122,7 @@ class CharacterImageController extends Controller
             'rarities' => ['0' => 'Select Rarity'] + Rarity::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'specieses' => ['0' => 'Select Species'] + Species::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'subtypes' => ['0' => 'Select Subtype'] + Subtype::where('species_id','=',$image->species_id)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'transformations' => ['0' => 'Select Transformation'] + Transformation::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'features' => Feature::orderBy('name')->pluck('name', 'id')->toArray()
         ]);
     }
@@ -120,7 +137,7 @@ class CharacterImageController extends Controller
      */
     public function postEditImageFeatures(Request $request, CharacterManager $service, $id)
     {
-        $data = $request->only(['species_id', 'subtype_id', 'rarity_id', 'feature_id', 'feature_data']);
+        $data = $request->only(['species_id', 'subtype_id', 'transformation_id', 'rarity_id', 'feature_id', 'feature_data', 'has_transformation']);
         $image = CharacterImage::find($id);
         if(!$image) abort(404);
         if($service->updateImageFeatures($data, $image, Auth::user())) {
@@ -146,6 +163,21 @@ class CharacterImageController extends Controller
           'subtypes' => ['0' => 'Select Subtype'] + Subtype::where('species_id','=',$species)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
       ]);
     }
+
+    /**
+     * Shows the edit image transformation portion of the modal
+     *
+     * @param  Request  $request
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getEditImageTransformation(Request $request) {
+       
+        $id = $request->input('id');
+        return view('character.admin._edit_features_transformation', [
+            'image' => CharacterImage::find($id),
+            'transformations' => ['0' => 'Select Transformation'] + Transformation::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+        ]);
+      }
 
     /**
      * Shows the edit image notes modal.
