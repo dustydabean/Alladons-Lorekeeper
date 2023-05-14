@@ -116,10 +116,6 @@
         {!! Form::label('Subtype (Optional)') !!}
         {!! Form::select('subtype_id', $subtypes, old('subtype_id') ?: $character->image->subtype_id, ['class' => 'form-control', 'id' => 'subtype']) !!}
     </div>
-
-    <div class="form-group">
-        {!! Form::select('has_transformation', ['0' => '0: No transformation.', '1' => '1: Enable the transformation modules to display on the profile.'], null, ['class' => 'form-control']) !!}
-        </div>
     
     <div class="form-group" id="transformations">
         {!! Form::label('Transformation (Optional)') !!}

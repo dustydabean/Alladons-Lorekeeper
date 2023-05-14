@@ -136,14 +136,14 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('subtypes/delete/{id}', 'SpeciesController@postDeleteSubtype');
     Route::post('subtypes/sort', 'SpeciesController@postSortSubtypes');
 
-    Route::get('transformations', 'SpeciesController@getTransformationIndex');
-    Route::get('transformations/create', 'SpeciesController@getCreateTransformation');
-    Route::get('transformations/edit/{id}', 'SpeciesController@getEditTransformation');
-    Route::get('transformations/delete/{id}', 'SpeciesController@getDeleteTransformation');
-    Route::post('transformations/create', 'SpeciesController@postCreateEditTransformation');
-    Route::post('transformations/edit/{id?}', 'SpeciesController@postCreateEditTransformation');
-    Route::post('transformations/delete/{id}', 'SpeciesController@postDeleteTransformation');
-    Route::post('transformations/sort', 'SpeciesController@postSortTransformations');
+    Route::get('transformations', 'TransformationController@getTransformationIndex');
+    Route::get('transformations/create', 'TransformationController@getCreateTransformation');
+    Route::get('transformations/edit/{id}', 'TransformationController@getEditTransformation');
+    Route::get('transformations/delete/{id}', 'TransformationController@getDeleteTransformation');
+    Route::post('transformations/create', 'TransformationController@postCreateEditTransformation');
+    Route::post('transformations/edit/{id?}', 'TransformationController@postCreateEditTransformation');
+    Route::post('transformations/delete/{id}', 'TransformationController@postDeleteTransformation');
+    Route::post('transformations/sort', 'TransformationController@postSortTransformations');
 
     // ITEMS
     Route::get('item-categories', 'ItemController@getIndex');

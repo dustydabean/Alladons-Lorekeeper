@@ -40,10 +40,6 @@
         </div>
 
         <div class="form-group">
-            {!! Form::select('has_transformation', ['0' => '0: No transformation.', '1' => '1: Enable the transformation modules to display on the profile.'], null, ['class' => 'form-control']) !!}
-        </div>
-
-        <div class="form-group">
             {!! Form::label('transformation_id', 'Transformation') !!}
             @if($request->character->is_myo_slot && $request->character->image->transformation_id)
                 <div class="alert alert-secondary">{!! $request->character->image->transformation->displayName !!}</div>

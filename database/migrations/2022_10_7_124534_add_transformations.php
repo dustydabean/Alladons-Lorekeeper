@@ -21,12 +21,10 @@ class AddTransformations extends Migration {
 
         Schema::table('character_images', function (Blueprint $table) {
             $table->integer('transformation_id')->unsigned()->nullable()->default(null);
-            $table->boolean('has_transformation')->default(0);
         });
 
         Schema::table('design_updates', function (Blueprint $table) {
             $table->integer('transformation_id')->unsigned()->nullable()->default(null);
-            $table->boolean('has_transformation')->default(0);
         });
     }
 
@@ -37,11 +35,9 @@ class AddTransformations extends Migration {
         //
         Schema::table('character_images', function (Blueprint $table) {
             $table->dropColumn('transformation_id');
-            $table->dropColumn('has_transformation');
         });
         Schema::table('design_updates', function (Blueprint $table) {
             $table->dropColumn('transformation_id');
-            $table->dropColumn('has_transformation');
         });
         Schema::dropIfExists('character_transformations');
     }

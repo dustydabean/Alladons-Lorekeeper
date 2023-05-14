@@ -218,7 +218,7 @@ class BrowseController extends Controller {
             $imageQuery->where('transformation_id', $request->get('transformation_id'));
         }
         if ($request->get('has_transformation')) {
-            $imageQuery->where('has_transformation', $request->get('has_transformation'));
+            // TODO
         }
         if ($request->get('feature_id')) {
             $featureIds = $request->get('feature_id');
@@ -315,7 +315,7 @@ class BrowseController extends Controller {
             'categories'      => [0 => 'Any Category'] + CharacterCategory::whereNotIn('id', $subCategories)->orderBy('character_categories.sort', 'DESC')->pluck('name', 'id')->toArray(),
             'specieses'       => [0 => 'Any Species'] + Species::whereNotIn('id', $subSpecies)->visible(Auth::check() ? Auth::user() : null)->orderBy('specieses.sort', 'DESC')->pluck('name', 'id')->toArray(),
             'subtypes'        => [0 => 'Any Subtype'] + Subtype::visible(Auth::check() ? Auth::user() : null)->orderBy('subtypes.sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'transformations' => [0 => 'Any Transformation'] + Transformation::orderBy('transformations.sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'transformations' => [0 => 'Any Transformation'] + Transformation::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'rarities'        => [0 => 'Any Rarity'] + Rarity::orderBy('rarities.sort', 'DESC')->pluck('name', 'id')->toArray(),
             'features'        => Feature::getDropdownItems(),
             'sublists'        => Sublist::orderBy('sort', 'DESC')->get(),
@@ -561,7 +561,7 @@ class BrowseController extends Controller {
             $imageQuery->where('transformation_id', $request->get('transformation_id'));
         }
         if ($request->get('has_transformation')) {
-            $imageQuery->where('has_transformation', $request->get('has_transformation'));
+            // TODO
         }
         if ($request->get('feature_id')) {
             $featureIds = $request->get('feature_id');
@@ -640,7 +640,7 @@ class BrowseController extends Controller {
             'categories'      => [0 => 'Any Category'] + $subCategory,
             'specieses'       => [0 => 'Any Species'] + $subSpecies,
             'subtypes'        => [0 => 'Any Subtype'] + Subtype::visible(Auth::check() ? Auth::user() : null)->orderBy('subtypes.sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'transformations' => [0 => 'Any Transformation'] + Transformation::orderBy('transformations.sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'transformations' => [0 => 'Any Transformation'] + Transformation::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'rarities'        => [0 => 'Any Rarity'] + Rarity::orderBy('rarities.sort', 'DESC')->pluck('name', 'id')->toArray(),
             'features'        => Feature::getDropdownItems(),
             'sublist'         => $sublist,

@@ -65,7 +65,6 @@ class DesignUpdateManager extends Service {
                 'rarity_id'     => $character->image->rarity_id,
                 'species_id'    => $character->image->species_id,
                 'subtype_id'    => $character->image->subtype_id,
-                'has_transformation' => $character->image->has_transformation,
                 'transformation_id' => $character->image->transformation_id
             ];
 
@@ -579,7 +578,6 @@ class DesignUpdateManager extends Service {
                 'rarity_id'     => $request->rarity_id,
                 'sort'          => 0,
                 'transformation_id' => ($request->character->is_myo_slot && isset($request->character->image->transformation_id)) ? $request->character->image->transformation_id : $request->transformation_id,
-                'has_transformation' => ($request->character->is_myo_slot && isset($request->character->image->has_transformation)) ? $request->character->image->has_transformation : $request->has_transformation,
             ]);
 
             // Shift the image credits over to the new image

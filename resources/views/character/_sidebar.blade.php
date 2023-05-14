@@ -11,7 +11,7 @@
     <li class="sidebar-section">
         <div class="sidebar-section-header">History</div>
         <div class="sidebar-item"><a href="{{ $character->url . '/images' }}" class="{{ set_active('character/'.$character->slug.'/images') }}">Images</a></div>
-        @if($character->image->has_transformation)<div class="sidebar-item"><a href="{{ $character->url . '/transformation-images' }}" class="{{ set_active('character/'.$character->slug.'/transformation-images') }}">Transformations</a></div>@endif
+        <div class="sidebar-item"><a href="{{ $character->url . '/transformation-images' }}" class="{{ set_active('character/'.$character->slug.'/transformation-images') }}">Transformations</a></div>
         <div class="sidebar-item"><a href="{{ $character->url . '/change-log' }}" class="{{ set_active('character/'.$character->slug.'/change-log') }}">Change Log</a></div>
         <div class="sidebar-item"><a href="{{ $character->url . '/ownership' }}" class="{{ set_active('character/'.$character->slug.'/ownership') }}">Ownership History</a></div>
         <div class="sidebar-item"><a href="{{ $character->url . '/item-logs' }}" class="{{ set_active('character/'.$character->slug.'/item-logs') }}">Item Logs</a></div>

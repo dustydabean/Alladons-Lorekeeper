@@ -22,8 +22,7 @@
                 </div>
                 <div class="masterlist-search-field">
                     {!! Form::label('has_transformation', 'Has a Transformation: ') !!}
-                    <br>
-                    {!! Form::select('has_transformation', ['0' => '0: No transformation.', '1' => '1: Has a transformation.'], ['class' => 'form-control']) !!}
+                    {!! Form::select('has_transformation', ['0' => 'No transformation.', '1' => 'Has a transformation.'], null, ['class' => 'form-control']) !!}
                 </div>
                 <hr>
                 <div class="masterlist-search-field">
