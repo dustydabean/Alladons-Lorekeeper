@@ -119,7 +119,7 @@
     
     <div class="form-group" id="transformations">
         {!! Form::label('Transformation (Optional)') !!}
-        {!! Form::select('transformation_id', $transformations, old('transformation_id') ? : $character->image->transformation_id, ['class' => 'form-control', 'id' => 'transformation']) !!}
+        {!! Form::select('transformation_id', $transformations, null, ['class' => 'form-control', 'id' => 'transformation']) !!}
     </div>
 
     <div class="form-group">

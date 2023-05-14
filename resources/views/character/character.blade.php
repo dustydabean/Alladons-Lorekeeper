@@ -20,8 +20,23 @@
 
     @include('character._header', ['character' => $character])
 
+    <div class="card-header mb-2">
+        <ul class="nav nav-tabs card-header-tabs">
+            @foreach($character->images()->where('is_valid', 1)->get() as $image)
+                <li class="nav-item">
+                    <a class="nav-link form-data-button {{$image->id == $character->image->id ? 'active' : ''}}" data-toggle="tab" role="tab" data-id="{{ $image->id }}">
+                        {{ $image->transformation_id ? $image->transformation->name : 'Main' }}
+                    </a>
+                </li>
+            @endforeach
+            <li>
+                <h3>{!! add_help('Click on a transformation to view the image. If you don\'t see the transformation you\'re looking for, it may not have been uploaded yet.') !!}</h3>
+            </li>
+        </ul>
+    </div>
+
     {{-- Main Image --}}
-    <div class="row mb-3">
+    <div class="row mb-3" id="main-tab">
         <div class="col-md-7">
             <div class="text-center">
                 <a href="{{ $character->image->canViewFull(Auth::check() ? Auth::user() : null) && file_exists(public_path($character->image->imageDirectory . '/' . $character->image->fullsizeFileName)) ? $character->image->fullsizeUrl : $character->image->imageUrl }}"
@@ -34,22 +49,8 @@
                 <div class="text-right">You are viewing the full-size image. <a href="{{ $character->image->imageUrl }}">View watermarked image</a>?</div>
             @endif
         </div>
-        @include('character._image_info', ['image' => $character->image])
+        @include('character._image_info', ['image' => $image])
     </div>
-
-    @if($character->image->has_transformation)
-        <div class="card-deck mb-4 profile-assets" style="clear:both;">
-            <div class="card profile-currencies profile-assets-card">
-                <div class="card-body text-center">
-                    <div class="text-center">
-                        This character has a <a href="/world/transformations">transformation!</a>
-                        <br>
-                        <a href="/character/{{ $character->slug }}/transformation-images">View images...</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    @endif
 
     {{-- Info --}}
     <div class="card character-bio">
@@ -98,5 +99,6 @@
 
 @section('scripts')
     @parent
+    @include('character._transformation_js')
     @include('character._image_js', ['character' => $character])
 @endsection
