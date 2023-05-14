@@ -13,8 +13,7 @@ class AddTransformations extends Migration
      */
     public function up()
     {
-        
-        Schema::create('transformations', function(Blueprint $table) {
+        Schema::create('character_transformations', function(Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
             $table->string('name');
@@ -22,14 +21,16 @@ class AddTransformations extends Migration
             $table->integer('sort')->unsigned()->default(0);
             $table->text('description')->nullable()->default(null);
             $table->text('parsed_description')->nullable()->default(null);
-
         });
+
         Schema::table('character_images', function(Blueprint $table) {
             $table->integer('transformation_id')->unsigned()->nullable()->default(null);
             $table->boolean('has_transformation')->default(0);
         });
+
         Schema::table('design_updates', function(Blueprint $table) {
             $table->integer('transformation_id')->unsigned()->nullable()->default(null);
+            $table->boolean('has_transformation')->default(0);
         });
     }
 
@@ -43,10 +44,12 @@ class AddTransformations extends Migration
         //
         Schema::table('character_images', function(Blueprint $table) {
             $table->dropColumn('transformation_id');
+            $table->dropColumn('has_transformation');
         });
         Schema::table('design_updates', function(Blueprint $table) {
             $table->dropColumn('transformation_id');
+            $table->dropColumn('has_transformation');
         });
-        Schema::dropIfExists('transformations');
+        Schema::dropIfExists('character_transformations');
     }
 }
