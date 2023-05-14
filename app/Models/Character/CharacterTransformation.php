@@ -2,18 +2,16 @@
 
 namespace App\Models\Character;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class CharacterTransformation extends Model
-{
+class CharacterTransformation extends Model {
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'has_image', 'sort', 'description', 'parsed_description'
+        'name', 'has_image', 'sort', 'description', 'parsed_description',
     ];
 
     /**
@@ -29,7 +27,7 @@ class CharacterTransformation extends Model
      * @var array
      */
     public static $createRules = [
-        'name' => 'required|unique:character_transformations|between:3,100',
+        'name'        => 'required|unique:character_transformations|between:3,100',
         'description' => 'nullable',
     ];
 
@@ -39,7 +37,7 @@ class CharacterTransformation extends Model
      * @var array
      */
     public static $updateRules = [
-        'name' => 'required|unique:items|between:3,100',
+        'name'        => 'required|unique:items|between:3,100',
         'description' => 'nullable',
     ];
 }

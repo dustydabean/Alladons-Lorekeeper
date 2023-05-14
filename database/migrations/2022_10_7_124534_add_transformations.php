@@ -1,19 +1,15 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-class AddTransformations extends Migration
-{
+class AddTransformations extends Migration {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
-    {
-        Schema::create('character_transformations', function(Blueprint $table) {
+    public function up() {
+        Schema::create('character_transformations', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
             $table->string('name');
@@ -23,12 +19,12 @@ class AddTransformations extends Migration
             $table->text('parsed_description')->nullable()->default(null);
         });
 
-        Schema::table('character_images', function(Blueprint $table) {
+        Schema::table('character_images', function (Blueprint $table) {
             $table->integer('transformation_id')->unsigned()->nullable()->default(null);
             $table->boolean('has_transformation')->default(0);
         });
 
-        Schema::table('design_updates', function(Blueprint $table) {
+        Schema::table('design_updates', function (Blueprint $table) {
             $table->integer('transformation_id')->unsigned()->nullable()->default(null);
             $table->boolean('has_transformation')->default(0);
         });
@@ -36,17 +32,14 @@ class AddTransformations extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
-    {
+    public function down() {
         //
-        Schema::table('character_images', function(Blueprint $table) {
+        Schema::table('character_images', function (Blueprint $table) {
             $table->dropColumn('transformation_id');
             $table->dropColumn('has_transformation');
         });
-        Schema::table('design_updates', function(Blueprint $table) {
+        Schema::table('design_updates', function (Blueprint $table) {
             $table->dropColumn('transformation_id');
             $table->dropColumn('has_transformation');
         });

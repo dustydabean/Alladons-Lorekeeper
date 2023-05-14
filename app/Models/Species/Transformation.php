@@ -2,18 +2,16 @@
 
 namespace App\Models\Species;
 
-use Config;
 use App\Models\Model;
 
-class Transformation extends Model
-{
+class Transformation extends Model {
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'sort', 'has_image', 'description', 'parsed_description'
+        'name', 'sort', 'has_image', 'description', 'parsed_description',
     ];
 
     /**
@@ -22,37 +20,33 @@ class Transformation extends Model
      * @var string
      */
     protected $table = 'transformations';
-    
-    
+
     /**
      * Validation rules for creation.
      *
      * @var array
      */
     public static $createRules = [
-       
-        'name' => 'required|between:3,100',
+
+        'name'        => 'required|between:3,100',
         'description' => 'nullable',
-        'image' => 'mimes:png',
+        'image'       => 'mimes:png',
     ];
-    
-    
+
     /**
      * Validation rules for updating.
      *
      * @var array
      */
     public static $updateRules = [
-        
-        'name' => 'required|between:3,100',
+
+        'name'        => 'required|between:3,100',
         'description' => 'nullable',
-        'image' => 'mimes:png',
+        'image'       => 'mimes:png',
     ];
-    
-    
 
     /**********************************************************************************************
-    
+
         ACCESSORS
 
     **********************************************************************************************/
@@ -62,18 +56,16 @@ class Transformation extends Model
      *
      * @return string
      */
-    public function getName()
-    {
+    public function getName() {
         return $this->name;
     }
-    
+
     /**
      * Displays the model's name, linked to its encyclopedia page.
      *
      * @return string
      */
-    public function getDisplayNameAttribute()
-    {
+    public function getDisplayNameAttribute() {
         return '<a href="'.$this->url.'" class="display-transformation">'.$this->name.'</a>';
     }
 
@@ -82,8 +74,7 @@ class Transformation extends Model
      *
      * @return string
      */
-    public function getImageDirectoryAttribute()
-    {
+    public function getImageDirectoryAttribute() {
         return 'images/data/transformations';
     }
 
@@ -92,9 +83,8 @@ class Transformation extends Model
      *
      * @return string
      */
-    public function getTransformationImageFileNameAttribute()
-    {
-        return $this->id . '-image.png';
+    public function getTransformationImageFileNameAttribute() {
+        return $this->id.'-image.png';
     }
 
     /**
@@ -102,20 +92,21 @@ class Transformation extends Model
      *
      * @return string
      */
-    public function getTransformationImagePathAttribute()
-    {
+    public function getTransformationImagePathAttribute() {
         return public_path($this->imageDirectory);
     }
-    
+
     /**
      * Gets the URL of the model's image.
      *
      * @return string
      */
-    public function getTransformationImageUrlAttribute()
-    {
-        if (!$this->has_image) return null;
-        return asset($this->imageDirectory . '/' . $this->transformationImageFileName);
+    public function getTransformationImageUrlAttribute() {
+        if (!$this->has_image) {
+            return null;
+        }
+
+        return asset($this->imageDirectory.'/'.$this->transformationImageFileName);
     }
 
     /**
@@ -123,8 +114,7 @@ class Transformation extends Model
      *
      * @return string
      */
-    public function getUrlAttribute()
-    {
+    public function getUrlAttribute() {
         return url('world/transformations?name='.$this->name);
     }
 
@@ -133,8 +123,7 @@ class Transformation extends Model
      *
      * @return string
      */
-    public function getSearchUrlAttribute()
-    {
+    public function getSearchUrlAttribute() {
         return url('masterlist?transformation_id='.$this->id);
     }
 }

@@ -1,18 +1,14 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-class MakeCharacterLogSenderNullable extends Migration
-{
+class MakeCharacterLogSenderNullable extends Migration {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
-    {
+    public function up() {
         // This is required to allow staff to transfer characters from non-registered users around
         Schema::table('user_character_log', function (Blueprint $table) {
             $table->string('sender_alias')->nullable();
@@ -26,11 +22,8 @@ class MakeCharacterLogSenderNullable extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
-    {
+    public function down() {
         //
         Schema::table('user_character_log', function (Blueprint $table) {
             $table->dropColumn('sender_alias');

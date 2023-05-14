@@ -1,18 +1,14 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-class ModifyTradeConfirmationFlags extends Migration
-{
+class ModifyTradeConfirmationFlags extends Migration {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
-    {
+    public function up() {
         //
         Schema::table('trades', function (Blueprint $table) {
             $table->dropColumn('is_confirmed');
@@ -23,11 +19,8 @@ class ModifyTradeConfirmationFlags extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
-    {
+    public function down() {
         //
         Schema::table('trades', function (Blueprint $table) {
             $table->dropColumn('is_sender_trade_confirmed');
