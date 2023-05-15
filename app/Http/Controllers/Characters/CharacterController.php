@@ -5,11 +5,10 @@ namespace App\Http\Controllers\Characters;
 use App\Http\Controllers\Controller;
 use App\Models\Character\Character;
 use App\Models\Character\CharacterCurrency;
-use App\Models\Character\CharacterItem;
 use App\Models\Character\CharacterImage;
+use App\Models\Character\CharacterItem;
 use App\Models\Character\CharacterProfile;
 use App\Models\Character\CharacterTransfer;
-use App\Models\Character\CharacterTransformation as Transformation;
 use App\Models\Currency\Currency;
 use App\Models\Gallery\GallerySubmission;
 use App\Models\Item\Item;
@@ -236,8 +235,7 @@ class CharacterController extends Controller {
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getCharacterImage($slug, $id)
-    {
+    public function getCharacterImage($slug, $id) {
         $image = CharacterImage::where('character_id', $this->character->id)->where('id', $id)->first();
 
         return view('character.image', [
