@@ -249,25 +249,6 @@ class CharacterController extends Controller {
     }
 
     /**
-     * Shows a character's transformation images.
-     *
-     * @param string $slug
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
-    public function getCharacterTransformationImages($slug) {
-        $character = $this->character;
-        $query = $character->images->whereNotNull('transformation_id');
-
-        return view('character.transformation_images', [
-            'user'                  => Auth::check() ? Auth::user() : null,
-            'character'             => $this->character,
-            'form_images'           => $query,
-            'extPrevAndNextBtnsUrl' => '/tranformations',
-        ]);
-    }
-
-    /**
      * Shows a character's inventory.
      *
      * @param string $slug

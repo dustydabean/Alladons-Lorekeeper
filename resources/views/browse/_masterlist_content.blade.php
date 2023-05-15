@@ -17,21 +17,21 @@
         <div class="card-body masterlist-advanced-search">
             @if (!$isMyo)
                 <div class="masterlist-search-field">
-                    {!! Form::label('transformation_id', 'Transformation: ') !!}
-                    {!! Form::select('transformation_id', $transformations, Request::get('transformation_id'), ['class' => 'form-control']) !!}
-                </div>
-                <div class="masterlist-search-field">
-                    {!! Form::label('has_transformation', 'Has a Transformation: ') !!}
-                    {!! Form::select('has_transformation', ['0' => 'No transformation.', '1' => 'Has a transformation.'], null, ['class' => 'form-control']) !!}
-                </div>
-                <hr>
-                <div class="masterlist-search-field">
                     {!! Form::label('character_category_id', 'Category: ') !!}
                     {!! Form::select('character_category_id', $categories, Request::get('character_category_id'), ['class' => 'form-control']) !!}
                 </div>
                 <div class="masterlist-search-field">
                     {!! Form::label('subtype_id', 'Species Subtype: ') !!}
                     {!! Form::select('subtype_id', $subtypes, Request::get('subtype_id'), ['class' => 'form-control']) !!}
+                </div>
+                <hr />
+                <div class="masterlist-search-field">
+                    {!! Form::label('transformation_id', 'Transformation: ') !!}
+                    {!! Form::select('transformation_id', $transformations, Request::get('transformation_id'), ['class' => 'form-control']) !!}
+                </div>
+                <div class="masterlist-search-field">
+                    {!! Form::label('has_transformation', 'Has a Transformation: ') !!}
+                    {!! Form::select('has_transformation', ['1' => 'Has a transformation.'], Request::get('has_transformation'), ['class' => 'form-control', 'placeholder' => 'Any']) !!}
                 </div>
                 <hr />
             @endif

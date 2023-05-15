@@ -77,7 +77,6 @@ Route::group(['prefix' => 'character', 'namespace' => 'Characters'], function ()
     Route::get('{slug}/inventory', 'CharacterController@getCharacterInventory');
     Route::get('{slug}/images', 'CharacterController@getCharacterImages');
     Route::get('{slug}/image/{id}', 'CharacterController@getCharacterImage');
-    Route::get('{slug}/transformation-images', 'CharacterController@getCharacterTransformationImages');
 
     Route::get('{slug}/currency-logs', 'CharacterController@getCharacterCurrencyLogs');
     Route::get('{slug}/item-logs', 'CharacterController@getCharacterItemLogs');

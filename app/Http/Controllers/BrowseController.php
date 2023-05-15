@@ -203,7 +203,7 @@ class BrowseController extends Controller {
         }
 
         // Search only main images
-        if (!$request->get('search_images')) {
+        if (!$request->get('search_images') && !$request->get('transformation_id') && !$request->get('has_transformation')) {
             $imageQuery->whereIn('id', $query->pluck('character_image_id')->toArray());
         }
 
@@ -218,7 +218,7 @@ class BrowseController extends Controller {
             $imageQuery->where('transformation_id', $request->get('transformation_id'));
         }
         if ($request->get('has_transformation')) {
-            // TODO
+            $imageQuery->whereNotNull('transformation_id');
         }
         if ($request->get('feature_id')) {
             $featureIds = $request->get('feature_id');
@@ -546,7 +546,7 @@ class BrowseController extends Controller {
         }
 
         // Search only main images
-        if (!$request->get('search_images')) {
+        if (!$request->get('search_images') && !$request->get('transformation_id') && !$request->get('has_transformation')) {
             $imageQuery->whereIn('id', $query->pluck('character_image_id')->toArray());
         }
 
@@ -561,7 +561,7 @@ class BrowseController extends Controller {
             $imageQuery->where('transformation_id', $request->get('transformation_id'));
         }
         if ($request->get('has_transformation')) {
-            // TODO
+            $imageQuery->whereNotNull('transformation_id');
         }
         if ($request->get('feature_id')) {
             $featureIds = $request->get('feature_id');
