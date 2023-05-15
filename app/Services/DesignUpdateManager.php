@@ -62,10 +62,10 @@ class DesignUpdateManager extends Service {
                 'update_type'   => $character->is_myo_slot ? 'MYO' : 'Character',
 
                 // Set some data based on the character's existing stats
-                'rarity_id'     => $character->image->rarity_id,
-                'species_id'    => $character->image->species_id,
-                'subtype_id'    => $character->image->subtype_id,
-                'transformation_id' => $character->image->transformation_id
+                'rarity_id'         => $character->image->rarity_id,
+                'species_id'        => $character->image->species_id,
+                'subtype_id'        => $character->image->subtype_id,
+                'transformation_id' => $character->image->transformation_id,
             ];
 
             $request = CharacterDesignUpdate::create($data);
@@ -370,10 +370,9 @@ class DesignUpdateManager extends Service {
             } else {
                 $subtype = null;
             }
-            if(isset($data['transformation_id']) && $data['transformation_id']) {
+            if (isset($data['transformation_id']) && $data['transformation_id']) {
                 $transformation = ($request->character->is_myo_slot && $request->character->image->transformation_id) ? $request->character->image->transformation : Transformation::find($data['transformation_id']);
-            }
-            else {
+            } else {
                 $transformation = null;
             }
             if (!$rarity) {
@@ -563,20 +562,20 @@ class DesignUpdateManager extends Service {
 
             // Create a new image with the request data
             $image = CharacterImage::create([
-                'character_id'  => $request->character_id,
-                'is_visible'    => 1,
-                'hash'          => $request->hash,
-                'fullsize_hash' => $request->fullsize_hash ? $request->fullsize_hash : randomString(15),
-                'extension'     => $extension,
-                'use_cropper'   => $request->use_cropper,
-                'x0'            => $request->x0,
-                'x1'            => $request->x1,
-                'y0'            => $request->y0,
-                'y1'            => $request->y1,
-                'species_id'    => $request->species_id,
-                'subtype_id'    => ($request->character->is_myo_slot && isset($request->character->image->subtype_id)) ? $request->character->image->subtype_id : $request->subtype_id,
-                'rarity_id'     => $request->rarity_id,
-                'sort'          => 0,
+                'character_id'      => $request->character_id,
+                'is_visible'        => 1,
+                'hash'              => $request->hash,
+                'fullsize_hash'     => $request->fullsize_hash ? $request->fullsize_hash : randomString(15),
+                'extension'         => $extension,
+                'use_cropper'       => $request->use_cropper,
+                'x0'                => $request->x0,
+                'x1'                => $request->x1,
+                'y0'                => $request->y0,
+                'y1'                => $request->y1,
+                'species_id'        => $request->species_id,
+                'subtype_id'        => ($request->character->is_myo_slot && isset($request->character->image->subtype_id)) ? $request->character->image->subtype_id : $request->subtype_id,
+                'rarity_id'         => $request->rarity_id,
+                'sort'              => 0,
                 'transformation_id' => ($request->character->is_myo_slot && isset($request->character->image->transformation_id)) ? $request->character->image->transformation_id : $request->transformation_id,
             ]);
 

@@ -5,18 +5,16 @@ namespace App\Http\Controllers\Admin\Data;
 use App\Http\Controllers\Controller;
 use App\Models\Character\CharacterTransformation as Transformation;
 use App\Models\Species\Species;
-use App\Models\Species\Subtype;
 use App\Services\TransformationService;
 use Auth;
 use Illuminate\Http\Request;
 
 class TransformationController extends Controller {
-
     /**
-    * Shows the transformation index.
-    *
-    * @return \Illuminate\Contracts\Support\Renderable
-    */
+     * Shows the transformation index.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
     public function getTransformationIndex() {
         return view('admin.specieses.transformations', [
             'transformations' => Transformation::orderBy('sort', 'DESC')->get(),
@@ -24,10 +22,10 @@ class TransformationController extends Controller {
     }
 
     /**
-    * Shows the create transformation page.
-    *
-    * @return \Illuminate\Contracts\Support\Renderable
-    */
+     * Shows the create transformation page.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
     public function getCreateTransformation() {
         return view('admin.specieses.create_edit_transformation', [
             'transformation' => new Transformation,
@@ -36,12 +34,12 @@ class TransformationController extends Controller {
     }
 
     /**
-    * Shows the edit transformation page.
-    *
-    * @param int $id
-    *
-    * @return \Illuminate\Contracts\Support\Renderable
-    */
+     * Shows the edit transformation page.
+     *
+     * @param int $id
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
     public function getEditTransformation($id) {
         $transformation = Transformation::find($id);
         if (!$transformation) {
@@ -55,13 +53,13 @@ class TransformationController extends Controller {
     }
 
     /**
-    * Creates or edits a transformation.
-    *
-    * @param App\Services\TransformationService $service
-    * @param int|null                    $id
-    *
-    * @return \Illuminate\Http\RedirectResponse
-    */
+     * Creates or edits a transformation.
+     *
+     * @param App\Services\TransformationService $service
+     * @param int|null                           $id
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function postCreateEditTransformation(Request $request, TransformationService $service, $id = null) {
         $id ? $request->validate(Transformation::$updateRules) : $request->validate(Transformation::$createRules);
         $data = $request->only([
@@ -83,12 +81,12 @@ class TransformationController extends Controller {
     }
 
     /**
-    * Gets the transformation deletion modal.
-    *
-    * @param int $id
-    *
-    * @return \Illuminate\Contracts\Support\Renderable
-    */
+     * Gets the transformation deletion modal.
+     *
+     * @param int $id
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
     public function getDeleteTransformation($id) {
         $transformation = Transformation::find($id);
 
@@ -98,13 +96,13 @@ class TransformationController extends Controller {
     }
 
     /**
-    * Deletes a transformation.
-    *
-    * @param App\Services\TransformationService $service
-    * @param int                         $id
-    *
-    * @return \Illuminate\Http\RedirectResponse
-    */
+     * Deletes a transformation.
+     *
+     * @param App\Services\TransformationService $service
+     * @param int                                $id
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function postDeleteTransformation(Request $request, TransformationService $service, $id) {
         if ($id && $service->deleteTransformation(Transformation::find($id))) {
             flash('Transformation deleted successfully.')->success();
@@ -118,12 +116,12 @@ class TransformationController extends Controller {
     }
 
     /**
-    * Sorts transformations.
-    *
-    * @param App\Services\TransformationService $service
-    *
-    * @return \Illuminate\Http\RedirectResponse
-    */
+     * Sorts transformations.
+     *
+     * @param App\Services\TransformationService $service
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function postSortTransformations(Request $request, TransformationService $service) {
         if ($service->sortTransformations($request->get('sort'))) {
             flash('Transformation order updated successfully.')->success();

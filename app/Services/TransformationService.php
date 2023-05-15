@@ -57,8 +57,8 @@ class TransformationService extends Service {
      * Updates a transformation.
      *
      * @param \App\Models\Transformation\Transformation $transformation
-     * @param array                              $data
-     * @param \App\Models\User\User              $user
+     * @param array                                     $data
+     * @param \App\Models\User\User                     $user
      *
      * @return \App\Models\Transformation\Transformation|bool
      */
@@ -144,11 +144,10 @@ class TransformationService extends Service {
         return $this->rollbackReturn(false);
     }
 
-    
     /**
      * Processes user input for creating/updating a transformation.
      *
-     * @param array                              $data
+     * @param array                                     $data
      * @param \App\Models\Transformation\Transformation $transformation
      *
      * @return array
