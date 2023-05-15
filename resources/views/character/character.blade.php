@@ -49,7 +49,7 @@
                 <div class="text-right">You are viewing the full-size image. <a href="{{ $character->image->imageUrl }}">View watermarked image</a>?</div>
             @endif
         </div>
-        @include('character._image_info', ['image' => $image])
+        @include('character._image_info', ['image' => $character->image])
     </div>
 
     {{-- Info --}}
