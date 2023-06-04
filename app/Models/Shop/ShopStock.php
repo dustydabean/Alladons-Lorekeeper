@@ -13,7 +13,7 @@ class ShopStock extends Model
      * @var array
      */
     protected $fillable = [
-        'shop_id', 'item_id', 'currency_id', 'cost', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'sort', 'purchase_limit'
+        'shop_id', 'item_id', 'currency_id', 'cost', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'sort', 'purchase_limit', 'is_fto', 'stock_type'
     ];
 
     /**
@@ -34,7 +34,8 @@ class ShopStock extends Model
      */
     public function item() 
     {
-        return $this->belongsTo('App\Models\Item\Item');
+        if($this->stock_type == 'Item') return $this->belongsTo('App\Models\Item\Item');
+        elseif($this->stock_type == 'Pet') return $this->belongsTo('App\Models\Pet\Pet');
     }
     
     /**

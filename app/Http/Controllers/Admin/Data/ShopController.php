@@ -10,7 +10,7 @@ use App\Models\Shop\Shop;
 use App\Models\Shop\ShopStock;
 use App\Models\Item\Item;
 use App\Models\Currency\Currency;
-
+use App\Models\Pet\Pet;
 use App\Services\ShopService;
 
 use App\Http\Controllers\Controller;
@@ -46,7 +46,8 @@ class ShopController extends Controller
     public function getCreateShop()
     {
         return view('admin.shops.create_edit_shop', [
-            'shop' => new Shop
+            'shop' => new Shop,
+            'items' => Item::orderBy('name')->pluck('name', 'id'),
         ]);
     }
     
@@ -63,6 +64,7 @@ class ShopController extends Controller
         return view('admin.shops.create_edit_shop', [
             'shop' => $shop,
             'items' => Item::orderBy('name')->pluck('name', 'id'),
+            'pets' => Pet::orderBy('name')->pluck('name', 'id'),
             'currencies' => Currency::orderBy('name')->pluck('name', 'id'),
         ]);
     }
@@ -79,7 +81,7 @@ class ShopController extends Controller
     {
         $id ? $request->validate(Shop::$updateRules) : $request->validate(Shop::$createRules);
         $data = $request->only([
-            'name', 'description', 'image', 'remove_image', 'is_active'
+            'name', 'description', 'image', 'remove_image', 'is_active', 'is_staff', 'use_coupons', 'is_fto'
         ]);
         if($id && $service->updateShop(Shop::find($id), $data, Auth::user())) {
             flash('Shop updated successfully.')->success();
@@ -87,6 +89,69 @@ class ShopController extends Controller
         else if (!$id && $shop = $service->createShop($data, Auth::user())) {
             flash('Shop created successfully.')->success();
             return redirect()->to('admin/data/shops/edit/'.$shop->id);
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back();
+    }
+
+    public function getCreateShopStock($id)
+    {
+        $shop = Shop::find($id);
+        if(!$shop) abort(404);
+
+        return view('admin.shops._stock_modal', [
+            'shop' => $shop,
+            'currencies' => Currency::orderBy('name')->pluck('name', 'id'),
+            'stock' => new ShopStock
+        ]);
+    }
+
+    public function getEditShopStock($id)
+    {
+        $stock = ShopStock::find($id);
+        if(!$stock) abort(404);
+
+        return view('admin.shops._stock_modal', [
+            'shop' => $stock->shop,
+            'stock' => $stock,
+            'currencies' => Currency::orderBy('name')->pluck('name', 'id'),
+            'items' => Item::orderBy('name')->pluck('name', 'id'),
+            'pets' => Pet::orderBy('name')->pluck('name', 'id')
+        ]);
+    }
+
+    public function getShopStockType(Request $request)
+    {
+        $type = $request->input('type');
+        if($type == 'Item') {
+            return view('admin.shops.stock._stock_item', [
+                'items' => Item::orderBy('name')->pluck('name', 'id')
+            ]);
+        }
+        else if($type == 'Pet') {
+            return view('admin.shops.stock._stock_pet', [
+                'pets' => Pet::orderBy('name')->pluck('name', 'id')
+            ]);
+        }
+    }
+    /**
+     * Edits a shop's stock.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  App\Services\ShopService  $service
+     * @param  int                       $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postEditShopStock(Request $request, ShopService $service, $id)
+    {
+        $data = $request->only([
+            'shop_id', 'item_id', 'currency_id', 'cost', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'purchase_limit', 'is_fto', 'stock_type'
+        ]);
+        if($service->editShopStock(ShopStock::find($id), $data, Auth::user())) {
+            flash('Shop stock updated successfully.')->success();
+            return redirect()->back();
         }
         else {
             foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
@@ -102,10 +167,10 @@ class ShopController extends Controller
      * @param  int                       $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postEditShopStock(Request $request, ShopService $service, $id)
+    public function postCreateShopStock(Request $request, ShopService $service, $id)
     {
         $data = $request->only([
-            'shop_id', 'item_id', 'currency_id', 'cost', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'purchase_limit'
+            'shop_id', 'item_id', 'currency_id', 'cost', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'purchase_limit', 'is_fto', 'stock_type'
         ]);
         if($service->updateShopStock(Shop::find($id), $data, Auth::user())) {
             flash('Shop stock updated successfully.')->success();
@@ -115,6 +180,41 @@ class ShopController extends Controller
             foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
         }
         return redirect()->back();
+    }
+
+    /**
+     * Gets the stock deletion modal.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getDeleteShopStock($id)
+    {
+        $stock = ShopStock::find($id);
+        return view('admin.shops._delete_stock', [
+            'stock' => $stock,
+        ]);
+    }
+
+    /**
+     * Deletes a stock.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  App\Services\StockService  $service
+     * @param  int                       $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postDeleteShopStock(Request $request, ShopService $service, $id)
+    {
+        $stock = ShopStock::find($id);
+        $shop = $stock->shop;
+        if($id && $service->deleteStock($stock)) {
+            flash('Stock deleted successfully.')->success();
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->to('admin/data/shops/edit/'.$shop->id);
     }
     
     /**
@@ -161,6 +261,21 @@ class ShopController extends Controller
     {
         if($service->sortShop($request->get('sort'))) {
             flash('Shop order updated successfully.')->success();
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back();
+    }
+
+    public function postRestrictShop(Request $request, ShopService $service, $id)
+    {
+        $data = $request->only([
+            'item_id', 'is_restricted'
+        ]);
+
+        if($service->restrictShop($data, $id)) {
+            flash('Shop limits updated successfully.')->success();
         }
         else {
             foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
