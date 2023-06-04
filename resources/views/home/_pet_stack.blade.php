@@ -93,6 +93,7 @@
                     <li class="list-group-item">
                         <a class="card-title h5 collapse-title"  data-toggle="collapse" href="#variantForm">[ADMIN] Change Pet Variant</a>
                         {!! Form::open(['url' => 'pets/variant/'.$stack->id, 'id' => 'variantForm', 'class' => 'collapse']) !!}
+                            {!! Form::hidden('is_staff', 1) !!}
                             <div class="form-group">
                                 @php $variants = ['0' => 'Default'] + $stack->pet->variants()->pluck('variant_name', 'id')->toArray() @endphp
                                 {!! Form::select('variant_id', $variants, $stack->variant_id, ['class'=>'form-control']) !!}

@@ -173,18 +173,10 @@ class PetController extends Controller
      * @param  App\Services\CharacterManager  $service
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postVariant(Request $request, PetManager $service, $id) 
+    public function postVariant(Request $request, PetManager $service, $id, $isStaff = false) 
     {
         $pet = UserPet::find($id);
-        if($request->input('stack_id')) {
-            $item = UserItem::find($request->input('stack_id'));
-            $invman = new InventoryManager;
-            if(!$invman->debitStack($pet->user, 'Used to change pet variant', ['data' => 'Used to change '.$pet->pet->name.' variant'], $item, 1)) {
-                flash('Could not debit splice.')->error();   
-                return redirect()->back();
-            } 
-        }
-        if($service->editVariant($request->input('variant_id'), $pet)) {
+        if($service->editVariant($request->input('variant_id'), $pet, $request->input('stack_id'), $request->input('is_staff'))) {
             flash('Pet variant changed successfully.')->success();
         }
         else {

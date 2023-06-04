@@ -304,6 +304,9 @@ class PetService extends Service
         return $this->rollbackReturn(false);
     }
 
+    /**
+     * Edits the variants on a pet
+     */
     public function editVariants($data, $pet)
     {
         DB::beginTransaction();
@@ -318,8 +321,8 @@ class PetService extends Service
 
                         $temp[] = $pet->variants()->where('variant_name', $type)->first()->id;
                         $tempVar = $pet->variants()->where('variant_name', $type)->first();
-
-                        if($tempVar->has_image && !isset($data['variant_images'][$key])) {
+                        // check if any user's own this variant also
+                        if(UserPet::where('variant_id', $tempVar->id)->exists() || ($tempVar->has_image && !isset($data['variant_images'][$key]))) {
                             // we do this so it isn't deleted in the next function
 
                             $image = null;
@@ -357,10 +360,11 @@ class PetService extends Service
                         ]);
 
                         $image = null;
-                        if(isset($data['variant_images'][$key]) && $data['variant_images'][$key] && $data['variant_images'][$key] != 1 ) {
+                        if(isset($data['variant_images'][$key]) && $data['variant_images'][$key]) {
                             $image = $data['variant_images'][$key];
                             unset($data['variant_images'][$key]);
                         }
+
 
                         if($image) $this->handleImage($image, $variant->imagePath, $variant->imagefilename);
                     }

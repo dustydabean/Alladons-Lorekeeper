@@ -251,11 +251,22 @@ class PetManager extends Service
     /**
      * edits variant
      */
-    public function editVariant($id, $pet)
+    public function editVariant($id, $pet, $stack_id, $isStaff = false)
     {
         DB::beginTransaction();
 
         try {
+                if (!$isStaff && !Auth::user()->isStaff) {
+                    if (!$stack_id) throw new \Exception("No item selected.");
+
+                    // check if user has item
+                    $item = UserItem::find($stack_id);
+                    $invman = new InventoryManager;
+                    if(!$invman->debitStack($pet->user, 'Used to change pet variant', ['data' => 'Used to change '.$pet->pet->name.' variant'], $item, 1)) {
+                        throw new \Exception("Could not debit item.");
+                    }
+                }
+                // else logAdminAction($pet->user, 'Pet Variant Changed', ['pet' => $pet->id, 'variant' => $id]); // for when develop is merged
 
                 $pet['variant_id'] = $id;
                 $pet->save();

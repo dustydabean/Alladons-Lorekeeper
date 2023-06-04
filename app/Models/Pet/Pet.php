@@ -15,7 +15,7 @@ class Pet extends Model
      * @var array
      */
     protected $fillable = [
-        'pet_category_id', 'name', 'has_image', 'description', 'parsed_description', 'allow_transfer', 'pet_name'
+        'pet_category_id', 'name', 'has_image', 'description', 'parsed_description', 'allow_transfer'
     ];
 
     /**
