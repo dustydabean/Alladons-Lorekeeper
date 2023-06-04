@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin\Data;
 use Illuminate\Http\Request;
 
 use Auth;
-
+use Log;
 use App\Models\Shop\Shop;
 use App\Models\Shop\ShopStock;
 use App\Models\Item\Item;
@@ -138,17 +138,20 @@ class ShopController extends Controller
     }
 
     /**
-     * Ajax function to return stock type
+     * gets stock of a certain type.
      */
     public function getShopStockType(Request $request)
     {
         $type = $request->input('type');
-        if($type == 'Item') {
-            return view('admin.shops.stock._stock_item', [
-                'items' => Item::orderBy('name')->pluck('name', 'id')
-            ]);
-        }
+        if (!$type) return null;
+        // get base modal from type using asset helper
+        $model = getAssetModelString(strtolower($type));
+        log::info([$model, $type]);
+        return view('admin.shops._stock_item', [
+            'items' => $model::orderBy('name')->pluck('name', 'id')
+        ]);
     }
+
     /**
      * Edits a shop's stock.
      *

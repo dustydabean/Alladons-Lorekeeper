@@ -42,9 +42,10 @@ class ShopStock extends Model
     /**
      * Get the item being stocked.
      */
-    public function item()
+    public function item() 
     {
-        if($this->stock_type == 'Item') return $this->belongsTo('App\Models\Item\Item');
+        $model = getAssetModelString(strtolower($this->stock_type));
+        return $this->belongsTo($model);
     }
 
     /**

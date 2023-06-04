@@ -14,8 +14,8 @@
         </div>
         <div class="col-md-6">
             <div class="form-group" id="stock">
-                @if($stock->stock_type == 'Item')
-                    @include('admin.shops.stock._stock_item', ['items' => $items, 'stock' => $stock])
+                @if($stock->id)
+                    @include('admin.shops._stock_item', ['items' => $items, 'stock' => $stock])
                 @endif
             </div>
         </div>

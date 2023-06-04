@@ -62,11 +62,17 @@ class Shop extends Model
     /**
      * Get the shop stock as items for display purposes.
      */
-    public function displayStock()
+    public function displayStock($model=null, $type=null)
     {
-        return $this->belongsToMany('App\Models\Item\Item', 'shop_stock')->withPivot('item_id', 'currency_id', 'cost', 'use_user_bank', 'use_character_bank', 'is_limited_stock','is_timed_stock', 'start_at', 'end_at', 'quantity', 'purchase_limit', 'purchase_limit_timeframe', 'id', 'is_visible', 'disallow_transfer')->wherePivot('is_visible', 1);
+        if (!$model || !$type) {
+            return $this->belongsToMany('App\Models\Item\Item', 'shop_stock')->where('stock_type', 'Item')->withPivot('item_id', 'currency_id', 'cost', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'purchase_limit', 'id');
+        }
+        return $this->belongsToMany($model, 'shop_stock', 'shop_id', 'item_id')->where('stock_type', $type)->withPivot('item_id', 'currency_id', 'cost', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'purchase_limit', 'id');
     }
 
+    /**
+     * Get the required items / assets to enter the shop.
+     */
     public function limits()
     {
         return $this->hasMany('App\Models\Shop\ShopLimit', 'shop_id');
