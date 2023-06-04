@@ -21,15 +21,15 @@ class ShopService extends Service
     */
 
     /**********************************************************************************************
-     
+
         SHOPS
 
     **********************************************************************************************/
-    
+
     /**
      * Creates a new shop.
      *
-     * @param  array                  $data 
+     * @param  array                  $data
      * @param  \App\Models\User\User  $user
      * @return bool|\App\Models\Shop\Shop
      */
@@ -49,22 +49,24 @@ class ShopService extends Service
             }
             else $data['has_image'] = 0;
 
+            $data['is_timed_shop'] = isset($data['is_timed_shop']);
+
             $shop = Shop::create($data);
 
             if ($image) $this->handleImage($image, $shop->shopImagePath, $shop->shopImageFileName);
 
             return $this->commitReturn($shop);
-        } catch(\Exception $e) { 
+        } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);
     }
-    
+
     /**
      * Updates a shop.
      *
      * @param  \App\Models\Shop\Shop  $shop
-     * @param  array                  $data 
+     * @param  array                  $data
      * @param  \App\Models\User\User  $user
      * @return bool|\App\Models\Shop\Shop
      */
@@ -78,29 +80,31 @@ class ShopService extends Service
 
             $data = $this->populateShopData($data, $shop);
 
-            $image = null;            
+            $image = null;
             if(isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
                 $image = $data['image'];
                 unset($data['image']);
             }
 
+            $data['is_timed_shop'] = isset($data['is_timed_shop']);
+
             $shop->update($data);
 
             if ($shop) $this->handleImage($image, $shop->shopImagePath, $shop->shopImageFileName);
 
             return $this->commitReturn($shop);
-        } catch(\Exception $e) { 
+        } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);
     }
-    
+
     /**
      * Updates shop stock.
      *
      * @param  \App\Models\Shop\Shop  $shop
-     * @param  array                  $data 
+     * @param  array                  $data
      * @param  \App\Models\User\User  $user
      * @return bool|\App\Models\Shop\Shop
      */
@@ -109,6 +113,8 @@ class ShopService extends Service
         DB::beginTransaction();
 
         try {
+            if(!$data['stock_type']) throw new \Exception("Please select a stock type.");
+            if(!$data['item_id']) throw new \Exception("You must select an item.");
 
             $shop->stock()->create([
                 'shop_id'               => $shop->id,
@@ -120,12 +126,21 @@ class ShopService extends Service
                 'is_fto'                => isset($data['is_fto']),
                 'is_limited_stock'      => isset($data['is_limited_stock']),
                 'quantity'              => isset($data['is_limited_stock']) ? $data['quantity'] : 0,
-                'purchase_limit'        => $data['purchase_limit'],
+                'purchase_limit'        => isset($data['purchase_limit']) ? $data['purchase_limit'] : 0,
+                'purchase_limit_timeframe' => isset($data['purchase_limit']) ? $data['purchase_limit_timeframe'] : null,
                 'stock_type'            => $data['stock_type'],
+                'is_visible'            => isset($data['is_visible']) ? $data['is_visible'] : 0,
+                'restock'               => isset($data['restock']) ? $data['restock'] : 0,
+                'restock_quantity'      => isset($data['restock']) && isset($data['quantity']) ? $data['quantity'] : 1,
+                'restock_interval'      => isset($data['restock_interval']) ? $data['restock_interval'] : 2,
+                'range'                 => isset($data['range']) ? $data['range'] : 0,
+                'is_timed_stock'        => isset($data['is_timed_stock']),
+                'start_at'              => $data['start_at'],
+                'end_at'                => $data['end_at'],
             ]);
 
             return $this->commitReturn($shop);
-        } catch(\Exception $e) { 
+        } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);
@@ -135,7 +150,7 @@ class ShopService extends Service
      * Updates shop stock.
      *
      * @param  \App\Models\Shop\Shop  $shop
-     * @param  array                  $data 
+     * @param  array                  $data
      * @param  \App\Models\User\User  $user
      * @return bool|\App\Models\Shop\Shop
      */
@@ -144,6 +159,8 @@ class ShopService extends Service
         DB::beginTransaction();
 
         try {
+            if(!$data['stock_type']) throw new \Exception("Please select a stock type.");
+            if(!$data['item_id']) throw new \Exception("You must select an item.");
 
             $stock->update([
                 'shop_id'               => $stock->shop->id,
@@ -156,11 +173,21 @@ class ShopService extends Service
                 'is_limited_stock'      => isset($data['is_limited_stock']),
                 'quantity'              => isset($data['is_limited_stock']) ? $data['quantity'] : 0,
                 'purchase_limit'        => $data['purchase_limit'],
+                'purchase_limit_timeframe' => $data['purchase_limit_timeframe'],
                 'stock_type'            => $data['stock_type'],
+                'is_visible'            => isset($data['is_visible']) ? $data['is_visible'] : 0,
+                'restock'               => isset($data['restock']) ? $data['restock'] : 0,
+                'restock_quantity'      => isset($data['restock']) && isset($data['quantity']) ? $data['quantity'] : 1,
+                'restock_interval'      => isset($data['restock_interval']) ? $data['restock_interval'] : 2,
+                'range'                 => isset($data['range']) ? $data['range'] : 0,
+                'disallow_transfer'     => isset($data['disallow_transfer']) ? $data['disallow_transfer'] : 0,
+                'is_timed_stock'        => isset($data['is_timed_stock']),
+                'start_at'              => $data['start_at'],
+                'end_at'                => $data['end_at'],
             ]);
 
             return $this->commitReturn($stock);
-        } catch(\Exception $e) { 
+        } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);
@@ -175,7 +202,7 @@ class ShopService extends Service
             $stock->delete();
 
             return $this->commitReturn(true);
-        } catch(\Exception $e) { 
+        } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);
@@ -184,7 +211,7 @@ class ShopService extends Service
     /**
      * Processes user input for creating/updating a shop.
      *
-     * @param  array                  $data 
+     * @param  array                  $data
      * @param  \App\Models\Shop\Shop  $shop
      * @return array
      */
@@ -194,20 +221,21 @@ class ShopService extends Service
         $data['is_active'] = isset($data['is_active']);
         $data['is_staff'] = isset($data['is_staff']);
         $data['use_coupons'] = isset($data['use_coupons']);
-        
+        $data['allowed_coupons'] = isset($data['allowed_coupons']) ? $data['allowed_coupons'] : null;
+
         if(isset($data['remove_image']))
         {
-            if($shop && $shop->has_image && $data['remove_image']) 
-            { 
-                $data['has_image'] = 0; 
-                $this->deleteImage($shop->shopImagePath, $shop->shopImageFileName); 
+            if($shop && $shop->has_image && $data['remove_image'])
+            {
+                $data['has_image'] = 0;
+                $this->deleteImage($shop->shopImagePath, $shop->shopImageFileName);
             }
             unset($data['remove_image']);
         }
 
         return $data;
     }
-    
+
     /**
      * Deletes a shop.
      *
@@ -222,11 +250,11 @@ class ShopService extends Service
             // Delete shop stock
             $shop->stock()->delete();
 
-            if($shop->has_image) $this->deleteImage($shop->shopImagePath, $shop->shopImageFileName); 
+            if($shop->has_image) $this->deleteImage($shop->shopImagePath, $shop->shopImageFileName);
             $shop->delete();
 
             return $this->commitReturn(true);
-        } catch(\Exception $e) { 
+        } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);
@@ -251,13 +279,13 @@ class ShopService extends Service
             }
 
             return $this->commitReturn(true);
-        } catch(\Exception $e) { 
+        } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);
     }
 
-    public function restrictShop($data, $id) 
+    public function restrictShop($data, $id)
     {
         DB::beginTransaction();
 
@@ -281,7 +309,7 @@ class ShopService extends Service
             }
 
             return $this->commitReturn(true);
-        } catch(\Exception $e) { 
+        } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);

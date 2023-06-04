@@ -2,11 +2,12 @@
     <div class="text-center">Invalid item selected.</div>
 @else
     <div class="text-center mb-3">
-        <div class="mb-1"><a href="{{ $stock->item->idUrl }}"><img src="{{ $stock->item->imageUrl }}" /></a></div>
+        <div class="mb-1"><a href="{{ $stock->item->idUrl }}"><img src="{{ $stock->item->imageUrl }}" alt="{{ $stock->item->name }}" /></a></div>
         <div><a href="{{ $stock->item->idUrl }}"><strong>{{ $stock->item->name }}</strong></a></div>
-        <div><strong>Cost: </strong> {!! $stock->currency->display($stock->cost) !!}</div>
+        <div><strong>Cost: </strong> {!! $stock->currency->display($stock->displayCost) !!}</div>
         @if($stock->is_limited_stock) <div>Stock: {{ $stock->quantity }}</div> @endif
-        @if($stock->purchase_limit) <div class="text-danger">Max {{ $stock->purchase_limit }} per user</div> @endif
+        @if($stock->purchase_limit) <div class="text-danger">Max {{ $stock->purchase_limit }} @if($stock->purchase_limit_timeframe !== 'lifetime') {{ $stock->purchase_limit_timeframe }} @endif per user</div> @endif
+        @if($stock->disallow_transfer) <div class="text-danger">Cannot be transferred after purchase</div> @endif
     </div>
 
     @if($stock->item->parsed_description)
@@ -22,10 +23,13 @@
 
     @if($stock->shop->use_coupons)
         <div class="alert alert-success">You can use coupons in this store!</div>
+        @if($shop->allowed_coupons && count(json_decode($shop->allowed_coupons, 1)))
+            <div class="alert alert-info">You can use the following coupons: @foreach($shop->allAllowedCoupons as $coupon) {!! $coupon->displayName !!}{{$loop->last ? '' : ','}} @endforeach</div>
+        @endif
     @endif
 
     @if(Auth::check())
-        @if($stock->is_fto && Auth::user()->settings->is_fto || !$stock->is_fto)
+    @if($stock->is_fto && Auth::user()->settings->is_fto || !$stock->is_fto)
         <h5>
             Purchase
             <span class="float-right">
@@ -35,9 +39,10 @@
         @if($stock->is_limited_stock && $stock->quantity == 0)
             <div class="alert alert-warning mb-0">This item is out of stock.</div>
         @elseif($purchaseLimitReached)
-            <div class="alert alert-warning mb-0">You have already purchased the limit of {{ $stock->purchase_limit }} of this item.</div>
+            <div class="alert alert-warning mb-0">You have already purchased the limit of {{ $stock->purchase_limit }} of this item @if($stock->purchase_limit_timeframe !== 'lifetime') within the {{$stock->purchase_limit_timeframe}} reset @endif.</div>
         @else
-            @if($stock->purchase_limit) <div class="alert alert-warning mb-3">You have purchased this item {{ $userPurchaseCount }} times.</div>@endif
+
+            @if($stock->purchase_limit) <div class="alert alert-warning mb-3">You have purchased this item {{ $userPurchaseCount }} times @if($stock->purchase_limit_timeframe !== 'lifetime') within the {{$stock->purchase_limit_timeframe}} reset @endif.</div>@endif
             {!! Form::open(['url' => 'shops/buy']) !!}
                 {!! Form::hidden('shop_id', $shop->id) !!}
                 {!! Form::hidden('stock_id', $stock->id) !!}
@@ -95,7 +100,7 @@
         @else
         <div class="alert alert-danger">You must be a FTO to purchase this item.</div>
         @endif
-    @else 
+    @else
         <div class="alert alert-danger">You must be logged in to purchase this item.</div>
     @endif
 @endif

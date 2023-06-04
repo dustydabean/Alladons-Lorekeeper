@@ -21,6 +21,7 @@ use App\Models\Prompt\Prompt;
 use App\Models\Shop\Shop;
 use App\Models\Shop\ShopStock;
 use App\Models\User\User;
+use Illuminate\Support\Facades\Auth;
 
 class WorldController extends Controller
 {
@@ -246,7 +247,7 @@ class WorldController extends Controller
     public function getItems(Request $request)
     {
         $query = Item::with('category')->released();
-        $data = $request->only(['item_category_id', 'name', 'sort']);
+        $data = $request->only(['item_category_id', 'name', 'sort', 'artist']);
         if(isset($data['item_category_id']) && $data['item_category_id'] != 'none')
             $query->where('item_category_id', $data['item_category_id']);
         if(isset($data['name']))
@@ -302,7 +303,10 @@ class WorldController extends Controller
             'name' => $item->displayName,
             'description' => $item->parsed_description,
             'categories' => $categories->keyBy('id'),
-            'shops' => Shop::whereIn('id', ShopStock::where('item_id', $item->id)->pluck('shop_id')->unique()->toArray())->orderBy('sort', 'DESC')->get()
+            'shops' => Shop::where(function($shops) {
+                if(Auth::check() && Auth::user()->isStaff) return $shops;
+                return $shops->where('is_staff', 0);
+            })->whereIn('id', ShopStock::where('item_id', $item->id)->pluck('shop_id')->unique()->toArray())->orderBy('sort', 'DESC')->get()
         ]);
     }
 

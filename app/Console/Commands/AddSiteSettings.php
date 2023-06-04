@@ -109,7 +109,8 @@ class AddSiteSettings extends Command
 
         $this->addSiteSetting('limited_stock_coupon_settings', 0, '0: Does not allow coupons to be used on limited stock items, 1: Allows coupons to be used on limited stock items');
 
-        $this->line("\nSite settings up to date!");
+        $this->addSiteSetting('shop_type', 0, '0: Default, 1: Collapsible.');
 
+        $this->line("\nSite settings up to date!");
     }
 }

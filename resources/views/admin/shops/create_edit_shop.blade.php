@@ -49,13 +49,43 @@
 </div>
 
 <div class="form-group">
-    {!! Form::checkbox('use_coupons', 1, $shop->id ? $shop->use_coupons : 0, ['class' => 'form-check-label', 'data-toggle' => 'toggle']) !!}
-    {!! Form::label('use_coupons', 'Allow Coupons?', ['class' => 'form-check-label ml-3']) !!} {!! add_help('Note that ALL coupons will be allowed to be used.') !!}
+    {!! Form::checkbox('use_coupons', 1, $shop->id ? $shop->use_coupons : 0, ['class' => 'form-check-label', 'data-toggle' => 'toggle', 'id' => 'use_coupons']) !!}
+    {!! Form::label('use_coupons', 'Allow Coupons?', ['class' => 'form-check-label ml-3']) !!} {!! add_help('Note that ALL coupons will be allowed to be used, unless specified otherwise.') !!}
+</div>
+<div class="form-group coupon-row {{ $shop->use_coupons ? '' : 'hide'}}">
+    {!! Form::label('allowed_coupons', 'Allowed Coupon(s)', ['class' => 'form-check-label']) !!}
+    <p>Leave blank to allow ALL coupons.</p>
+    {!! Form::select('allowed_coupons[]', $coupons, json_decode($shop->allowed_coupons, 1), ['multiple', 'class' => 'form-check-label', 'placeholder' => 'Select Coupons', 'id' => 'allowed_coupons']) !!}
+
 </div>
 
 <div class="form-group">
     {!! Form::checkbox('is_fto', 1, $shop->id ? $shop->is_fto : 0, ['class' => 'form-check-label', 'data-toggle' => 'toggle']) !!}
     {!! Form::label('is_fto', 'FTO Only?', ['class' => 'form-check-label ml-3']) !!} {!! add_help('Only users who are currently FTO and staff can enter.') !!}
+</div>
+
+<br>
+<div class="pl-4">
+    <div class="form-group">
+            {!! Form::checkbox('is_timed_shop', 1, $shop->is_timed_shop ?? 0, ['class' => 'form-check-input shop-timed shop-toggle shop-field', 'id' => 'is_timed_shop']) !!}
+            {!! Form::label('is_timed_shop', 'Set Timed Shop', ['class' => 'form-check-label ml-3']) !!} {!! add_help('Sets the shop as timed between the chosen dates.') !!}
+        </div>
+    <div class="shop-timed-quantity {{ $shop->is_timed_shop ? '' : 'hide' }}">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    {!! Form::label('start_at', 'Start Time') !!} {!! add_help('The shop will cycle in at this date.') !!}
+                    {!! Form::text('start_at', $shop->start_at, ['class' => 'form-control', 'id' => 'datepicker2']) !!}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    {!! Form::label('end_at', 'End Time') !!} {!! add_help('The shop will cycle out at this date.') !!}
+                    {!! Form::text('end_at', $shop->end_at, ['class' => 'form-control', 'id' => 'datepicker3']) !!}
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 
@@ -103,12 +133,27 @@
     <div id="shopStock">
         <div class="row col-12">
         @foreach($shop->stock as $stock)
-        <div class="col-4">
+        <div class="col-md-4">
             <div class="card p-3 my-1">
-                <div><a href="{{ $stock->item->idUrl }}"><strong>{{ $stock->item->name }} - {{ $stock->stock_type }}</strong></a></div>
-                <div><strong>Cost: </strong> {!! $stock->currency->display($stock->cost) !!}</div>
+                <div class="row">
+                    @if($stock->item->has_image)
+                        <div class="col-2">
+                            <img src="{{ $stock->item->imageUrl }}" style="width: 100%;" alt="{{ $stock->item->name }}">
+                        </div>
+                    @endif
+                    <div class="col-{{ $stock->item->has_image ? '8' : '10' }}">
+                        <div><a href="{{ $stock->item->idUrl }}"><strong>{{ $stock->item->name }} - {{ $stock->stock_type }}</strong></a></div>
+                        <div><strong>Cost: </strong> {!! $stock->currency->display($stock->cost) !!}</div>
+                    </div>
+                    <div class="row">
+                        @if(!$stock->is_visible)<div class="col-2"> <i class="fas fa-eye-slash"></i></div>@endif
+                        @if($stock->is_timed_stock)<div class="col-2"> <i class="fas fa-clock"></i></div>@endif
+                    </div>
+                </div>
                 @if($stock->is_limited_stock) <div>Stock: {{ $stock->quantity }}</div> @endif
-                @if($stock->purchase_limit) <div class="text-danger">Max {{ $stock->purchase_limit }} per user</div> @endif
+                @if($stock->is_limited_stock) <div>Restock: {!! $stock->restock ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-danger"></i>' !!}</div> @endif
+                @if($stock->purchase_limit) <div class="text-danger">Max {{ $stock->purchase_limit }} @if($stock->purchase_limit_timeframe !== 'lifetime') {{ $stock->purchase_limit_timeframe }} @endif per user</div> @endif
+                @if($stock->disallow_transfer) <div class="text-danger">Cannot be transferred</div> @endif
                 <div class="text-right">
                     <button class="btn btn-primary" onclick="editStock({{$stock->id}})">
                         {{-- pencil icon --}}
@@ -137,6 +182,26 @@
 @section('scripts')
 @parent
 <script>
+
+        $('#is_timed_shop').change(function() {
+            if ($(this).is(':checked')) {
+                $('.shop-timed-quantity').removeClass('hide');
+            }
+            else {
+                $('.shop-timed-quantity').addClass('hide');
+            }
+        });
+
+        $("#datepicker2").datetimepicker({
+            dateFormat: "yy-mm-dd",
+            timeFormat: 'HH:mm:ss',
+        });
+
+        $("#datepicker3").datetimepicker({
+            dateFormat: "yy-mm-dd",
+            timeFormat: 'HH:mm:ss',
+        });
+
     // edit stock function
     function editStock(id) {
         loadModal("{{ url('admin/data/shops/stock/edit') }}/" + id, 'Edit Stock');
@@ -145,6 +210,18 @@
         loadModal("{{ url('admin/data/shops/stock/delete') }}/" + id, 'Delete Stock');
     }
 $( document ).ready(function() {
+
+    $('#use_coupons').change(function() {
+        if($(this).is(':checked')) {
+            $('.coupon-row').removeClass('hide');
+        } else {
+            $('.coupon-row').addClass('hide');
+        }
+    });
+
+    $('#allowed_coupons').selectize({
+        maxItems: 5
+    });
 
     $('.delete-shop-button').on('click', function(e) {
         e.preventDefault();
@@ -179,12 +256,11 @@ $( document ).ready(function() {
         $trigger.parent().remove();
     }
 
-    $('.is-restricted-class').change(function(e){
-            console.log(this.checked)
-            $('.br-form-group').css('display',this.checked ? 'block' : 'none')
-                })
-            $('.br-form-group').css('display',$('.is-restricted-class').prop('checked') ? 'block' : 'none')
+    $('.is-restricted-class').change(function(e)    {
+        $('.br-form-group').css('display',this.checked ? 'block' : 'none')
+        })
+        $('.br-form-group').css('display',$('.is-restricted-class').prop('checked') ? 'block' : 'none')
 });
-    
+
 </script>
 @endsection
