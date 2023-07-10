@@ -647,16 +647,16 @@ tr.accountbound {
  
 
 .square-grid {
-    display: grid;
-    grid-auto-rows: 1fr;
-    grid-template-columns: repeat(6, 1fr);
-    grid-column-gap: 20px;
-    grid-row-gap: 20px;
+    display: flex;
+    gap: 20px;
+    justify-content: center;
 }
 
+.square-grid > div {
+    flex: 0 0 15%;
+}
 .square-grid .square-column {
     aspect-ratio: 1;
-    min-height: 0;
 }
 
 .square-grid .square-column img {
