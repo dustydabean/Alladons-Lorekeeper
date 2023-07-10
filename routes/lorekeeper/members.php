@@ -189,6 +189,16 @@ Route::group(['prefix' => 'shops'], function() {
 });
 
 /**************************************************************************************************
+    Activities
+ **************************************************************************************************/
+
+Route::group(['prefix' => 'activities'], function () {
+    Route::get('/', 'ActivityController@getIndex');
+    Route::get('{id}', 'ActivityController@getActivity')->where(['id' => '[0-9]+']);
+    Route::post('{id}/act', 'ActivityController@postAct')->where(['id' => '[0-9]+']);
+});
+
+/**************************************************************************************************
     Comments
 **************************************************************************************************/
 Route::group(['prefix' => 'comments', 'namespace' => 'Comments'], function() {
