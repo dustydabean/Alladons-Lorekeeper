@@ -40,7 +40,7 @@ class ForageService extends Service
         DB::beginTransaction();
 
         try {
-            
+
             // More specific validation
             foreach($data['rewardable_type'] as $key => $type)
             {
@@ -79,7 +79,7 @@ class ForageService extends Service
             $this->populateForage($table, array_only($data, ['rewardable_type', 'rewardable_id', 'quantity', 'weight']));
 
             return $this->commitReturn($table);
-        } catch(\Exception $e) { 
+        } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);
@@ -89,7 +89,7 @@ class ForageService extends Service
      * Updates a loot table.
      *
      * @param  \App\Models\Loot\Forage  $table
-     * @param  array                       $data 
+     * @param  array                       $data
      * @return bool|\App\Models\Loot\Forage
      */
     public function updateForage($table, $data)
@@ -97,7 +97,7 @@ class ForageService extends Service
         DB::beginTransaction();
 
         try {
-            
+
             // More specific validation
             foreach($data['rewardable_type'] as $key => $type)
             {
@@ -128,7 +128,7 @@ class ForageService extends Service
                 $data['currency_id'] = null;
                 $data['currency_quantity'] = null;
             }
-            
+
             if ($table->has_image && !$image) {
                 $data['has_image'] = 1;
             }
@@ -140,7 +140,7 @@ class ForageService extends Service
             $this->populateForage($table, Arr::only($data, ['rewardable_type', 'rewardable_id', 'quantity', 'weight']));
 
             return $this->commitReturn($table);
-        } catch(\Exception $e) { 
+        } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);
@@ -150,7 +150,7 @@ class ForageService extends Service
      * Handles the creation of loot for a loot table.
      *
      * @param  \App\Models\Loot\Forage  $table
-     * @param  array                       $data 
+     * @param  array                       $data
      */
     private function populateForage($table, $data)
     {
@@ -180,12 +180,18 @@ class ForageService extends Service
         DB::beginTransaction();
 
         try {
-
+            // get all users with this forage
+            $users = UserForaging::where('forage_id', $table->id)->get();
+            foreach($users as $user) {
+                $user->forage_id = null;
+                $user->distribute_at = null;
+                $user->save();
+            }
             $table->loot()->delete();
             $table->delete();
 
             return $this->commitReturn(true);
-        } catch(\Exception $e) { 
+        } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);
@@ -219,13 +225,13 @@ class ForageService extends Service
                 if(!(new CurrencyManager)->debitCurrency($user, null, 'Foraging Cost', 'Cost to Forage in the ' . $forage->display_name, Currency::find($forage->currency_id), $forage->currency_quantity))
                     throw new \Exception('Could not debit currency.');
             }
-            
+
             if(Config::get('lorekeeper.foraging.use_characters') && !$user->foraging->character_id) throw new \Exception('Please select a character.');
-            
+
             $user->foraging->forage_id = $id;
             $user->foraging->foraged_at = carbon::now();
             $user->foraging->distribute_at = carbon::now()->addMinutes(Config::get('lorekeeper.foraging.forage_time'));
-            
+
             // CHARACTER_STAMINA_DECREMENT
             if(Config::get('lorekeeper.foraging.use_characters')) {
                 if (Config::get('lorekeeper.foraging.use_foraging_stamina')) {
@@ -251,7 +257,7 @@ class ForageService extends Service
             }
 
             return $this->commitReturn(true);
-        } catch(\Exception $e) { 
+        } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);
@@ -299,7 +305,7 @@ class ForageService extends Service
             flash($this->getRewardsString($rewards, $name ?? null))->success();
 
             return $this->commitReturn(true);
-        } catch(\Exception $e) { 
+        } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);
@@ -313,7 +319,7 @@ class ForageService extends Service
         $assets = createAssetsArray(false);
 
         addAsset($assets, $data, 1);
-                    
+
         return $assets;
     }
 
@@ -322,7 +328,7 @@ class ForageService extends Service
      */
     private function getRewardsString($rewards, $character_name = null)
     {
-        if(Config::get('lorekeeper.foraging.use_characters')) 
+        if(Config::get('lorekeeper.foraging.use_characters'))
             $results = $character_name . " has found: ";
         else $results = "You have received: ";
         $result_elements = [];
