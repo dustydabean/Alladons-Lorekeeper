@@ -14,9 +14,6 @@ use App\Services\Service;
 use DB;
 use Auth;
 
-// START:
-// - Display Activities on their own page, but make the list a widget so you can move it elsewhere
-// - Load in the Module UI for Recycle (and the act code)
 class RecycleService extends Service {
 
   /**

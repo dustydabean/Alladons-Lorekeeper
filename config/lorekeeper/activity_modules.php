@@ -15,8 +15,9 @@
 return [] +
   // Turn in any items from a defined set in an inventory picker and get rewards back out
   // Item Turn-in can be limited by count, item, and item categories
-  (class_exists('\App\Services\Activity\RecycleService') ? ['recycle' => "Recycle"] : []) +
+  ['recycle' => "Recycle"] +
   // Own all items from a set of defined items, displayed on the activity, and get a reward once you have them all
+  // Requires:: Collection Extension
   (class_exists('\App\Models\Collection\Collection') ? ['collection' => "Collection"] : []);
 
   
