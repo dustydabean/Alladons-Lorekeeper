@@ -78,6 +78,8 @@
     {!! Form::close() !!}
 </div>
 
+@include('widgets._staff_profile_form', ['user' => $user, 'adminView' => 1])
+
 <div class="card p-3 mb-2">
     <h3>Birthdate</h3>
     @if(!$user->checkBirthday)<p class="text-danger">This user is currently set to an underage DOB</p>@endif
@@ -119,4 +121,11 @@
         <p>No aliases found.</p>
     @endif
 </div>
+@endsection
+
+@section('scripts')
+@parent
+    @if(Auth::user()->isStaff)
+        @include('js._website_links_js')
+    @endif
 @endsection

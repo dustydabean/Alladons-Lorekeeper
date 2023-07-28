@@ -11,6 +11,7 @@ use Carbon\Carbon;
 
 use App\Models\User\User;
 use App\Models\User\UserAlias;
+use App\Models\User\StaffProfile;
 use App\Models\Rank\Rank;
 use App\Models\User\UserUpdateLog;
 
@@ -80,9 +81,12 @@ class UserController extends Controller
 
         if(!$user) abort(404);
 
+        $links = StaffProfile::where('user_id', $user->id)->first();
+
         return view('admin.users.user', [
             'user' => $user,
-            'ranks' => Rank::orderBy('ranks.sort')->pluck('name', 'id')->toArray()
+            'ranks' => Rank::orderBy('ranks.sort')->pluck('name', 'id')->toArray(),
+            'links' => $links ? $links : null
         ]);
     }
 
@@ -191,6 +195,48 @@ class UserController extends Controller
         if($service->updateBirthday($formatDate, $user)) {
             UserUpdateLog::create(['staff_id' => Auth::user()->id, 'user_id' => $user->id, 'data' => json_encode($logData), 'type' => 'Birth Date Change']);
             flash('Birthday updated successfully!')->success();
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back();
+    }
+
+    public function postStaffProfile(Request $request, $name)
+    {
+        $user = User::where('name', $name)->first();
+        if(!$user) {
+            flash('Invalid user.')->error();
+        }
+
+        $service = new UserService;
+        $logData = ['old_profile' => $user->staffProfile ? $user->staffProfile->text : ''] + ['new_profile' => $request['text']];
+
+        if($service->updateStaffProfile($request->only(['text']), $user)) {
+            UserUpdateLog::create(['staff_id' => Auth::user()->id, 'user_id' => $user->id, 'data' => json_encode($logData), 'type' => 'Staff Profile Update']);
+            flash($name.'\'s staff profile updated successfully!')->success();
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back();
+    }
+
+    public function postStaffLinks(Request $request, $name)
+    {
+        $user = User::where('name', $name)->first();
+        if(!$user) {
+            flash('Invalid user.')->error();
+        }
+
+        $service = new UserService;
+        $oldData = $user->staffProfile && $user->staffProfile->contacts ? implode(", ", $user->staffProfile->contacts['url']) : '';
+        $newData = $request['url'] ? implode (", ", $request['url']) : '';
+
+        if($service->updateStaffLinks($request->only(['site', 'url']), $user)) {
+            $logData = ['old_urls' => $oldData] + ['new_urls' => $newData];
+            UserUpdateLog::create(['staff_id' => Auth::user()->id, 'user_id' => $user->id, 'data' => json_encode($logData), 'type' => 'Staff Links Update']);
+            flash($name.'\'s staff profile links updated successfully!')->success();
         }
         else {
             foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
