@@ -73,6 +73,18 @@ Route::group(['prefix' => 'images', 'middleware' => 'power:edit_site_settings'],
     Route::post('reset', 'FileController@postResetFile');
 });
 
+# THEME EDITOR
+Route::group(['prefix' => 'theme-editor', 'middleware' => 'power:edit_site_settings'], function() {
+    Route::get('/', 'ThemeEditorController@getThemeEditor');
+    Route::get('create', 'ThemeEditorController@getCreateTheme');
+    Route::get('edit/{id}', 'ThemeEditorController@getEditTheme');
+
+    Route::post('create', 'ThemeEditorController@postCreateEditTheme');
+    Route::post('/edit/{id?}', 'ThemeEditorController@postCreateEditTheme');
+    Route::post('delete/{id}', 'ThemeEditorController@postDeleteTheme');
+});
+
+
 # DATA
 Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:edit_data'], function() {
 

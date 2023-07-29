@@ -202,6 +202,10 @@ return [
                 'name' => 'File Manager',
                 'url' => 'admin/files'
             ],
+            [
+                'name' => 'Theme Editor',
+                'url' => 'admin/theme-editor'
+            ],
         ]
     ],
 ];
