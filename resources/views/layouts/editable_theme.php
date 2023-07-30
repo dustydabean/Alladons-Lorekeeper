@@ -3,10 +3,17 @@
 
     use App\Models\ThemeEditor;
 
-    $userThemeId = Auth::user()->settings->theme_id;
     $defaultThemeId = Settings::get('default_theme');
-    $theme = (isset($userThemeId)) ? ThemeEditor::find($userThemeId) : ThemeEditor::find($defaultThemeId);
     
+    //check if user exits. If yes, find if they have a set theme. 
+    if(Auth::user() != null){
+        $userThemeId = Auth::user()->settings->theme_id;
+        $theme = (isset($userThemeId) && $userThemeId > 0) ? ThemeEditor::find($userThemeId) : ThemeEditor::find($defaultThemeId);    
+    } else {
+        //if not, we just return the default
+        $theme = ThemeEditor::find($defaultThemeId);
+    }
+
     if(isset($defaultThemeId) && $theme != null){
         $titleColor = $theme->title_color;
         $navBarColor = $theme->nav_color; 

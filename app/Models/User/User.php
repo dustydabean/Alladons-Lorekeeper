@@ -102,7 +102,7 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
-     * Get user-editable profile data.
+     * Get user theme.
      */
     public function theme()
     {
