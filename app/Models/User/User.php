@@ -102,6 +102,14 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Get user-editable profile data.
+     */
+    public function theme()
+    {
+        return $this->hasOne('App\Models\ThemeEditor');
+    }
+
+    /**
      * Get the user's aliases.
      */
     public function aliases()

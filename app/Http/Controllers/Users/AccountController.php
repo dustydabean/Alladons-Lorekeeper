@@ -12,6 +12,7 @@ use App\Models\User\UserAlias;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Notification;
+use App\Models\ThemeEditor;
 
 use App\Services\UserService;
 use App\Services\LinkService;
@@ -49,7 +50,19 @@ class AccountController extends Controller
      */
     public function getSettings()
     {
-        return view('account.settings');
+        $user = Auth::user();
+
+        if($user->isStaff || $user->isAdmin){
+            // staff can always see all themes even if unreleased
+            $themes = ['0' => 'Select Theme'] + ThemeEditor::orderBy('name', 'DESC')->pluck('name', 'id')->toArray();
+        } else {
+            // members can only see themes marked as released
+            $themes = ['0' => 'Select Theme'] + ThemeEditor::orderBy('name', 'DESC')->released()->pluck('name', 'id')->toArray();
+        }
+
+        return view('account.settings', [
+            'themes' => $themes,
+        ]);
     }
     
     /**
@@ -65,6 +78,23 @@ class AccountController extends Controller
             'parsed_text' => parse($request->get('text'))
         ]);
         flash('Profile updated successfully.')->success();
+        return redirect()->back();
+    }
+
+    /**
+     * Edits the user's theme.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postTheme(Request $request, UserService $service)
+    {
+        if($service->updateTheme($request->input('theme_id'), Auth::user())) {
+            flash('Setting updated successfully.')->success();
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
         return redirect()->back();
     }
 
