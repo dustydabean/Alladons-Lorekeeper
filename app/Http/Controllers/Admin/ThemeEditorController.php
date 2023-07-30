@@ -8,7 +8,7 @@ use Auth;
 use Config;
 
 use App\Models\ThemeEditor;
-use App\Services\ThemeEditormanager;
+use App\Services\ThemeEditorManager;
 
 use App\Http\Controllers\Controller;
 
@@ -59,10 +59,10 @@ class ThemeEditorController extends Controller
      * Creates a new theme.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  App\Services\FileManager  $service
+     * @param  App\Services\ThemeEditorManager  $service
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postCreateEditTheme(Request $request, ThemeEditormanager $service, $id = null)
+    public function postCreateEditTheme(Request $request, ThemeEditorManager $service, $id = null)
     {
         $data = $request->only([
             'name', 'title_color', 'nav_color', 'nav_text_color', 'header_image_display', 'header_image_url', 'background_color', 'background_image_url', 'background_size', 
@@ -90,7 +90,7 @@ class ThemeEditorController extends Controller
      * @param  int                       $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postDeleteTheme(Request $request, ThemeEditormanager $service, $id)
+    public function postDeleteTheme(Request $request, ThemeEditorManager $service, $id)
     {
         if($id && $service->deleteTheme(ThemeEditor::find($id))) {
             flash('Theme deleted successfully.')->success();

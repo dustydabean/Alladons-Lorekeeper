@@ -64,13 +64,13 @@
     background-image: url('<?php echo $headerImage; ?>') !important;
 }
 
-#headerNav {
+#headerNav, .sidebar-header, .sidebar a.active, .sidebar a.active:hover {
     background-color: <?php echo $navBarColor; ?>!important;
     color: <?php echo $navTextColor; ?>!important;
 }
 
 .dropdown-item:hover, .sidebar a:hover, .sidebar a:active, .selectize-dropdown .active {
-  filter: brightness(120%);
+  filter: brightness(115%);
 }
 
 .navbar-dark .navbar-nav .nav-link {
@@ -95,7 +95,7 @@
 }
 
 .main-content, .modal-content, 
-.sidebar-section, .sidebar a:hover, .sidebar a:active, .sidebar-item, 
+.sidebar-section, .sidebar-item, .sidebar a:hover, .sidebar a:active, 
 option:hover, .form-control, .selectize-input, .selectize-dropdown .active, 
 ::placeholder, .breadcrumb-item, 
 .dropdown-item:hover, .dropdown-item, .dropdown-menu {
@@ -116,16 +116,16 @@ option:hover, .form-control, .selectize-input, .selectize-dropdown .active,
 
 /** Style links&buttons */
 
-a:not(.btn, .navbar-brand, .card-link, .dropdown-item), a strong, .text-muted {
+a:not(.btn, .navbar-brand, .card-link, .dropdown-item):not(.sidebar-item > a), a strong, .text-muted {
     color: <?php echo $linkColor; ?>!important;
 }
 
-.btn-primary{
+.btn-primary, .page-item.active .page-link {
     background-color: <?php echo $primaryButtonColor; ?>!important;
     border-color: <?php echo $primaryButtonColor; ?>!important;
 }
 
-.btn-secondary{
+.btn-secondary {
     background-color: <?php echo $secondaryButtonColor; ?>!important;
     border-color: <?php echo $secondaryButtonColor; ?>!important;
 }
