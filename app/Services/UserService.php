@@ -161,6 +161,17 @@ class UserService extends Service
         return true;
     }
 
+        /**
+     * Updates user's birthday setting
+     */
+    public function updateTheme($data, $user)
+    {
+        $user->settings->theme_id = $data;
+        $user->settings->save();
+
+        return true;
+    }
+
     /**
      * Updates the user's avatar.
      *

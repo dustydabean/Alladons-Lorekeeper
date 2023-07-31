@@ -38,6 +38,22 @@
 </div>
 
 <div class="card p-3 mb-2">
+    <h3>Site Theme</h3>
+    {!! Form::open(['url' => 'account/theme']) !!}
+        <div class="form-group row">
+            <label class="col-md-2 col-form-label">Themes</label>
+            <div class="col-md-10">
+                {!! Form::select('theme_id', $themes, Auth::user()->settings->theme_id, ['class' => 'form-control']) !!}
+            </div>
+        </div>
+        <div class="text-right">
+            {!! Form::submit('Edit', ['class' => 'btn btn-primary']) !!}
+        </div>
+    {!! Form::close() !!}
+</div>
+
+
+<div class="card p-3 mb-2">
     <h3>Birthday Publicity</h3>
     {!! Form::open(['url' => 'account/dob']) !!}
         <div class="form-group row">

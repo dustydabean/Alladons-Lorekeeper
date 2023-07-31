@@ -55,6 +55,7 @@
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/lorekeeper.css') }}" rel="stylesheet">
+    @include('layouts.editable_theme')
 
     {{-- Font Awesome --}}
     <link href="{{ asset('css/all.min.css') }}" rel="stylesheet">
@@ -103,7 +104,7 @@
 			<div class="site-mobile-header bg-secondary"><a href="#" class="btn btn-sm btn-outline-light" id="mobileMenuButton">Menu <i class="fas fa-caret-right ml-1"></i></a></div>
 		@endif
 
-        <main class="container-fluid">
+        <main class="container-fluid" id="main">
             <div class="row">
 
                 <div class="sidebar col-lg-2" id="sidebar">
