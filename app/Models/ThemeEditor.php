@@ -41,7 +41,9 @@ class ThemeEditor extends Model
      * @var array
      */
     public static $createRules = [
-
+        'name' => ['required'],
+        'header_image_url' => ['nullable', 'regex:/(https?):\/\/(www\.)?[\w.-]+\.[a-zA-Z]+\/((([\w\/-]+)\/)?[\w.-]+\.(png|gif|jpe?g)$)/'],
+        'background_image_url' => ['nullable', 'regex:/(https?):\/\/(www\.)?[\w.-]+\.[a-zA-Z]+\/((([\w\/-]+)\/)?[\w.-]+\.(png|gif|jpe?g)$)/']
     ];
     
     /**
@@ -50,7 +52,9 @@ class ThemeEditor extends Model
      * @var array
      */
     public static $updateRules = [
-
+        'name' => ['required'],
+        'header_image_url' => ['nullable', 'regex:/(https?):\/\/(www\.)?[\w.-]+\.[a-zA-Z]+\/((([\w\/-]+)\/)?[\w.-]+\.(png|gif|jpe?g)$)/'],
+        'background_image_url' => ['nullable', 'regex:/(https?):\/\/(www\.)?[\w.-]+\.[a-zA-Z]+\/((([\w\/-]+)\/)?[\w.-]+\.(png|gif|jpe?g)$)/']
     ];
 
     public function scopeReleased($query)
