@@ -77,15 +77,14 @@
     @endif
 
     @php $theme = Auth::user()->theme ?? $defaultTheme ?? null; @endphp
-    @if(!$theme?->prioritize_css) @include('layouts.editable_theme') @endif
     <link href="{{ $theme?->cssUrl }}" rel="stylesheet">
-    @if($theme?->prioritize_css) @include('layouts.editable_theme') @endif
+    @include('layouts.editable_theme')
 
 </head>
 <body>
     <div id="app">
 
-        <div class="site-header-image" id="header" style="background-image: url('{{ $theme?->imageUrl ?? asset('images/header.png') }}');"></div>
+        <div class="site-header-image" id="header" style="background-image: url('{{ $theme?->headerImageUrl ?? asset('images/header.png') }}');"></div>
 
         @include('layouts._nav')
         @if ( View::hasSection('sidebar') )

@@ -43,7 +43,7 @@
         <div class="form-group row">
             <label class="col-md-2 col-form-label">Themes</label>
             <div class="col-md-10">
-                {!! Form::select('theme_id', $themes, Auth::user()->settings->theme_id, ['class' => 'form-control']) !!}
+                {!! Form::select('theme', $themeOptions, Auth::user()->theme_id, ['class' => 'form-control']) !!}
             </div>
         </div>
         <div class="text-right">

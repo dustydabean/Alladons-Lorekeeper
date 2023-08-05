@@ -51,16 +51,15 @@ class AccountController extends Controller {
         $user = Auth::user();
 
         if ($user->isStaff || $user->isAdmin) {
-            // staff can always see all themes even if unreleased
-            $themes = ['0' => 'Select Theme'] + ThemeEditor::orderBy('name', 'DESC')->pluck('name', 'id')->toArray();
+            // staff can see all active themes
+            $themeOptions = ['0' => 'Select Theme'] + Theme::where('is_active', 1)->get()->pluck('displayName', 'id')->toArray();
         } else {
-            // members can only see themes marked as released
-            $themes = ['0' => 'Select Theme'] + ThemeEditor::orderBy('name', 'DESC')->released()->pluck('name', 'id')->toArray();
+            // members can only see active themes that are user selectable
+            $themeOptions = ['0' => 'Select Theme'] + Theme::where('is_active', 1)->where()->get('is_user_selectable', 1)->pluck('displayName', 'id')->toArray();
         }
 
         return view('account.settings', [
-            'themeOptions' => Theme::where('is_active', 1)->get()->pluck('displayName', 'id')->toArray(),
-            'themes' => $themes,
+            'themeOptions' => $themeOptions,
         ]);
     }
 
@@ -76,21 +75,6 @@ class AccountController extends Controller {
             'parsed_text' => parse($request->get('text'))
         ]);
         flash('Profile updated successfully.')->success();
-        return redirect()->back();
-    }
-
-    /**
-     * Edits the user's theme.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function postTheme(Request $request, UserService $service) {
-        if ($service->updateTheme($request->input('theme_id'), Auth::user())) {
-            flash('Setting updated successfully.')->success();
-        } else {
-            foreach ($service->errors()->getMessages()['error'] as $error) flash($error)->error();
-        }
         return redirect()->back();
     }
 
@@ -123,6 +107,7 @@ class AccountController extends Controller {
         }
         return redirect()->back();
     }
+
 
     /**
      * Changes the user's password.

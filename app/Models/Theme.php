@@ -20,7 +20,7 @@ class Theme extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'hash', 'is_default', 'is_active', 'has_css', 'has_header', 'extension', 'creators', 'prioritize_css', 'link_id', 'link_types', 'is_user_selectable'
+        'name', 'hash', 'is_default', 'is_active', 'has_css', 'has_header', 'has_background', 'extension', 'extension_background', 'creators', 'prioritize_css', 'link_id', 'link_types', 'is_user_selectable'
     ];
 
     /**
@@ -38,6 +38,7 @@ class Theme extends Model
     public static $createRules = [
         'name' => 'required|unique:themes|between:3,100',
         'header' => 'mimes:png,jpg,jpeg,gif,svg',
+        'background' => 'mimes:png,jpg,jpeg',
         'active' => 'nullable|boolean',
         'default' => 'nullable|boolean',
     ];
@@ -50,6 +51,7 @@ class Theme extends Model
     public static $updateRules = [
         'name' => 'required|between:3,100',
         'header' => 'mimes:png,jpg,jpeg,gif,svg',
+        'background' => 'mimes:png,jpg,jpeg',
         'active' => 'nullable|boolean',
         'default' => 'nullable|boolean',
     ];
@@ -182,13 +184,23 @@ class Theme extends Model
     }
 
     /**
-     * Gets the file name of the model's image.
+     * Gets the file name of the model's header image.
      *
      * @return string
      */
-    public function getImageFileNameAttribute()
+    public function getHeaderImageFileNameAttribute()
     {
         return $this->id . '-header.'.$this->extension;
+    }
+
+    /**
+     * Gets the file name of the model's background image.
+     *
+     * @return string
+     */
+    public function getBackgroundImageFileNameAttribute()
+    {
+        return $this->id . '-background.'.$this->extension_background;
     }
 
     /**
@@ -206,10 +218,21 @@ class Theme extends Model
      *
      * @return string
      */
-    public function getImageUrlAttribute()
+    public function getHeaderImageUrlAttribute()
     {
         if (!$this->has_header && !$this->themeEditor->header_image_url) return asset('images/header.png');
-        return $this->extension ? asset($this->imageDirectory . '/' . $this->imageFileName . '?' . $this->hash) : $this->themeEditor->header_image_url;
+        return $this->extension ? asset($this->imageDirectory . '/' . $this->headerImageFileName . '?' . $this->hash) : $this->themeEditor->header_image_url;
+    }
+
+    /**
+     * Gets the URL of the model's background image.
+     *
+     * @return string
+     */
+    public function getBackgroundImageUrlAttribute()
+    {
+        if (!$this->has_background && !$this->themeEditor->background_image_url) return '';
+        return $this->extension_background ? asset($this->imageDirectory . '/' . $this->backgroundImageFileName . '?' . $this->hash) : $this->themeEditor->background_image_url;
     }
 
     /**

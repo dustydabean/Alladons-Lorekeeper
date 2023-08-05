@@ -70,38 +70,6 @@
     </div>
 </div>
 
-<h5>Header Image</h5>
-<p>The Header Image can be uploaded directly or specified by url. Finally you can turn the header off entirely and have just the top nav.</p>
-<div class="row">
-    <div class="col-md-4">
-        <div class="form-group">
-            @if($theme->has_header) <a href="{{ $theme->imageUrl }}"><i class="fas fa-link"></i></a> @endif
-            {!! Form::label('Header Image') !!}
-            <div>{!! Form::file('header') !!}</div>
-            <div class="text-muted">Header image.</div>
-            @if($theme->has_header)
-                <div class="form-check">
-                    {!! Form::checkbox('remove_header', 1, false, ['class' => 'form-check-input']) !!}
-                    {!! Form::label('remove_header', 'Remove current header', ['class' => 'form-check-label']) !!}
-                </div>
-            @endif
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="form-group">
-            {!! Form::label('Header Image Url') !!}
-            {!! Form::text('header_image_url', $theme->themeEditor->header_image_url, ['class' => 'form-control']) !!}
-        </div>
-    </div>
-    <div class="col-md-4">
-        {!! Form::label('Show header image') !!}
-        <div class="form-group">
-            {!! Form::checkbox('header_image_display', 1, $theme->themeEditor->header_image_display == 'inline' ?? 1, ['class' => 'form-check-input form-control', 'data-toggle' => 'toggle']) !!}
-        </div>
-    </div>
-</div>
-
-
 <h5>CSS File</h5>
 <p></p>
 <div class="row">
@@ -122,12 +90,60 @@
 </div>
 
 <hr>
-<h5>Background Image</h5>
+
+<h5>Header Image</h5>
+<p>The Header Image can be uploaded directly or specified by url. Finally you can turn the header off entirely and have just the top nav.</p>
 <div class="row">
     <div class="col-md-4">
         <div class="form-group">
+            @if($theme->has_header) <a href="{{ $theme->headerImageUrl }}"><i class="fas fa-link"></i></a> @endif
+            {!! Form::label('Header Image') !!}
+            <div>{!! Form::file('header') !!}</div>
+            <div class="text-muted">Header image.</div>
+            @if($theme->has_header)
+                <div class="form-check">
+                    {!! Form::checkbox('remove_header', 1, false, ['class' => 'form-check-input']) !!}
+                    {!! Form::label('remove_header', 'Remove current header', ['class' => 'form-check-label']) !!}
+                </div>
+            @endif
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            {!! Form::label('Header Image Url') !!}
+            {!! Form::text('header_image_url', $theme->themeEditor ? $theme->themeEditor->header_image_url : '', ['class' => 'form-control']) !!}
+        </div>
+    </div>
+    <div class="col-md-4">
+        {!! Form::label('Show header image') !!}
+        <div class="form-group">
+            {!! Form::checkbox('header_image_display', 1,  $theme->themeEditor ? $theme->themeEditor->header_image_display == 'inline' : 1 ?? 1, ['class' => 'form-check-input form-control', 'data-toggle' => 'toggle']) !!}
+        </div>
+    </div>
+</div>
+
+<h5>Background Image</h5>
+<p>The Background Image can be uploaded directly or specified by url. If you only specify a color there will be no background image.</p>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="form-group">
+            @if($theme->has_background) <a href="{{ $theme->backgroundImageUrl }}"><i class="fas fa-link"></i></a> @endif
+            {!! Form::label('Background Image') !!}
+            <div>{!! Form::file('background') !!}</div>
+            <div class="text-muted">Background image.</div>
+            @if($theme->has_background)
+                <div class="form-check">
+                    {!! Form::checkbox('remove_background', 1, false, ['class' => 'form-check-input']) !!}
+                    {!! Form::label('remove_background', 'Remove current background', ['class' => 'form-check-label']) !!}
+                </div>
+            @endif
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
             {!! Form::label('Background Image Url') !!}
-            {!! Form::text('background_image_url', $theme->themeEditor->background_image_url, ['class' => 'form-control']) !!}
+            {!! Form::text('background_image_url', $theme->themeEditor ? $theme->themeEditor->background_image_url : '', ['class' => 'form-control']) !!}
         </div>
     </div>
     <div class="col-md-4">
@@ -144,7 +160,7 @@
     <div class="col-md-4">
         {!! Form::label('Background Repeat') !!}{!! add_help('If this is turned on, your background image will repeat to fill the page. If turned off, your background image will cover the width of the screen.') !!}
         <div class="form-group">
-            {!! Form::checkbox('background_size', 1, $theme->themeEditor->background_size == 'cover' ?? 1, ['class' => 'form-check-input form-control', 'data-toggle' => 'toggle']) !!}
+            {!! Form::checkbox('background_size', 1, $theme->themeEditor ? $theme->themeEditor->background_size == 'cover' : 1 ?? 1, ['class' => 'form-check-input form-control', 'data-toggle' => 'toggle']) !!}
         </div>
     </div>
 </div>
@@ -219,7 +235,7 @@
 <h5>Card Content</h5>
 <p>These colors also affect list groups and the nav tabs.</p>
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="form-group">
             {!! Form::label('Select card color') !!}
             <div class="input-group cp">
@@ -230,7 +246,18 @@
             </div>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
+        <div class="form-group">
+            {!! Form::label('Select card text color') !!}
+            <div class="input-group cp">
+                {!! Form::text('card_text_color', $theme->themeEditor->card_text_color ?? '#000', ['class' => 'form-control']) !!}
+                <span class="input-group-append">
+                    <span class="input-group-text colorpicker-input-addon"><i></i></span>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
         <div class="form-group">
             {!! Form::label('Select card header color') !!}
             <div class="input-group cp">
@@ -241,11 +268,11 @@
             </div>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="form-group">
-            {!! Form::label('Select card text color') !!}
+            {!! Form::label('Select card header text color') !!}
             <div class="input-group cp">
-                {!! Form::text('card_text_color', $theme->themeEditor->card_text_color ?? '#000', ['class' => 'form-control']) !!}
+                {!! Form::text('card_header_text_color', $theme->themeEditor->card_header_text_color ?? '#fff', ['class' => 'form-control']) !!}
                 <span class="input-group-append">
                     <span class="input-group-text colorpicker-input-addon"><i></i></span>
                 </span>
