@@ -6,18 +6,25 @@
         $navBarColor = $theme->themeEditor->nav_color; 
         $navTextColor  = $theme->themeEditor->nav_text_color; 
         $headerImageDisplay = $theme->themeEditor->header_image_display;
-        $backgroundColor = $theme->themeEditor->background_color; 
-        $backgroundImage = $theme->themeEditor->background_image_url; 
+        $backgroundColor = $theme->themeEditor->background_color;
+        $backgroundImage = $theme->backgroundImageUrl; 
         $backgroundSize = $theme->themeEditor->background_size; 
         $mainMarginTop = ($headerImageDisplay == 'none') ? 50 : 0;
         $mainColor = $theme->themeEditor->main_color;  
         $mainTextColor = $theme->themeEditor->main_text_color;  
         $cardColor = $theme->themeEditor->card_color;  
-        $cardHeaderColor = $theme->themeEditor->card_header_color;  
         $cardTextColor = $theme->themeEditor->card_text_color;  
+        $cardHeaderColor = $theme->themeEditor->card_header_color;  
+        $cardHeaderTextColor = $theme->themeEditor->card_header_text_color;  
         $linkColor = $theme->themeEditor->link_color;  
         $primaryButtonColor = $theme->themeEditor->primary_button_color;  
-        $secondaryButtonColor = $theme->themeEditor->secondary_button_color;  
+        $secondaryButtonColor = $theme->themeEditor->secondary_button_color;
+        $commentStart = '';
+        $commentEnd = '';
+        if($theme->has_css){
+            $commentStart = '/*';
+            $commentEnd = '*/';
+        }
 
     } else {
         # mimic default lorekeeper behavior
@@ -58,15 +65,25 @@
   filter: brightness(115%);
 }
 
-.navbar-dark .navbar-nav .nav-link {
-    color: <?php echo $navTextColor; ?>!important;
+.navbar-dark .navbar-nav .nav-link, .nav-tabs .nav-link {
+    color: <?php echo $cardHeaderTextColor; ?>!important;
 }
 
 .navbar-brand {
     color: <?php echo $titleColor; ?>!important;
 }
 
-/** Style the main content + sidebars and make buttons/forms/cards fit */
+/** Style card header */
+
+.card-header {
+    background-color: <?php echo $cardHeaderColor; ?>!important;
+}
+
+.card-title a, .card-title {
+    color: <?php echo $cardHeaderTextColor; ?>!important;
+}
+
+/** Style main background */
 
 #main {
     background-image: url('<?php echo $backgroundImage; ?>');
@@ -74,6 +91,24 @@
     background-size: 100% <?php echo $backgroundSize; ?>;
     background-repeat: repeat;
 }
+
+
+/** Style &buttons */
+
+.btn-primary, .page-item.active .page-link {
+    background-color: <?php echo $primaryButtonColor; ?>!important;
+    border-color: <?php echo $primaryButtonColor; ?>!important;
+}
+
+.btn-secondary {
+    background-color: <?php echo $secondaryButtonColor; ?>!important;
+    border-color: <?php echo $secondaryButtonColor; ?>!important;
+}
+
+
+/** Style the main content + sidebars and make links/forms/cards fit. This part gets commented out if a css theme is used! */
+
+<?php echo $commentStart; ?>
 
 .main-content, .sidebar {
     margin-top: <?php echo $mainMarginTop; ?>px;
@@ -88,32 +123,16 @@ option:hover, .form-control, .selectize-input, .selectize-dropdown .active,
     color: <?php echo $mainTextColor; ?>!important;
 }
 
-/** Style cards */
-
-.card-header {
-    background-color: <?php echo $cardHeaderColor; ?>!important;
-}
-
 .card, .list-group-item, .nav-tabs .active {
     background-color: <?php echo $cardColor; ?>!important;
     color: <?php echo $cardTextColor; ?>!important;
 }
 
-/** Style links&buttons */
-
 a:not(.btn, .navbar-brand, .card-link, .dropdown-item):not(.sidebar-item > a), a strong, .text-muted {
     color: <?php echo $linkColor; ?>!important;
 }
 
-.btn-primary, .page-item.active .page-link {
-    background-color: <?php echo $primaryButtonColor; ?>!important;
-    border-color: <?php echo $primaryButtonColor; ?>!important;
-}
-
-.btn-secondary {
-    background-color: <?php echo $secondaryButtonColor; ?>!important;
-    border-color: <?php echo $secondaryButtonColor; ?>!important;
-}
+<?php echo $commentEnd; ?>
 
 </style>
 

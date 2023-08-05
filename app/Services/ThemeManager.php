@@ -43,6 +43,14 @@ class ThemeManager extends Service
             }
             else $data['has_header'] = 0;
 
+            $background = null;
+            if(isset($data['background']) && $data['background']) {
+                $data['has_background'] = 1;
+                $background = $data['background'];
+                unset($data['background']);
+            }
+            else $data['has_background'] = 0;
+
             $css = null;
             if(isset($data['css']) && $data['css']) {
                 $data['has_css'] = 1;
@@ -59,11 +67,15 @@ class ThemeManager extends Service
             if ($header) {
                 $theme->extension = $header->getClientOriginalExtension();
                 $theme->update();
-                $this->handleImage($header, $theme->imagePath, $theme->imageFileName, null);
+                $this->handleImage($header, $theme->imagePath, $theme->headerImageFileName, null);
             }
+            if ($background) {
+                $theme->extension_background = $background->getClientOriginalExtension();
+                $theme->update();
+                $this->handleImage($background, $theme->imagePath, $theme->backgroundImageFileName, null);
+            }
+
             if ($css) $this->handleImage($css, $theme->imagePath, $theme->cssFileName, null);
-            
-            
 
             return $this->commitReturn($theme);
         } catch(\Exception $e) {
@@ -94,12 +106,21 @@ class ThemeManager extends Service
 
             $header = null;
             if(isset($data['header']) && $data['header']) {
-                if (isset($theme->extension)) $old = $theme->imageFileName;
+                if (isset($theme->extension)) $old = $theme->headerImageFileName;
                 else $old = null;
                 $data['has_header'] = 1;
                 $header = $data['header'];
                 unset($data['header']);
             }
+            $background = null;
+            if(isset($data['background']) && $data['background']) {
+                if (isset($theme->extension_background)) $old = $theme->backgroundImageFileName;
+                else $old = null;
+                $data['has_background'] = 1;
+                $background = $data['background'];
+                unset($data['background']);
+            }
+
             $css = null;
             if(isset($data['css']) && $data['css']) {
                 $data['has_css'] = 1;
@@ -115,12 +136,17 @@ class ThemeManager extends Service
                 $themeEditor->save();
             }
                 
-
             if ($header) {
                 $theme->extension = $header->getClientOriginalExtension();
                 $theme->update();
-                $this->handleImage($header, $theme->imagePath, $theme->imageFileName, $old);
+                $this->handleImage($header, $theme->imagePath, $theme->headerImageFileName, $old);
             }
+            if ($background) {
+                $theme->extension_background = $background->getClientOriginalExtension();
+                $theme->update();
+                $this->handleImage($background, $theme->imagePath, $theme->backgroundImageFileName, $old);
+            }
+
             if($css) $this->handleImage($css, $theme->imagePath, $theme->cssFileName);
 
             return $this->commitReturn($theme);
@@ -173,9 +199,18 @@ class ThemeManager extends Service
         if(isset($data['remove_header']) && isset($theme->extension) && $data['remove_header'])
         {
             $data['extension'] = null;
-            $this->deleteImage($theme->imagePath, $theme->imageFileName);
+            $this->deleteImage($theme->imagePath, $theme->headerImageFileName);
             unset($data['remove_image']);
             $data['has_header'] = 0;
+        }
+
+        // Remove Background
+        if(isset($data['remove_background']) && isset($theme->extension_background) && $data['remove_background'])
+        {
+            $data['extension_background'] = null;
+            $this->deleteImage($theme->imagePath, $theme->backgroundImageFileName);
+            unset($data['remove_image']);
+            $data['has_background'] = 0;
         }
 
         // Remove Css
@@ -205,7 +240,8 @@ class ThemeManager extends Service
                 $user->update(['theme_id' => null]);
             }
 
-            if($theme->has_header) $this->deleteImage($theme->imagePath, $theme->imageFileName);
+            if($theme->has_header) $this->deleteImage($theme->imagePath, $theme->headerImageFileName);
+            if($theme->has_background) $this->deleteImage($theme->imagePath, $theme->backgroundImageFileName);
             if($theme->has_css) $this->deleteImage($theme->imagePath, $theme->cssFileName);
             $theme->delete();
 
