@@ -20,7 +20,7 @@ class Theme extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'hash', 'is_default', 'is_active', 'has_css', 'has_header', 'extension', 'creators'
+        'name', 'hash', 'is_default', 'is_active', 'has_css', 'has_header', 'extension', 'creators', 'prioritize_css', 'link_id', 'link_types', 'is_user_selectable'
     ];
 
     /**
@@ -38,11 +38,8 @@ class Theme extends Model
     public static $createRules = [
         'name' => 'required|unique:themes|between:3,100',
         'header' => 'mimes:png,jpg,jpeg,gif,svg',
-        'css' => 'required',
         'active' => 'nullable|boolean',
         'default' => 'nullable|boolean',
-        'creator_name' => 'required',
-        'creator_url' => 'required',
     ];
 
     /**
@@ -53,11 +50,8 @@ class Theme extends Model
     public static $updateRules = [
         'name' => 'required|between:3,100',
         'header' => 'mimes:png,jpg,jpeg,gif,svg',
-        'css' => 'nullable',
         'active' => 'nullable|boolean',
         'default' => 'nullable|boolean',
-        'creator_name' => 'required',
-        'creator_url' => 'required',
     ];
 
     /**********************************************************************************************
@@ -67,11 +61,18 @@ class Theme extends Model
     **********************************************************************************************/
 
     /**
-     * Get the category the theme belongs to.
+     * Get the users who are using this theme.
      */
     public function users()
     {
         return $this->hasMany('App\Models\User\User', 'theme_id');
+    }
+
+    /** 
+     * Get the ThemeEditor attached to this theme
+     */
+    public function themeEditor() {
+        return $this->hasOne('App\Models\ThemeEditor', 'theme_id');
     }
 
     /**********************************************************************************************
@@ -207,8 +208,8 @@ class Theme extends Model
      */
     public function getImageUrlAttribute()
     {
-        if (!$this->has_header) return asset('images/header.png');
-        return asset($this->imageDirectory . '/' . $this->imageFileName . '?' . $this->hash);
+        if (!$this->has_header && !$this->themeEditor->header_image_url) return asset('images/header.png');
+        return $this->extension ? asset($this->imageDirectory . '/' . $this->imageFileName . '?' . $this->hash) : $this->themeEditor->header_image_url;
     }
 
     /**

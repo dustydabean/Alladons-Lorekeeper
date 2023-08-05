@@ -17,7 +17,7 @@ class ThemeEditor extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'title_color', 'nav_color', 'nav_text_color', 'header_image_display', 'header_image_url', 'background_color', 'background_image_url', 'background_size', 
+        'name', 'theme_id', 'title_color', 'nav_color', 'nav_text_color', 'header_image_display', 'header_image_url', 'background_color', 'background_image_url', 'background_size', 
         'main_color', 'main_text_color', 'card_color', 'card_header_color', 'card_text_color', 'link_color', 'primary_button_color', 'secondary_button_color', 'is_released'
     ];
 

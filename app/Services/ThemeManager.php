@@ -52,6 +52,9 @@ class ThemeManager extends Service
             else $data['has_css'] = 0;
 
             $theme = Theme::create($data);
+            $themeEditor = (new ThemeEditorManager)->createTheme($data, $user);
+            $themeEditor->theme_id = $theme->id;
+            $themeEditor->save();
 
             if ($header) {
                 $theme->extension = $header->getClientOriginalExtension();
@@ -59,6 +62,8 @@ class ThemeManager extends Service
                 $this->handleImage($header, $theme->imagePath, $theme->imageFileName, null);
             }
             if ($css) $this->handleImage($css, $theme->imagePath, $theme->cssFileName, null);
+            
+            
 
             return $this->commitReturn($theme);
         } catch(\Exception $e) {
@@ -89,7 +94,7 @@ class ThemeManager extends Service
 
             $header = null;
             if(isset($data['header']) && $data['header']) {
-                if(isset($category->extension)) $old = $category->imageFileName;
+                if (isset($theme->extension)) $old = $theme->imageFileName;
                 else $old = null;
                 $data['has_header'] = 1;
                 $header = $data['header'];
@@ -102,6 +107,14 @@ class ThemeManager extends Service
                 unset($data['css']);
             }
             $theme->update($data);
+            if ($theme->themeEditor) {
+                $themeEditor = (new ThemeEditorManager)->updateTheme($theme->themeEditor, $data, $user);
+            } else {
+                $themeEditor = (new ThemeEditorManager)->createTheme($data, $user);
+                $themeEditor->theme_id = $theme->id;
+                $themeEditor->save();
+            }
+                
 
             if ($header) {
                 $theme->extension = $header->getClientOriginalExtension();

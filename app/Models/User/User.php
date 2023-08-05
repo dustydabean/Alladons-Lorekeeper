@@ -109,13 +109,13 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasOne('App\Models\User\UserProfile');
     }
 
-    /**
-     * Get user theme.
-     */
-    public function theme()
-    {
-        return $this->hasOne('App\Models\ThemeEditor');
-    }
+    // /**
+    //  * Get user theme.
+    //  */
+    // public function themeEditor()
+    // {
+    //     return $this->hasOne('App\Models\ThemeEditor');
+    // }
 
     /**
      * Get the user's aliases.

@@ -99,9 +99,7 @@ class ThemeController extends Controller
     public function postCreateEditTheme(Request $request, ThemeManager $service, $id = null)
     {
         $id ? $request->validate(Theme::$updateRules) : $request->validate(Theme::$createRules);
-        $data = $request->only([
-            'name', 'creator_name', 'creator_url', 'header', 'css', 'is_active', 'is_default', 'remove_header', 'remove_css'
-        ]);
+        $data = $request->all();
 
         if($id && $service->updateTheme(Theme::find($id), $data, Auth::user())) {
             flash('Theme updated successfully.')->success();

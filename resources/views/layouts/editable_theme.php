@@ -1,44 +1,30 @@
 <?php
     header("Content-type: text/css; charset: UTF-8"); //interpret as css file
 
-    use App\Models\ThemeEditor;
-
-    $defaultThemeId = Settings::get('default_theme');
-    
-    //check if user exits. If yes, find if they have a set theme. 
-    if(Auth::user() != null){
-        $userThemeId = Auth::user()->settings->theme_id;
-        $theme = (isset($userThemeId) && $userThemeId > 0) ? ThemeEditor::find($userThemeId) : ThemeEditor::find($defaultThemeId);    
-    } else {
-        //if not, we just return the default
-        $theme = ThemeEditor::find($defaultThemeId);
-    }
-
-    if(isset($defaultThemeId) && $theme != null){
-        $titleColor = $theme->title_color;
-        $navBarColor = $theme->nav_color; 
-        $navTextColor  = $theme->nav_text_color; 
-        $headerImageDisplay = $theme->header_image_display; 
-        $headerImage = $theme->header_image_url; 
-        $backgroundColor = $theme->background_color; 
-        $backgroundImage = $theme->background_image_url; 
-        $backgroundSize = $theme->background_size; 
+    if ($theme) {
+        $titleColor = $theme->themeEditor->title_color;
+        $navBarColor = $theme->themeEditor->nav_color; 
+        $navTextColor  = $theme->themeEditor->nav_text_color; 
+        $headerImageDisplay = $theme->themeEditor->header_image_display;
+        $backgroundColor = $theme->themeEditor->background_color; 
+        $backgroundImage = $theme->themeEditor->background_image_url; 
+        $backgroundSize = $theme->themeEditor->background_size; 
         $mainMarginTop = ($headerImageDisplay == 'none') ? 50 : 0;
-        $mainColor = $theme->main_color;  
-        $mainTextColor = $theme->main_text_color;  
-        $cardColor = $theme->card_color;  
-        $cardHeaderColor = $theme->card_header_color;  
-        $cardTextColor = $theme->card_text_color;  
-        $linkColor = $theme->link_color;  
-        $primaryButtonColor = $theme->primary_button_color;  
-        $secondaryButtonColor = $theme->secondary_button_color;  
+        $mainColor = $theme->themeEditor->main_color;  
+        $mainTextColor = $theme->themeEditor->main_text_color;  
+        $cardColor = $theme->themeEditor->card_color;  
+        $cardHeaderColor = $theme->themeEditor->card_header_color;  
+        $cardTextColor = $theme->themeEditor->card_text_color;  
+        $linkColor = $theme->themeEditor->link_color;  
+        $primaryButtonColor = $theme->themeEditor->primary_button_color;  
+        $secondaryButtonColor = $theme->themeEditor->secondary_button_color;  
 
     } else {
         # mimic default lorekeeper behavior
         #navbar colors
         $titleColor = "#ffffff";
-        $navBarColor = "#343a40"; 
-        $navTextColor  = "#ffffff";
+        $navBarColor = "#343a40";
+        $navTextColor  = "hsla(0,0%,100%,.5)";
         $headerImageDisplay = 'inline';  // none or inline depending on toggle
         $headerImage = '/images/header.png'; // url to uploaded header image
         $backgroundColor = '#ddd';  
@@ -61,7 +47,6 @@
 /** Style the site header and nav */
 .site-header-image{
     display: <?php echo $headerImageDisplay; ?>;
-    background-image: url('<?php echo $headerImage; ?>') !important;
 }
 
 #headerNav, .sidebar-header, .sidebar a.active, .sidebar a.active:hover {

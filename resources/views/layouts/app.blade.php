@@ -55,7 +55,6 @@
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/lorekeeper.css') }}" rel="stylesheet">
-    @include('layouts.editable_theme')
 
     {{-- Font Awesome --}}
     <link href="{{ asset('css/all.min.css') }}" rel="stylesheet">
@@ -77,27 +76,16 @@
         <link href="{{ asset('css/custom.css') }}" rel="stylesheet">
     @endif
 
-    @if(Auth::check() && Auth::user()->theme)
-        @php $theme = Auth::user()->theme->cssUrl @endphp
-        <link href="{{ Auth::user()->theme->cssUrl }}" rel="stylesheet">
-    @elseif(isset($defaultTheme))
-        @php $theme = $defaultTheme->CSSUrl @endphp
-        <link href="{{ $defaultTheme->CSSUrl }}" rel="stylesheet">
-    @else
-        @php $theme = null @endphp
-    @endif
+    @php $theme = Auth::user()->theme ?? $defaultTheme ?? null; @endphp
+    @if(!$theme?->prioritize_css) @include('layouts.editable_theme') @endif
+    <link href="{{ $theme?->cssUrl }}" rel="stylesheet">
+    @if($theme?->prioritize_css) @include('layouts.editable_theme') @endif
 
 </head>
 <body>
     <div id="app">
 
-        @if(Auth::check() && Auth::user()->theme)
-            <div class="site-header-image" id="header" style="background-image: url('{{ Auth::user()->theme->imageUrl }}');"></div>
-        @elseif(isset($defaultTheme) && isset($defaultTheme->imageUrl))
-            <div class="site-header-image" id="header" style="background-image: url('{{ $defaultTheme->imageUrl }}');"></div>
-        @else
-            <div class="site-header-image" id="header" style="background-image: url('{{ asset('images/header.png') }}');"></div>
-        @endif
+        <div class="site-header-image" id="header" style="background-image: url('{{ $theme?->imageUrl ?? asset('images/header.png') }}');"></div>
 
         @include('layouts._nav')
         @if ( View::hasSection('sidebar') )

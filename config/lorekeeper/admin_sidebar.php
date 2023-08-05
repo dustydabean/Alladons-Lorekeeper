@@ -205,9 +205,6 @@ return [
             [
                 'name' => 'Theme Manager',
                 'url' => 'admin/themes'
-            ], [
-                'name' => 'Theme Editor',
-                'url' => 'admin/theme-editor'
             ],
         ]
     ],
