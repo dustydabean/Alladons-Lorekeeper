@@ -53,7 +53,7 @@
     </div>
 </div>
 
-@if(isset($conditions))
+@if(get_object_vars($conditions))
 <hr />
 <h5>Conditional Theme</h5>
 <p>
@@ -62,7 +62,7 @@ As such you should only select one condition, or risk the site themes getting a 
 Conditional Themes will be layered on top of a users base theme, and under a user's decorative theme selections.
 </p>
 
-@if($conditions->weathers)
+@if(isset($conditions->weathers))
     <div class="row">
         <div class="col-md-6">
             <div class="form-group">
