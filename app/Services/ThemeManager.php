@@ -7,6 +7,7 @@ use Config;
 
 use App\Models\Theme;
 use App\Models\User\User;
+use App\Models\User\UserTheme;
 
 class ThemeManager extends Service
 {
@@ -245,10 +246,49 @@ class ThemeManager extends Service
             if($theme->has_header) $this->deleteImage($theme->imagePath, $theme->headerImageFileName);
             if($theme->has_background) $this->deleteImage($theme->imagePath, $theme->backgroundImageFileName);
             if($theme->has_css) $this->deleteImage($theme->imagePath, $theme->cssFileName);
+            $theme->themeEditor->delete();
             $theme->delete();
 
             return $this->commitReturn(true);
         } catch(\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Credits theme to a user or character.
+     *
+     * @param  \App\Models\User\User                        $sender
+     * @param  \App\Models\User\User                        $recipient
+     * @param  \App\Models\Character\Character              $character
+     * @param  string                                       $type 
+     * @param  string                                       $data
+     * @param  \App\Models\Theme                            $theme
+     * @param  int                                          $quantity
+     * @return  bool
+     */
+    public function creditTheme($recipient, $theme) {
+        DB::beginTransaction();
+
+        try {
+            if (is_numeric($theme)) $theme = Theme::find($theme);
+
+            if ($recipient->themes->contains($theme)) {
+                flash($recipient->name . " already has the theme " . $theme->displayName, 'warning');
+                return $this->commitReturn(false);
+            }
+
+            $record = UserTheme::where('user_id', $recipient->id)->where('theme_id', $theme->id)->first();
+            if ($record) {
+                // Laravel doesn't support composite primary keys, so directly updating the DB row here
+                DB::table('user_themes')->where('user_id', $recipient->id)->where('theme_id', $theme->id);
+            } else {
+                $record = UserTheme::create(['user_id' => $recipient->id, 'theme_id' => $theme->id]);
+            }
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);

@@ -266,6 +266,15 @@ class Theme extends Model
         return User::where('is_banned',0)->where('theme_id',$this->id)->count();
     }
 
+    /**
+     * Gets the themes's asset type for asset management.
+     *
+     * @return string
+     */
+    public function getAssetTypeAttribute() {
+        return 'themes';
+    }
+    
     /**********************************************************************************************
 
         OTHER FUNCTIONS

@@ -58,9 +58,11 @@ class AccountController extends Controller {
             $themeOptions = ['0' => 'Select Theme'] + Theme::where('is_active', 1)->where('theme_type', 'base')->where('is_user_selectable', 1)->get()->pluck('displayName', 'id')->toArray();
         }
 
+        $decoratorOptions = ['0' => 'Select Decorator Theme'] + Theme::where('is_active', 1)->where('theme_type', 'decorator')->where('is_user_selectable', 1)->get()->pluck('displayName', 'id')->toArray();
+
         return view('account.settings', [
-            'themeOptions' => $themeOptions,
-            'decoratorThemes' => ['0' => 'Select Decorator Theme'] + Theme::where('is_active', 1)->where('theme_type', 'decorator')->where('is_user_selectable', 1)->get()->pluck('displayName', 'id')->toArray()
+            'themeOptions' => $themeOptions + Auth::user()->themes()->where('theme_type', 'base')->get()->pluck('displayName', 'id')->toArray(),
+            'decoratorThemes' => $decoratorOptions + Auth::user()->themes()->where('theme_type', 'decorator')->get()->pluck('displayName', 'id')->toArray(),
         ]);
     }
 

@@ -11,6 +11,9 @@ $( document ).ready(function() {
     @if($showRaffles)
         var $raffleSelect = $('#lootRowData').find('.raffle-select');
     @endif
+    @if(isset($showThemes) && $showThemes)
+        var $themeSelect = $('#lootRowData').find('.theme-select');
+    @endif
 
     $('#lootTableBody .selectize').selectize();
     attachRemoveListener($('#lootTableBody .remove-loot-button'));
@@ -36,6 +39,9 @@ $( document ).ready(function() {
         @if($showRaffles)
             else if (val == 'Raffle') $clone = $raffleSelect.clone();
         @endif
+        @if(isset($showThemes) && $showThemes)
+            else if (val == 'Theme') $clone = $themeSelect.clone();
+        @endif
 
         $cell.html('');
         $cell.append($clone);
@@ -54,6 +60,9 @@ $( document ).ready(function() {
             @endif
             @if($showRaffles)
                 else if (val == 'Raffle') $clone = $raffleSelect.clone();
+            @endif
+            @if(isset($showThemes) && $showThemes)
+                else if (val == 'Theme') $clone = $themeSelect.clone();
             @endif
 
             $cell.html('');
