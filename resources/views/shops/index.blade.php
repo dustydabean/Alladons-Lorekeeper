@@ -11,12 +11,13 @@
 
 <div class="row shops-row">
     @foreach($shops as $shop)
-    @if($shop->is_staff)
-        @if(auth::check() && auth::user()->isstaff)
+        @if($shop->is_staff)
+            @if(auth::check() && auth::user()->isstaff)
+                @include('shops._shop')
+            @endif
+        @else
             @include('shops._shop')
         @endif
-    @else
-        @include('shops._shop')
     @endforeach
 </div>
 
