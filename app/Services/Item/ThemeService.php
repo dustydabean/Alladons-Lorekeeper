@@ -12,10 +12,10 @@ use App\Services\InventoryManager;
 class ThemeService extends Service {
   /*
     |--------------------------------------------------------------------------
-    | Recipe Service
+    | Theme Service
     |--------------------------------------------------------------------------
     |
-    | Handles the editing and usage of box type items.
+    | Handles the editing and usage of theme type items.
     |
     */
 
