@@ -77,15 +77,28 @@
     @endif
 
     @php $theme = Auth::user()->theme ?? $defaultTheme ?? null; @endphp
-    @if(!$theme?->prioritize_css) @include('layouts.editable_theme') @endif
-    <link href="{{ $theme?->cssUrl }}" rel="stylesheet">
     @if($theme?->prioritize_css) @include('layouts.editable_theme') @endif
+    @if($theme?->has_css)
+        <style type="text/css" media="screen">
+            @php include_once($theme?->cssUrl) @endphp
+        </style>
+    @endif
+    @if(!$theme?->prioritize_css) @include('layouts.editable_theme') @endif
+    
+    @php $decoratorTheme = Auth::user()->decoratorTheme ?? null; @endphp
+    @if($decoratorTheme?->prioritize_css) @include('layouts.editable_theme', ['theme' => $decoratorTheme]) @endif
+    @if($decoratorTheme?->has_css)
+        <style type="text/css" media="screen">
+            @php include_once($decoratorTheme?->cssUrl) @endphp
+        </style>
+    @endif
+    @if(!$decoratorTheme?->prioritize_css) @include('layouts.editable_theme', ['theme' => $decoratorTheme]) @endif
 
 </head>
 <body>
     <div id="app">
 
-        <div class="site-header-image" id="header" style="background-image: url('{{ $theme?->headerImageUrl ?? asset('images/header.png') }}');"></div>
+        <div class="site-header-image" id="header" style="background-image: url('{{ $decoratorTheme?->headerImageUrl ?? $theme?->headerImageUrl ?? asset('images/header.png') }}');"></div>
 
         @include('layouts._nav')
         @if ( View::hasSection('sidebar') )
@@ -138,7 +151,43 @@
         <script>
             $(function() {
                 $('[data-toggle="tooltip"]').tooltip({html: true});
-                $('.cp').colorpicker();
+                
+                class BlurValid extends $.colorpicker.Extension {
+                    constructor(colorpicker, options = {}) {
+                        super(colorpicker, options);
+
+                        if (this.colorpicker.inputHandler.hasInput()) {
+                            const onBlur = function (colorpicker, fallback) {
+                                return () => {
+                                    colorpicker.setValue(colorpicker.blurFallback._original.color);
+                                }
+                            };
+                            this.colorpicker.inputHandler.input[0].addEventListener('blur', onBlur(this.colorpicker));
+                        }
+                    }
+                    
+                    onInvalid(e) {
+                        const color = this.colorpicker.colorHandler.getFallbackColor();
+                        if(color._original.valid)
+                            this.colorpicker.blurFallback = color;
+                    }
+                }
+                
+                $.colorpicker.extensions.blurvalid = BlurValid;
+                console.log($['colorpicker'].extensions);
+                
+                
+                
+                $('.cp').colorpicker({
+                    'autoInputFallback': false,
+                    'autoHexInputFallback': false,
+                    'format': 'auto',
+                    'useAlpha': true,
+                    extensions: [{
+                        name: 'blurValid'
+                    }]
+                });
+                
                 tinymce.init({
                     selector: '.wysiwyg',
                     height: 500,
@@ -154,7 +203,7 @@
                         '{{ asset('css/app.css') }}',
                         '{{ asset('css/lorekeeper.css') }}',
                         '{{ asset('css/custom.css') }}',
-                        '{{$theme}}'
+                        '{{ asset($theme?->cssUrl) }}'
                     ],
                     spoiler_caption: 'Toggle Spoiler',
                     target_list: false

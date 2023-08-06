@@ -30,16 +30,16 @@ class ThemeEditorManager extends Service
         DB::beginTransaction();
 
         try {
-            // $data['header_image_display'] = (isset($data['header_image_display'])) ?  'inline' : 'none'; 
+            $data['header_image_display'] = (isset($data['header_image_display'])) ?  'inline' : 'none'; 
             $data['background_size'] = (isset($data['background_size'])) ?  'cover' : 'auto'; 
-            $data['header_image_url'] = (isset($data['header_image_url'])) ? $data['header_image_url'] : ''; 
+            $data['header_image_url'] = (isset($data['header_image_url'])) ? $data['header_image_url'] : '';
             $data['background_image_url'] = (isset($data['background_image_url'])) ? $data['background_image_url'] : '';
-            // $data['is_released'] = (isset($data['is_released'])) ? 1 : 0;
 
             $theme = ThemeEditor::create($data);
 
             return $this->commitReturn($theme);
-        } catch(\Exception $e) { 
+        } catch (\Exception $e) {
+            dd($e->getMessage());
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);

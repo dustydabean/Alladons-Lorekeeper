@@ -157,6 +157,7 @@ class UserService extends Service
     public function updateTheme($data, $user)
     {
         $user->theme_id = $data['theme'];
+        $user->decorator_theme_id = $data['decorator_theme'];
         $user->save();
         return true;
     }

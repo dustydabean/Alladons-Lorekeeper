@@ -12,7 +12,7 @@ class AddBackgroundToThemeAndMore extends Migration {
      */
     public function up() {
         Schema::table('theme_editor', function (Blueprint $table) {
-            $table->string('card_header_text_color')->default('#000');;
+            $table->string('card_header_text_color')->default('#000');
         });
 
         Schema::table('themes', function (Blueprint $table) {

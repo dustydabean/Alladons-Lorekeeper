@@ -60,7 +60,7 @@ class ThemeManager extends Service
             else $data['has_css'] = 0;
 
             $theme = Theme::create($data);
-            $themeEditor = (new ThemeEditorManager)->createTheme($data, $user);
+            if (!$themeEditor = (new ThemeEditorManager)->createTheme($data, $user)) throw new \Exception('Failed to create Theme Editor');
             $themeEditor->theme_id = $theme->id;
             $themeEditor->save();
 
@@ -131,7 +131,7 @@ class ThemeManager extends Service
             if ($theme->themeEditor) {
                 $themeEditor = (new ThemeEditorManager)->updateTheme($theme->themeEditor, $data, $user);
             } else {
-                $themeEditor = (new ThemeEditorManager)->createTheme($data, $user);
+                if (!$themeEditor = (new ThemeEditorManager)->createTheme($data, $user)) throw new \Exception('Failed to create Theme Editor');
                 $themeEditor->theme_id = $theme->id;
                 $themeEditor->save();
             }
@@ -168,6 +168,8 @@ class ThemeManager extends Service
         if(isset($data['description']) && $data['description']) $data['parsed_description'] = parse($data['description']);
         else $data['parsed_description'] = null;
 
+        $data['prioritize_css'] = (isset($data['prioritize_css'])) ? 1 : 0;
+        
         $data['hash'] = randomString(10);
 
         $names = explode(',',$data['creator_name']);

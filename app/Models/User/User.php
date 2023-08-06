@@ -35,7 +35,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array
      */
     protected $fillable = [
-        'name', 'alias', 'rank_id', 'email', 'password', 'is_news_unread', 'is_banned', 'has_alias', 'avatar', 'is_sales_unread', 'theme_id', 'birthday'
+        'name', 'alias', 'rank_id', 'email', 'password', 'is_news_unread', 'is_banned', 'has_alias', 'avatar', 'is_sales_unread', 'theme_id', 'decorator_theme_id', 'birthday'
     ];
 
     /**
@@ -102,20 +102,19 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Get user decorator .
+     */
+    public function decoratorTheme() {
+        return $this->belongsTo('App\Models\Theme', 'decorator_theme_id');
+    }
+
+    /**
      * Get user-editable profile data.
      */
     public function profile()
     {
         return $this->hasOne('App\Models\User\UserProfile');
     }
-
-    // /**
-    //  * Get user theme.
-    //  */
-    // public function themeEditor()
-    // {
-    //     return $this->hasOne('App\Models\ThemeEditor');
-    // }
 
     /**
      * Get the user's aliases.

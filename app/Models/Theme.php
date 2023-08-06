@@ -20,7 +20,7 @@ class Theme extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'hash', 'is_default', 'is_active', 'has_css', 'has_header', 'has_background', 'extension', 'extension_background', 'creators', 'prioritize_css', 'link_id', 'link_types', 'is_user_selectable'
+        'name', 'hash', 'is_default', 'is_active', 'has_css', 'has_header', 'has_background', 'extension', 'extension_background', 'creators', 'prioritize_css', 'link_id', 'link_types', 'is_user_selectable', 'theme_type'
     ];
 
     /**
@@ -253,7 +253,7 @@ class Theme extends Model
     public function getCSSUrlAttribute()
     {
         if (!$this->has_css) return null;
-        return asset($this->ImageDirectory . '/' . $this->CSSFileName . '?' . $this->hash);
+        return $this->ImageDirectory . '/' . $this->CSSFileName;
     }
 
     /**
