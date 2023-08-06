@@ -53,15 +53,34 @@
     </div>
 </div>
 
-{{-- TODO: --}}
 @if(isset($conditions))
+<hr />
+<h5>Conditional Theme</h5>
+<p>
+Setting a condition here will cause this theme to override the default theme if the conditions below are met. <br/>
+As such you should only select one condition, or risk the site themes getting a bit confused. <br/>
+Conditional Themes will be layered on top of a users base theme, and under a user's decorative theme selections.
+</p>
+
+@if($conditions->weathers)
     <div class="row">
         <div class="col-md-6">
-            TODO
+            <div class="form-group">
+                {!! Form::label('Seasonal') !!} {!! add_help('This will implement this theme when this season is active.') !!}
+                {!! Form::select('season_link_id', $conditions->seasons, $theme->link_type === 'season' ? $theme->link_id : null, ['class' => 'form-control', 'placeholder' => 'Select a Season']) !!}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                {!! Form::label('Weather') !!} {!! add_help('This will implement this theme when this weather is active.') !!}
+                {!! Form::select('weather_link_id', $conditions->weathers, $theme->link_type === 'weather' ? $theme->link_id : null, ['class' => 'form-control', 'placeholder' => 'Select a Weather']) !!}
+            </div>
         </div>
     </div>
 @endif
+@endif
 
+<hr />
 <h5>Creator(s)</h5>
 
 <div class="row">

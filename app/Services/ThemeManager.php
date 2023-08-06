@@ -224,6 +224,14 @@ class ThemeManager extends Service
             $data['has_css'] = 0;
         }
 
+        if (isset($data['season_link_id'])) {
+            $data['link_id'] = $data['season_link_id'];
+            $data['link_type'] = 'season';
+        } else if (isset($data['weather_link_id'])) {
+            $data['link_id'] = $data['weather_link_id'];
+            $data['link_type'] = 'weather';
+        } 
+
         return $data;
     }
 

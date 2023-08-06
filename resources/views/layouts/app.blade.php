@@ -81,15 +81,35 @@
     @if($theme?->has_css)
         <style type="text/css" media="screen">
             @php include_once($theme?->cssUrl) @endphp
+            {{-- css in style tag to so that order matters --}}
         </style>
     @endif
     @if(!$theme?->prioritize_css) @include('layouts.editable_theme') @endif
+    
+    {{-- Conditional Themes are dependent on other site features --}}
+    @php 
+        $conditionalTheme;
+        if(class_exists('\App\Models\Weather\WeatherSeason')) {
+            $conditionalTheme = \App\Models\Theme::where('link_type', 'season')->where('link_id', Settings::get('site_season'))->first() ??
+                \App\Models\Theme::where('link_type', 'weather')->where('link_id', Settings::get('site_weather'))->first() ??
+                $theme;
+        }
+    @endphp
+    @if($conditionalTheme?->prioritize_css) @include('layouts.editable_theme', ['theme' => $conditionalTheme]) @endif
+    @if($conditionalTheme?->has_css)
+        <style type="text/css" media="screen">
+            @php include_once($conditionalTheme?->cssUrl) @endphp
+            {{-- css in style tag to so that order matters --}}
+        </style>
+    @endif
+    @if(!$conditionalTheme?->prioritize_css) @include('layouts.editable_theme', ['theme' => $conditionalTheme]) @endif
     
     @php $decoratorTheme = Auth::user()->decoratorTheme ?? null; @endphp
     @if($decoratorTheme?->prioritize_css) @include('layouts.editable_theme', ['theme' => $decoratorTheme]) @endif
     @if($decoratorTheme?->has_css)
         <style type="text/css" media="screen">
             @php include_once($decoratorTheme?->cssUrl) @endphp
+            {{-- css in style tag to so that order matters --}}
         </style>
     @endif
     @if(!$decoratorTheme?->prioritize_css) @include('layouts.editable_theme', ['theme' => $decoratorTheme]) @endif
@@ -98,7 +118,7 @@
 <body>
     <div id="app">
 
-        <div class="site-header-image" id="header" style="background-image: url('{{ $decoratorTheme?->headerImageUrl ?? $theme?->headerImageUrl ?? asset('images/header.png') }}');"></div>
+        <div class="site-header-image" id="header" style="background-image: url('{{ $decoratorTheme?->headerImageUrl ?? $conditionalTheme?->headerImageUrl ?? $theme?->headerImageUrl ?? asset('images/header.png') }}');"></div>
 
         @include('layouts._nav')
         @if ( View::hasSection('sidebar') )
