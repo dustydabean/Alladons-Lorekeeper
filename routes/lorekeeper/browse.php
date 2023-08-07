@@ -57,8 +57,9 @@ Route::group(['prefix' => 'user', 'namespace' => 'Users'], function() {
     Route::get('{name}/myos', 'UserController@getUserMyoSlots');
     Route::get('{name}/inventory', 'UserController@getUserInventory');
     Route::get('{name}/pets', 'UserController@getUserPets');
+    Route::get('{name}/pets/{id}', 'UserController@getUserPet');
     Route::get('{name}/bank', 'UserController@getUserBank');
-    
+
     Route::get('{name}/currency-logs', 'UserController@getUserCurrencyLogs');
     Route::get('{name}/item-logs', 'UserController@getUserItemLogs');
     Route::get('{name}/pet-logs', 'UserController@getUserPetLogs');
@@ -78,7 +79,7 @@ Route::group(['prefix' => 'character', 'namespace' => 'Characters'], function() 
     Route::get('{slug}/bank', 'CharacterController@getCharacterBank');
     Route::get('{slug}/inventory', 'CharacterController@getCharacterInventory');
     Route::get('{slug}/images', 'CharacterController@getCharacterImages');
-    
+
     Route::get('{slug}/currency-logs', 'CharacterController@getCharacterCurrencyLogs');
     Route::get('{slug}/item-logs', 'CharacterController@getCharacterItemLogs');
     Route::get('{slug}/ownership', 'CharacterController@getCharacterOwnershipLogs');
@@ -101,7 +102,7 @@ Route::group(['prefix' => 'myo', 'namespace' => 'Characters'], function() {
 
 Route::group(['prefix' => 'world'], function() {
     Route::get('/', 'WorldController@getIndex');
-    
+
     Route::get('currencies', 'WorldController@getCurrencies');
     Route::get('rarities', 'WorldController@getRarities');
     Route::get('species', 'WorldController@getSpecieses');
@@ -176,5 +177,3 @@ Route::group(['prefix' => 'gallery'], function() {
 Route::group(['prefix' => 'reports', 'namespace' => 'Users'], function() {
     Route::get('/bug-reports', 'ReportController@getBugIndex');
 });
-
-

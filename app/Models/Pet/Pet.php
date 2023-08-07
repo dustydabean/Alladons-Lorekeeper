@@ -6,6 +6,7 @@ use Config;
 use DB;
 use App\Models\Model;
 use App\Models\Pet\PetCategory;
+use App\Models\User\UserPet;
 
 class Pet extends Model
 {
@@ -24,7 +25,7 @@ class Pet extends Model
      * @var string
      */
     protected $table = 'pets';
-    
+
     /**
      * Validation rules for creation.
      *
@@ -36,7 +37,7 @@ class Pet extends Model
         'description' => 'nullable',
         'image' => 'mimes:png',
     ];
-    
+
     /**
      * Validation rules for updating.
      *
@@ -50,7 +51,7 @@ class Pet extends Model
     ];
 
     /**********************************************************************************************
-    
+
         RELATIONS
 
     **********************************************************************************************/
@@ -58,7 +59,7 @@ class Pet extends Model
     /**
      * Get the category the pet belongs to.
      */
-    public function category() 
+    public function category()
     {
         return $this->belongsTo('App\Models\Pet\PetCategory', 'pet_category_id');
     }
@@ -69,7 +70,7 @@ class Pet extends Model
     }
 
     /**********************************************************************************************
-    
+
         SCOPES
 
     **********************************************************************************************/
@@ -121,11 +122,11 @@ class Pet extends Model
     }
 
     /**********************************************************************************************
-    
+
         ACCESSORS
 
     **********************************************************************************************/
-    
+
     /**
      * Displays the model's name, linked to its encyclopedia page.
      *
@@ -165,7 +166,7 @@ class Pet extends Model
     {
         return public_path($this->imageDirectory);
     }
-    
+
     /**
      * Gets the URL of the model's image.
      *
@@ -200,6 +201,10 @@ class Pet extends Model
     public function VariantImage($id = null)
     {
         if(!$id) return $this->imageUrl;
-        else return $this->variants()->where('id', $id)->first()->imageUrl;
+        $userpet = UserPet::find($id);
+        if (!$userpet) return $this->imageUrl;
+        else if ($userpet->has_image) return $userpet->imageUrl;
+        else if ($userpet->variant_id) return $userpet->variant->imageUrl;
+        return $this->imageUrl;
     }
 }

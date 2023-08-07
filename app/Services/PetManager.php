@@ -76,7 +76,7 @@ class PetManager extends Service
             }
 
             return $this->commitReturn(true);
-        } catch(\Exception $e) { 
+        } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);
@@ -105,7 +105,7 @@ class PetManager extends Service
             if((!$stack->pet->allow_transfer || isset($stack->data['disallow_transfer'])) && !$sender->hasPower('edit_inventories')) throw new \Exception("This pet cannot be transferred.");
 
             $oldUser = $stack->user;
-            if($this->moveStack($stack->user, $recipient, ($stack->user_id == $sender->id ? 'User Transfer' : 'Staff Transfer'), ['data' => ($stack->user_id != $sender->id ? 'Transferred by '.$sender->displayName : '')], $stack)) 
+            if($this->moveStack($stack->user, $recipient, ($stack->user_id == $sender->id ? 'User Transfer' : 'Staff Transfer'), ['data' => ($stack->user_id != $sender->id ? 'Transferred by '.$sender->displayName : '')], $stack))
             {
                 Notifications::create('PET_TRANSFER', $recipient, [
                     'pet_name' => $stack->pet->name,
@@ -113,7 +113,7 @@ class PetManager extends Service
                     'sender_url' => $sender->url,
                     'sender_name' => $sender->name
                 ]);
-                if($stack->user_id != $sender->id) 
+                if($stack->user_id != $sender->id)
                     Notifications::create('FORCED_PET_TRANSFER', $oldUser, [
                         'pet_name' => $stack->pet->name,
                         'pet_quantity' => 1,
@@ -122,7 +122,7 @@ class PetManager extends Service
                     ]);
                 return $this->commitReturn(true);
             }
-        } catch(\Exception $e) { 
+        } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);
@@ -146,9 +146,9 @@ class PetManager extends Service
 
             $oldUser = $stack->user;
 
-            if($this->debitStack($stack->user, ($stack->user_id == $user->id ? 'User Deleted' : 'Staff Deleted'), ['data' => ($stack->user_id != $user->id ? 'Deleted by '.$user->displayName : '')], $stack)) 
+            if($this->debitStack($stack->user, ($stack->user_id == $user->id ? 'User Deleted' : 'Staff Deleted'), ['data' => ($stack->user_id != $user->id ? 'Deleted by '.$user->displayName : '')], $stack))
             {
-                if($stack->user_id != $user->id) 
+                if($stack->user_id != $user->id)
                     Notifications::create('PET_REMOVAL', $oldUser, [
                         'pet_name' => $stack->pet->name,
                         'pet_quantity' => 1,
@@ -157,7 +157,7 @@ class PetManager extends Service
                     ]);
                 return $this->commitReturn(true);
             }
-        } catch(\Exception $e) { 
+        } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);
@@ -183,9 +183,9 @@ class PetManager extends Service
 
                 $pet['pet_name'] = $name;
                 $pet->save();
-            
+
             return $this->commitReturn(true);
-        } catch(\Exception $e) { 
+        } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);
@@ -216,9 +216,9 @@ class PetManager extends Service
                 $pet['chara_id'] = $character->id;
                 $pet['attached_at'] = Carbon::now();
                 $pet->save();
-            
+
             return $this->commitReturn(true);
-        } catch(\Exception $e) { 
+        } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);
@@ -240,9 +240,9 @@ class PetManager extends Service
 
                 $pet['chara_id'] = null;
                 $pet->save();
-            
+
             return $this->commitReturn(true);
-        } catch(\Exception $e) { 
+        } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);
@@ -256,7 +256,7 @@ class PetManager extends Service
         DB::beginTransaction();
 
         try {
-                if (!$isStaff && !Auth::user()->isStaff) {
+                if (!$isStaff || !Auth::user()->isStaff) {
                     if (!$stack_id) throw new \Exception("No item selected.");
 
                     // check if user has item
@@ -270,9 +270,72 @@ class PetManager extends Service
 
                 $pet['variant_id'] = $id;
                 $pet->save();
-            
+
             return $this->commitReturn(true);
-        } catch(\Exception $e) { 
+        } catch(\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+        return $this->rollbackReturn(false);
+    }
+
+        /**
+     * Edits the custom variant image on a user pet stack
+     *
+     */
+    public function editCustomImage($pet, $data)
+    {
+        DB::beginTransaction();
+
+        try {
+                $data['has_image'] = 1;
+                $image = null;
+                if(isset($data['remove_image']))
+                {
+                    if($pet && $pet->has_image && $data['remove_image'])
+                    {
+                        $data['has_image'] = 0;
+                        if (file_exists($pet->imagePath . '/' . $pet->imageFileName))
+                            $this->deleteImage($pet->imagePath, $pet->imageFileName);
+                    }
+                    unset($data['remove_image']);
+                    unset($data['image']);
+                    $data['has_image'] = 0;
+                }
+
+                if(isset($data['image']) && $data['image']) {
+                    $image = $data['image'];
+                    unset($data['image']);
+                    $data['has_image'] = 1;
+                }
+
+                $data['artist_id'] = (isset($data['remove_credit']) && $data['remove_credit']) ? null : ($data['artist_id'] ?? null);
+                $data['artist_url'] = (isset($data['remove_credit']) && $data['remove_credit']) ? null : ($data['artist_url'] ?? null);
+
+                $pet->update($data);
+
+                if ($pet) $this->handleImage($image, $pet->imagePath, $pet->imageFileName);
+
+            return $this->commitReturn(true);
+        } catch(\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * change pet's description
+     */
+    public function editCustomImageDescription($pet, $data)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            $pet->description = parse($data['description']);
+            $pet->save();
+
+            return $this->commitReturn(true);
+        } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);
@@ -283,7 +346,7 @@ class PetManager extends Service
      *
      * @param  \App\Models\User\User  $sender
      * @param  \App\Models\User\User  $recipient
-     * @param  string                 $type 
+     * @param  string                 $type
      * @param  array                  $data
      * @param  \App\Models\Pet\Pet  $pet
      * @param  int                    $quantity
@@ -298,7 +361,7 @@ class PetManager extends Service
             if($type && !$this->createLog($sender ? $sender->id : null, $recipient->id, null, $type, $data['data'], $pet->id, $quantity)) throw new \Exception("Failed to create log.");
 
             return $this->commitReturn(true);
-        } catch(\Exception $e) { 
+        } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);
@@ -309,7 +372,7 @@ class PetManager extends Service
      *
      * @param  \App\Models\User\User      $sender
      * @param  \App\Models\User\User      $recipient
-     * @param  string                     $type 
+     * @param  string                     $type
      * @param  array                      $data
      * @param  \App\Models\User\UserPet  $pet
      * @return bool
@@ -325,7 +388,7 @@ class PetManager extends Service
             if($type && !$this->createLog($sender ? $sender->id : null, $recipient->id, $stack->id, $type, $data['data'], $stack->pet_id, 1)) throw new \Exception("Failed to create log.");
 
             return $this->commitReturn(true);
-        } catch(\Exception $e) { 
+        } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);
@@ -335,7 +398,7 @@ class PetManager extends Service
      * Debits an pet from a user.
      *
      * @param  \App\Models\User\User      $user
-     * @param  string                     $type 
+     * @param  string                     $type
      * @param  array                      $data
      * @param  \App\Models\Pet\UserPet  $stack
      * @return bool
@@ -350,19 +413,19 @@ class PetManager extends Service
             if($type && !$this->createLog($user ? $user->id : null, null, $stack->id, $type, $data['data'], $stack->pet_id, 1)) throw new \Exception("Failed to create log.");
 
             return $this->commitReturn(true);
-        } catch(\Exception $e) { 
+        } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
         return $this->rollbackReturn(false);
     }
-    
+
     /**
      * Creates an inventory log.
      *
      * @param  int     $senderId
      * @param  int     $recipientId
      * @param  int     $stackId
-     * @param  string  $type 
+     * @param  string  $type
      * @param  string  $data
      * @param  int     $quantity
      * @return  int
@@ -370,7 +433,7 @@ class PetManager extends Service
     public function createLog($senderId, $recipientId, $stackId, $type, $data, $petId, $quantity)
     {
         return DB::table('user_pets_log')->insert(
-            [       
+            [
                 'sender_id' => $senderId,
                 'recipient_id' => $recipientId,
                 'stack_id' => $stackId,

@@ -62,6 +62,11 @@ Route::group(['prefix' => 'pets', 'namespace' => 'Users'], function() {
     Route::post('variant/{id}', 'PetController@postVariant');
 
     Route::get('selector', 'PetController@getSelector');
+    Route::post('image/{id}', 'PetController@postCustomImage');
+    Route::post('description/{id}', 'PetController@postDescription');
+
+    Route::get('view/{id}', 'PetController@getCustomInfoPage')->where('id', '[0-9]+');
+    Route::post('view/{id}/edit', 'PetController@postEditPetProfile')->where('id', '[0-9]+');
 });
 
 Route::group(['prefix' => 'characters', 'namespace' => 'Users'], function() {

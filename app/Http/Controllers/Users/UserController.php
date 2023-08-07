@@ -71,7 +71,7 @@ class UserController extends Controller
     {
         $characters = $this->user->characters();
         if(!Auth::check() || !(Auth::check() && Auth::user()->hasPower('manage_characters'))) $characters->visible();
-        
+
         return view('user.profile', [
             'user' => $this->user,
             'items' => $this->user->items()->where('count', '>', 0)->orderBy('user_items.updated_at', 'DESC')->take(4)->get(),
@@ -92,7 +92,7 @@ class UserController extends Controller
     {
         $aliases = $this->user->aliases();
         if(!Auth::check() || !(Auth::check() && Auth::user()->hasPower('edit_user_info'))) $aliases->visible();
-        
+
         return view('user.aliases', [
             'user' => $this->user,
             'aliases' => $aliases->orderBy('is_primary_alias', 'DESC')->orderBy('site')->get(),
@@ -226,10 +226,28 @@ class UserController extends Controller
     {
         $categories = PetCategory::orderBy('sort', 'DESC')->get();
         $pets = count($categories) ? $this->user->pets()->orderByRaw('FIELD(pet_category_id,'.implode(',', $categories->pluck('id')->toArray()).')')->orderBy('name')->orderBy('updated_at')->get()->groupBy('pet_category_id') : $this->user->pets()->orderBy('name')->orderBy('updated_at')->get()->groupBy('pet_category_id');
-        return view('user.pet', [
+        return view('user.pets', [
             'user' => $this->user,
             'categories' => $categories->keyBy('id'),
             'pets' => $pets,
+            'userOptions' => User::where('id', '!=', $this->user->id)->orderBy('name')->pluck('name', 'id')->toArray(),
+            'user' => $this->user,
+            'logs' => $this->user->getPetLogs()
+        ]);
+    }
+
+        /**
+     * Shows a user's pets.
+     *
+     * @param  string  $name
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getUserPet($name, $id)
+    {
+        $pet = UserPet::findOrFail($id);
+        return view('user.pet', [
+            'user' => $this->user,
+            'pet' => $pet,
             'userOptions' => User::where('id', '!=', $this->user->id)->orderBy('name')->pluck('name', 'id')->toArray(),
             'user' => $this->user,
             'logs' => $this->user->getPetLogs()
