@@ -1,73 +1,56 @@
-@extends('user.layout')
+@php $namespace = (Request::url() == url('pets/view/'.$pet->id)); @endphp
+@extends(($namespace ? 'home' : 'user').'.layout')
 
-@section('profile-title') {{ $user->name }}'s Pets @endsection
-
-@section('profile-content')
-{!! breadcrumbs(['Users' => 'users', $user->name => $user->url, 'Pets' => $user->url . '/pets']) !!}
-
-<h1>
-    Pets
-</h1>
-
-@foreach($pets as $categoryId=>$categoryPets)
-    <div class="card mb-3 inventory-category">
-        <h5 class="card-header inventory-header">
-            {!! isset($categories[$categoryId]) ? '<a href="'.$categories[$categoryId]->searchUrl.'">'.$categories[$categoryId]->name.'</a>' : 'Miscellaneous' !!}
-        </h5>
-        <div class="card-body inventory-body">
-            @foreach($categoryPets->chunk(4) as $chunk)
-                <div class="row mb-3">
-                    @foreach($chunk as $pet)
-                        <div class="col-sm-3 col-6 text-center inventory-item" data-id="{{ $pet->pivot->id }}" data-name="{{ $user->name }}'s {{ $pet->name }}">
-                            <div class="mb-1">
-                                <a href="#" class="inventory-stack"><img src="{{ $pet->VariantImage($pet->pivot->variant_id) }}" class="img-fluid"/></a>
-                            </div>
-                            <div>
-                                <a href="#" class="inventory-stack inventory-stack-name">{{ $pet->VariantName($pet->pivot->variant_id) }} {{ $pet->name }}</a>
-                            </div>
-                            <div>
-                                <span class="text-light badge badge-dark" style="font-size:95%;">{{ $pet->pivot->pet_name }}</span>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            @endforeach
-        </div>
-    </div>
-@endforeach
-
-
-<h3>Latest Activity</h3>
-<table class="table table-sm">
-    <thead>
-        <th>Sender</th>
-        <th>Recipient</th>
-        <th>Pet</th>
-        <th>Log</th>
-        <th>Date</th>
-    </thead>
-    <tbody>
-        @foreach($logs as $log)
-            @include('user._pet_log_row', ['log' => $log, 'user' => $user])
-        @endforeach
-    </tbody>
-</table>
-<div class="text-right">
-    <a href="{{ url($user->url.'/pet-logs') }}">View all...</a>
-</div>
-
+@section($namespace ? 'title' : 'profile-title')
+    {{ $pet->pet_name ? $pet->pet_name . ' ('.$pet->pet->name.')' : $user->name."'s ".$pet->pet->name }}
 @endsection
 
-@section('scripts')
-<script>
+@section($namespace ? 'content' : 'profile-content')
 
-$( document ).ready(function() {
-    $('.inventory-stack').on('click', function(e) {
-        e.preventDefault();
-        var $parent = $(this).parent().parent();
-        loadModal("{{ url('pets') }}/" + $parent.data('id'), $parent.data('name'));
-    });
-});
+    {!! breadcrumbs(['Users' => 'users', $user->name => $user->url, 'Pets' => $user->url . '/pets',
+        $pet->pet_name ? $pet->pet_name . ' ('.$pet->pet->name.')' : $user->name."'s ".$pet->pet->name => $pet->url]) !!}
 
-</script>
+    <h1>
+        {{ $pet->pet_name ? $pet->pet_name . ' ('. $user->name."'s ". $pet->pet->name.')' : $user->name."'s ".$pet->pet->name }}
+    </h1>
+
+    @if(Auth::check() && ($pet->user_id !== Auth::user()->id && Auth::user()->hasPower('edit_inventories')))
+        <div class="alert alert-warning">
+            You are editing this pet as a staff member.
+        </div>
+    @endif
+
+    <div class="card mb-3">
+        <div class="card-body text-center">
+            <img class="img-fluid" src="{{ $pet->pet->VariantImage($pet->id) }}" data-toggle="tooltip" title="{{ $pet->pet_name ?? $pet->pet->name }}" alt="{{ $pet->pet_name ?? $pet->pet->name }}" />
+            @if($pet->has_image)
+                <div class="mt-2">
+                    <p class="alert alert-info">
+                        This pet is displaying custom art!
+                    </p>
+                    @if(isset($pet->petArtist) && $pet->petArtist)
+                        <h2 class="h5">Artist</h2>
+                        <div class="col-md">
+                            <p><strong>Artist:</strong> {!! $pet->petArtist !!}</p>
+                        </div>
+                    @else
+                        No credits given.
+                    @endif
+                </div>
+            @endif
+            @if($pet->description)
+                <hr>
+                <h2 class="h5">Profile</h2>
+                <div class="card-body parsed-text">
+                    {!! $pet->description !!}
+                </div>
+            @endif
+        </div>
+
+        @if(Auth::check() && ($pet->user_id == Auth::user()->id || Auth::user()->hasPower('edit_inventories')))
+            <ul class="list-group list-group-flush">
+                @include('user._pet_form', ['pet' => $pet, 'user' => Auth::user()])
+            </ul>
+        @endif
+    </div>
 @endsection

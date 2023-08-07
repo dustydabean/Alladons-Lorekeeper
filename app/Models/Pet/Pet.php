@@ -6,6 +6,7 @@ use Config;
 use DB;
 use App\Models\Model;
 use App\Models\Pet\PetCategory;
+use App\Models\User\UserPet;
 
 class Pet extends Model
 {
@@ -209,7 +210,11 @@ class Pet extends Model
     public function VariantImage($id = null)
     {
         if(!$id) return $this->imageUrl;
-        else return $this->variants()->where('id', $id)->first()->imageUrl;
+        $userpet = UserPet::find($id);
+        if (!$userpet) return $this->imageUrl;
+        else if ($userpet->has_image) return $userpet->imageUrl;
+        else if ($userpet->variant_id) return $userpet->variant->imageUrl;
+        return $this->imageUrl;
     }
 
     public function VariantName($id = null)

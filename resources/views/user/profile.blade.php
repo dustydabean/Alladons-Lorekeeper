@@ -95,11 +95,15 @@
                 <div class="row">
                     @foreach($pets as $pet)
                         <div class="col profile-inventory-item">
-                            <a href="#" class="inventory-stack"><img src="{{ $pet->variantimage($pet->pivot->variant_id) }}" class="img-fluid" style="width:25%;" data-toggle="tooltip" title="{{ $pet->name }}" />
+                            <a href="#" class="inventory-stack">
+                                <img class="img-fluid" src="{{ $pet->VariantImage($pet->pivot->id) }}"
+                                    data-toggle="tooltip" title="{{ $pet->pivot->pet_name ? $pet->pivot->pet_name . ' ('.$pet->name.')' : $pet->name }}"
+                                    alt="{{ $pet->pivot->pet_name ? $pet->pivot->pet_name . ' ('.$pet->name.')' : $pet->name }}" />
+                            </a>
                         </div>
                     @endforeach
                 </div>
-            @else 
+            @else
                 <div>No pets owned.</div>
             @endif
         </div>

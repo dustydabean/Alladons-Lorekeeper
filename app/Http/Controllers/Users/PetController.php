@@ -39,12 +39,13 @@ class PetController extends Controller
     public function getIndex()
     {
         $categories = PetCategory::orderBy('sort', 'DESC')->get();
-        $pets = count($categories) ? Auth::user()->pets()->orderByRaw('FIELD(pet_category_id,'.implode(',', $categories->pluck('id')->toArray()).')')->orderBy('name')->orderBy('updated_at')->get()->groupBy('pet_category_id') : Auth::user()->pets()->orderBy('name')->orderBy('updated_at')->get()->groupBy('pet_category_id');
-        return view('home.pet', [
+        $pets = count($categories) ? Auth::user()->pets()->orderByRaw('FIELD(pet_category_id,'.implode(',', $categories->pluck('id')->toArray()).')')->orderBy('name')->get()->groupBy('pet_category_id') : Auth::user()->pets()->orderBy('name')->get()->groupBy('pet_category_id');
+        return view('home.pets', [
             'categories' => $categories->keyBy('id'),
             'pets' => $pets,
             'userOptions' => User::visible()->where('id', '!=', Auth::user()->id)->orderBy('name')->pluck('name', 'id')->toArray(),
-            'user' => Auth::user()
+            'user' => Auth::user(),
+            'userCreditOptions' => ['' => 'Select User'] + User::visible()->orderBy('name')->get()->pluck('verified_name', 'id')->toArray(),
         ]);
     }
 
@@ -58,7 +59,7 @@ class PetController extends Controller
     public function getStack(Request $request, $id)
     {
         $stack = UserPet::withTrashed()->where('id', $id)->with('pet')->first();
-        $chara = Character::where('user_id', $stack->user_id)->pluck('slug', 'id');
+        $chara = Character::myo()->where('user_id', $stack->user_id)->pluck('slug', 'id');
 
         $readOnly = $request->get('read_only') ? : ((Auth::check() && $stack && !$stack->deleted_at && ($stack->user_id == Auth::user()->id || Auth::user()->hasPower('edit_inventories'))) ? 0 : 1);
 
@@ -70,7 +71,8 @@ class PetController extends Controller
             'user' => Auth::user(),
             'userOptions' => ['' => 'Select User'] + User::visible()->where('id', '!=', $stack ? $stack->user_id : 0)->orderBy('name')->get()->pluck('verified_name', 'id')->toArray(),
             'readOnly' => $readOnly,
-            'splices' => $splices
+            'splices' => $splices,
+            'userCreditOptions' => ['' => 'Select User'] + User::visible()->orderBy('name')->get()->pluck('verified_name', 'id')->toArray(),
         ]);
     }
 
@@ -247,4 +249,55 @@ class PetController extends Controller
         return redirect()->back();
     }
 
+    /**
+     * Post custom image
+     */
+    public function postCustomImage($id, Request $request, PetManager $service)
+    {
+        $pet = UserPet::findOrFail($id);
+        $data = $request->only(['image', 'remove_image', 'artist_id', 'artist_url', 'remove_credit']);
+
+        if(!Auth::user()->isStaff) abort(404);
+
+        if($service->editCustomImage($pet, $data)) {
+            flash('Pet image updated successfully.')->success();
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back();
+    }
+
+    /**
+     * Shows a custom pet's info page.
+     *
+     * @param  string  $slug
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCustomInfoPage($id)
+    {
+        $pet = UserPet::findOrFail($id);
+        $user = $pet->user;
+        return view('user.pet', [
+            'pet' => $pet,
+            'user' => $user,
+            'userOptions' => ['0' => 'Select User'] + User::visible()->orderBy('name')->get()->pluck('verified_name', 'id')->toArray(),
+        ]);
+    }
+
+    /**
+     * Unique image
+     */
+    public function postDescription($id, Request $request, PetManager $service)
+    {
+        $pet = UserPet::findOrFail($id);
+
+        if($service->editCustomImageDescription($pet, $request->only(['description']))) {
+            flash('Pet custom image description updated successfully.')->success();
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back();
+    }
 }

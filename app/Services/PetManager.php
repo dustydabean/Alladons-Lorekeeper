@@ -257,7 +257,7 @@ class PetManager extends Service
         DB::beginTransaction();
 
         try {
-                if (!$isStaff && !Auth::user()->isStaff) {
+                if (!$isStaff || !Auth::user()->isStaff) {
                     if (!$stack_id) throw new \Exception("No item selected.");
 
                     // check if user has item
@@ -271,6 +271,69 @@ class PetManager extends Service
 
                 $pet['variant_id'] = $id;
                 $pet->save();
+
+            return $this->commitReturn(true);
+        } catch(\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+        return $this->rollbackReturn(false);
+    }
+
+        /**
+     * Edits the custom variant image on a user pet stack
+     *
+     */
+    public function editCustomImage($pet, $data)
+    {
+        DB::beginTransaction();
+
+        try {
+                $data['has_image'] = 1;
+                $image = null;
+                if(isset($data['remove_image']))
+                {
+                    if($pet && $pet->has_image && $data['remove_image'])
+                    {
+                        $data['has_image'] = 0;
+                        if (file_exists($pet->imagePath . '/' . $pet->imageFileName))
+                            $this->deleteImage($pet->imagePath, $pet->imageFileName);
+                    }
+                    unset($data['remove_image']);
+                    unset($data['image']);
+                    $data['has_image'] = 0;
+                }
+
+                if(isset($data['image']) && $data['image']) {
+                    $image = $data['image'];
+                    unset($data['image']);
+                    $data['has_image'] = 1;
+                }
+
+                $data['artist_id'] = (isset($data['remove_credit']) && $data['remove_credit']) ? null : ($data['artist_id'] ?? null);
+                $data['artist_url'] = (isset($data['remove_credit']) && $data['remove_credit']) ? null : ($data['artist_url'] ?? null);
+
+                $pet->update($data);
+
+                if ($pet) $this->handleImage($image, $pet->imagePath, $pet->imageFileName);
+
+            return $this->commitReturn(true);
+        } catch(\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * change pet's description
+     */
+    public function editCustomImageDescription($pet, $data)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            $pet->description = parse($data['description']);
+            $pet->save();
 
             return $this->commitReturn(true);
         } catch(\Exception $e) {
