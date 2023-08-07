@@ -11,6 +11,7 @@
     </div>
     {!! Form::close() !!}
 </li>
+
 <li class="list-group-item">
     <a class="card-title h5 collapse-title" data-toggle="collapse" href="#descForm">@if($pet->user_id != Auth::user()->id) [ADMIN] @endif Edit Profile</a>
     {!! Form::open(['url' => 'pets/description/'.$pet->id, 'id' => 'descForm', 'class' => 'collapse']) !!}
@@ -24,6 +25,7 @@
     </div>
     {!! Form::close() !!}
 </li>
+
 <li class="list-group-item">
     @php
         $now = Carbon\Carbon::parse($pet->attached_at);

@@ -92,7 +92,8 @@ Select how often drops should occur.
     </div>
 
     <h3>Variants</h3>
-    @if($drop->pet->variants->count())
+    <p>Variant drops are dropped in addition to the above drops by default. You can change this behaviour in config.</p>
+    {{-- @if($drop->pet->variants->count())
         @foreach($drop->pet->variants as $variant)
             <div class="card card-body mb-2">
                 <div class="card-title">
@@ -102,14 +103,11 @@ Select how often drops should occur.
                     <div class="mb-2">
                         <h5>{{ $label }}</h5>
                         <div class="form-group">
-                            {!! Form::label('Item and Min/Max Quantity Dropped') !!} {!! add_help('Select an item for this group to drop, and the minimum and maximum quantity that should be dropped. If only one quantity is set, or they are both the same number, the same quantity will be dropped each time.') !!}
-                            <div id="itemList">
-                                <div class="d-flex mb-2">
-                                    {!! Form::select('item_id['.$variant->id.']['.$label.']', $items, isset($drop->data['items'][$variant->id][$label]) ? $drop->data['items'][$variant->id][$label]['item_id'] : null, ['class' => 'form-control mr-2 default item-select', 'placeholder' => 'Select Item']) !!}
-                                    {!! Form::number('min_quantity['.$variant->id.']['.$label.']', isset($drop->data['items'][$variant->id][$label]) ? $drop->data['items'][$variant->id][$label]['min'] : null, ['class' => 'form-control mr-2', 'placeholder' => 'Minimum Quantity']) !!}
-                                    {!! Form::number('max_quantity['.$variant->id.']['.$label.']', isset($drop->data['items'][$variant->id][$label]) ? $drop->data['items'][$variant->id][$label]['max'] : null, ['class' => 'form-control mr-2', 'placeholder' => 'Maximum Quantity']) !!}
-                                </div>
-                            </div>
+                            @include('widgets._pet_drop_loot_select', [
+                                'loots' => $drop->rewards[strtolower($label)] ?? null,
+                                'group' => strtolower(str_replace(' ', '_', $label)),
+                                'label' => $label
+                            ])
                         </div>
                     </div>
                 @endforeach
@@ -117,7 +115,7 @@ Select how often drops should occur.
         @endforeach
     @else
         <p>No variants found for this pet.</p>
-    @endif
+    @endif --}}
 @endif
 
 <div class="text-right">

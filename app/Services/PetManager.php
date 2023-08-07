@@ -279,7 +279,7 @@ class PetManager extends Service
         return $this->rollbackReturn(false);
     }
 
-        /**
+    /**
      * Edits the custom variant image on a user pet stack
      *
      */

@@ -4,6 +4,7 @@ namespace App\Models\User;
 
 use App\Models\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Pet\PetDrop;
 
 class UserPet extends Model
 {

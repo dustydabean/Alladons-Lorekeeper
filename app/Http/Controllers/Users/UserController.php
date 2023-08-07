@@ -245,9 +245,11 @@ class UserController extends Controller
     public function getUserPet($name, $id)
     {
         $pet = UserPet::findOrFail($id);
+
         return view('user.pet', [
             'user' => $this->user,
             'pet' => $pet,
+            'drops' => $pet->drops,
             'userOptions' => User::where('id', '!=', $this->user->id)->orderBy('name')->pluck('name', 'id')->toArray(),
             'user' => $this->user,
             'logs' => $this->user->getPetLogs()

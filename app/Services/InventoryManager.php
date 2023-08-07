@@ -243,55 +243,6 @@ class InventoryManager extends Service
     }
 
     /**
-     * Claim pet drops and credit user the items from the drop.
-     *
-     * @param  \App\Models\User\UserPet             $pet
-     * @param  \App\Models\User\User                $recipient
-     * @param  \App\Models\Pet\PetDrop              $drops
-     * @param  int                                  $quantities
-     * @return bool
-     */
-    public function claimPetDrops($pet, $user, $drops)
-    {
-        DB::beginTransaction();
-
-        try {
-            if(!$drops->drops_available) throw new \Exception('This pet doesn\'t have any available drops.');
-            if(!$drops->dropData->isActive) throw new \Exception('Drops are not currently active for this pet.');
-
-            // Assemble data
-            $type = 'Pet Drop';
-            $data = [
-                'data' => 'Collected from '.($pet->pet_name ? $pet->pet_name.' the '.$pet->pet->name : $pet->pet->name ),
-                'notes' => 'Collected ' . format_date(Carbon::now())
-            ];
-
-            // Credit item(s), calulating quantity for each individual drop if relevant
-            $itemData = $drops->dropData->data['items'];
-            $successes = 0;
-            for($i = $drops->drops_available; $i > 0; $i--) if($drops->petItem && $this->creditItem(null, Auth::user(), $type, $data, $drops->petItem,
-                is_numeric($drops->petQuantity) ?
-                $drops->petQuantity :
-                mt_rand($itemData['pet'][$drops->parameters]['min'], $itemData['pet'][$drops->parameters]['max'])
-            )) $successes += 1;
-            for($i = $drops->drops_available; $i > 0; $i--) if($drops->variantItem && $this->creditItem(null, Auth::user(), $type, $data, $drops->variantItem,
-                is_numeric($drops->variantQuantity) ?
-                $drops->variantQuantity :
-                mt_rand($itemData[$pet->variant_id][$drops->parameters]['min'], $itemData[$pet->variant_id][$drops->parameters]['max'])
-            )) $successes += 1;
-            if($successes != $drops->items->count() * $drops->drops_available) throw new \Exception('Failed to collect all drops.');
-
-            // Clear the number of available drops
-            $drops->update(['drops_available' => 0]);
-
-            return $this->commitReturn(true);
-        } catch(\Exception $e) {
-            $this->setError('error', $e->getMessage());
-        }
-        return $this->rollbackReturn(false);
-    }
-
-    /**
      * Deletes items from stack.
      *
      * @param  \App\Models\User\User|\App\Models\Character\Character          $owner

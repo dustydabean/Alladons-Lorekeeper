@@ -263,8 +263,8 @@ function parseDropAssetData($array) {
                 foreach($contents as $id => $data) {
                     $result[$group][$type][$id] = [
                         'asset' => $model::find($id),
-                        'min_quantity' => $data->min_quantity,
-                        'max_quantity' => $data->max_quantity
+                        'min_quantity' => $data['min_quantity'],
+                        'max_quantity' => $data['max_quantity']
                     ];
                 }
             }

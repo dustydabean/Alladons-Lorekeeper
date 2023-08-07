@@ -13,6 +13,7 @@ use App\Models\Pet\PetDrop;
 use App\Models\Pet\PetDropData;
 use App\Services\PetService;
 use App\Services\PetDropService;
+use App\Models\User\UserPet;
 
 use App\Models\Item\Item;
 
@@ -309,7 +310,7 @@ class PetController extends Controller
 
         if ($drops->update(['parameters' => $request['parameters'], 'drops_available' => $request['drops_available']])) {
             flash('Pet drops updated successfully.')->success();
-            return redirect()->to($this->user_pet->url.'/drops');
+            return redirect()->to($this->user_pet->pageUrl(Auth::user()->id));
         }
         else {
             flash('Failed to update pet drops.')->error();

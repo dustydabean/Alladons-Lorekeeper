@@ -3,6 +3,7 @@
 @section('home-title') Pets @endsection
 
 @section('home-content')
+
 {!! breadcrumbs(['Pets' => 'pets']) !!}
 
 <h1>
@@ -24,14 +25,11 @@
                             <div class="mb-1">
                                 <a href="#" class="inventory-stack"><img src="{{ $pet->VariantImage($pet->pivot->id) }}" class="img-fluid"/></a>
                             </div>
-                            <div> <span class="text-light badge badge-dark px-3 py-2 mb-1" style="font-size:95%;">{{ $pet->pivot->pet_name }}</span></div>
                             <div>
-                                <a href="#" class="inventory-stack inventory-stack-name">{{ $pet->name }}</a>
+                                <a href="{{ url('pets/view/'.$pet->pivot->id) }}" class="{{ $pet->pivot->pet_name ? 'btn-dark' : 'btn-primary' }} btn btn-sm my-1">
+                                    {!! $pet->pivot->pet_name ?? $pet->name !!}
+                                </a>
                             </div>
-
-                            @if($pet->dropData)
-                                <a href="{{ url('pets/pet/'.$pet->pivot->id) }}" class="btn btn-primary btn-sm mt-1">Drops</a>
-                            @endif
                         </div>
                     @endforeach
                 </div>

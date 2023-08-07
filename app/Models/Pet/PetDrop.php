@@ -92,26 +92,8 @@ class PetDrop extends Model
      */
     public function getPetItemAttribute()
     {
-        // Collect data from the drop data about what item this species drops.
-        $itemsData = $this->dropData->data['items'];
-        $petItem = isset($itemsData['pet']) && isset($itemsData['pet'][$this->parameters]) ? Item::find($itemsData['pet'][$this->parameters]['item_id']) : null;
-        if($petItem) return $petItem;
-        else return null;
-    }
-
-    /**
-     * Get quantity or quantity range for pet drop.
-     *
-     */
-    public function getPetQuantityAttribute()
-    {
-        if($this->petItem) {
-            $itemsData = $this->dropData->data['items'];
-            $min = $itemsData['pet'][$this->parameters]['min'];
-            $max = $itemsData['pet'][$this->parameters]['max'];
-            if($min == $max) return $min;
-            else return $min.'-'.$max;
-        }
+        // get rewards from drop data
+        return $this->dropData->rewards(true)[strtolower($this->parameters)];
     }
 
     /**
@@ -120,40 +102,9 @@ class PetDrop extends Model
      */
     public function getVariantItemAttribute()
     {
-        // Collect data from the drop data about what item this variant drops.
-        $itemsData = $this->dropData->data['items'];
-        $variantItem = isset($this->user_pet->variant_id) && isset($itemsData[$this->user_pet->variant_id][$this->parameters]) ? Item::find($itemsData[$this->user_pet->variant_id][$this->parameters]['item_id']) : null;
-        if($variantItem) return $variantItem;
-        else return null;
-    }
-
-    /**
-     * Get quantity or quantity range for species drop.
-     *
-     */
-    public function getVariantQuantityAttribute()
-    {
-        if($this->variantItem) {
-            $itemsData = $this->dropData->data['items'];
-            $min = $itemsData[$this->user_pet->variant_id][$this->parameters]['min'];
-            $max = $itemsData[$this->user_pet->variant_id][$this->parameters]['max'];
-            if($min == $max) return $min;
-            else return $min.'-'.$max;
-        }
-    }
-
-    /**
-     * Get the item(s) a given user pet should be dropping.
-     *
-     */
-    public function getItemsAttribute()
-    {
-        // Collect resulting items
-        $items = collect([]);
-        if($this->petItem) $items = $items->concat([$this->petItem]);
-        if($this->variantItem) $items = $items->concat([$this->variantItem]);
-
-        return $items;
+        // get rewards from drop data
+        if (!$this->user_pet->variant || !isset($this->dropData->rewards(false)[str_replace(' ', '_', $this->user_pet->variant->name)])) return null;
+        return $this->dropData->rewards(false)[strtolower(str_replace(' ', '_', $this->user_pet->variant->name))];
     }
 
     /**

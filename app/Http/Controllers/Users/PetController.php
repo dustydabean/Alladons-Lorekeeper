@@ -14,7 +14,7 @@ use App\Models\Pet\PetLog;
 use App\Models\Item\ItemTag;
 use App\Models\User\UserItem;
 use App\Services\PetManager;
-use App\Services\InventoryManager;
+use App\Services\PetDropService;
 
 use App\Models\Character\Character;
 
@@ -200,25 +200,20 @@ class PetController extends Controller
         ]);
     }
 
-
-    //  DROPS
-
     /**
-     * Shows a pet's drops page.
+     * Shows a pet's indiviudal page.
      *
      * @param  string  $slug
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getPetDrops($id)
+    public function getPetPage($id)
     {
         $pet = UserPet::findOrFail($id);
         $user = $pet->user;
-
-        if(!$pet->pet->hasDrops || (!$pet->drops->dropData->isActive && (!Auth::check() || !Auth::user()->hasPower('manage_inventory')))) abort(404);
-        return view('user.pet_drops', [
+        return view('user.pet', [
             'pet' => $pet,
-            'drops' => $pet->drops,
-            'user' => $user
+            'user' => $user,
+            'userOptions' => ['0' => 'Select User'] + User::visible()->orderBy('name')->get()->pluck('verified_name', 'id')->toArray(),
         ]);
     }
 
@@ -226,21 +221,16 @@ class PetController extends Controller
      * Claims pet drops.
      *
      * @param  \Illuminate\Http\Request       $request
-     * @param  App\Services\InventoryManager  $service
+     * @param  App\Services\PetDropService    $service
      * @param  string                         $slug
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postClaimPetDrops(Request $request, InventoryManager $service, $id)
+    public function postClaimPetDrops(PetDropService $service, $id)
     {
         $pet = UserPet::findOrFail($id);
-        $user = $pet->user;
-
-        if(!Auth::check()) abort(404);
-        if($pet->user_id != Auth::user()->id) abort(404);
-        $drops = $pet->drops;
-        if(!$drops) abort(404);
-
-        if($service->claimPetDrops($pet, $pet->user, $pet->drops)) {
+        if(!Auth::check() || $pet->user_id != Auth::user()->id) abort(404);
+        if(!$pet->drops) abort(404);
+        if($service->claimPetDrops($pet)) {
             flash('Drops claimed successfully.')->success();
         }
         else {
@@ -266,23 +256,6 @@ class PetController extends Controller
             foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
         }
         return redirect()->back();
-    }
-
-    /**
-     * Shows a custom pet's info page.
-     *
-     * @param  string  $slug
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
-    public function getCustomInfoPage($id)
-    {
-        $pet = UserPet::findOrFail($id);
-        $user = $pet->user;
-        return view('user.pet', [
-            'pet' => $pet,
-            'user' => $user,
-            'userOptions' => ['0' => 'Select User'] + User::visible()->orderBy('name')->get()->pluck('verified_name', 'id')->toArray(),
-        ]);
     }
 
     /**

@@ -204,19 +204,19 @@ class PetDropData extends Model
      *
      * @return array
      */
-    public function getRewardsAttribute() {
-        if ($this->data && $this->data['assets'] != '[]') {
-            $assets = parseDropAssetData(json_decode($this->data['assets']));
+    public function Rewards($namespace = false) {
+        if ($this->data && isset($this->data['assets'])) {
+            $assets = parseDropAssetData($this->data['assets']);
             $rewards = [];
             foreach ($assets as $group => $types) {
                 foreach ($types as $type => $a) {
-                    $class = getAssetModelString($type, false);
+                    $class = getAssetModelString($type, $namespace);
                     foreach ($a as $id => $asset) {
                         $rewards[$group][] = (object) [
                             'rewardable_type' => $class,
                             'rewardable_id'   => $id,
-                            'min_quantity'        => $asset['min_quantity'],
-                            'max_quantity'        => $asset['max_quantity']
+                            'min_quantity'    => $asset['min_quantity'],
+                            'max_quantity'    => $asset['max_quantity']
                         ];
                     }
                 }
