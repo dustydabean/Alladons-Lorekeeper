@@ -62,6 +62,7 @@ Route::group(['prefix' => 'pets', 'namespace' => 'Users'], function() {
     Route::post('variant/{id}', 'PetController@postVariant');
 
     Route::get('selector', 'PetController@getSelector');
+    Route::post('pet/{id}', 'PetController@postClaimPetDrops');
 });
 
 Route::group(['prefix' => 'characters', 'namespace' => 'Users'], function() {

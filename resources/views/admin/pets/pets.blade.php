@@ -7,11 +7,12 @@
 
 <h1>Pets</h1>
 
-<p>This is a list of pets in the game. Specific details about pets can be added when they are granted to users (e.g. reason for grant). By default, pets are merely collectibles and any additional functionality must be manually processed, or custom coded in for the specific pet.</p> 
+<p>This is a list of pets in the game. Specific details about pets can be added when they are granted to users (e.g. reason for grant). By default, pets are merely collectibles and any additional functionality must be manually processed, or custom coded in for the specific pet.</p>
 
 <div class="text-right mb-3">
-    <a class="btn btn-primary" href="{{ url('admin/data/pet-categories') }}"><i class="fas fa-folder"></i> Pet Categories</a>
-    <a class="btn btn-primary" href="{{ url('admin/data/pets/create') }}"><i class="fas fa-plus"></i> Create New Pet</a>
+    <a class="btn btn-primary" href="{{ url('admin/data/pet-categories') }}"><i class="fas fa-folder mr-1"></i> Pet Categories</a>
+    <a class="btn btn-primary" href="{{ url('admin/data/pet-drops') }}"><i class="fas fa-egg mr-1"></i> Pet Drops</a>
+    <a class="btn btn-primary" href="{{ url('admin/data/pets/create') }}"><i class="fas fa-plus mr-1"></i> Create New Pet</a>
 </div>
 
 <div>
@@ -30,32 +31,25 @@
 
 @if(!count($pets))
     <p>No pets found.</p>
-@else 
+@else
     {!! $pets->render() !!}
-    <table class="table table-sm category-table">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Category</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($pets as $pet)
-                <tr class="sort-item" data-id="{{ $pet->id }}">
-                    <td>
-                        {{ $pet->name }}
-                    </td>
-                    <td>{{ $pet->category ? $pet->category->name : '' }}</td>
-                    <td class="text-right">
-                        <a href="{{ url('admin/data/pets/edit/'.$pet->id) }}" class="btn btn-primary">Edit</a>
-                    </td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
+    <div class="row ml-md-2">
+        <div class="d-flex row flex-wrap col-12 mt-1 pt-1 px-0 ubt-bottom">
+            <div class="col-5 col-md-6 font-weight-bold">Name</div>
+            <div class="col col-md font-weight-bold">Category</div>
+        </div>
+        @foreach($pets as $pet)
+            <div class="d-flex row flex-wrap col-12 mt-1 pt-1 px-0 ubt-top">
+                <div class="col-5 col-md-6"> {{ $pet->name }} </div>
+                <div class="col-5 col-md-5"> {{ $pet->category ? $pet->category->name : '' }} </div>
+                <div class="col-2 col-md-1 text-right"> <a href="{{ url('admin/data/pets/edit/'.$pet->id) }}" class="btn btn-primary py-0">Edit</a> </div>
+            </div>
+        @endforeach
+    </div>
     {!! $pets->render() !!}
 @endif
+
+<div class="text-center mt-4 small text-muted">{{ $pets->total() }} result{{ $pets->total() == 1 ? '' : 's' }} found.</div>
 
 @endsection
 

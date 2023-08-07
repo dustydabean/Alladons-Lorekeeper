@@ -17,20 +17,16 @@
         <div class="card-body inventory-body">
             @foreach($categoryPets->chunk(4) as $chunk)
                 <div class="row mb-3">
-                    @foreach($chunk as $pet) 
-                        <?php
-                        $pet->pivot->pluck('pet_name', 'id');
-                            $stackName = $pet->pivot->pluck('pet_name', 'id')->toArray()[$pet->pivot->id];
-                        ?>
+                    @foreach($chunk as $pet)
                         <div class="col-sm-3 col-6 text-center inventory-item" data-id="{{ $pet->pivot->id }}" data-name="{{ $user->name }}'s {{ $pet->name }}">
                             <div class="mb-1">
-                                <a href="#" class="inventory-stack"><img src="{{ $pet->VariantImage($pet->pivot->variant_id) }}" class="img-fluid" style="width:50%;"/></a>
+                                <a href="#" class="inventory-stack"><img src="{{ $pet->VariantImage($pet->pivot->variant_id) }}" class="img-fluid"/></a>
                             </div>
                             <div>
-                                <a href="#" class="inventory-stack inventory-stack-name">{{ $pet->name }}</a>
+                                <a href="#" class="inventory-stack inventory-stack-name">{{ $pet->VariantName($pet->pivot->variant_id) }} {{ $pet->name }}</a>
                             </div>
                             <div>
-                                <span class="text-light badge badge-dark" style="font-size:95%;">{{ $stackName }}</span>
+                                <span class="text-light badge badge-dark" style="font-size:95%;">{{ $pet->pivot->pet_name }}</span>
                             </div>
                         </div>
                     @endforeach

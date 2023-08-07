@@ -92,7 +92,7 @@ function getAssetModelString($type, $namespaced = true)
             if($namespaced) return '\App\Models\Currency\Currency';
             else return 'Currency';
             break;
-            
+
         case 'pets': case 'pet':
             if($namespaced) return '\App\Models\Pet\Pet';
             else return 'Pet';
@@ -193,6 +193,88 @@ function getDataReadyAssets($array, $isCharacter = false)
     }
     return $result;
 }
+
+// --------------------------------------------
+
+/**
+ * Adds an asset to the given array.
+ * If the asset already exists, it adds to the quantity.
+ *
+ * @param  array  $array
+ * @param  mixed  $asset
+ * @param  int    $quantity
+ */
+function addDropAsset(&$array, $asset, $min_quantity = 1, $max_quantity = 1)
+{
+    if(!$asset) return;
+    if(isset($array[$asset->assetType][$asset->id])) return;
+    else $array[$asset->assetType][$asset->id] = ['asset' => $asset, 'min_quantity' => $min_quantity, 'max_quantity' => $max_quantity];
+}
+
+/**
+ * Get a clean version of the asset array to store in the database,
+ * where each asset is listed in [id => quantity] format.
+ * json_encode this and store in the data attribute.
+ *
+ * @param  array  $array
+ * @param  bool   $isCharacter
+ * @return array
+ */
+function getDataReadyDropAssets($array)
+{
+    $result = [];
+    foreach($array as $group => $types)
+    {
+        $result[$group] = [];
+        foreach($types as $type => $key)
+        {
+            if($type && !isset($result[$group][$type])) $result[$group][$type] = [];
+            foreach($key as $assetId => $assetData)
+            {
+                $result[$group][$type][$assetId] = [
+                    'min_quantity' => $assetData['min_quantity'],
+                    'max_quantity' => $assetData['max_quantity']
+                ];
+            }
+            if (empty($result[$group][$type])) {
+                unset($result[$group][$type]);
+            }
+        }
+    }
+    return $result;
+}
+
+/**
+ * Retrieves the data associated with an asset array,
+ * basically reversing the above function.
+ * Use the data attribute after json_decode()ing it.
+ *
+ * @param array $array
+ *
+ * @return array
+ */
+function parseDropAssetData($array) {
+    $result = [];
+    foreach ($array as $group => $types) {
+        $result[$group] = [];
+        foreach ($types as $type => $contents) {
+            $model = getAssetModelString($type);
+            if ($model) {
+                foreach($contents as $id => $data) {
+                    $result[$group][$type][$id] = [
+                        'asset' => $model::find($id),
+                        'min_quantity' => $data->min_quantity,
+                        'max_quantity' => $data->max_quantity
+                    ];
+                }
+            }
+        }
+    }
+
+    return $result;
+}
+
+// --------------------------------------------
 
 /**
  * Retrieves the data associated with an asset array,

@@ -170,6 +170,14 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
 
     Route::post('pets/variants/{id?}', 'PetController@postEditVariants');
 
+    Route::get('pet-drops', 'PetController@getDropIndex');
+    Route::get('pet-drops/create', 'PetController@getCreateDrop');
+    Route::get('pet-drops/edit/{id}', 'PetController@getEditDrop');
+    Route::get('pet-drops/delete/{id}', 'PetController@getDeleteDrop');
+    Route::post('pet-drops/create', 'PetController@postCreateEditDrop');
+    Route::post('pet-drops/edit/{id?}', 'PetController@postCreateEditDrop');
+    Route::post('pet-drops/delete/{id}', 'PetController@postDeleteDrop');
+
     # SHOPS
     Route::get('shops', 'ShopController@getIndex');
     Route::get('shops/create', 'ShopController@getCreateShop');
@@ -192,7 +200,7 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('shops/stock/delete/{id}', 'ShopController@postDeleteShopStock');
     // misc
     Route::get('shops/stock-type', 'ShopController@getShopStockType');
-    
+
     # FEATURES (TRAITS)
     Route::get('trait-categories', 'FeatureController@getIndex');
     Route::get('trait-categories/create', 'FeatureController@getCreateFeatureCategory');
@@ -316,10 +324,14 @@ Route::group(['prefix' => 'grants', 'namespace' => 'Users', 'middleware' => 'pow
 
     Route::get('pets', 'GrantController@getPets');
     Route::post('pets', 'GrantController@postPets');
-    
+
     Route::get('item-search', 'GrantController@getItemSearch');
 });
 
+# PETS
+Route::group(['prefix' => 'pets', 'middleware' => 'power:edit_inventories'], function() {
+    Route::post('pet/{id}', 'Data\PetController@postEditPetDrop');
+});
 
 # MASTERLIST
 Route::group(['prefix' => 'masterlist', 'namespace' => 'Characters', 'middleware' => 'power:manage_characters'], function() {

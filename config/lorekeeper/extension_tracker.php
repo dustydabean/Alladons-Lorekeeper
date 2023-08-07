@@ -21,5 +21,13 @@ return [
         'version' => '1.0.4',
     ],
 
-
+    'pets' => [
+        'wiki_key' => 'Pets',
+        'creators' => json_encode([
+            'Newt' => 'https://github.com/ne-wt/',
+            'Mercury' => 'https://github.com/itinerare/',
+            'Uri' => 'https://github.com/preimpression/',
+        ]),
+        'version' => '1.5.0',
+    ],
 ];

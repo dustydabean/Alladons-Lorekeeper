@@ -5,9 +5,15 @@
 @section('admin-content')
 {!! breadcrumbs(['Admin Panel' => 'admin', 'Pets' => 'admin/data/pets', ($pet->id ? 'Edit' : 'Create').' Pet' => $pet->id ? 'admin/data/pets/edit/'.$pet->id : 'admin/data/pets/create']) !!}
 
-<h1>{{ $pet->id ? 'Edit' : 'Create' }} Pet
+<h1>
+    {{ $pet->id ? 'Edit' : 'Create' }} Pet
     @if($pet->id)
         <a href="#" class="btn btn-outline-danger float-right delete-pet-button">Delete Pet</a>
+        @if ($pet->dropData)
+            <a href="{{ url('/admin/data/pet-drops/edit/') . '/' . $pet->dropData->id }}" class="btn btn-info float-right mr-2">Edit Drops</a>
+        @else
+            <a href="{{ url('/admin/data/pet-drops/create') }}" class="btn btn-info float-right mr-2">Create Drops</a>
+        @endif
     @endif
 </h1>
 
@@ -15,7 +21,7 @@
 
 @if(!$pet->id)<p>You can create variants once the pet is made.<p>@endif
 
-<h3>Basic Information</h3>
+<h2>Basic Information</h2>
 
 <div class="form-group">
     {!! Form::label('Name') !!}
@@ -53,7 +59,7 @@
 {!! Form::close() !!}
 
 @if($pet->id)
-    <h3>Variants</h3>
+    <h2>Variants</h2>
     {!! Form::open(['url' => 'admin/data/pets/variants/'.$pet->id, 'files' => true]) !!}
     <div class="card mb-3">
         <div class="card-body">
@@ -65,7 +71,7 @@
             <div id="featureList">
                 @foreach($pet->variants as $variant)
                     <div class="form-group d-flex mb-2">
-                        {!! Form::text('variant_names[]', $variant->variant_name, ['class' => 'form-control mr-2 feature-select original', 'placeholder' => 'Variant Name']) !!}                  
+                        {!! Form::text('variant_names[]', $variant->variant_name, ['class' => 'form-control mr-2 feature-select original', 'placeholder' => 'Variant Name']) !!}
                         {!! Form::file('variant_images[]') !!}
                         <a href="#" class="remove-feature btn btn-danger mb-2">×</a>
                     </div>
@@ -74,18 +80,18 @@
             <div class="text-right">
                 {!! Form::submit('Edit Variants', ['class' => 'btn btn-primary']) !!}
             </div>
-            
+
             {!! Form::close() !!}
         </div>
     </div>
 
     <div class="feature-row hide mb-2">
-        {!! Form::text('variant_names[]', null, ['class' => 'form-control mr-2 feature-select', 'placeholder' => 'Variant Name']) !!}                  
+        {!! Form::text('variant_names[]', null, ['class' => 'form-control mr-2 feature-select', 'placeholder' => 'Variant Name']) !!}
         {!! Form::file('variant_images[]') !!}
         <a href="#" class="remove-feature btn btn-danger mb-2">×</a>
     </div>
 
-    <h3>Preview</h3>
+    <h2>Preview</h2>
     <div class="card mb-3">
         <div class="card-body">
             @include('world._entry', ['imageUrl' => $pet->imageUrl, 'name' => $pet->displayName, 'description' => $pet->parsed_description, 'searchUrl' => $pet->searchUrl])
@@ -101,7 +107,7 @@
                         </div>
                     </div>
                 @endforeach
-            </div>    
+            </div>
         </div>
     </div>
 @endif
@@ -111,7 +117,7 @@
 @section('scripts')
 @parent
 <script>
-$( document ).ready(function() {    
+$( document ).ready(function() {
     $('.delete-pet-button').on('click', function(e) {
         e.preventDefault();
         loadModal("{{ url('admin/data/pets/delete') }}/{{ $pet->id }}", 'Delete Pet');
@@ -139,6 +145,6 @@ $( document ).ready(function() {
         $trigger.parent().remove();
     }
 });
-    
+
 </script>
 @endsection

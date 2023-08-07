@@ -34,6 +34,8 @@ class Kernel extends ConsoleKernel
                 ->daily();
         $schedule->command('update-timed-stock')
                 ->everyMinute();
+        $schedule->command('check-pet-drops')
+                ->everyMinute();
     }
 
     /**

@@ -24,7 +24,7 @@ class Pet extends Model
      * @var string
      */
     protected $table = 'pets';
-    
+
     /**
      * Validation rules for creation.
      *
@@ -36,7 +36,7 @@ class Pet extends Model
         'description' => 'nullable',
         'image' => 'mimes:png',
     ];
-    
+
     /**
      * Validation rules for updating.
      *
@@ -50,7 +50,7 @@ class Pet extends Model
     ];
 
     /**********************************************************************************************
-    
+
         RELATIONS
 
     **********************************************************************************************/
@@ -58,7 +58,7 @@ class Pet extends Model
     /**
      * Get the category the pet belongs to.
      */
-    public function category() 
+    public function category()
     {
         return $this->belongsTo('App\Models\Pet\PetCategory', 'pet_category_id');
     }
@@ -68,8 +68,17 @@ class Pet extends Model
         return $this->hasMany('App\Models\Pet\PetVariant', 'pet_id');
     }
 
+    /**
+     * Get the drop data associated with this species.
+     */
+    public function dropData()
+    {
+        return $this->hasOne('App\Models\Pet\PetDropData');
+    }
+
+
     /**********************************************************************************************
-    
+
         SCOPES
 
     **********************************************************************************************/
@@ -121,11 +130,11 @@ class Pet extends Model
     }
 
     /**********************************************************************************************
-    
+
         ACCESSORS
 
     **********************************************************************************************/
-    
+
     /**
      * Displays the model's name, linked to its encyclopedia page.
      *
@@ -165,7 +174,7 @@ class Pet extends Model
     {
         return public_path($this->imageDirectory);
     }
-    
+
     /**
      * Gets the URL of the model's image.
      *
@@ -201,5 +210,22 @@ class Pet extends Model
     {
         if(!$id) return $this->imageUrl;
         else return $this->variants()->where('id', $id)->first()->imageUrl;
+    }
+
+    public function VariantName($id = null)
+    {
+        if(!$id || !$this->variants() ) return '';
+        else return $this->variants()->where('id', $id)->first()->variant_name;
+    }
+
+    /**
+     * Gets whether or not the pet has drops.
+     *
+     * @return string
+     */
+    public function getHasDropsAttribute()
+    {
+        if($this->dropData) return 1;
+        else return 0;
     }
 }
