@@ -50,7 +50,7 @@
     @if($cardHeaderColor) background-color: {{ $cardHeaderColor }} !important; @endif
 }
 
-.card-title a, .card-title {
+.card-header .card-title a, .card-header .card-title, .card-header a {
     @if($cardHeaderTextColor) color: {{ $cardHeaderTextColor }} !important; @endif
 }
 
