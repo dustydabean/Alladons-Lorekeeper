@@ -12,6 +12,7 @@ use App\Models\User\User;
 use App\Services\ThemeManager;
 
 use App\Http\Controllers\Controller;
+use stdClass;
 
 class ThemeController extends Controller
 {
@@ -68,8 +69,15 @@ class ThemeController extends Controller
      */
     public function getCreateTheme()
     {
+        $conditions = new stdClass();
+        if (class_exists('\App\Models\Weather\WeatherSeason')) {
+            $conditions->seasons =  \App\Models\Weather\WeatherSeason::get()->pluck('name', 'id');
+            $conditions->weathers = \App\Models\Weather\Weather::get()->pluck('name', 'id');
+        }
+        
         return view('admin.themes.create_edit_theme', [
-            'theme' => new Theme
+            'theme' => new Theme,
+            'conditions' => $conditions
         ]);
     }
 
@@ -81,10 +89,17 @@ class ThemeController extends Controller
      */
     public function getEditTheme($id)
     {
+        $conditions = new stdClass();
+        if (class_exists('\App\Models\Weather\WeatherSeason')) {
+            $conditions->seasons =  \App\Models\Weather\WeatherSeason::get()->pluck('name', 'id');
+            $conditions->weathers = \App\Models\Weather\Weather::get()->pluck('name', 'id');
+        }
+        
         $theme = Theme::find($id);
         if(!$theme) abort(404);
         return view('admin.themes.create_edit_theme', [
             'theme' => $theme,
+            'conditions' => $conditions
         ]);
     }
 
@@ -99,9 +114,7 @@ class ThemeController extends Controller
     public function postCreateEditTheme(Request $request, ThemeManager $service, $id = null)
     {
         $id ? $request->validate(Theme::$updateRules) : $request->validate(Theme::$createRules);
-        $data = $request->only([
-            'name', 'creator_name', 'creator_url', 'header', 'css', 'is_active', 'is_default', 'remove_header', 'remove_css'
-        ]);
+        $data = $request->all();
 
         if($id && $service->updateTheme(Theme::find($id), $data, Auth::user())) {
             flash('Theme updated successfully.')->success();

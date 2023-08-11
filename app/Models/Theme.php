@@ -20,7 +20,7 @@ class Theme extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'hash', 'is_default', 'is_active', 'has_css', 'has_header', 'extension', 'creators'
+        'name', 'hash', 'is_default', 'is_active', 'has_css', 'has_header', 'has_background', 'extension', 'extension_background', 'creators', 'prioritize_css', 'link_id', 'link_type', 'is_user_selectable', 'theme_type'
     ];
 
     /**
@@ -38,11 +38,9 @@ class Theme extends Model
     public static $createRules = [
         'name' => 'required|unique:themes|between:3,100',
         'header' => 'mimes:png,jpg,jpeg,gif,svg',
-        'css' => 'required',
+        'background' => 'mimes:png,jpg,jpeg',
         'active' => 'nullable|boolean',
         'default' => 'nullable|boolean',
-        'creator_name' => 'required',
-        'creator_url' => 'required',
     ];
 
     /**
@@ -53,11 +51,9 @@ class Theme extends Model
     public static $updateRules = [
         'name' => 'required|between:3,100',
         'header' => 'mimes:png,jpg,jpeg,gif,svg',
-        'css' => 'nullable',
+        'background' => 'mimes:png,jpg,jpeg',
         'active' => 'nullable|boolean',
         'default' => 'nullable|boolean',
-        'creator_name' => 'required',
-        'creator_url' => 'required',
     ];
 
     /**********************************************************************************************
@@ -67,11 +63,18 @@ class Theme extends Model
     **********************************************************************************************/
 
     /**
-     * Get the category the theme belongs to.
+     * Get the users who are using this theme.
      */
     public function users()
     {
         return $this->hasMany('App\Models\User\User', 'theme_id');
+    }
+
+    /** 
+     * Get the ThemeEditor attached to this theme
+     */
+    public function themeEditor() {
+        return $this->hasOne('App\Models\ThemeEditor', 'theme_id');
     }
 
     /**********************************************************************************************
@@ -181,13 +184,23 @@ class Theme extends Model
     }
 
     /**
-     * Gets the file name of the model's image.
+     * Gets the file name of the model's header image.
      *
      * @return string
      */
-    public function getImageFileNameAttribute()
+    public function getHeaderImageFileNameAttribute()
     {
         return $this->id . '-header.'.$this->extension;
+    }
+
+    /**
+     * Gets the file name of the model's background image.
+     *
+     * @return string
+     */
+    public function getBackgroundImageFileNameAttribute()
+    {
+        return $this->id . '-background.'.$this->extension_background;
     }
 
     /**
@@ -205,10 +218,21 @@ class Theme extends Model
      *
      * @return string
      */
-    public function getImageUrlAttribute()
+    public function getHeaderImageUrlAttribute()
     {
-        if (!$this->has_header) return asset('images/header.png');
-        return asset($this->imageDirectory . '/' . $this->imageFileName . '?' . $this->hash);
+        if (!$this->has_header && !$this->themeEditor->header_image_url) return asset('images/header.png');
+        return $this->extension ? asset($this->imageDirectory . '/' . $this->headerImageFileName . '?' . $this->hash) : $this->themeEditor->header_image_url;
+    }
+
+    /**
+     * Gets the URL of the model's background image.
+     *
+     * @return string
+     */
+    public function getBackgroundImageUrlAttribute()
+    {
+        if (!$this->has_background && !$this->themeEditor->background_image_url) return '';
+        return $this->extension_background ? asset($this->imageDirectory . '/' . $this->backgroundImageFileName . '?' . $this->hash) : $this->themeEditor->background_image_url;
     }
 
     /**
@@ -229,7 +253,7 @@ class Theme extends Model
     public function getCSSUrlAttribute()
     {
         if (!$this->has_css) return null;
-        return asset($this->ImageDirectory . '/' . $this->CSSFileName . '?' . $this->hash);
+        return $this->ImageDirectory . '/' . $this->CSSFileName;
     }
 
     /**
@@ -242,6 +266,15 @@ class Theme extends Model
         return User::where('is_banned',0)->where('theme_id',$this->id)->count();
     }
 
+    /**
+     * Gets the themes's asset type for asset management.
+     *
+     * @return string
+     */
+    public function getAssetTypeAttribute() {
+        return 'themes';
+    }
+    
     /**********************************************************************************************
 
         OTHER FUNCTIONS
