@@ -88,8 +88,10 @@ class RecycleService extends Service {
       }
     }
 
-    $dataObj->lootPlain = $dataObj->loot;
-    $dataObj->loot = $rewards;
+    if ($dataObj) {
+      $dataObj->lootPlain = $dataObj->loot;
+      $dataObj->loot = $rewards;
+    }
 
     return $dataObj;
   }

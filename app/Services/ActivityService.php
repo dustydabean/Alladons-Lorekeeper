@@ -79,6 +79,13 @@ class ActivityService extends Service {
         unset($data['image']);
       }
 
+      // If changing modules, clear out the old data
+      if ($activity->modules !== $data['module']) {
+        $activity->data = null;
+        $activity->save();
+      }
+      
+      
       $activity->update($data);
 
       if ($activity) $this->handleImage($image, $activity->ImagePath, $activity->ImageFileName);
