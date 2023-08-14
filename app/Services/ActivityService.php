@@ -80,7 +80,7 @@ class ActivityService extends Service {
       }
 
       // If changing modules, clear out the old data
-      if ($activity->modules !== $data['module']) {
+      if ($activity->module !== $data['module']) {
         $activity->data = null;
         $activity->save();
       }
