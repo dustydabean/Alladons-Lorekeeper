@@ -90,19 +90,26 @@ class UpdatePetDrops extends Command
             if($key == "pet") {
                 $assets = [];
                 foreach($group as $name => $item) {
-                    $assets[strtolower($name)] = [
-                        'items' => [
-                            $item['item_id'] => [
-                                'min_quantity' => $item['min'],
-                                'max_quantity' => $item['max'],
-                            ]
-                        ]
+                    $assets[strtolower($name)]['items'][$item['item_id']] = [
+                        'min_quantity' => $item['min'],
+                        'max_quantity' => $item['max'],
                     ];
                 }
                 $drop->data = ['assets' => $assets];
             }
             else {
-                // TODO: variant data
+                $assets = [];
+                foreach($group as $name => $item) {
+                    $assets[strtolower($name)]['items'][$item['item_id']] = [
+                        'min_quantity' => $item['min'],
+                        'max_quantity' => $item['max'],
+                    ];
+                }
+                // if not "pet" we create a PetVariantDropData entry with the data
+                \App\Models\Pet\PetVariantDropData::create([
+                    'variant_id' => $key,
+                    'data' => json_encode(['assets' => $assets]),
+                ]);
             }
         }
         $drop->save();

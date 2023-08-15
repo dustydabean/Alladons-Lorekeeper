@@ -64,7 +64,6 @@ class PetVariantDropData extends Model
      */
     public function petDrops()
     {
-        dd('TODO: Fix this');
         return $this->hasMany('App\Models\Pet\PetDrop', 'drop_id');
     }
 
