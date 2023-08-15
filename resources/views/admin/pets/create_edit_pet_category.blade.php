@@ -13,11 +13,26 @@
 
 {!! Form::open(['url' => $category->id ? 'admin/data/pet-categories/edit/'.$category->id : 'admin/data/pet-categories/create', 'files' => true]) !!}
 
-<h3>Basic Information</h3>
+<h2 class="h3">Basic Information</h2>
 
 <div class="form-group">
     {!! Form::label('Name') !!}
     {!! Form::text('name', $category->name, ['class' => 'form-control']) !!}
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="form-check mb-2">
+            {!! Form::checkbox('allow_attach', 1, $category->allow_attach, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
+            {!! Form::label('allow_attach', 'Allow Character Attachment', ['class' => 'form-check-label ml-2']) !!}
+        </div>
+        <div class="form-group row no-gutters align-items-center">
+            <div class="col-md col-form-label">
+                {!! Form::label('limit', 'Hold Limit (Optional)', ['class' => 'mb-0']) !!} {!! add_help('This limit is per category and does not get overwritten by individual pet limits.') !!}
+            </div>
+            {!! Form::number('limit', $category->limit, ['class' => 'col-md-9 form-control px-2']) !!}
+        </div>
+    </div>
 </div>
 
 <div class="form-group">
@@ -44,7 +59,7 @@
 {!! Form::close() !!}
 
 @if($category->id)
-    <h3>Preview</h3>
+    <h2 class="h3">Preview</h2>
     <div class="card mb-3">
         <div class="card-body">
             @include('world._entry', ['imageUrl' => $category->categoryImageUrl, 'name' => $category->displayName, 'description' => $category->parsed_description])
@@ -57,12 +72,15 @@
 @section('scripts')
 @parent
 <script>
-$( document ).ready(function() {    
-    $('.delete-category-button').on('click', function(e) {
-        e.preventDefault();
-        loadModal("{{ url('admin/data/pet-categories/delete') }}/{{ $category->id }}", 'Delete Category');
+
+    $( document ).ready(function() {
+        $('.delete-category-button').on('click', function(e) {
+            e.preventDefault();
+            loadModal("{{ url('admin/data/pet-categories/delete') }}/{{ $category->id }}", 'Delete Category');
+        });
+
+
     });
-});
-    
+
 </script>
 @endsection

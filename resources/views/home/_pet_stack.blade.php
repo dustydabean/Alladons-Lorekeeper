@@ -96,7 +96,7 @@
                     {!! Form::open(['url' => 'pets/variant/'.$stack->id, 'id' => 'userVariantForm', 'class' => 'collapse']) !!}
                     <p>This will use a splice item!</p>
                         <div class="form-group">
-                            {!! Form::select('stack_id', $splices, null, ['class'=>'form-control']) !!}
+                            {!! Form::select('stack_id', $splices, null, ['class'=>'form-control', 'placeholder' => 'Select Item']) !!}
                         </div>
                         <div class="form-group">
                             @php $variants = ['0' => 'Default'] + $stack->pet->variants()->pluck('variant_name', 'id')->toArray() @endphp

@@ -9,6 +9,7 @@ use Auth;
 use App\Models\User\User;
 use App\Models\User\UserPet;
 use App\Models\Pet\Pet;
+use App\Models\Pet\PetDrop;
 use App\Models\Pet\PetCategory;
 use App\Models\Pet\PetLog;
 use App\Models\Item\ItemTag;
@@ -210,10 +211,15 @@ class PetController extends Controller
     {
         $pet = UserPet::findOrFail($id);
         $user = $pet->user;
+        $tags = ItemTag::where('tag', 'splice')->where('is_active', 1)->pluck('item_id');
+        $splices = UserItem::where('user_id', $user->id)->whereIn('item_id', $tags)->where('count', '>', 0)->with('item')->get()->pluck('item.name', 'id');
         return view('user.pet', [
-            'pet' => $pet,
             'user' => $user,
-            'userOptions' => ['0' => 'Select User'] + User::visible()->orderBy('name')->get()->pluck('verified_name', 'id')->toArray(),
+            'pet' => $pet,
+            'drops' => $pet->drops,
+            'userOptions' => User::where('id', '!=', $user->id)->orderBy('name')->pluck('name', 'id')->toArray(),
+            'logs' => $user->getPetLogs(),
+            'splices' => $splices,
         ]);
     }
 
@@ -238,6 +244,35 @@ class PetController extends Controller
         }
         return redirect()->back();
     }
+
+    /**
+     * Claims pet drops.
+     *
+     * @param  \Illuminate\Http\Request       $request
+     * @param  App\Services\PetDropService    $service
+     * @param  string                         $slug
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postClaimAllPetDrops(PetDropService $service)
+    {
+        $user_pet_ids = UserPet::where('user_id', Auth::user()->id)->pluck('id');
+        $pet_drops = PetDrop::whereIn('user_pet_id', $user_pet_ids)->where('drops_available', '>', 0)->pluck('user_pet_id');
+        $pets = UserPet::whereIn('id', $pet_drops)->get();
+
+        $rewards = createAssetsArray();
+        foreach($pets as $pet) {
+            if($assets = $service->claimPetDrops($pet, false)) {
+                $rewards = mergeAssetsArrays($rewards, $assets);
+            }
+            else {
+                foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+            }
+        }
+        if(createRewardsString($rewards)) flash("You received: " . createRewardsString($rewards))->info();
+        else flash('No drops to claim.')->info();
+        flash('Drops claimed successfully.')->success();
+        return redirect()->back();
+}
 
     /**
      * Post custom image

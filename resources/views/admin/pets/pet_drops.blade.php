@@ -4,15 +4,15 @@
 
 @section('admin-content')
 
-{!! breadcrumbs(['Admin Panel' => 'admin', 'Pets' => 'admin/data/pets', 'Pet Drops' => 'admin/data/pet-drops']) !!}
+{!! breadcrumbs(['Admin Panel' => 'admin', 'Pets' => 'admin/data/pets', 'Pet Drops' => 'admin/data/pets/drops']) !!}
 
-<h1>Pet Drop Data</h1>
+<h1>Pet Drops</h1>
 
-<p>Pet drops are items that can be collected from pets at set intervals.</p>
+<p>Pet drops are items that can be collected from pets at set intervals. In the code, they are called "Pet Drop Data" whereas "Pet Drop" refers to specific pets' drops.</p>
 
 <div class="text-right mb-3">
     <a class="btn btn-secondary" href="{{ url('admin/data/pets') }}"><i class="fas fa-undo-alt mr-1"></i> Return to Pets</a>
-    <a class="btn btn-primary" href="{{ url('admin/data/pet-drops/create') }}"><i class="fas fa-plus mr-1"></i> Create New Pet Drop</a>
+    <a class="btn btn-primary" href="{{ url('admin/data/pets/drops/create') }}"><i class="fas fa-plus mr-1"></i> Create New Pet Drop</a>
 </div>
 
 @if(!count($drops))

@@ -87,27 +87,6 @@ class PetDrop extends Model
     **********************************************************************************************/
 
     /**
-     * Get the item(s) a given user pet should be dropping.
-     *
-     */
-    public function getPetItemAttribute()
-    {
-        // get rewards from drop data
-        return $this->dropData->rewards(true)[strtolower($this->parameters)];
-    }
-
-    /**
-     * Get the item(s) a given user pet should be dropping.
-     *
-     */
-    public function getVariantItemAttribute()
-    {
-        // get rewards from drop data
-        if (!$this->user_pet->variant || !isset($this->dropData->rewards(false)[str_replace(' ', '_', $this->user_pet->variant->name)])) return null;
-        return $this->dropData->rewards(false)[strtolower(str_replace(' ', '_', $this->user_pet->variant->name))];
-    }
-
-    /**
      * Get the display of the group a user pet belongs to, so long as the species has more than one.
      *
      */
@@ -137,7 +116,7 @@ class PetDrop extends Model
             'user_pet_id' => $id,
             'parameters' => $parameters ? $parameters : $dropData->rollParameters(),
             'drops_available' => 0,
-            'next_day' => Carbon::now()->add($dropData->data['frequency']['frequency'], $dropData->data['frequency']['interval'])->startOf($dropData->data['frequency']['interval']),
+            'next_day' => Carbon::now()->add($dropData->frequency, $dropData->interval)->startOf($dropData->interval),
         ]);
     }
 }

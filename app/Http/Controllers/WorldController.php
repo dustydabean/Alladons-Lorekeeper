@@ -408,7 +408,7 @@ class WorldController extends Controller
         $query = PetCategory::query();
         $name = $request->get('name');
         if($name) $query->where('name', 'LIKE', '%'.$name.'%');
-        return view('world.pet_categories', [  
+        return view('world.pet_categories', [
             'categories' => $query->orderBy('sort', 'DESC')->paginate(20)->appends($request->query()),
         ]);
     }
@@ -423,12 +423,12 @@ class WorldController extends Controller
     {
         $query = Pet::with('category');
         $data = $request->only(['pet_category_id', 'name', 'sort']);
-        if(isset($data['pet_category_id']) && $data['pet_category_id'] != 'none') 
+        if(isset($data['pet_category_id']) && $data['pet_category_id'] != 'none')
             $query->where('pet_category_id', $data['pet_category_id']);
-        if(isset($data['name'])) 
+        if(isset($data['name']))
             $query->where('name', 'LIKE', '%'.$data['name'].'%');
 
-        if(isset($data['sort'])) 
+        if(isset($data['sort']))
         {
             switch($data['sort']) {
                 case 'alpha':
@@ -447,12 +447,24 @@ class WorldController extends Controller
                     $query->sortOldest();
                     break;
             }
-        } 
+        }
         else $query->sortCategory();
 
         return view('world.pets', [
             'pets' => $query->paginate(20)->appends($request->query()),
             'categories' => ['none' => 'Any Category'] + PetCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray()
+        ]);
+    }
+
+    /**
+     * Gets a specific pet page.
+     *
+     */
+    public function getPet($id)
+    {
+        $pet = Pet::with('category')->findOrFail($id);
+        return view('world.pet_page', [
+            'pet' => $pet,
         ]);
     }
 }

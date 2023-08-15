@@ -49,9 +49,9 @@ class CheckPetDrops extends Command
                 $drop->update([
                     'drops_available' => $drop->drops_available += 1,
                     'next_day' => Carbon::now()->add(
-                        $drop->dropData->data['frequency']['frequency'],
-                        $drop->dropData->data['frequency']['interval']
-                    )->startOf($drop->dropData->data['frequency']['interval'])
+                        $drop->dropData->frequency,
+                        $drop->dropData->interval,
+                    )->startOf($drop->dropData->interval)
                 ]);
             }
         }

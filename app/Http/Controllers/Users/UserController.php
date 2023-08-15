@@ -236,7 +236,7 @@ class UserController extends Controller
         ]);
     }
 
-        /**
+    /**
      * Shows a user's pets.
      *
      * @param  string  $name
@@ -249,9 +249,7 @@ class UserController extends Controller
         return view('user.pet', [
             'user' => $this->user,
             'pet' => $pet,
-            'drops' => $pet->drops,
             'userOptions' => User::where('id', '!=', $this->user->id)->orderBy('name')->pluck('name', 'id')->toArray(),
-            'user' => $this->user,
             'logs' => $this->user->getPetLogs()
         ]);
     }

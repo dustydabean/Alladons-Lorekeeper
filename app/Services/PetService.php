@@ -8,6 +8,7 @@ use Config;
 use App\Models\Pet\PetCategory;
 use App\Models\Pet\PetVariant;
 use App\Models\Pet\Pet;
+use App\Models\User\UserPet;
 
 class PetService extends Service
 {
@@ -96,29 +97,6 @@ class PetService extends Service
         return $this->rollbackReturn(false);
     }
 
-    /**
-     * Handle category data.
-     *
-     * @param  array                               $data
-     * @param  \App\Models\Pet\PetCategory|null  $category
-     * @return array
-     */
-    private function populateCategoryData($data, $category = null)
-    {
-        if(isset($data['description']) && $data['description']) $data['parsed_description'] = parse($data['description']);
-
-        if(isset($data['remove_image']))
-        {
-            if($category && $category->has_image && $data['remove_image'])
-            {
-                $data['has_image'] = 0;
-                $this->deleteImage($category->categoryImagePath, $category->categoryImageFileName);
-            }
-            unset($data['remove_image']);
-        }
-
-        return $data;
-    }
 
     /**
      * Delete a category.
@@ -252,32 +230,6 @@ class PetService extends Service
     }
 
     /**
-     * Processes user input for creating/updating an pet.
-     *
-     * @param  array                  $data
-     * @param  \App\Models\Pet\Pet  $pet
-     * @return array
-     */
-    private function populateData($data, $pet = null)
-    {
-        if(isset($data['description']) && $data['description']) $data['parsed_description'] = parse($data['description']);
-
-        if(!isset($data['allow_transfer'])) $data['allow_transfer'] = 0;
-
-        if(isset($data['remove_image']))
-        {
-            if($pet && $pet->has_image && $data['remove_image'])
-            {
-                $data['has_image'] = 0;
-                $this->deleteImage($pet->imagePath, $pet->imageFileName);
-            }
-            unset($data['remove_image']);
-        }
-
-        return $data;
-    }
-
-    /**
      * Deletes an pet.
      *
      * @param  \App\Models\Pet\Pet  $pet
@@ -310,71 +262,89 @@ class PetService extends Service
         return $this->rollbackReturn(false);
     }
 
+    /**********************************************************************************************
+
+        PET VARIANTS
+
+    **********************************************************************************************/
+
     /**
-     * Edits the variants on a pet
+     * Creates a new variant for a pet
      */
-    public function editVariants($data, $pet)
+    public function createVariant($pet, $data)
     {
         DB::beginTransaction();
 
         try {
 
-            $temp = [];
-            // this is so the user doesn't have to re-upload the variant image every time. It's not perfect but is some-what convenient
-            if(isset($data['variant_names'])) {
-                foreach($data['variant_names'] as $key => $type) {
-                    if($pet->variants()->where('variant_name', $type)->exists()) {
+            // check name is unique
+            if(PetVariant::where('variant_name', $data['variant_name'])->where('pet_id', $pet->id)->exists()) throw new \Exception("The name has already been taken.");
 
-                        $temp[] = $pet->variants()->where('variant_name', $type)->first()->id;
-                        $tempVar = $pet->variants()->where('variant_name', $type)->first();
-                        // check if any user's own this variant also
-                        if(UserPet::where('variant_id', $tempVar->id)->exists() || ($tempVar->has_image && !isset($data['variant_images'][$key]))) {
-                            // we do this so it isn't deleted in the next function
-
-                            $image = null;
-                            if(isset($data['variant_images'][$key]) && $data['variant_images'][$key] && $data['variant_images'][$key] != 1 ) {
-                                $image = $data['variant_images'][$key];
-                                unset($data['variant_images'][$key]);
-                            }
-
-                            if($image) $this->handleImage($image, $tempVar->imagePath, $tempVar->imagefilename);
-                        }
-                    }
-                }
+            $image = null;
+            if(isset($data['variant_image']) && $data['variant_image']) {
+                $data['has_image'] = 1;
+                $image = $data['variant_image'];
+                unset($data['variant_image']);
             }
-            foreach($pet->variants as $variant) {
-                if(!in_array($variant->id, $temp)) {
-                    $variant->delete();
-                }
-            }
-            // Clear the old variants...
-            //foreach($pet->variants as $variant)
-            //{
-            //    if($variant->has_image) $this->deleteImage($variant->imagePath, $variant->imageFileName);
-            //}
-            //$pet->variants()->delete();
+            else $data['has_image'] = 0;
 
-            // make new variants
-            if(isset($data['variant_names'])) {
-                foreach($data['variant_names'] as $key => $type)
+            $data['pet_id'] = $pet->id;
+
+            $variant = PetVariant::create($data);
+
+            if ($image) $this->handleImage($image, $variant->imagePath, $variant->imageFileName);
+
+            return $this->commitReturn(true);
+        } catch(\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Edits the variants on a pet
+     */
+    public function editVariant($variant, $data)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            // check name is unique
+            if(PetVariant::where('variant_name', $data['variant_name'])->where('pet_id', $variant->pet->id)->exists()) throw new \Exception("The name has already been taken.");
+
+            if(isset($data['remove_image']))
+            {
+                if($variant && $variant->has_image && $data['remove_image'])
                 {
-                    if(!$pet->variants()->where('variant_name', $type)->exists()) {
-                        $variant = PetVariant::create([
-                            'pet_id'          => $pet->id,
-                            'variant_name' => $type,
-                            'has_image'   => isset($data['variant_images'][$key]) ? 1 : 0,
-                        ]);
-
-                        $image = null;
-                        if(isset($data['variant_images'][$key]) && $data['variant_images'][$key]) {
-                            $image = $data['variant_images'][$key];
-                            unset($data['variant_images'][$key]);
-                        }
-
-
-                        if($image) $this->handleImage($image, $variant->imagePath, $variant->imagefilename);
-                    }
+                    $data['has_image'] = 0;
+                    $this->deleteImage($variant->imagePath, $variant->imageFileName);
                 }
+                unset($data['remove_image']);
+            }
+
+            $image = null;
+            if(isset($data['variant_image']) && $data['variant_image']) {
+                $data['has_image'] = 1;
+                $image = $data['variant_image'];
+                unset($data['variant_image']);
+            }
+
+            $variant->update([
+                'variant_name' => $data['variant_name'],
+                'has_image'    => $data['has_image'],
+            ]);
+
+            if ($image) $this->handleImage($image, $variant->imagePath, $variant->imageFileName);
+
+            if (isset($data['delete']) && $data['delete']) {
+                // check that no user pets exist with this variant before deleting
+                if(UserPet::where('variant_id', $variant->id)->exists()) throw new \Exception("At least one user pet currently is this variant. Please remove the pet(s) before deleting it.");
+                $variant->delete();
+                flash('Variant deleted successfully.')->success();
+            }
+            else {
+                flash('Variant updated successfully.')->success();
             }
 
             return $this->commitReturn(true);
@@ -383,4 +353,66 @@ class PetService extends Service
         }
         return $this->rollbackReturn(false);
     }
+
+    /**
+     * Handle category data.
+     *
+     * @param  array                               $data
+     * @param  \App\Models\Pet\PetCategory|null  $category
+     * @return array
+     */
+    private function populateCategoryData($data, $category = null)
+    {
+        if(isset($data['description']) && $data['description']) $data['parsed_description'] = parse($data['description']);
+
+        if(!isset($data['allow_attach'])) {
+            $data['allow_attach'] = 0;
+            $data['limit'] = null;
+        }
+        // If attachments are allowed, but no limit is set, set it to null.
+        if(isset($data['allow_attach']) && $data['allow_attach'] && !isset($data['limit'])) $data['limit'] = null;
+
+        if(isset($data['remove_image']))
+        {
+            if($category && $category->has_image && $data['remove_image'])
+            {
+                $data['has_image'] = 0;
+                $this->deleteImage($category->categoryImagePath, $category->categoryImageFileName);
+            }
+            unset($data['remove_image']);
+        }
+
+        return $data;
+    }
+
+    /**
+     * Processes user input for creating/updating an pet.
+     *
+     * @param  array                  $data
+     * @param  \App\Models\Pet\Pet  $pet
+     * @return array
+     */
+    private function populateData($data, $pet = null)
+    {
+        if(isset($data['description']) && $data['description']) $data['parsed_description'] = parse($data['description']);
+
+        // If attachments are allowed, but no limit is set, set it to null.
+        if(isset($data['allow_attach']) && $data['allow_attach'] && !isset($data['limit'])) $data['limit'] = null;
+
+        if(!isset($data['allow_transfer'])) $data['allow_transfer'] = 0;
+
+        if(isset($data['remove_image']))
+        {
+            if($pet && $pet->has_image && $data['remove_image'])
+            {
+                $data['has_image'] = 0;
+                $this->deleteImage($pet->imagePath, $pet->imageFileName);
+            }
+            unset($data['remove_image']);
+        }
+
+        return $data;
+    }
+
+
 }

@@ -25,14 +25,17 @@
                         <div class="col-sm-3 col-6 text-center inventory-item" data-id="{{ $pet->pivot->id }}" data-name="{{ $user->name }}'s {{ $pet->pivot->pet_name ?? $pet->name }}">
                             <div class="mb-1">
                                 <a href="#" class="inventory-stack">
-                                    <img class="img-fluid" src="{{ $pet->VariantImage($pet->pivot->id) }}" />
+                                    <img class="img-fluid rounded" src="{{ $pet->VariantImage($pet->pivot->id) }}" />
                                 </a>
                             </div>
                             <div>
                                 <a href="#" class="inventory-stack inventory-stack-name">
                                     {{ $pet->name }}
                                     @if($pet->pivot->has_image)
-                                        <i class="fas fa-brush mr-2"  data-toggle="tooltip" title="This pet has custom art."></i>
+                                        <i class="fas fa-brush ml-1"  data-toggle="tooltip" title="This pet has custom art."></i>
+                                    @endif
+                                    @if($pet->pivot->chara_id)
+                                        <span data-toggle="tooltip" title="Attached to a character."><i class="fas fa-link ml-1"></i></span>
                                     @endif
                                 </a>
                             </div>

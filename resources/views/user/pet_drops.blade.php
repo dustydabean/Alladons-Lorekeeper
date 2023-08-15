@@ -1,14 +1,14 @@
 @extends('user.layout')
 
-@section('profile-title') {{ $user->name }}'s {{ $pet->pet->name }} {{ isset($pet->drops->dropData->data['drop_name']) ? strtolower($pet->drops->dropData->data['drop_name']).'s' : 'drops' }} @endsection
+@section('profile-title') {{ $user->name }}'s {{ $pet->pet->name }} {{ isset($pet->drops->dropData->name) ? strtolower($pet->drops->dropData->name).'s' : 'drops' }} @endsection
 
 @section('profile-content')
 
 
 @if(!Auth::check()  || (Auth::check() && Auth::user()->id != $pet->user_id))
-    {!! breadcrumbs(['Users' => 'users', $user->name => $user->url, 'Pets' => $user->url . '/pets', $user->name .'\'s '. $pet->pet->name.' '.(isset($pet->drops->dropData->data['drop_name']) ? $pet->drops->dropData->data['drop_name'].'s' : 'drops') => 'pets/pet/'.$pet->id ]) !!}
+    {!! breadcrumbs(['Users' => 'users', $user->name => $user->url, 'Pets' => $user->url . '/pets', $user->name .'\'s '. $pet->pet->name.' '.(isset($pet->drops->dropData->name) ? $pet->drops->dropData->name.'s' : 'drops') => 'pets/pet/'.$pet->id ]) !!}
 @else
-    {!! breadcrumbs(['Pets' => 'pets', $pet->pet->name.' '.(isset($pet->drops->dropData->data['drop_name']) ? $pet->drops->dropData->data['drop_name'].'s' : 'drops') => 'pets/pet/'.$pet->id ]) !!}
+    {!! breadcrumbs(['Pets' => 'pets', $pet->pet->name.' '.(isset($pet->drops->dropData->name) ? $pet->drops->dropData->name.'s' : 'drops') => 'pets/pet/'.$pet->id ]) !!}
 @endif
 
 @if(!$pet->drops->dropData->isActive)
@@ -18,7 +18,7 @@
 <h1>
     {{ $pet->pet_id && $pet->pet->hasDrops ? $pet->drops->group : '' }}
     {{ $pet->pet->name }}
-    {{ isset($pet->drops->dropData->data['drop_name']) ? strtolower($pet->drops->dropData->data['drop_name']).'s' : 'drops' }}
+    {{ isset($pet->drops->dropData->name) ? strtolower($pet->drops->dropData->name).'s' : 'drops' }}
 </h1>
 
 
@@ -32,7 +32,7 @@
     </div>
     <div class="col-md-6 text-center">
         <h2>
-            Collect {{ isset($pet->drops->dropData->data['drop_name']) ? $pet->drops->dropData->data['drop_name'].'s' : 'Drops' }}
+            Collect {{ isset($pet->drops->dropData->name) ? $pet->drops->dropData->name.'s' : 'Drops' }}
             @if(Auth::check() && Auth::user()->hasPower('edit_inventories'))
                 <a href="#" class="float-right btn btn-outline-info btn-sm" id="paramsButton" data-toggle="modal" data-target="#paramsModal"><i class="fas fa-cog"></i> Admin</a>
             @endif
@@ -40,7 +40,7 @@
 
         <div class="card card-body mb-4">
             @if($drops->petItem || $drops->variantItem)
-                <p>This pet produces these {{ isset($pet->drops->dropData->data['drop_name']) ? strtolower($pet->drops->dropData->data['drop_name']).'s' : 'drops' }}, based on their type of pet and/or variant:</p>
+                <p>This pet produces these {{ isset($pet->drops->dropData->name) ? strtolower($pet->drops->dropData->name).'s' : 'drops' }}, based on their type of pet and/or variant:</p>
                 @if($drops->petItem)
                     <div class="row">
                     <div class="col-md align-self-center">
@@ -48,7 +48,7 @@
                         </div>
                         <div class="col-md align-self-center">
                             @if($drops->petItem->has_image) <img src="{{ $drops->petItem->imageUrl }}"><br/> @endif
-                            {!! $drops->petItem->displayName !!} ({{ $drops->petQuantity }}/{{ $drops->dropData->data['frequency']['interval']}})
+                            {!! $drops->petItem->displayName !!} ({{ $drops->petQuantity }}/{{ $drops->dropData->interval}})
                         </div>
                     </div>
                 @endif
@@ -60,34 +60,34 @@
                         </div>
                         <div class="col-md align-self-center">
                             @if($drops->variantItem->has_image) <img src="{{ $drops->variantItem->imageUrl }}"><br/> @endif
-                            {!! $drops->variantItem->displayName !!} ({{ $drops->variantQuantity }} every {{ $drops->dropData->data['frequency']['frequency'] > 1 ? $drops->dropData->data['frequency']['frequency'].' '.$drops->dropData->data['frequency']['interval'].'s' : $drops->dropData->data['frequency']['interval']}})
+                            {!! $drops->variantItem->displayName !!} ({{ $drops->variantQuantity }} every {{ $drops->dropData->frequency > 1 ? $drops->dropData->frequency.' '.$drops->dropData->interval.'s' : $drops->dropData->interval}})
                         </div>
                     </div>
                 @endif
             @else
-                <p>This pet {{ isset($pet->drops->dropData->data['drop_name']) ? 'doesn\'t produce any '.strtolower($pet->drops->dropData->data['drop_name']).'s' : 'isn\'t eligible for any drops' }}.</p>
+                <p>This pet {{ isset($pet->drops->dropData->name) ? 'doesn\'t produce any '.strtolower($pet->drops->dropData->name).'s' : 'isn\'t eligible for any drops' }}.</p>
             @endif
         </div>
 
         @if($drops->petItem || $drops->variantItem)
             <div class="text-center">
                 <p>
-                    This pet has {{ $drops->drops_available }} batch{{ $drops->drops_available == 1 ? '' : 'es' }} of {{ isset($pet->drops->dropData->data['drop_name']) ? strtolower($pet->drops->dropData->data['drop_name']) : 'drop' }}s available.<br/>
+                    This pet has {{ $drops->drops_available }} batch{{ $drops->drops_available == 1 ? '' : 'es' }} of {{ isset($pet->drops->dropData->name) ? strtolower($pet->drops->dropData->name) : 'drop' }}s available.<br/>
                     @if(isset($drops->dropData->cap) && $drops->dropData->cap > 0)
-                        This pet can manage a maximum of {{ $drops->dropData->cap }} batch{{ $drops->dropData->cap == 1 ? '' : 'es' }} of {{ isset($pet->drops->dropData->data['drop_name']) ? strtolower($pet->drops->dropData->data['drop_name']) : 'drop' }}s at once!
+                        This pet can manage a maximum of {{ $drops->dropData->cap }} batch{{ $drops->dropData->cap == 1 ? '' : 'es' }} of {{ isset($pet->drops->dropData->name) ? strtolower($pet->drops->dropData->name) : 'drop' }}s at once!
                         @if($drops->drops_available >= $drops->dropData->cap)
-                             Until these {{ isset($pet->drops->dropData->data['drop_name']) ? strtolower($pet->drops->dropData->data['drop_name']) : 'drop' }}s are collected, this pet won't produce any more.
+                             Until these {{ isset($pet->drops->dropData->name) ? strtolower($pet->drops->dropData->name) : 'drop' }}s are collected, this pet won't produce any more.
                         @else
-                             This pet's next {{ isset($pet->drops->dropData->data['drop_name']) ? strtolower($pet->drops->dropData->data['drop_name']) : 'drop' }}(s) will be available to collect {!! pretty_date($drops->next_day) !!}.
+                             This pet's next {{ isset($pet->drops->dropData->name) ? strtolower($pet->drops->dropData->name) : 'drop' }}(s) will be available to collect {!! pretty_date($drops->next_day) !!}.
                         @endif
                     @else
-                        This pet's next {{ isset($pet->drops->dropData->data['drop_name']) ? strtolower($pet->drops->dropData->data['drop_name']) : 'drop' }}(s) will be available to collect {!! pretty_date($drops->next_day) !!}.
+                        This pet's next {{ isset($pet->drops->dropData->name) ? strtolower($pet->drops->dropData->name) : 'drop' }}(s) will be available to collect {!! pretty_date($drops->next_day) !!}.
                     @endif
                 </p>
             </div>
             @if(Auth::check() && Auth::user()->id == $pet->user_id && $drops->drops_available > 0)
                 {!! Form::open(['url' => 'pets/pet/'.$pet->id]) !!}
-                    {!! Form::submit('Collect '.(isset($pet->drops->dropData->data['drop_name']) ? $pet->drops->dropData->data['drop_name'] : 'Drop').($drops->drops_available > 1 ? 's' : ''), ['class' => 'btn btn-primary']) !!}
+                    {!! Form::submit('Collect '.(isset($pet->drops->dropData->name) ? $pet->drops->dropData->name : 'Drop').($drops->drops_available > 1 ? 's' : ''), ['class' => 'btn btn-primary']) !!}
                 {!! Form::close() !!}
             @endif
         @endif

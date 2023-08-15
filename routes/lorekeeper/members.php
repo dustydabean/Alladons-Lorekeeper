@@ -63,6 +63,7 @@ Route::group(['prefix' => 'pets', 'namespace' => 'Users'], function() {
 
     Route::get('selector', 'PetController@getSelector');
     Route::post('collect/{id}', 'PetController@postClaimPetDrops');
+    Route::post('collect-all', 'PetController@postClaimAllPetDrops');
     Route::post('image/{id}', 'PetController@postCustomImage');
     Route::post('description/{id}', 'PetController@postDescription');
 

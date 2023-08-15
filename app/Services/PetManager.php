@@ -205,15 +205,42 @@ class PetManager extends Service
         DB::beginTransaction();
 
         try {
+                // First, check user permissions
                 $user = Auth::user();
+                if(!$user->hasAlias) throw new \Exception("Your deviantART account must be verified before you can perform this action.");
+
+                // Next, why bother checking everything else if the pet isn't even attachable? Also determine if the user is the owner of the pet/has permission to attach.
+                if(!$pet) throw new \Exception("An invalid pet was selected.");
+                if($pet->pet->category && !$pet->pet->category->allow_attach) throw new \Exception("This pet is in a category that cannot be attached to a character.");
+                if($pet->user_id != $user->id && !$user->hasPower('edit_inventories')) throw new \Exception("You do not own this pet.");
+
+                // Next, check if the character the pet is being attached to is valid and the user has permission to attach the pet to that character.
                 if($id == NULL) throw new \Exception("No character selected.");
                 $character = Character::find($id);
-                if(!$user->hasAlias) throw new \Exception("Your deviantART account must be verified before you can perform this action.");
-                if(!$pet) throw new \Exception("An invalid pet was selected.");
-                if($pet->user_id != $user->id && !$user->hasPower('edit_inventories')) throw new \Exception("You do not own this pet.");
                 if(!$character) throw new \Exception("An invalid character was selected.");
                 if($character->user_id !== $user->id && !$user->hasPower('edit_inventories'))throw new \Exception("You do not own this character.");
 
+                // Finally, compare character and limits based on pet and pet category.
+                $allPets = $character->pets;
+                if($pet->pet->category){
+                    $petCategory = $pet->pet->category;
+                    $categoryLimit = $petCategory->limit;
+                    $categoryCount = 0;
+                    foreach($allPets as $p) {
+                        if($p->pet->pet_category_id == $petCategory->id) $categoryCount++;
+                    }
+                    if($categoryLimit && $categoryCount >= $categoryLimit) throw new \Exception("This character has reached the limit of pets in this category.");
+                }
+                if($pet->pet->limit){
+                    $petLimit = $pet->pet->limit;
+                    $petCount = 0;
+                    foreach($allPets as $p) {
+                        if($p->pet_id == $pet->pet->id) $petCount++;
+                    }
+                    if($petLimit && $petCount >= $petLimit) throw new \Exception("This character has reached the limit of this pet.");
+                }
+
+                // If all checks pass, attach the pet to the character.
                 $pet['chara_id'] = $character->id;
                 $pet['attached_at'] = Carbon::now();
                 $pet->save();

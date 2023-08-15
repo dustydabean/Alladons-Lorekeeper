@@ -12,6 +12,12 @@
 
 <p>These are your pets. Click on a pet to view more details and actions you can perform on it.</p>
 
+<div class="text-right">
+    {!! Form::open(['url' => 'pets/collect-all']) !!}
+        {!! Form::submit('Collect All Pet Drops', ['class' => 'btn btn-success my-3']) !!}
+    {!! Form::close() !!}
+</div>
+
 @foreach($pets as $categoryId=>$categoryPets)
     <div class="card mb-3 inventory-category">
         <h5 class="card-header inventory-header">
@@ -28,8 +34,10 @@
                             <div>
                                 <a href="{{ url('pets/view/'.$pet->pivot->id) }}" class="{{ $pet->pivot->pet_name ? 'btn-dark' : 'btn-primary' }} btn btn-sm my-1">
                                     {!! $pet->pivot->pet_name ?? $pet->name !!}
+                                    @if($pet->pivot->chara_id) <span data-toggle="tooltip" title="Attached to a character."><i class="fas fa-link ml-1"></i></span> @endif
                                 </a>
                             </div>
+
                         </div>
                     @endforeach
                 </div>

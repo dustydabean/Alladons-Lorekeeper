@@ -26,38 +26,75 @@
     {!! Form::close() !!}
 </li>
 
-<li class="list-group-item">
-    @php
-        $now = Carbon\Carbon::parse($pet->attached_at);
-        $diff = $now->addDays(Settings::get('claymore_cooldown'));
-    @endphp
-    @if($pet->chara_id != NULL && $diff < Carbon\Carbon::now())
-    <a class="card-title h5 collapse-title"  data-toggle="collapse" href="#attachForm">@if($pet->user_id != $user->id) [ADMIN] @endif Detach Pet from Character</a>
-    {!! Form::open(['url' => 'pets/detach/'.$pet->id, 'id' => 'attachForm', 'class' => 'collapse']) !!}
-        <p>This pet is currently attached to {!! $pet->character->displayName !!}, do you want to detach them?</p>
-        <div class="text-right">
-            {!! Form::submit('Detach', ['class' => 'btn btn-primary']) !!}
-        </div>
-    {!! Form::close() !!}
-    @elseif($pet->chara_id == NULL || $diff < Carbon\Carbon::now())
-        <a class="card-title h5 collapse-title"  data-toggle="collapse" href="#attachForm">@if($pet->user_id != $user->id) [ADMIN] @endif Attach Pet to Character</a>
-        {!! Form::open(['url' => 'pets/attach/'.$pet->id, 'id' => 'attachForm', 'class' => 'collapse']) !!}
-            <p>Attach this pet to a character you own! They'll appear on the character's page and any stat bonuses will automatically be applied.</p>
-            <p>Pets can be detached.</p>
-            <div class="form-group">
-                {!! Form::label('id', 'Slug') !!} {!! add_help('Insert your character\'s slug.') !!}
-                {!! Form::select('id', $pet->user->characters()->myo()->pluck('slug', 'id'), null, ['class'=>'form-control']) !!}
-            </div>
+@if(!$pet->pet->category || ($pet->pet->category->allow_attach && (!isset($pet->pet->category->limit) || $pet->pet->category->limit > 0)))
+    <li class="list-group-item">
+        @php
+            $now = Carbon\Carbon::parse($pet->attached_at);
+            $diff = $now->addDays(Settings::get('claymore_cooldown'));
+        @endphp
+        @if($pet->chara_id != NULL && $diff < Carbon\Carbon::now())
+        <a class="card-title h5 collapse-title"  data-toggle="collapse" href="#attachForm">@if($pet->user_id != $user->id) [ADMIN] @endif Detach Pet from Character</a>
+        {!! Form::open(['url' => 'pets/detach/'.$pet->id, 'id' => 'attachForm', 'class' => 'collapse']) !!}
+            <p>This pet is currently attached to {!! $pet->character->displayName !!}, do you want to detach them?</p>
             <div class="text-right">
-                {!! Form::submit('Attach', ['class' => 'btn btn-primary']) !!}
+                {!! Form::submit('Detach', ['class' => 'btn btn-primary']) !!}
             </div>
         {!! Form::close() !!}
-    @else
-        <a class="card-title h5">You cannot currently attach / detach this pet! It is under cooldown.</a>
-    @endif
+        @elseif($pet->chara_id == NULL || $diff < Carbon\Carbon::now())
+            <a class="card-title h5 collapse-title"  data-toggle="collapse" href="#attachForm">@if($pet->user_id != $user->id) [ADMIN] @endif Attach Pet to Character</a>
+            {!! Form::open(['url' => 'pets/attach/'.$pet->id, 'id' => 'attachForm', 'class' => 'collapse']) !!}
+                <p>Attach this pet to a character you own! They'll appear on the character's page and any stat bonuses will automatically be applied.</p>
+                <p>Pets can be detached.</p>
+                <div class="form-group">
+                    {!! Form::label('id', 'Slug') !!} {!! add_help('Insert your character\'s slug.') !!}
+                    {!! Form::select('id', $pet->user->characters()->myo()->pluck('slug', 'id'), null, ['class'=>'form-control']) !!}
+                </div>
+                <div class="text-right">
+                    {!! Form::submit('Attach', ['class' => 'btn btn-primary']) !!}
+                </div>
+            {!! Form::close() !!}
+        @else
+            <a class="card-title h5">You cannot currently attach / detach this pet! It is under cooldown.</a>
+        @endif
+    </li>
+@endif
+
+@if($user && $splices && $user->id == $pet->user_id)
+<li class="list-group-item">
+    <a class="card-title h5 collapse-title"  data-toggle="collapse" href="#userVariantForm">Change Pet Variant</a>
+    {!! Form::open(['url' => 'pets/variant/'.$pet->id, 'id' => 'userVariantForm', 'class' => 'collapse']) !!}
+    <p>This will use a splice item!</p>
+        <div class="form-group">
+            {!! Form::select('stack_id', $splices, null, ['class'=>'form-control', 'placeholder' => 'Select Item']) !!}
+        </div>
+        <div class="form-group">
+            @php $variants = ['0' => 'Default'] + $pet->pet->variants()->pluck('variant_name', 'id')->toArray() @endphp
+            {!! Form::select('variant_id', $variants, $pet->variant_id, ['class'=>'form-control']) !!}
+        </div>
+        <div class="text-right">
+            {!! Form::submit('Change Variant', ['class' => 'btn btn-primary']) !!}
+        </div>
+    {!! Form::close() !!}
 </li>
+@endif
 
 @if($user->hasPower('edit_inventories'))
+    {{-- variant --}}
+    <li class="list-group-item">
+        <a class="card-title h5 collapse-title"  data-toggle="collapse" href="#variantForm">[ADMIN] Change Pet Variant</a>
+        {!! Form::open(['url' => 'pets/variant/'.$pet->id, 'id' => 'variantForm', 'class' => 'collapse']) !!}
+            {!! Form::hidden('is_staff', 1) !!}
+            <div class="form-group">
+                @php $variants = ['0' => 'Default'] + $pet->pet->variants()->pluck('variant_name', 'id')->toArray() @endphp
+                {!! Form::select('variant_id', $variants, $pet->variant_id, ['class'=>'form-control']) !!}
+            </div>
+            <div class="text-right">
+                {!! Form::submit('Change Variant', ['class' => 'btn btn-primary']) !!}
+            </div>
+        {!! Form::close() !!}
+    </li>
+
+    {{-- custom image --}}
     <li class="list-group-item">
         <a class="card-title h5 collapse-title" data-toggle="collapse" href="#imageForm">[ADMIN] Change Image</a>
         {!! Form::open(['url' => 'pets/image/'.$pet->id, 'id' => 'imageForm', 'class' => 'collapse', 'files' => true]) !!}

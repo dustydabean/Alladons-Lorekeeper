@@ -10,9 +10,9 @@
     @if($pet->id)
         <a href="#" class="btn btn-outline-danger float-right delete-pet-button">Delete Pet</a>
         @if ($pet->dropData)
-            <a href="{{ url('/admin/data/pet-drops/edit/') . '/' . $pet->dropData->id }}" class="btn btn-info float-right mr-2">Edit Drops</a>
+            <a href="{{ url('/admin/data/pets/drops/edit/') . '/' . $pet->id }}" class="btn btn-info float-right mr-2">Edit Drops</a>
         @else
-            <a href="{{ url('/admin/data/pet-drops/create') }}" class="btn btn-info float-right mr-2">Create Drops</a>
+            <a href="{{ url('/admin/data/pets/drops/create') }}" class="btn btn-info float-right mr-2">Create Drops</a>
         @endif
     @endif
 </h1>
@@ -39,9 +39,17 @@
         </div>
     @endif
 </div>
-<div class="form-group">
-    {!! Form::label('Pet Category (Optional)') !!}
-    {!! Form::select('pet_category_id', $categories, $pet->pet_category_id, ['class' => 'form-control']) !!}
+
+<div class="form-group row no-gutters align-items-center">
+    {!! Form::label('pet_category_id', 'Pet Category (Optional)', ['class' => 'col-md mb-0']) !!}
+    {!! Form::select('pet_category_id', $categories, $pet->pet_category_id, ['class' => 'col-md-9 form-control']) !!}
+</div>
+
+<div class="form-group row no-gutters align-items-center">
+    <div class="col-md col-form-label">
+        {!! Form::label('limit', 'Character Hold Limit (Optional)', ['class' => 'mb-0']) !!} {!! add_help('This limit is per pet and holds lower priority than category limits, if set. If there is a category set, it is only applicable if that category can be attached.') !!}
+    </div>
+    {!! Form::number('limit', $pet->limit, ['class' => 'col-md-9 form-control px-2']) !!}
 </div>
 
 <div class="form-group">
@@ -60,28 +68,37 @@
 
 @if($pet->id)
     <h2>Variants</h2>
-    {!! Form::open(['url' => 'admin/data/pets/variants/'.$pet->id, 'files' => true]) !!}
     <div class="card mb-3">
         <div class="card-body">
-
-            <div class="mb-2">
-                <a href="#" class="btn btn-primary" id="add-feature">Add Variant</a>
+            <div class="mb-2 text-right">
+                <a href="#" class="btn btn-primary" id="add-variant">Add Variant</a>
             </div>
-
-            <div id="featureList">
-                @foreach($pet->variants as $variant)
-                    <div class="form-group d-flex mb-2">
-                        {!! Form::text('variant_names[]', $variant->variant_name, ['class' => 'form-control mr-2 feature-select original', 'placeholder' => 'Variant Name']) !!}
-                        {!! Form::file('variant_images[]') !!}
-                        <a href="#" class="remove-feature btn btn-danger mb-2">×</a>
+            @if ($pet->variants->count())
+                @foreach($pet->variants->chunk(4) as $chunk)
+                    <div class="row">
+                        @foreach($chunk as $variant)
+                            <div class="col"><div class="card h-100 mb-3"><div class="card-body text-center">
+                                @if($variant->has_image)
+                                    <a href="{{ $variant->imageUrl }}" data-lightbox="entry" data-title="{{ $variant->variant_name }}">
+                                        <img src="{{ $variant->imageUrl }}" class="img-fluid" alt="{{ $variant->variant_name }}" data-toggle="tooltip" data-title="{{ $variant->variant_name }}" style="max-height:200px" />
+                                    </a>
+                                    <div class="h5 my-2">{{ $variant->variant_name }}</div>
+                                    <div>
+                                        <a href="#" class="btn btn-sm btn-primary edit-variant" data-id="{{$variant->id}}"><i class="fas fa-cog mr-1"></i>Edit</a>
+                                        @if($variant->dropData)
+                                            <a href="{{ url('/admin/data/pets/drops/edit/') . '/' . $pet->id.'#variant-'.$variant->id }}" class="btn btn-sm btn-primary"><i class="fas fa-gift mr-1"></i>Drops</a>
+                                        @endif
+                                    </div>
+                                @else
+                                    {{ $variant->name }}
+                                @endif
+                            </div></div></div>
+                        @endforeach
                     </div>
                 @endforeach
-            </div>
-            <div class="text-right">
-                {!! Form::submit('Edit Variants', ['class' => 'btn btn-primary']) !!}
-            </div>
-
-            {!! Form::close() !!}
+            @else
+                <div class="alert alert-info">No variants found.</div>
+            @endif
         </div>
     </div>
 
@@ -94,20 +111,7 @@
     <h2>Preview</h2>
     <div class="card mb-3">
         <div class="card-body">
-            @include('world._entry', ['imageUrl' => $pet->imageUrl, 'name' => $pet->displayName, 'description' => $pet->parsed_description, 'searchUrl' => $pet->searchUrl])
-            <div class="container mt-2">
-                <h5 class="pl-2">Variants</h5>
-                @foreach($pet->variants as $variant)
-                    <div class="row world-entry p-2">
-                        @if($variant->imageurl)
-                            <div class="col-md-3 world-entry-image"><a href="{{ $variant->imageurl }}" data-lightbox="entry" data-title="{{ $variant->variant_name }}"><img src="{{ $variant->imageurl }}" class="world-entry-image" style="width:50%;" /></a></div>
-                        @endif
-                        <div class="{{ $variant->imageurl ? 'col-md-9' : 'col-12' }} my-auto">
-                            <small>{!! $variant->variant_name !!} </small>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
+            @include('world._pet_entry', ['pet' => $pet])
         </div>
     </div>
 @endif
@@ -123,27 +127,15 @@ $( document ).ready(function() {
         loadModal("{{ url('admin/data/pets/delete') }}/{{ $pet->id }}", 'Delete Pet');
     });
 
-    $('#add-feature').on('click', function(e) {
+    $('#add-variant').on('click', function(e) {
         e.preventDefault();
-        addFeatureRow();
+        loadModal("{{ url('admin/data/pets/edit/'.$pet->id.'/variants/create') }}", 'Create Variant');
     });
-    $('.remove-feature').on('click', function(e) {
+
+    $('.edit-variant').on('click', function(e) {
         e.preventDefault();
-        removeFeatureRow($(this));
-    })
-    function addFeatureRow() {
-        var $clone = $('.feature-row').clone();
-        $('#featureList').append($clone);
-        $clone.removeClass('hide feature-row');
-        $clone.addClass('d-flex');
-        $clone.find('.remove-feature').on('click', function(e) {
-            e.preventDefault();
-            removeFeatureRow($(this));
-        })
-    }
-    function removeFeatureRow($trigger) {
-        $trigger.parent().remove();
-    }
+        loadModal("{{ url('admin/data/pets/edit/'.$pet->id.'/variants/edit') }}/" + $(this).data('id'), 'Edit Variant');
+    });
 });
 
 </script>

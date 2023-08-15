@@ -3,24 +3,9 @@
 namespace App\Models\Pet;
 
 use Config;
-use DB;
-use Carbon\Carbon;
-use Notifications;
 use App\Models\Model;
 
-use App\Models\Species\Species;
-use App\Models\Species\Subtype;
-use App\Models\Character\Character;
-
-use App\Models\User\UserPet;
-use App\Models\Pet\Pet;
-use App\Models\Pet\PetVariant;
-use App\Models\Pet\PetDrop;
-
-use App\Models\Currency\Currency;
-use App\Models\Item\Item;
-
-class PetDropData extends Model
+class PetVariantDropData extends Model
 {
 
     /**
@@ -29,7 +14,7 @@ class PetDropData extends Model
      * @var array
      */
     protected $fillable = [
-        'pet_id', 'parameters', 'data', 'is_active', 'name', 'cap', 'frequency', 'interval', 'variant_data', 'override',
+        'pet_drop_data_id', 'variant_id', 'data'
     ];
 
     /**
@@ -37,7 +22,7 @@ class PetDropData extends Model
      *
      * @var string
      */
-    protected $table = 'pet_drop_data';
+    protected $table = 'pet_variant_drop_data';
 
     /**
      * Validation rules for pet creation.
@@ -45,7 +30,7 @@ class PetDropData extends Model
      * @var array
      */
     public static $createRules = [
-        'pet_id' => 'required|unique:pet_drop_data',
+        'variant_id' => 'required|unique:pet_variant_drop_data',
         'drop_frequency' => 'required',
         'drop_interval' => 'required'
     ];
@@ -69,17 +54,9 @@ class PetDropData extends Model
     /**
      * Get the pet to which the data pertains.
      */
-    public function pet()
+    public function variant()
     {
-        return $this->belongsTo('App\Models\Pet\Pet', 'pet_id');
-    }
-
-    /**
-     * Get the pet to which the data pertains.
-     */
-    public function user_pet()
-    {
-        return $this->belongsTo('App\Models\Pet\Pet', 'pet_id');
+        return $this->belongsTo('App\Models\Pet\PetVariant', 'variant_id');
     }
 
     /**
@@ -87,6 +64,7 @@ class PetDropData extends Model
      */
     public function petDrops()
     {
+        dd('TODO: Fix this');
         return $this->hasMany('App\Models\Pet\PetDrop', 'drop_id');
     }
 
@@ -97,13 +75,13 @@ class PetDropData extends Model
     **********************************************************************************************/
 
     /**
-     * Get the admin url for this pet drop data.
+     * Get the parameter attribute as an associative array.
      *
      * @return array
      */
     public function getUrlAttribute()
     {
-        return url('admin/data/pets/drops/edit/'.$this->pet_id);
+        return url('admin/data/pets/drops/edit/'.$this->pet->id.'/variants/'.$this->variant_id);
     }
 
     /**
@@ -223,5 +201,21 @@ class PetDropData extends Model
             return $rewards;
         }
         return null;
+    }
+
+    /**
+     * gets the rewards as a comma-seperated string
+     */
+    public function rewardString()
+    {
+        $string = [];
+        foreach($this->rewards(true) as $label => $reward_values) {
+            foreach($reward_values as $reward) {
+                $reward_object = $reward->rewardable_type::find($reward->rewardable_id);
+                if( $reward->min_quantity == $reward->max_quantity) $string[$label][] = $reward_object->displayname . ' ('. $reward->min_quantity .')';
+                else $string[$label][] = $reward_object->displayname . ' ('. $reward->min_quantity . '-' . $reward->max_quantity .')';
+            }
+        }
+        return $string;
     }
 }

@@ -3,88 +3,69 @@
 @endif
 
 <h4>
-    Collect {{ isset($pet->drops->dropData->data['drop_name']) ? $pet->drops->dropData->data['drop_name'].'s' : 'Drops' }}
+    Collect  {{ isset($pet->drops->dropData->name) ? $pet->drops->dropData->name.'s' : 'Drops' }} ({{ $pet->drops->parameters}})
+    {!! add_help('Your pet\'s type is ' .$pet->drops->parameters.'.<br>You can view all pet drops on the ' . $pet->pet->name . ' pet page.') !!}
     @if(Auth::check() && Auth::user()->hasPower('edit_inventories'))
         <a href="#" class="float-right btn btn-outline-info btn-sm" id="paramsButton" data-toggle="modal" data-target="#paramsModal"><i class="fas fa-cog"></i> Admin</a>
     @endif
 </h4>
-
+<div class="alert alert-info mt-3">
+    <i class="fas fa-info-circle"></i> Drops every {{ $pet->drops->dropData->interval }}.
+</div>
 <a class="btn btn-primary mb-2" data-toggle="collapse" href="#drops" role="button" aria-expanded="false" aria-controls="drops">
     View Drops
 </a>
 
 <div class="card card-body mb-4 collapse" id="drops">
-    @if($drops->petItem || $drops->variantItem)
-        <p>This pet produces these {{ isset($pet->drops->dropData->data['drop_name']) ? strtolower($pet->drops->dropData->data['drop_name']).'s' : 'drops' }}, based on their type of pet and/or variant:</p>
-        @if($drops->petItem)
-            <table class="table table-sm category-table">
-                <thead>
-                    <tr>
-                        <th width="70%">Reward</th>
-                        <th>Quantity</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($drops->petItem as $drop)
-                        <tr>
-                            <td>
-                                @php $reward = $drop->rewardable_type::find($drop->rewardable_id); @endphp
-                                @if($reward->has_image) <img class="img-fluid" style="max-height: 10em;" src="{{ $reward->imageUrl }}"><br/> @endif
-                                {!! $reward->displayName !!}
-                            </td>
-                            <td>{{ $drop->min_quantity.'-'.$drop->max_quantity }}/{{ $drops->dropData->data['frequency']['interval'] }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        @endif
-        {!! $drops->petItem && $drops->variantItem ? '<hr/>' : null !!}
-        @if($drops->variantItem)
+    @if($pet->availableDrops)
+        <p>This pet produces these {{ isset($pet->drops->dropData->name) ? strtolower($pet->drops->dropData->name).'s' : 'drops' }}, based on their type of pet and/or variant:</p>
         <table class="table table-sm category-table">
             <thead>
                 <tr>
-                    <th width="70%">Reward</th>
+                    <th width="50%">Reward</th>
                     <th>Quantity</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($drops->variantItem as $drop)
-                    <tr>
-                        <td>
-                            @php $reward = $drop->rewardable_type::find($drop->rewardable_id); @endphp
-                            @if($reward->has_image) <img class="img-fluid" style="max-height: 10em;" src="{{ $reward->imageUrl }}"><br/> @endif
-                            {!! $reward->displayName !!}
-                        </td>
-                        <td>{{ $drop->min_quantity.'-'.$drop->max_quantity }}/{{ $drops->dropData->data['frequency']['interval'] }}</td>
-                    </tr>
+                @foreach($pet->availableDrops as $available_drops)
+                    @if(isset($available_drops->rewards(true)[strtolower($pet->drops->parameters)]))
+                        @foreach($available_drops->rewards(true)[strtolower($pet->drops->parameters)] as $reward)
+                            <tr>
+                                @php $reward_object = $reward->rewardable_type::find($reward->rewardable_id); @endphp
+                                <td>
+                                    @if($reward_object->has_image) <img class="img-fluid" style="max-height: 10em;" src="{{ $reward_object->imageUrl }}"><br/> @endif
+                                    {!! $reward_object->displayName !!}
+                                </td>
+                                <td>Between {{ $reward->min_quantity.' and '.$reward->max_quantity }}</td>
+                            </tr>
+                        @endforeach
+                    @endif
                 @endforeach
             </tbody>
         </table>
-        @endif
     @else
-        <p>This pet {{ isset($pet->drops->dropData->data['drop_name']) ? 'doesn\'t produce any '.strtolower($pet->drops->dropData->data['drop_name']).'s' : 'isn\'t eligible for any drops' }}.</p>
+        <p>This pet {{ isset($pet->drops->dropData->name) ? 'doesn\'t produce any '.strtolower($pet->drops->dropData->name).'s' : 'isn\'t eligible for any drops' }}.</p>
     @endif
 
-
-    @if($drops->petItem || $drops->variantItem)
+    @if($pet->availableDrops)
         <div class="text-center">
             <p>
-                This pet has {{ $drops->drops_available }} batch{{ $drops->drops_available == 1 ? '' : 'es' }} of {{ isset($pet->drops->dropData->data['drop_name']) ? strtolower($pet->drops->dropData->data['drop_name']) : 'drop' }}s available.<br/>
+                This pet has {{ $drops->drops_available }} batch{{ $drops->drops_available == 1 ? '' : 'es' }} of {{ isset($pet->drops->dropData->name) ? strtolower($pet->drops->dropData->name) : 'drop' }}s available.<br/>
                 @if(isset($drops->dropData->cap) && $drops->dropData->cap > 0)
-                    This pet can manage a maximum of {{ $drops->dropData->cap }} batch{{ $drops->dropData->cap == 1 ? '' : 'es' }} of {{ isset($pet->drops->dropData->data['drop_name']) ? strtolower($pet->drops->dropData->data['drop_name']) : 'drop' }}s at once!
+                    This pet can manage a maximum of {{ $drops->dropData->cap }} batch{{ $drops->dropData->cap == 1 ? '' : 'es' }} of {{ isset($pet->drops->dropData->name) ? strtolower($pet->drops->dropData->name) : 'drop' }}s at once!
                     @if($drops->drops_available >= $drops->dropData->cap)
-                        Until these {{ isset($pet->drops->dropData->data['drop_name']) ? strtolower($pet->drops->dropData->data['drop_name']) : 'drop' }}s are collected, this pet won't produce any more.
+                        Until these {{ isset($pet->drops->dropData->name) ? strtolower($pet->drops->dropData->name) : 'drop' }}s are collected, this pet won't produce any more.
                     @else
-                        This pet's next {{ isset($pet->drops->dropData->data['drop_name']) ? strtolower($pet->drops->dropData->data['drop_name']) : 'drop' }}(s) will be available to collect {!! pretty_date($drops->next_day) !!}.
+                        This pet's next {{ isset($pet->drops->dropData->name) ? strtolower($pet->drops->dropData->name) : 'drop' }}(s) will be available to collect {!! pretty_date($drops->next_day) !!}.
                     @endif
                 @else
-                    This pet's next {{ isset($pet->drops->dropData->data['drop_name']) ? strtolower($pet->drops->dropData->data['drop_name']) : 'drop' }}(s) will be available to collect {!! pretty_date($drops->next_day) !!}.
+                    This pet's next {{ isset($pet->drops->dropData->name) ? strtolower($pet->drops->dropData->name) : 'drop' }}(s) will be available to collect {!! pretty_date($drops->next_day) !!}.
                 @endif
             </p>
         </div>
         @if(Auth::check() && Auth::user()->id == $pet->user_id && $drops->drops_available > 0)
             {!! Form::open(['url' => 'pets/collect/'.$pet->id]) !!}
-                {!! Form::submit('Collect '.(isset($pet->drops->dropData->data['drop_name']) ? $pet->drops->dropData->data['drop_name'] : 'Drop').($drops->drops_available > 1 ? 's' : ''), ['class' => 'btn btn-primary']) !!}
+                {!! Form::submit('Collect '.(isset($pet->drops->dropData->name) ? $pet->drops->dropData->name : 'Drop').($drops->drops_available > 1 ? 's' : ''), ['class' => 'btn btn-primary']) !!}
             {!! Form::close() !!}
         @endif
     @endif

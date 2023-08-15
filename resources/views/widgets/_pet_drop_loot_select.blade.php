@@ -32,7 +32,7 @@
                             @if($loot->rewardable_type == 'Item')
                                 {!! Form::select('rewardable_id['.$group.'][]', $items, $loot->rewardable_id, ['class' => 'form-control item-select selectize', 'placeholder' => 'Select Item']) !!}
                             @elseif($loot->rewardable_type == 'Currency')
-                                {!! Form::select($group.'rewardable_id['.$group.'][]', $currencies, $loot->rewardable_id, ['class' => 'form-control currency-select selectize', 'placeholder' => 'Select Currency']) !!}
+                                {!! Form::select('rewardable_id['.$group.'][]', $currencies, $loot->rewardable_id, ['class' => 'form-control currency-select selectize', 'placeholder' => 'Select Currency']) !!}
                             @elseif($loot->rewardable_type == 'LootTable')
                                 {!! Form::select('rewardable_id['.$group.'][]', $tables, $loot->rewardable_id, ['class' => 'form-control table-select selectize', 'placeholder' => 'Select Loot Table']) !!}
                             @endif

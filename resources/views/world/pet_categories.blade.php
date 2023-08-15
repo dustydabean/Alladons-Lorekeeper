@@ -21,7 +21,10 @@
 @foreach($categories as $category)
     <div class="card mb-3">
         <div class="card-body">
-        @include('world._entry', ['imageUrl' => $category->categoryImageUrl, 'name' => $category->displayName, 'description' => $category->parsed_description, 'searchUrl' => $category->searchUrl])
+            @include('world._entry', ['imageUrl' => $category->categoryImageUrl, 'name' => $category->displayName, 'description' => $category->parsed_description, 'searchUrl' => $category->searchUrl])
+            @if($category->allow_attach && (!isset($category->limit) || $category->limit > 0))
+                <div class="alert alert-info mb-0 mt-2">Can be attached to characters @isset($category->limit) <b>— up to {{ $category->limit }} per pet</b> @endisset</div>
+            @endif
         </div>
     </div>
 @endforeach

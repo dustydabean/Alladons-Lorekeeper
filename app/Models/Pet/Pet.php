@@ -16,7 +16,7 @@ class Pet extends Model
      * @var array
      */
     protected $fillable = [
-        'pet_category_id', 'name', 'has_image', 'description', 'parsed_description', 'allow_transfer'
+        'pet_category_id', 'name', 'has_image', 'description', 'parsed_description', 'allow_transfer', 'limit'
     ];
 
     /**
@@ -76,7 +76,6 @@ class Pet extends Model
     {
         return $this->hasOne('App\Models\Pet\PetDropData');
     }
-
 
     /**********************************************************************************************
 
@@ -143,7 +142,7 @@ class Pet extends Model
      */
     public function getDisplayNameAttribute()
     {
-        return '<a href="'.$this->url.'" class="display-item">'.$this->name.'</a>';
+        return '<a href="'.$this->idUrl.'" class="display-item">'.$this->name.'</a>';
     }
 
     /**
@@ -188,13 +187,23 @@ class Pet extends Model
     }
 
     /**
-     * Gets the URL of the model's encyclopedia page.
+     * Gets the URL of the model's encyclopedia entry in the index.
      *
      * @return string
      */
     public function getUrlAttribute()
     {
         return url('world/pets?name='.$this->name);
+    }
+
+    /**
+     * Gets the URL of the model's encyclopedia page.
+     *
+     * @return string
+     */
+    public function getIdUrlAttribute()
+    {
+        return url('world/pets/'.$this->id);
     }
 
     /**

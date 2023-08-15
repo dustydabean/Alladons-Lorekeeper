@@ -9,8 +9,8 @@ use Auth;
 use App\Models\Pet\PetCategory;
 use App\Models\Pet\Pet;
 use App\Models\Pet\PetVariant;
-use App\Models\Pet\PetDrop;
 use App\Models\Pet\PetDropData;
+use App\Models\Pet\PetVariantDropData;
 use App\Services\PetService;
 use App\Services\PetDropService;
 use App\Models\User\UserPet;
@@ -18,6 +18,8 @@ use App\Models\User\UserPet;
 use App\Models\Item\Item;
 
 use App\Http\Controllers\Controller;
+
+use function PHPSTORM_META\type;
 
 class PetController extends Controller
 {
@@ -87,7 +89,7 @@ class PetController extends Controller
     {
         $id ? $request->validate(PetCategory::$updateRules) : $request->validate(PetCategory::$createRules);
         $data = $request->only([
-            'name', 'description', 'image', 'remove_image'
+            'name', 'description', 'image', 'remove_image', 'allow_attach', 'limit'
         ]);
         if($id && $service->updatePetCategory(PetCategory::find($id), $data, Auth::user())) {
             flash('Category updated successfully.')->success();
@@ -174,7 +176,7 @@ class PetController extends Controller
         if(isset($data['name']))
             $query->where('name', 'LIKE', '%'.$data['name'].'%');
         return view('admin.pets.pets', [
-            'pets' => $query->paginate(20)->appends($request->query()),
+            'pets'       => $query->paginate(20)->appends($request->query()),
             'categories' => ['none' => 'Any Category'] + PetCategory::orderBy('name', 'DESC')->pluck('name', 'id')->toArray()
         ]);
     }
@@ -187,7 +189,7 @@ class PetController extends Controller
     public function getCreatePet()
     {
         return view('admin.pets.create_edit_pet', [
-            'pet' => new Pet,
+            'pet'        => new Pet,
             'categories' => ['none' => 'No category'] + PetCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray()
         ]);
     }
@@ -203,7 +205,7 @@ class PetController extends Controller
         $pet = Pet::find($id);
         if(!$pet) abort(404);
         return view('admin.pets.create_edit_pet', [
-            'pet' => $pet,
+            'pet'        => $pet,
             'categories' => ['none' => 'No category'] + PetCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray()
         ]);
     }
@@ -220,7 +222,7 @@ class PetController extends Controller
     {
         $id ? $request->validate(Pet::$updateRules) : $request->validate(Pet::$createRules);
         $data = $request->only([
-            'name', 'allow_transfer', 'pet_category_id', 'description', 'image', 'remove_image'
+            'name', 'allow_transfer', 'pet_category_id', 'description', 'image', 'remove_image', 'limit'
         ]);
         if($id && $service->updatePet(Pet::find($id), $data, Auth::user())) {
             flash('Pet updated successfully.')->success();
@@ -269,6 +271,17 @@ class PetController extends Controller
     }
 
     /**
+     * Gets the create / edit pet variant page.
+     */
+    public function getCreateEditVariant($pet_id, $id = null)
+    {
+        return view('admin.pets._create_edit_pet_variant', [
+            'pet'     => Pet::find($pet_id),
+            'variant' => $id ? PetVariant::find($id) : new PetVariant,
+        ]);
+    }
+
+    /**
      * Edits pet variants
      *
      * @param  \Illuminate\Http\Request  $request
@@ -276,10 +289,14 @@ class PetController extends Controller
      * @param  int                       $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postEditVariants(Request $request, PetService $service, $id)
+    public function postCreateEditVariant(Request $request, PetService $service, $pet_id, $id = null)
     {
-        if($id && $service->editVariants($request->only(['variant_names', 'variant_images']), Pet::find($id))) {
-            flash('Variants editted successfully.')->success();
+        $data = $request->only(['variant_name', 'variant_image']);
+        if($id && $service->editVariant(PetVariant::findOrFail($id), $data)) {
+            // we dont flash in case we are deleting the variant
+        }
+        else if (!$id && $service->createVariant(Pet::find($pet_id), $data)) {
+            flash('Variant created successfully.')->success();
         }
         else {
             foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
@@ -337,10 +354,12 @@ class PetController extends Controller
      */
     public function getCreateDrop()
     {
+        // get pets without drop relation
+        $pets = Pet::orderBy('name', 'DESC')->whereDoesntHave('dropData')->pluck('name', 'id')->toArray();
         return view('admin.pets.create_edit_drop', [
-            'drop' => new PetDropData,
-            'pets' => Pet::orderBy('name', 'DESC')->pluck('name', 'id')->toArray(),
-            'variants' => PetVariant::orderBy('variant_name', 'DESC')->pluck('variant_name', 'id')->toArray(),
+            'drop'      => new PetDropData,
+            'pets'      => $pets,
+            'variants'  => PetVariant::orderBy('variant_name', 'DESC')->pluck('variant_name', 'id')->toArray(),
         ]);
     }
 
@@ -350,15 +369,16 @@ class PetController extends Controller
      * @param  int  $id
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getEditDrop($id)
+    public function getEditDrop($pet_id)
     {
-        $petDrop = PetDropData::find($id);
-        if(!$petDrop) abort(404);
+        $pet = Pet::findOrFail($pet_id);
+        $petDrop = $pet->dropData;
+        if (!$petDrop) abort(404);
         return view('admin.pets.create_edit_drop', [
-            'drop' => $petDrop,
-            'pets' => Pet::orderBy('name', 'DESC')->pluck('name', 'id')->toArray(),
-            'variants' => PetVariant::orderBy('variant_name', 'DESC')->pluck('variant_name', 'id')->toArray(),
-            'items' => Item::orderBy('name')->pluck('name', 'id')
+            'drop'      => $petDrop,
+            'pets'      => Pet::orderBy('name', 'DESC')->pluck('name', 'id')->toArray(),
+            'variants'  => PetVariant::orderBy('variant_name', 'DESC')->pluck('variant_name', 'id')->toArray(),
+            'items'     => Item::orderBy('name')->pluck('name', 'id')
         ]);
     }
 
@@ -370,19 +390,19 @@ class PetController extends Controller
      * @param  int|null                           $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postCreateEditDrop(Request $request, PetDropService $service, $id = null)
+    public function postCreateEditDrop(Request $request, PetDropService $service, $pet_id = null)
     {
-        $id ? $request->validate(PetDropData::$updateRules) : $request->validate(PetDropData::$createRules);
+        // $id ? $request->validate(PetDropData::$updateRules) : $request->validate(PetDropData::$createRules);
         $data = $request->only([
             'pet_id', 'label', 'weight', 'drop_frequency', 'drop_interval', 'is_active', 'item_id', 'drop_name', 'is_active', 'cap',
-            'rewardable_type', 'rewardable_id', 'min_quantity', 'max_quantity'
+            'rewardable_type', 'rewardable_id', 'min_quantity', 'max_quantity', 'override',
         ]);
-        if($id && $service->updatePetDrop(PetDropData::find($id), $data, Auth::user())) {
+        if($pet_id && $service->updatePetDrop(Pet::find($pet_id)->dropData, $data, Auth::user())) {
             flash('Pet drop updated successfully.')->success();
         }
-        else if (!$id && $drop = $service->createPetDrop($data, Auth::user())) {
+        else if (!$pet_id && $drop = $service->createPetDrop($data, Auth::user())) {
             flash('Pet drop created successfully.')->success();
-            return redirect()->to('admin/data/pet-drops/edit/'.$drop->id);
+            return redirect()->to('admin/data/pets/drops/edit/'.$drop->pet_id);
         }
         else {
             foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
@@ -420,7 +440,102 @@ class PetController extends Controller
         else {
             foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
         }
-        return redirect()->to('admin/data/pet-drops');
+        return redirect()->to('admin/data/pets/drops');
     }
 
+    /**
+     * returns widget based on id
+     */
+    public function getDropWidget($id)
+    {
+        return view('admin.pets._drop_widget', [
+            'drop' => PetDropData::find($id),
+        ]);
+    }
+
+    /**********************************************************************************************
+
+        PET DROP VARIANTS
+
+    **********************************************************************************************/
+
+    /**
+     * Gets the pet drop variant creation modal.
+     */
+    public function getCreateVariantDrop($pet_id)
+    {
+        return view('admin.pets._create_edit_pet_variant_drop', [
+            'pet'           => Pet::findOrFail($pet_id),
+            'variants'      => PetVariant::where('pet_id', $pet_id)->orderBy('variant_name', 'DESC')->pluck('variant_name', 'id')->toArray(),
+            'variant_drop'  => new PetVariantDropData,
+        ]);
+    }
+
+    /**
+     * Gets the pet drop variant edit modal.
+     */
+    public function getEditVariantDrop($pet_id, $variant_id)
+    {
+        $variant = PetVariant::findOrFail($variant_id);
+
+        return view('admin.pets._create_edit_pet_variant_drop', [
+            'pet'           => Pet::findOrFail($pet_id),
+            'variants'      => PetVariant::where('pet_id', $pet_id)->orderBy('variant_name', 'DESC')->pluck('variant_name', 'id')->toArray(),
+            'variant'       => $variant,
+            'variant_drop'  => $variant->dropData,
+        ]);
+    }
+
+    /**
+     * Creates or edits a pet drop variant.
+     */
+    public function postCreateEditVariantDrop(Request $request, PetDropService $service, $pet_id, $variant_id = null)
+    {
+        $data = $request->only([
+            'variant_id', 'rewardable_type', 'rewardable_id', 'min_quantity', 'max_quantity',
+        ]);
+
+        $variant = PetVariant::find($variant_id);
+        $pet = Pet::findOrFail($pet_id);
+
+        if($variant_id && $service->editPetVariantDrop($variant->dropData, $data)) {
+            flash('Pet variant drop edited successfully.')->success();
+        }
+        else if (!$variant_id && $drop = $service->createPetVariantDrop($data)) {
+            flash('Pet variant drop created successfully.')->success();
+            return redirect()->to('admin/data/pets/drops/edit/'.$pet->id);
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->to('admin/data/pets/drops/edit/'.$pet->id);
+    }
+
+    /**
+     * Gets the pet drop variant deletion modal.
+     */
+    public function getDeleteVariantDrop($pet_id, $variant_id)
+    {
+        $variant = PetVariant::findOrFail($variant_id);
+        return view('admin.pets._delete_pet_variant_drop', [
+            'pet'       => Pet::findOrFail($pet_id),
+            'variant'   => $variant,
+            'drop'      => $variant->dropData,
+        ]);
+    }
+
+    /**
+     * Deletes a pet drop variant.
+     */
+    public function postDeleteVariantDrop(Request $request, PetDropService $service, $pet_id, $variant_id)
+    {
+        $variant = PetVariant::findOrFail($variant_id);
+        if($variant_id && $service->deletePetVariantDrop($variant->dropData)) {
+            flash('Pet variant drop deleted successfully.')->success();
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->to('admin/data/pets/drops/edit/'.$pet_id);
+    }
 }

@@ -76,6 +76,7 @@ class UserPet extends Model
      */
     public function drops()
     {
+        if(!$this->pet->dropData) return $this->belongsTo('App\Models\Loot\Loot', 'rewardable_id', 'loot_table_id')->whereNull('loot_table_id');
         if(!PetDrop::where('user_pet_id', $this->id)->first()) {
             $drop = new PetDrop;
             $drop->createDrop($this->id);
@@ -216,5 +217,24 @@ class UserPet extends Model
     {
         if($id && $this->user_id == $id) return url('pets/view/' . $this->id);
         return url('user/'. $this->user->name . '/pets/' . $this->id);
+    }
+
+    /**
+     * gets all drops this pet is eligible for
+     */
+    public function getAvailableDropsAttribute()
+    {
+        if(!$this->pet->dropData) return null;
+        $rewards = [];
+        // otherwise return base rewards + variant rewards
+        if($this->variant_id) {
+            if($this->variant->dropData) {
+                $rewards[] = $this->variant->dropData;
+            }
+        }
+        if(!$this->pet->dropData->override) {
+            $rewards[] = $this->pet->dropData;
+        }
+        return $rewards;
     }
 }

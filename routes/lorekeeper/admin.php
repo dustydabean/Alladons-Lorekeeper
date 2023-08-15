@@ -168,15 +168,27 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('pets/edit/{id?}', 'PetController@postCreateEditPet');
     Route::post('pets/delete/{id}', 'PetController@postDeletePet');
 
-    Route::post('pets/variants/{id?}', 'PetController@postEditVariants');
+    Route::get('pets/edit/{pet_id}/variants/create', 'PetController@getCreateEditVariant');
+    Route::get('pets/edit/{pet_id}/variants/edit/{id}', 'PetController@getCreateEditVariant');
+    Route::post('pets/edit/{pet_id}/variants/create', 'PetController@postCreateEditVariant');
+    Route::post('pets/edit/{pet_id}/variants/edit/{id}', 'PetController@postCreateEditVariant');
 
-    Route::get('pet-drops', 'PetController@getDropIndex');
-    Route::get('pet-drops/create', 'PetController@getCreateDrop');
-    Route::get('pet-drops/edit/{id}', 'PetController@getEditDrop');
-    Route::get('pet-drops/delete/{id}', 'PetController@getDeleteDrop');
-    Route::post('pet-drops/create', 'PetController@postCreateEditDrop');
-    Route::post('pet-drops/edit/{id?}', 'PetController@postCreateEditDrop');
-    Route::post('pet-drops/delete/{id}', 'PetController@postDeleteDrop');
+    Route::get('pets/drops', 'PetController@getDropIndex');
+    Route::get('pets/drops/create', 'PetController@getCreateDrop');
+    Route::get('pets/drops/edit/{pet_id}', 'PetController@getEditDrop');
+    Route::get('pets/drops/delete/{pet_id}', 'PetController@getDeleteDrop');
+    Route::post('pets/drops/create', 'PetController@postCreateEditDrop');
+    Route::post('pets/drops/edit/{pet_id}', 'PetController@postCreateEditDrop');
+    Route::post('pets/drops/delete/{pet_id}', 'PetController@postDeleteDrop');
+    Route::get('pets/drops/widget/{id}', 'PetController@getDropWidget');
+
+    // variants drops
+    Route::get('pets/drops/edit/{pet_id}/variants/create', 'PetController@getCreateVariantDrop');
+    Route::get('pets/drops/edit/{pet_id}/variants/edit/{variant_id}', 'PetController@getEditVariantDrop');
+    Route::post('pets/drops/edit/{pet_id}/variants/create', 'PetController@postCreateEditVariantDrop');
+    Route::post('pets/drops/edit/{pet_id}/variants/edit/{variant_id}', 'PetController@postCreateEditVariantDrop');
+    Route::get('pets/drops/edit/{pet_id}/variants/delete/{variant_id}', 'PetController@getDeleteVariantDrop');
+    Route::post('pets/drops/edit/{pet_id}/variants/delete/{variant_id}', 'PetController@postDeleteVariantDrop');
 
     # SHOPS
     Route::get('shops', 'ShopController@getIndex');

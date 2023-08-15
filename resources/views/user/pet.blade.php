@@ -14,12 +14,13 @@
     !!}
 
     <h1>
-        {{ $pet->pet_name ? $pet->pet_name . ' ('. $user->name."'s ". $pet->pet->name.')' : $user->name."'s ".$pet->pet->name }}
-        <a href="{{ $pet->pet->url }}" class="world-entry-search text-muted"><i class="fas fa-search"></i></a>
+        {!! $pet->pet_name ?
+            $pet->pet_name . ' ('. $user->displayName."'s ". ($pet->variant_id ? $pet->variant->variant_name .' ' : '') . $pet->pet->displayName.')'
+            : $user->name."'s ".($pet->variant_id ? $pet->variant->variant_name .' ' : '') . $pet->pet->displayName !!}
     </h1>
 
     @if(!$namespace)
-        <div class="container justify-content-right text-right m-3">
+        <div class="container justify-content-right text-right my-3">
             <a href="{{ $user->url.'/pets' }}">
                 <div class="btn btn-primary">Return to Pets</div>
             </a>
@@ -34,44 +35,52 @@
 
     <div class="row world-entry">
         <div class="col-md-3 world-entry-image">
-            <img class="img-fluid" src="{{ $pet->pet->VariantImage($pet->id) }}" data-toggle="tooltip" title="{{ $pet->pet_name ?? $pet->pet->name }}" alt="{{ $pet->pet_name ?? $pet->pet->name }}" />
+            <img class="img-fluid rounded mb-2" src="{{ $pet->pet->VariantImage($pet->id) }}" data-toggle="tooltip" title="{{ $pet->pet_name ?? $pet->pet->name }}" alt="{{ $pet->pet_name ?? $pet->pet->name }}" />
         </div>
         <div class="col-md-9">
             <div class="row col-12 world-entry-text">
-                <div class="col-md-6">
-                    @if($pet->has_image)
-                        <div class="mt-2">
-                            <p class="alert alert-info">
-                                This pet is displaying custom art!
-                            </p>
-                            @if(isset($pet->petArtist) && $pet->petArtist)
-                                <h2 class="h5">Artist</h2>
-                                <div class="col-md">
-                                    <p><strong>Artist:</strong> {!! $pet->petArtist !!}</p>
-                                </div>
-                            @else
-                                No credits given.
-                            @endif
-                        </div>
-                    @endif
-                    @if($pet->description)
-                        <hr>
-                        <h2 class="h5">Profile</h2>
-                        <div class="card-body parsed-text">
-                            {!! $pet->description !!}
-                        </div>
+                <div class="col-md-4 mb-2">
+                    @if($pet->character)
+                        <h2 class="h5">Attached to {{ $pet->character->fullName }}</h2>
+                        <a href="{{ $pet->character->url }}">
+                            <img src="{{ $pet->character->image->thumbnailUrl }}" class="rounded img-thumbnail" alt="Thumbnail for {{ $pet->character->fullName }}"/>
+                        </a>
                     @endif
                 </div>
-                <div class="col-md-6">
-                    @include('user._pet_drops', ['pet' => $pet, 'drops' => $pet->drops])
-                </div>
+                @if($pet->pet->hasDrops)
+                    <div class="col-md-8 mb-2">
+                        @include('user._pet_drops', ['pet' => $pet, 'drops' => $pet->drops])
+                    </div>
+                @endif
             </div>
         </div>
+    </div>
+    <div class="pl-2 pr-2 pb-2">
+        @if($pet->has_image)
+            <div>
+                <p class="alert alert-info">
+                    This pet is displaying custom art!
+                    @if(isset($pet->petArtist) && $pet->petArtist)
+                        <b>Artist:</b> {!! $pet->petArtist !!}
+                    @else
+                        No credits given.
+                    @endif
+                </p>
+
+            </div>
+        @endif
+        @if($pet->description)
+            <hr>
+            <div>
+                <h2 class="h5">Profile</h2>
+                {!! $pet->description !!}
+            </div>
+        @endif
     </div>
     @if (Auth::check() && ($pet->user_id == Auth::user()->id || Auth::user()->hasPower('edit_inventories')))
         <div class="card">
             <ul class="list-group list-group-flush">
-                @include('user._pet_form', ['pet' => $pet, 'user' => Auth::user()])
+                @include('home._pet_form', ['pet' => $pet, 'user' => Auth::user()])
             </ul>
         </div>
     @endif

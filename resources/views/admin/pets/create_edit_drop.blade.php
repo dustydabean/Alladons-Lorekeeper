@@ -3,27 +3,34 @@
 @section('admin-title') {{ $drop->id ? 'Edit' : 'Create' }} Pet Drop @endsection
 
 @section('admin-content')
-{!! breadcrumbs(['Admin Panel' => 'admin', 'Pet Drops' => 'admin/data/pet-drops', ($drop->id ? 'Edit' : 'Create').' Drop Data' => $drop->id ? 'admin/data/pet-drops/edit/'.$drop->id : 'admin/data/pet-drops/create']) !!}
+{!! breadcrumbs(['Admin Panel' => 'admin', 'Pet Drops' => 'admin/data/pets/drops', ($drop->id ? 'Edit' : 'Create').' Drop Data' => $drop->id ? 'admin/data/pets/drops/edit/'.$drop->pet_id : 'admin/data/pets/drops/create']) !!}
 
 <h1>
-    {{ $drop->id ? 'Edit' : 'Create' }} Pet Drop Data
+    {!! $drop->id ? 'Edit ' . $drop->pet->displayName : 'Create' !!} Pet Drop
     @if($drop->id)
-        <a href="#" class="btn btn-danger float-right delete-drop-button">Delete Drop</a>
+        <a href="#" class="btn btn-outline-danger float-right delete-drop-button">Delete Drop</a>
     @endif
 </h1>
 
-{!! Form::open(['url' => $drop->id ? 'admin/data/pet-drops/edit/'.$drop->id : 'admin/data/pet-drops/create']) !!}
+{!! Form::open(['url' => $drop->id ? 'admin/data/pets/drops/edit/'.$drop->pet_id : 'admin/data/pets/drops/create']) !!}
 
 <h2>Basic Information</h2>
 
+@if(!$drop->id && !$drop->pet_id)
+    <div class="form-group">
+        {!! Form::label('Pet') !!}
+        {!! Form::select('pet_id', $pets, $drop->pet_id, ['class' => 'form-control', 'placeholder' => 'Select Pet']) !!}
+    </div>
+@endif
+
 <div class="form-group">
-    {!! Form::label('Pet') !!}
-    {!! Form::select('pet_id', $pets, $drop->pet_id, ['class' => 'form-control']) !!}
+    {!! Form::label('drop_name', 'Drop Name (Optional)', ['class' => 'form-label']) !!} {!! add_help('What drops are referred to on pet pages. Impacts variants as well. Should be singular.') !!}
+    {!! Form::text('drop_name', $drop->name ?? null, ['class' => 'form-control']) !!}
 </div>
 
 <h2>Groups</h2>
 <p>
-    Every pet of the above selected pet is sorted into a "group" - these groups are used for different item drops, which can be set in this form after the pet drop is initially created.
+    Every pet of the above pet is sorted into a "group" - these groups are used for different item drops, which can be set in this form after the pet drop is initially created.
     These groups can be either assigned at pet creation (either at random or manually after selecting an applicable pet) or may be assigned after pet creation in the pet's "Collect" page, accessed via the pet sidebar on applicable pets.
 </p>
 <div class="float-right mb-3">
@@ -55,67 +62,35 @@
 <h2>Drop Frequency</h2>
 Select how often drops should occur.
 <div class="d-flex my-2">
-    {!! Form::number('drop_frequency', $drop->id ? $drop->data['frequency']['frequency'] : null, ['class' => 'form-control mr-2', 'placeholder' => 'Drop Frequency']) !!}
-    {!! Form::select('drop_interval', ['hour' => 'Hour', 'day' => 'Day', 'month' => 'Month', 'year' => 'Year'], $drop->id ? $drop->data['frequency']['interval'] : null, ['class' => 'form-control mr-2 default item-select', 'placeholder' => 'Drop Interval']) !!}
+    {!! Form::number('drop_frequency', $drop->id ? $drop->frequency : null, ['class' => 'form-control mr-2', 'placeholder' => 'Drop Frequency']) !!}
+    {!! Form::select('drop_interval', ['hour' => 'Hour', 'day' => 'Day', 'month' => 'Month', 'year' => 'Year'], $drop->id ? $drop->interval : null, ['class' => 'form-control mr-2 default item-select', 'placeholder' => 'Drop Interval']) !!}
 </div>
 <div class="form-group">
     {!! Form::label('cap', 'Drop Cap (Optional)', ['class' => 'form-label ml-3']) !!} {!! add_help('How many batches of drops are allowed to accumulate. Either set to 0 or unset to allow unlimited accumulation.') !!}
-    {!! Form::number('cap', $drop->id ? $drop->cap : null, ['class' => 'form-control mr-2', 'placeholder' => 'Drop Cap']) !!}
+    {!! Form::number('cap', $drop->id ?? null, ['class' => 'form-control mr-2', 'placeholder' => 'Drop Cap']) !!}
 </div>
 
-<div class="form-group">
-    {!! Form::checkbox('is_active', 1, $drop->id ? $drop->isActive : 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
-    {!! Form::label('is_active', 'Is Active', ['class' => 'form-check-label ml-3']) !!} {!! add_help('Whether or not drops for this pet are active. Impacts variants as well.') !!}
-</div>
-
-<div class="form-group">
-    {!! Form::label('drop_name', 'Drop Name', ['class' => 'form-label']) !!} {!! add_help('What drops are referred to on pet pages. Impacts variants as well. Should be singular.') !!}
-    {!! Form::text('drop_name', isset($drop->data['drop_name']) ? $drop->data['drop_name'] : null, ['class' => 'form-control']) !!}
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-group">
+            {!! Form::checkbox('is_active', 1, $drop->id ? $drop->isActive : 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
+            {!! Form::label('is_active', 'Is Active', ['class' => 'form-check-label ml-3']) !!} {!! add_help('Whether or not drops for this pet are active. Impacts variants as well.') !!}
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="form-group">
+            {!! Form::checkbox('override', 1, $drop->override ?? 0, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
+            {!! Form::label('override', 'Override Drops', ['class' => 'form-check-label ml-3']) !!} {!! add_help('Only receive variant drops instead of in addition to base drops.') !!}
+        </div>
+    </div>
 </div>
 
 @if($drop->id)
     <h2>Dropped Items</h2>
-    Select an item for each group of this pet to drop, and/or for each group to drop per variant of this pet. Leave the item field blank to disable drops for the group. To clear a previously set input, simply backspace when it's selected.
-    <div class="card card-body my-2">
-        @foreach($drop->parameters as $label=>$weight)
-            <div class="mb-2">
-                <h5>{{ $label }}</h5>
-                <div class="form-group">
-                    @include('widgets._pet_drop_loot_select', [
-                        'loots' => $drop->rewards[strtolower($label)] ?? null,
-                        'group' => strtolower(str_replace(' ', '_', $label)),
-                        'label' => $label
-                    ])
-                </div>
-            </div>
-        @endforeach
+    <p>Select an item for each group of this pet to drop. Leave the item field blank to disable drops for the group.</p>
+    <div class="card card-body my-2 mb-4" id="dropped">
+        @include('admin.pets._drop_widget', ['drop' => $drop])
     </div>
-
-    <h3>Variants</h3>
-    <p>Variant drops are dropped in addition to the above drops by default. You can change this behaviour in config.</p>
-    {{-- @if($drop->pet->variants->count())
-        @foreach($drop->pet->variants as $variant)
-            <div class="card card-body mb-2">
-                <div class="card-title">
-                    <h4>{{ $variant->variant_name.' '.$variant->pet->name }}</h4>
-                </div>
-                @foreach($drop->parameters as $label=>$weight)
-                    <div class="mb-2">
-                        <h5>{{ $label }}</h5>
-                        <div class="form-group">
-                            @include('widgets._pet_drop_loot_select', [
-                                'loots' => $drop->rewards[strtolower($label)] ?? null,
-                                'group' => strtolower(str_replace(' ', '_', $label)),
-                                'label' => $label
-                            ])
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        @endforeach
-    @else
-        <p>No variants found for this pet.</p>
-    @endif --}}
 @endif
 
 <div class="text-right">
@@ -123,6 +98,50 @@ Select how often drops should occur.
 </div>
 
 {!! Form::close() !!}
+
+@if($drop->id)
+    <hr />
+    @if($drop->pet->variants->count())
+        <h3 class="h4">Variant Drops</h3>
+        <p>Variant drops are dropped <b>in addition</b> to the above drops by default, unless set otherwise above via the "Override" checkbox.</p>
+        <a href="#" id="create-variant" class="btn btn-primary">
+            Create Variant Drop
+        </a>
+        @if($drop->pet->variants()->has('dropData')->get()->count())
+            <div class="card card-body my-2 mb-4">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th width="25%">Variant</th>
+                            <th width="65%">Rewards</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($drop->pet->variants()->has('dropData')->get() as $variant)
+                            <tr id="variant-{{ $variant->id }}">
+                                <td>{{ $variant->variant_name }}</td>
+                                <td>
+                                    @if($variant->dropData->rewards())
+                                        @foreach($variant->dropData->rewardString() as $label => $string)
+                                            {!! '<b>'.$label.':</b> '.implode(', ', $string).($loop->last ? '' : '<br />') !!}
+                                        @endforeach
+                                    @else
+                                        <i>No rewards set.</i>
+                                    @endif
+                                </td>
+                                <td class="row">
+                                    <a href="#" class="btn btn-primary edit-variant" data-id="{{$variant->id}}">Edit</a>
+                                    <a href="#" class="btn btn-outline-danger ml-2 delete-variant" data-id="{{$variant->id}}">Delete</a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
+    @endif
+@endif
 
 <div class="hide">
     @include('widgets._pet_drop_loot_select_row', ['group' => ''])
@@ -148,10 +167,34 @@ Select how often drops should occur.
 @include('js._pet_loot_js')
 <script>
 $( document ).ready(function() {
+    $('#create-variant').on('click', function(e) {
+        e.preventDefault();
+        loadModal("{{ url('admin/data/pets/drops/edit/'.$drop->pet_id.'/variants/create') }}", 'Create Variant Drop');
+    });
+    $('.edit-variant').on('click', function(e) {
+        e.preventDefault();
+        loadModal("{{ url('admin/data/pets/drops/edit/'.$drop->pet_id.'/variants/edit') }}/"+$(this).data('id'), 'Edit Variant Drop');
+    });
+    $('.delete-variant').on('click', function(e) {
+        e.preventDefault();
+        loadModal("{{ url('admin/data/pets/drops/edit/'.$drop->pet_id.'/variants/delete') }}/"+$(this).data('id'), 'Delete Variant Drop');
+    });
+
     $('.delete-drop-button').on('click', function(e) {
         e.preventDefault();
-        loadModal("{{ url('admin/data/pet-drops/delete') }}/{{ $drop->id }}", 'Delete Drop');
+        loadModal("{{ url('admin/data/pet/drops/delete') }}/{{ $drop->id }}", 'Delete Drop');
     });
+
+    // on modal dismiss, ajax call to admin/data/pet/drops/widget and put into #dropped
+    $('#modal').on('hidden.bs.modal', function (e) {
+        $.ajax({
+            url: "{{ url('admin/data/pets/drops/widget') }}/{{ $drop->id }}",
+            success: function(data) {
+                $('#dropped').html(data);
+            }
+        });
+    });
+
     var $lootTable  = $('#lootTableBody');
     var $dropRow = $('#dropRow').find('.drop-row');
     var $itemSelect = $('#dropRowData').find('.item-select');

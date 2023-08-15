@@ -30,7 +30,7 @@ class PetVariant extends Model
     protected $table = 'pet_variants';
 
     /**********************************************************************************************
-    
+
         RELATIONS
 
     **********************************************************************************************/
@@ -38,16 +38,34 @@ class PetVariant extends Model
     /**
      * Get the pet associated with this pet stack.
      */
-    public function pet() 
+    public function pet()
     {
         return $this->belongsTo('App\Models\Pet\Pet');
     }
 
+    /**
+     * gets the variants drop data
+     */
+    public function dropData()
+    {
+        return $this->hasOne('App\Models\Pet\PetVariantDropData', 'variant_id');
+    }
+
     /**********************************************************************************************
-    
+
         ACCESSORS
 
     **********************************************************************************************/
+
+    /**
+     * Displays the model's name, linked to its encyclopedia page.
+     *
+     * @return string
+     */
+    public function getDisplayNameAttribute()
+    {
+        return '<a href="'.$this->pet->idUrl.'" class="display-item">'.$this->name.' '.$this->pet->name.'</a>';
+    }
 
     /**
      * Gets the file directory containing the model's image.
@@ -78,7 +96,7 @@ class PetVariant extends Model
     {
         return public_path($this->imageDirectory);
     }
-    
+
     /**
      * Gets the URL of the model's image.
      *

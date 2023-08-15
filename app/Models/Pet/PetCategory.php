@@ -13,7 +13,7 @@ class PetCategory extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'sort', 'has_image', 'description', 'parsed_description', 'allow_attach'
+        'name', 'sort', 'has_image', 'description', 'parsed_description', 'allow_attach', 'limit',
     ];
 
     /**
@@ -22,7 +22,7 @@ class PetCategory extends Model
      * @var string
      */
     protected $table = 'pet_categories';
-    
+
     /**
      * Validation rules for creation.
      *
@@ -33,7 +33,7 @@ class PetCategory extends Model
         'description' => 'nullable',
         'image' => 'mimes:png',
     ];
-    
+
     /**
      * Validation rules for updating.
      *
@@ -46,7 +46,7 @@ class PetCategory extends Model
     ];
 
     /**********************************************************************************************
-    
+
         ACCESSORS
 
     **********************************************************************************************/
@@ -90,7 +90,7 @@ class PetCategory extends Model
     {
         return public_path($this->imageDirectory);
     }
-    
+
     /**
      * Gets the URL of the model's image.
      *
