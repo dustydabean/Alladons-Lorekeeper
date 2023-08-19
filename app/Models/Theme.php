@@ -221,7 +221,7 @@ class Theme extends Model
     public function getHeaderImageUrlAttribute()
     {
         if (!$this->has_header && !$this->themeEditor->header_image_url) return asset('images/header.png');
-        return $this->extension ? asset($this->imageDirectory . '/' . $this->headerImageFileName . '?' . $this->hash) : $this->themeEditor->header_image_url;
+        return $this->extension ? asset($this->imageDirectory . '/' . $this->headerImageFileName . '?' . $this->hash) : $this->themeEditor?->header_image_url;
     }
 
     /**
@@ -232,7 +232,7 @@ class Theme extends Model
     public function getBackgroundImageUrlAttribute()
     {
         if (!$this->has_background && !$this->themeEditor->background_image_url) return '';
-        return $this->extension_background ? asset($this->imageDirectory . '/' . $this->backgroundImageFileName . '?' . $this->hash) : $this->themeEditor->background_image_url;
+        return $this->extension_background ? asset($this->imageDirectory . '/' . $this->backgroundImageFileName . '?' . $this->hash) : $this->themeEditor?->background_image_url;
     }
 
     /**
