@@ -44,6 +44,12 @@
     @if($titleColor) color: {{ $titleColor }} !important; @endif
 }
 
+@media (max-width: 991px) {
+    .site-header-image {
+        display: none;
+    }
+}
+
 /** Style card header */
 
 .card-header {
