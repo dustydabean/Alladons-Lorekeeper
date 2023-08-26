@@ -41,8 +41,8 @@ class RecycleService extends Service {
    *
    * @return array
    */
-  public function getActData($data) {
-
+  public function getActData($activity) {
+    $data = $activity->data;
     $inventory = UserItem::with('item')->whereNull('deleted_at')->where('count', '>', '0')->where('user_id', Auth::user()->id);
     $recyclables = collect($data->recyclables);
 

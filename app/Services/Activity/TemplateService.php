@@ -24,7 +24,7 @@ class TemplateService extends Service {
    *
    * @return array
    */
-  public function getActData($data) {
+  public function getActData($activity) {
 
 
     return [];

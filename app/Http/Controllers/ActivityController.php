@@ -40,7 +40,7 @@ class ActivityController extends Controller {
         if (!$activity) abort(404);
         return view('activities.activity', [
             'activity' => $activity,
-        ] + $activity->service->getActData($activity->data));
+        ] + $activity->service->getActData($activity));
     }
 
 

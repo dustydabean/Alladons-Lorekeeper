@@ -27,9 +27,10 @@ class CollectionService extends Service {
    *
    * @return array
    */
-  public function getActData($data) {
+  public function getActData($activity) {
+    
     return [
-      'collection' => Collection::find($data)
+      'collection' => Collection::find($activity->data)
     ];
   }
 
