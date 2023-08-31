@@ -10,7 +10,10 @@
 </h1>
 
 <p>Welcome to foraging! Here you can choose an area to check for goodies.</p>
-<p>Goods will be claimable after you return from scavenging! Usually, about an hour is the amount of time it takes to check out an area.</p>
+<p>Goods will be claimable after you return from scavenging! Usually, about
+    {{-- convert integer to minutes using carbon (multiple integer by 60) --}}
+    {{ Config::get('lorekeeper.foraging.forage_time') . ' minute' . (Config::get('lorekeeper.foraging.forage_time') > 1 ? 's' : '')}}
+    is the amount of time it takes to check out an area.</p>
 <div class="row">
     <div class="col-md-6">
         @if($user->foraging->foraged_at)
@@ -18,7 +21,7 @@
                 Last Foraged: {!! pretty_date($user->foraging->foraged_at) !!}
             <br>
                 Foraging Stamina Left: {{ $user->foraging->stamina }}
-            </p> 
+            </p>
         @endif
     </div>
     @if(Config::get('lorekeeper.foraging.use_characters') && !$user->foraging->distribute_at)
@@ -62,7 +65,7 @@
     let now = new Date("<?php echo date('Y-m-d H:i:s'); ?>");
     function timeCount(timer) {
         // timer = carbon time
-        setInterval(function() { 
+        setInterval(function() {
             var date = new Date(timer);
             getServerTime();
             // count down time difference between now and date
@@ -121,7 +124,6 @@
         <div id="time">Foraging complete in {{ $diff < 1 ? 'less than a minute' : $diff }}</div>
         <p>Started {!! pretty_date($user->foraging->foraged_at)!!}
     </div>
-    
 @elseif($user->foraging->distribute_at <= $now && $user->foraging->forage_id)
     {{-- When foraging is done and we can claim --}}
     <div class="container text-center">
@@ -154,7 +156,7 @@
 
                     <div><img src="{{ $table->imageUrl }}" class="img-fluid mb-2"/></div>
                     <div>{!! Form::button(($table->isVisible ? '' : '<i class="fas fa-crown"></i> ') . 'Forage in the ' . $table->display_name , ['class' => 'btn btn-primary m-2', 'type' => 'submit']) !!}</div>
-                        
+
                         <div class="alert alert-info pb-0">
                             <ul style="list-style: none;">
                                 <li>This forage costs {{$table->stamina_cost}} stamina.</li>

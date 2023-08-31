@@ -3,23 +3,16 @@
 namespace App\Http\Controllers\Users;
 
 use Auth;
-use File;
-use Image;
 use DB;
 use Config;
 use Carbon\Carbon;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use App\Models\Notification;
 
-use App\Models\User\User;
 use App\Models\User\UserForaging;
 use App\Models\Foraging\Forage;
 
 use App\Services\ForageService;
-use App\Services\UserService;
-
 use App\Http\Controllers\Controller;
 
 class ForagingController extends Controller
@@ -36,7 +29,7 @@ class ForagingController extends Controller
                 'user_id' => Auth::user()->id,
             ]);
         }
-        
+
         $characters = Auth::user()->characters()->pluck('slug', 'id');
         if (!count($characters) && Config::get('lorekeeper.foraging.use_characters')) {
             if (Config::get('lorekeeper.foraging.npcs.enabled')) {
@@ -71,7 +64,7 @@ class ForagingController extends Controller
      */
     public function postForage($id, ForageService $service)
     {
-        if($service->initForage($id, Auth::user())) 
+        if($service->initForage($id, Auth::user()))
         {
             flash('You have begun to forage!')->info();
         }
@@ -88,7 +81,7 @@ class ForagingController extends Controller
      */
     public function postClaim(ForageService $service)
     {
-        if($service->claimReward(Auth::user())) 
+        if($service->claimReward(Auth::user()))
         {
             flash('Forage successful!')->success();
         }
@@ -101,7 +94,7 @@ class ForagingController extends Controller
 
     /**
      * edits the selected character for foraging
-     * 
+     *
      */
     public function postEditCharacter(Request $request, ForageService $service) {
         $id = $request->input('character_id');

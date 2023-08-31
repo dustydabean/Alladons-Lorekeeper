@@ -19,7 +19,7 @@
         <div class="form-group">
             {!! Form::label('Name') !!} {!! add_help('This is the name you will use to identify this table internally. This name will not be shown to users and does not have to be unique, but a name that can be easily identified is recommended.') !!}
             {!! Form::text('name', $table->name, ['class' => 'form-control']) !!}
-        </div>        
+        </div>
     </div>
     <div class="col-md">
         <div class="form-group">
@@ -41,7 +41,7 @@
 
 <div class="form-group">
     {!! Form::label('Stamina Cost') !!}
-    {!! Form::number('stamina_cost', $table->stamina_cost, ['class' => 'form-control']) !!}
+    {!! Form::number('stamina_cost', $table->stamina_cost ?? 1, ['class' => 'form-control']) !!}
 </div>
 
 <div class="form-group">
@@ -54,7 +54,7 @@
         <div class="form-group">
             {!! Form::label('Currency') !!}
             {!! Form::select('currency_id', $forage_currencies, $table->currency_id, ['class' => 'form-control']) !!}
-        </div>      
+        </div>
     </div>
     <div class="col-md">
         <div class="form-group">
@@ -71,7 +71,7 @@
         <div class="form-group">
             {!! Form::checkbox('is_active', 1, $table->is_active, ['class' => 'form-check-input mr-2', 'data-toggle' => 'toggle']) !!}
             {!! Form::label('is_active', 'Active (visible to users)', ['class' => 'form-check-label ml-3']) !!}
-        </div>      
+        </div>
     </div>
     <div class="col-md">
         <div class="form-group">
@@ -151,7 +151,7 @@
     {!! Form::select('rewardable_id[]', [1 => 'No reward given.'], null, ['class' => 'form-control none-select']) !!}
 </div>
 
-@if($table->id)
+@if($table->id && $table->loot()->count())
     <h3>Test Roll</h3>
     <p>If you have made any modifications to the loot table contents above, be sure to save it (click the Edit button) before testing.</p>
     <p>Please note that due to the nature of probability, as long as there is a chance, there will always be the possibility of rolling improbably good or bad results. <i>This is not indicative of the code being buggy or poor game balance.</i> Be cautious when adjusting values based on a small sample size, including but not limited to test rolls and a small amount of user reports.</p>
@@ -169,7 +169,7 @@
 @section('scripts')
 @parent
 <script>
-$( document ).ready(function() {    
+$( document ).ready(function() {
     var $lootTable  = $('#lootTableBody');
     var $lootRow = $('#lootRow').find('.loot-row');
     var $itemSelect = $('#lootRowData').find('.item-select');

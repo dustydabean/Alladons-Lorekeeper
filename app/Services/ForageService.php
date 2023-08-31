@@ -41,16 +41,8 @@ class ForageService extends Service
 
         try {
 
-            // More specific validation
-            foreach($data['rewardable_type'] as $key => $type)
-            {
-                if(!$type) throw new \Exception("Loot type is required.");
-                if(!$data['rewardable_id'][$key]) throw new \Exception("Reward is required.");
-                if(!$data['quantity'][$key] || $data['quantity'][$key] < 1) throw new \Exception("Quantity is required and must be an integer greater than 0.");
-                if(!$data['weight'][$key] || $data['weight'][$key] < 1) throw new \Exception("Weight is required and must be an integer greater than 0.");
-            }
-
             if(!isset($data['is_active'])) $data['is_active'] = 0;
+            if(!isset($data['stamina_cost'])) $data['stamina_cost'] = 1;
 
             $image = null;
             if(isset($data['image']) && $data['image']) {
@@ -76,7 +68,7 @@ class ForageService extends Service
 
             if ($image) $this->handleImage($image, $table->imagePath, $table->imageFileName);
 
-            $this->populateForage($table, array_only($data, ['rewardable_type', 'rewardable_id', 'quantity', 'weight']));
+            if (isset($data['rewardable_type'])) $this->populateForage($table, Arr::only($data, ['rewardable_type', 'rewardable_id', 'quantity', 'weight']));
 
             return $this->commitReturn($table);
         } catch(\Exception $e) {
@@ -98,16 +90,8 @@ class ForageService extends Service
 
         try {
 
-            // More specific validation
-            foreach($data['rewardable_type'] as $key => $type)
-            {
-                if(!$type) throw new \Exception("Loot type is required.");
-                if(!$data['rewardable_id'][$key]) throw new \Exception("Reward is required.");
-                if(!$data['quantity'][$key] || $data['quantity'][$key] < 1) throw new \Exception("Quantity is required and must be an integer greater than 0.");
-                if(!$data['weight'][$key] || $data['weight'][$key] < 1) throw new \Exception("Weight is required and must be an integer greater than 0.");
-            }
-
             if(!isset($data['is_active'])) $data['is_active'] = 0;
+            if(!isset($data['stamina_cost'])) $data['stamina_cost'] = 1;
 
             $image = null;
             if(isset($data['image']) && $data['image']) {
@@ -137,7 +121,7 @@ class ForageService extends Service
 
             if ($image) $this->handleImage($image, $table->imagePath, $table->imageFileName);
 
-            $this->populateForage($table, Arr::only($data, ['rewardable_type', 'rewardable_id', 'quantity', 'weight']));
+            if (isset($data['rewardable_type'])) $this->populateForage($table, Arr::only($data, ['rewardable_type', 'rewardable_id', 'quantity', 'weight']));
 
             return $this->commitReturn($table);
         } catch(\Exception $e) {
@@ -154,6 +138,14 @@ class ForageService extends Service
      */
     private function populateForage($table, $data)
     {
+        foreach($data['rewardable_type'] as $key => $type)
+        {
+            if(!$type) throw new \Exception("Loot type is required.");
+            if(!$data['rewardable_id'][$key]) throw new \Exception("Reward is required.");
+            if(!$data['quantity'][$key] || $data['quantity'][$key] < 1) throw new \Exception("Quantity is required and must be an integer greater than 0.");
+            if(!$data['weight'][$key] || $data['weight'][$key] < 1) throw new \Exception("Weight is required and must be an integer greater than 0.");
+        }
+
         // Clear the old loot...
         $table->loot()->delete();
 
@@ -225,7 +217,7 @@ class ForageService extends Service
                 if(!(new CurrencyManager)->debitCurrency($user, null, 'Foraging Cost', 'Cost to Forage in the ' . $forage->display_name, Currency::find($forage->currency_id), $forage->currency_quantity))
                     throw new \Exception('Could not debit currency.');
             }
-
+            if (!$forage->loot()->count()) throw new \Exception('This forage has no rewards.');
             if(Config::get('lorekeeper.foraging.use_characters') && !$user->foraging->character_id) throw new \Exception('Please select a character.');
 
             $user->foraging->forage_id = $id;
@@ -277,9 +269,9 @@ class ForageService extends Service
 
             if (!$user->foraging->forage_id) throw new \Exception('You have not started a forage yet.');
             if (!$user->foraging->distribute_at) throw new \Exception('You have not started a forage yet.');
-
+            if (!$user->foraging->forage->loot()->count()) throw new \Exception('This forage has no rewards.');
             // check it's been forage_time since forage started
-            $now = carbon::now();
+            $now = Carbon::now();
             // add forage time to foraged_at
             $distribute = $user->foraging->foraged_at->addMinutes(Config::get('lorekeeper.foraging.forage_time'));
             if($now->lt($distribute)) throw new \Exception('You must wait until the forage is complete before claiming your rewards.');
