@@ -75,11 +75,14 @@ class DailyController extends Controller
         if(!$rewards) {
             foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
         } else {
+            $rolledRewards = 0;
             foreach($rewards as $type => $rewardList){
                 foreach($rewardList as $reward){
+                    $rolledRewards += 1;
                     flash('You recieved '.$reward['quantity'].'x '.$reward['asset']->name."!");
                 }
             }
+            if($rolledRewards <= 0) flash('You received nothing. Better luck next time!');
         }
         return view('dailies.dailies', [
             'daily' => $daily,

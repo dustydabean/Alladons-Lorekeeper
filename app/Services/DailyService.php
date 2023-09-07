@@ -384,6 +384,7 @@ class DailyService extends Service
                     //uncomment if you use pets or awards, may still have to fix/add in other places
                     /**case 'Pet':
                         $reward = Pet::find($data['rewardable_id'][$key]);
+                        break;
                     case 'Award':
                         $reward = Award::find($data['rewardable_id'][$key]);
                         break;**/

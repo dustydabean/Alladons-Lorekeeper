@@ -138,7 +138,7 @@ class Daily extends Model
      */
     public function getButtonImageUrlAttribute()
     {
-        if (!$this->has_image) return null;
+        if (!$this->has_button_image) return null;
         return asset($this->imageDirectory . '/' . $this->buttonImageFileName);
     }
 
