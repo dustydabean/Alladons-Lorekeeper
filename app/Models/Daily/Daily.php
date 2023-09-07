@@ -1,0 +1,165 @@
+<?php
+
+namespace App\Models\Daily;
+
+use Config;
+use App\Models\Model;
+
+class Daily extends Model
+{
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'name', 'sort', 'has_image', 'has_button_image', 'description', 'parsed_description', 'is_active', 'is_one_off', 'max_roll', 'item_id', 'currency_id', 'is_timed_daily', 'start_at', 'end_at'
+    ];
+
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'daily';
+
+    /**
+     * Validation rules for creation.
+     *
+     * @var array
+     */
+    public static $createRules = [
+        'name' => 'required|unique:item_categories|between:3,100',
+        'description' => 'nullable',
+        'image' => 'mimes:png',
+    ];
+
+    /**
+     * Validation rules for updating.
+     *
+     * @var array
+     */
+    public static $updateRules = [
+        'name' => 'required|between:3,100',
+        'description' => 'nullable',
+        'image' => 'mimes:png',
+    ];
+
+
+    /**********************************************************************************************
+
+        ACCESSORS
+
+    **********************************************************************************************/
+
+    
+    /**
+     * Get the rewards attached to this daily.
+     */
+    public function rewards()
+    {
+        return $this->hasMany('App\Models\Daily\DailyReward', 'daily_id');
+    }
+
+    /**
+     * Get the timers attached to this daily.
+     */
+    public function timers()
+    {
+        return $this->hasMany('App\Models\Daily\DailyTimer', 'daily_id');
+    }
+
+    /**
+     * Displays the daily's name, linked to its purchase page.
+     *
+     * @return string
+     */
+    public function getDisplayNameAttribute()
+    {
+        return '<a href="'.$this->url.'" class="display-shop">'.$this->name.'</a>';
+    }
+
+    /**
+     * Gets the file directory containing the model's image.
+     *
+     * @return string
+     */
+    public function getImageDirectoryAttribute()
+    {
+        return 'images/data/dailies';
+    }
+
+    /**
+     * Gets the file name of the model's image.
+     *
+     * @return string
+     */
+    public function getDailyImageFileNameAttribute()
+    {
+        return $this->id . '-image.png';
+    }
+
+        /**
+     * Gets the file name of the model's image.
+     *
+     * @return string
+     */
+    public function getButtonImageFileNameAttribute()
+    {
+        return $this->id . '-button-image.png';
+    }
+
+    /**
+     * Gets the path to the file directory containing the model's image.
+     *
+     * @return string
+     */
+    public function getDailyImagePathAttribute()
+    {
+        return public_path($this->imageDirectory);
+    }
+
+
+    /**
+     * Gets the URL of the model's image.
+     *
+     * @return string
+     */
+    public function getDailyImageUrlAttribute()
+    {
+        if (!$this->has_image) return null;
+        return asset($this->imageDirectory . '/' . $this->dailyImageFileName);
+    }
+
+    /**
+     * Gets the URL of the model's button image.
+     *
+     * @return string
+     */
+    public function getButtonImageUrlAttribute()
+    {
+        if (!$this->has_image) return null;
+        return asset($this->imageDirectory . '/' . $this->buttonImageFileName);
+    }
+
+    /**
+     * Gets the URL of the model's encyclopedia page.
+     *
+     * @return string
+     */
+    public function getUrlAttribute()
+    {
+        return url(__('dailies.dailies').'/'.$this->id);
+    }
+
+
+    /**********************************************************************************************
+
+        OTHER FUNCTIONS
+
+    **********************************************************************************************/
+
+    
+
+
+}
