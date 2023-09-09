@@ -145,9 +145,12 @@ function createAssetsArray($isCharacter = false)
 function mergeAssetsArrays($first, $second)
 {
     $keys = getAssetKeys();
-    foreach($keys as $key)
-        foreach($second[$key] as $item)
-            addAsset($first, $item['asset'], $item['quantity']);
+    foreach ($keys as $key) {
+        if (isset($second[$key])) {
+            foreach ($second[$key] as $item)
+                addAsset($first, $item['asset'], $item['quantity']);
+        }
+    }
     return $first;
 }
 
