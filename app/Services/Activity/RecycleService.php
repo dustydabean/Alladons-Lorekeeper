@@ -165,10 +165,14 @@ class RecycleService extends Service {
           throw new \Exception('Failed to remove item');
       }
 
-      if (!$rewards = fillUserAssets(parseAssetData($activity->data->lootPlain), $user, $user, $activity->name . ' Rewards', [
-        'data' => 'Received rewards from turning items into ' . $activity->name
-      ])) throw new \Exception("Failed to process rewards.");
-      flash(getRewardsString($rewards));
+      $rewardCount =  array_sum($data['stack_quantity']) / $activity->data->quantity;
+
+      for ($i = 0; $i < $rewardCount; $i++) {
+        if (!$rewards = fillUserAssets(parseAssetData($activity->data->lootPlain), $user, $user, $activity->name . ' Rewards', [
+          'data' => 'Received rewards from turning items into ' . $activity->name
+        ])) throw new \Exception("Failed to process rewards.");
+      }
+      flash(getRewardsString($rewards) . ' -- ' . $rewardCount . ' times for your donations');
 
       return $this->commitReturn(true);
     } catch (\Exception $e) {
