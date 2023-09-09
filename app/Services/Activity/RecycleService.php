@@ -156,7 +156,8 @@ class RecycleService extends Service {
     DB::beginTransaction();
 
     try {
-      if (array_sum($data['stack_quantity']) != $activity->data->quantity) throw new \Exception('Please select the correct number of items to turn in.');
+      if (!isset($data['stack_quantity'])) throw new \Exception('Please select the items to turn in.');
+      if (array_sum($data['stack_quantity']) % $activity->data->quantity !== 0) throw new \Exception('Please select the correct number of items to turn in. It should be divisible by ' . $activity->data->quantity);
 
       foreach ($data['stack_id'] as $stackId) {
         $stack = UserItem::find($stackId);
