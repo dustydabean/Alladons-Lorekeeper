@@ -308,7 +308,7 @@ class DailyService extends Service
             $rewards = $this->processRewards($rewardData);
 
             // Distribute user rewards
-            $logType = __('dailies.daily').' Rewards';
+            $logType = ucwords(__('dailies.daily')).' Rewards';
             $dailyData = [
                 'data' => 'Received rewards for '.__('dailies.daily').' (<a href="'.$daily->viewUrl.'">#'.$daily->id.'</a>)'
             ];
