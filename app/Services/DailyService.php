@@ -44,9 +44,10 @@ class DailyService extends Service
         DB::beginTransaction();
 
         try {
+            // More specific validation
+            if(Daily::where('name', $data['name'])->exists()) throw new \Exception("The name has already been taken.");
 
             $data = $this->populateDailyData($data);
-
             $image = null;
             if(isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
@@ -54,7 +55,6 @@ class DailyService extends Service
                 unset($data['image']);
             }
             else $data['has_image'] = 0;
-
             
             $buttonImage = null;
             if(isset($data['button_image']) && $data['button_image']) {
@@ -71,7 +71,8 @@ class DailyService extends Service
             if ($image) $this->handleImage($image, $daily->dailyImagePath, $daily->dailyImageFileName);
             if ($buttonImage) $this->handleImage($buttonImage, $daily->dailyImagePath, $daily->buttonImageFileName);
 
-            $this->populateRewards(Arr::only($data, ['rewardable_type', 'rewardable_id', 'quantity']), $daily);
+            $this->populateRewards(Arr::only($data, ['rewardable_type', 'rewardable_id', 'quantity', 'step']), $daily);
+
 
             return $this->commitReturn($daily);
         } catch(\Exception $e) {
@@ -117,8 +118,7 @@ class DailyService extends Service
 
             if ($daily) $this->handleImage($image, $daily->dailyImagePath, $daily->dailyImageFileName);
             if ($buttonImage) $this->handleImage($buttonImage, $daily->dailyImagePath, $daily->buttonImageFileName);
-
-            $this->populateRewards(Arr::only($data, ['rewardable_type', 'rewardable_id', 'quantity']), $daily);
+            $this->populateRewards(Arr::only($data, ['rewardable_type', 'rewardable_id', 'quantity', 'step']), $daily);
 
             return $this->commitReturn($daily);
         } catch(\Exception $e) {
@@ -139,7 +139,15 @@ class DailyService extends Service
     {
         if(isset($data['description']) && $data['description']) $data['parsed_description'] = parse($data['description']);
         $data['is_active'] = isset($data['is_active']);
-        $data['is_one_off'] = isset($data['is_one_off']);
+
+        //set progressable automatically
+        if(isset($data['step'])){
+            $steps = array_unique($data['step']);
+            if(count($steps) > 1) $data['is_progressable'] = 1;
+            if(count($steps) == 1) $data['is_progressable'] = 0;
+        } else {
+            $data['is_progressable'] = 0;
+        }
 
 
         if(isset($data['remove_image']))
@@ -175,7 +183,6 @@ class DailyService extends Service
     {
         // Clear the old rewards...
         $daily->rewards()->delete();
-
         if(isset($data['rewardable_type'])) {
             foreach($data['rewardable_type'] as $key => $type)
             {
@@ -184,6 +191,7 @@ class DailyService extends Service
                     'rewardable_type' => $type,
                     'rewardable_id'   => $data['rewardable_id'][$key],
                     'quantity'        => $data['quantity'][$key],
+                    'step'        => $data['step'][$key],
                 ]);
             }
         }
@@ -262,12 +270,29 @@ class DailyService extends Service
             // Check that the daily exists and is open
             $daily = Daily::where('id', $data['daily_id'])->where('is_active', 1)->first();
             if(!$daily) throw new \Exception("Invalid ".__('dailies.daily')." selected.");
+            $dailyRewards = $daily->rewards()->get();
 
             // Check if the user has not done the daily that day
-            if(!$this->canRoll($daily, $user)) throw new \Exception("You have already received your ".__('dailies.daily')." reward.");
-            
-            //build reward data to the correct format used for grants
-            $dailyRewards = $daily->rewards()->get();
+            if(!$this->canRoll($daily, $user)) throw new \Exception("You have already received your reward.");
+
+            //get daily timer now that we know we can roll. if none exists, create one.
+            $dailyTimer = DailyTimer::where('daily_id', $daily->id)->where('user_id', $user->id)->first();
+
+            if(!$dailyTimer){
+                $dailyTimer = DailyTimer::create([
+                    'daily_id' => $daily->id,
+                    'user_id' => $user->id,
+                    'rolled_at' => Carbon::now(),
+                    'step' => 1
+                ]);
+            } else {
+                $dailyTimer->rolled_at = Carbon::now();
+                $dailyTimer->step = $this->getNextStep($dailyTimer, $dailyRewards->groupBy('step')->count());
+            }
+
+            //build reward data to the correct format used for grants, make sure to only grant the current step
+            $dailyRewards = $daily->rewards()->where('step', $dailyTimer->step)->get();
+
             $rewardData = [];
             $rewardData['rewardable_type'] = [];
             $rewardData['rewardable_id'] = [];
@@ -281,20 +306,6 @@ class DailyService extends Service
 
             // Get the updated set of rewards
             $rewards = $this->processRewards($rewardData);
-
-            //get daily timer now that we know we can roll. if none exists, create one.
-            $dailyTimer = DailyTimer::where('daily_id', $daily->id)->where('user_id', $user->id)->first();
-
-            if(!$dailyTimer){
-                $dailyTimer = DailyTimer::create([
-                    'daily_id' => $daily->id,
-                    'user_id' => $user->id,
-                    'rolled_at' => Carbon::now()
-                ]);
-            } else {
-                $dailyTimer->rolled_at = Carbon::now();
-            }
-
 
             // Distribute user rewards
             $logType = __('dailies.daily').' Rewards';
@@ -317,6 +328,15 @@ class DailyService extends Service
     }
 
 
+    private function getNextStep($dailyTimer, $maxStep){
+        $step = $dailyTimer->step;
+
+        if($step == $maxStep) return 1;
+        if($step < $maxStep) return $step += 1;
+        if($step > $maxStep) throw new \Exception("There was an issue with assigning the next daily step.");
+
+    }
+
     /**
      * Checks if user can roll the daily.
      *
@@ -326,25 +346,15 @@ class DailyService extends Service
      */
     public function canRoll($daily, $user)
     {
-        $reset = date("Y-m-d H:i:s", strtotime('midnight'));
-        
         $dailyTimer = DailyTimer::where('daily_id', $daily->id)->where('user_id', $user->id)->first();
-
-        if($daily->is_one_off){
-            // if one off: if a timer exists never roll again
-            return !isset($dailyTimer);
-        } else {
-            // daily daily
-            if($dailyTimer && $dailyTimer->rolled_at >= $reset){
-                // if a timer exists we cannot roll again
+        if($dailyTimer && $dailyTimer->rolled_at >= $daily->dailyTimeframeDate){
+                // if a timer exists we cannot roll again if the time is right
                 return false;
-            } else {
-                // if no timer exists we can roll
+        } else {
+                // if no timer exists we can always roll
                 return true;
-            }
         }
-
-
+        
     }
 
 

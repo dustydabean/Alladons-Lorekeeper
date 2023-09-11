@@ -53,12 +53,21 @@ true]) !!}
     {!! Form::textarea('description', $daily->description, ['class' => 'form-control wysiwyg']) !!}
 </div>
 
-<h3>Rewards</h3>
-<p>Please add what reward the daily should award users each day. If you would like  an element of chance in it, linking a loot table here is recommended.</p>
-<p>You can add loot tables containing any kind of currencies (both user- and character-attached), but be sure to keep track of which are being distributed! Character-only currencies cannot be given to users.</p>
-
-@include('widgets._loot_select', ['loots' => $daily->rewards, 'showLootTables' => true, 'showRaffles' => true])
-
+<div class="row p-4">
+    <div class="form-group col">
+        {!! Form::select('daily_timeframe', ["daily" => "Daily", "weekly" => "Weekly", "monthly" => "Monthly",  "yearly" => "Yearly", "lifetime" => "Lifetime"] , $daily ? $daily->daily_timeframe : 0, ['class' => 'form-control stock-field', 'data-name' => 'daily_timeframe']) !!}
+        {!! Form::label('daily_timeframe', 'Daily Timeframe') !!} {!! add_help('This is the timeframe that the daily can be collected in. I.E. yearly will only allow one roll per year. Weekly allows one roll per week. Rollover will happen on UTC time.') !!}
+    </div>
+    <div class="form-group col">
+        {!! Form::select('progress_display', ["none" => "None", "hidden" => "Rewards hidden until collected", "all" => "All rewards shown"] , $daily ? $daily->progress_display : 0, ['class' => 'form-control stock-field', 'data-name' => 'progress_display']) !!}
+        {!! Form::label('progress_display', 'Progress Display') !!} {!! add_help('Decides what kind of information on the rewards for each step should be shown on the daily page.') !!}
+    </div>
+    <div class="form-group col">
+        {!! Form::checkbox('is_active', 1, $daily->id ? $daily->is_active : 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
+        {!! Form::label('is_active', 'Set Active', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If turned off,
+        the '.__('dailies.daily').' will not be visible to regular users.') !!}
+    </div>
+</div>
 
 <div class="pl-4">
     <div class="form-group">
@@ -83,17 +92,16 @@ true]) !!}
     </div>
 </div>
 
-<div class="row p-4">
-    <div class="form-group col">
-        {!! Form::checkbox('is_active', 1, $daily->id ? $daily->is_active : 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
-        {!! Form::label('is_active', 'Set Active', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If turned off,
-        the '.__('dailies.daily').' will not be visible to regular users.') !!}
-    </div>
-    <div class="form-group col">
-        {!! Form::checkbox('is_one_off', 1, $daily->id ? $daily->is_one_off : 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
-        {!! Form::label('is_one_off', 'Is one-off', ['class' => 'form-check-label ml-3']) !!} {!! add_help('Decides if the '.__('dailies.daily').' is claimable each day, or one time only.') !!}
-    </div>
-</div>
+<hr>
+
+<h3>Rewards</h3>
+<p>Please add what reward the {{__('dailies.daily')}} should award users each day. If you would like  an element of chance in it, linking a loot table here is recommended.</p>
+<p>The step field is needed for progressable {{__('dailies.dailies')}}. It defines what rewards the user can get at each step as. One the end of the steps is reached, the rewards start over from step 1. 
+    If you have no need for progression, simply always leave it at step 1.
+</p>
+
+@include('dailies._loot_select', ['loots' => $daily->rewards, 'showLootTables' => true, 'showRaffles' => true])
+
 
 <br>
 
@@ -106,7 +114,7 @@ true]) !!}
 {!! Form::close() !!}
 
 
-@include('widgets._loot_select_row', ['items' => $items, 'currencies' => $currencies, 'tables' => $tables, 'raffles' => $raffles, 'showLootTables' => true, 'showRaffles' => true])
+@include('dailies._loot_select_row', ['items' => $items, 'currencies' => $currencies, 'tables' => $tables, 'raffles' => $raffles, 'showLootTables' => true, 'showRaffles' => true])
 
 
 @endsection

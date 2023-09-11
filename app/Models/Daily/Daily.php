@@ -4,6 +4,7 @@ namespace App\Models\Daily;
 
 use Config;
 use App\Models\Model;
+use Carbon\Carbon;
 
 class Daily extends Model
 {
@@ -13,7 +14,7 @@ class Daily extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'sort', 'has_image', 'has_button_image', 'description', 'parsed_description', 'is_active', 'is_one_off', 'max_roll', 'item_id', 'currency_id', 'is_timed_daily', 'start_at', 'end_at'
+        'name', 'sort', 'has_image', 'has_button_image', 'description', 'parsed_description', 'is_active', 'is_progressable', 'is_timed_daily', 'start_at', 'end_at', 'daily_timeframe', 'progress_display'
     ];
 
     /**
@@ -159,7 +160,28 @@ class Daily extends Model
 
     **********************************************************************************************/
 
-    
+    /*
+     * Gets the current date associated to the daily's timeframe
+     */
+    public function getDailyTimeframeDateAttribute() {
+        switch($this->daily_timeframe) {
+            case "yearly":
+                $date = date("Y-m-d H:i:s", strtotime('January 1st')); 
+                break;
+            case "monthly":
+                $date = date("Y-m-d H:i:s", strtotime('midnight first day of this month')); 
+                break;
+            case "weekly":
+                $date = date("Y-m-d H:i:s", strtotime('last sunday')); 
+                break;
+            case "daily":
+                $date = date("Y-m-d H:i:s", strtotime('midnight'));
+                break;
+            default:
+                $date = null;
+        }
+        return $date;
+    }
 
 
 }

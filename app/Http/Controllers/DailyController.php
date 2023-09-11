@@ -55,6 +55,7 @@ class DailyController extends Controller
         return view('dailies.dailies', [
             'daily' => $daily,
             'dailies' => Daily::where('is_active', 1)->orderBy('sort', 'DESC')->get(),
+            'timer' => DailyTimer::where('daily_id', $daily->id)->where("user_id", Auth::user()->id)->first()
         ]);
     }
 
@@ -79,7 +80,7 @@ class DailyController extends Controller
             foreach($rewards as $type => $rewardList){
                 foreach($rewardList as $reward){
                     $rolledRewards += 1;
-                    flash('You recieved '.$reward['quantity'].'x '.$reward['asset']->name."!");
+                    flash('You received '.$reward['quantity'].'x '.$reward['asset']->name."!");
                 }
             }
             if($rolledRewards <= 0) flash('You received nothing. Better luck next time!');
@@ -87,6 +88,7 @@ class DailyController extends Controller
         return view('dailies.dailies', [
             'daily' => $daily,
             'dailies' => Daily::where('is_active', 1)->orderBy('sort', 'DESC')->get(),
+            'timer' => DailyTimer::where('daily_id', $daily->id)->where("user_id", Auth::user()->id)->first(),
             'rewards'=> $rewards,
         ]);
     }

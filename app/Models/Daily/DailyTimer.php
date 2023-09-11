@@ -13,7 +13,7 @@ class DailyTimer extends Model
      * @var array
      */
     protected $fillable = [
-       "daily_id", "user_id", "rolled_at"
+       "daily_id", "user_id", "rolled_at", 'step'
     ];
 
     /**
