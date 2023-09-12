@@ -14,7 +14,8 @@ class Daily extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'sort', 'has_image', 'has_button_image', 'description', 'parsed_description', 'is_active', 'is_progressable', 'is_timed_daily', 'start_at', 'end_at', 'daily_timeframe', 'progress_display'
+        'name', 'sort', 'has_image', 'has_button_image', 'description', 'parsed_description', 'is_active', 'is_progressable', 'is_timed_daily', 'start_at', 'end_at', 'daily_timeframe', 
+        'progress_display', 'is_loop'
     ];
 
     /**

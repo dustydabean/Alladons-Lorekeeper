@@ -14,7 +14,7 @@ class AddDisplayToDaily extends Migration
     public function up()
     {
         Schema::table('daily', function (Blueprint $table) {
-            $table->text('progress_display')->default('none');
+            $table->string('progress_display')->default('none');
         });
 
     }

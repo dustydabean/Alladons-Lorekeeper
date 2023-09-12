@@ -139,6 +139,7 @@ class DailyService extends Service
     {
         if(isset($data['description']) && $data['description']) $data['parsed_description'] = parse($data['description']);
         $data['is_active'] = isset($data['is_active']);
+        $data['is_loop'] = isset($data['is_loop']);
 
         //set progressable automatically
         if(isset($data['step'])){
@@ -271,9 +272,9 @@ class DailyService extends Service
             $daily = Daily::where('id', $data['daily_id'])->where('is_active', 1)->first();
             if(!$daily) throw new \Exception("Invalid ".__('dailies.daily')." selected.");
             $dailyRewards = $daily->rewards()->get();
-
+            $maxStep = $dailyRewards->groupBy('step')->count();
             // Check if the user has not done the daily that day
-            if(!$this->canRoll($daily, $user)) throw new \Exception("You have already received your reward.");
+            if(!$this->canRoll($daily, $maxStep, $user)) throw new \Exception("You have already received your reward.");
 
             //get daily timer now that we know we can roll. if none exists, create one.
             $dailyTimer = DailyTimer::where('daily_id', $daily->id)->where('user_id', $user->id)->first();
@@ -287,7 +288,7 @@ class DailyService extends Service
                 ]);
             } else {
                 $dailyTimer->rolled_at = Carbon::now();
-                $dailyTimer->step = $this->getNextStep($dailyTimer, $dailyRewards->groupBy('step')->count());
+                $dailyTimer->step = $this->getNextStep($dailyTimer, $maxStep);
             }
 
             //build reward data to the correct format used for grants, make sure to only grant the current step
@@ -344,16 +345,20 @@ class DailyService extends Service
      * @param  \App\Models\User\User      $user
      * @return bool
      */
-    public function canRoll($daily, $user)
+    public function canRoll($daily, $maxStep, $user)
     {
         $dailyTimer = DailyTimer::where('daily_id', $daily->id)->where('user_id', $user->id)->first();
-        if($dailyTimer && $dailyTimer->rolled_at >= $daily->dailyTimeframeDate){
-                // if a timer exists we cannot roll again if the time is right
-                return false;
-        } else {
-                // if no timer exists we can always roll
-                return true;
+
+        if($dailyTimer){
+            // if the daily does not loop, we stop users once they collected the max step.
+            if(!$daily->is_loop && $dailyTimer->step >= $maxStep) return false;
+
+            // if a timer exists we cannot roll again if the time is right
+            if($dailyTimer->rolled_at >= $daily->dailyTimeframeDate) return false;
+            
         }
+      
+        return true;
         
     }
 

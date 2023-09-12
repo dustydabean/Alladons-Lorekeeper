@@ -14,9 +14,11 @@ class AddDailyTimeframeAndTypeToDaily extends Migration
     public function up()
     {
         Schema::table('daily', function (Blueprint $table) {
-            $table->text('daily_timeframe')->default('daily');
+            $table->string('daily_timeframe')->default('daily');
             $table->boolean('is_progressable')->default(0);
+            $table->boolean('is_loop')->default(0);
             $table->dropColumn('is_one_off');
+
         });
 
         Schema::table('daily_rewards', function (Blueprint $table) {
@@ -38,6 +40,7 @@ class AddDailyTimeframeAndTypeToDaily extends Migration
         Schema::table('daily', function (Blueprint $table) {
             $table->dropColumn('daily_timeframe');
             $table->dropColumn('is_progressable');
+            $table->dropColumn('is_loop');
             $table->boolean('is_one_off')->default(0);
         });
 

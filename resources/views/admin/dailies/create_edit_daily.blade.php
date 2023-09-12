@@ -55,12 +55,17 @@ true]) !!}
 
 <div class="row p-4">
     <div class="form-group col">
-        {!! Form::select('daily_timeframe', ["daily" => "Daily", "weekly" => "Weekly", "monthly" => "Monthly",  "yearly" => "Yearly", "lifetime" => "Lifetime"] , $daily ? $daily->daily_timeframe : 0, ['class' => 'form-control stock-field', 'data-name' => 'daily_timeframe']) !!}
+        {!! Form::select('daily_timeframe', ["daily" => "Daily", "weekly" => "Weekly", "monthly" => "Monthly",  "yearly" => "Yearly"] , $daily ? $daily->daily_timeframe : 0, ['class' => 'form-control stock-field', 'data-name' => 'daily_timeframe']) !!}
         {!! Form::label('daily_timeframe', 'Daily Timeframe') !!} {!! add_help('This is the timeframe that the daily can be collected in. I.E. yearly will only allow one roll per year. Weekly allows one roll per week. Rollover will happen on UTC time.') !!}
     </div>
     <div class="form-group col">
         {!! Form::select('progress_display', ["none" => "None", "hidden" => "Rewards hidden until collected", "all" => "All rewards shown"] , $daily ? $daily->progress_display : 0, ['class' => 'form-control stock-field', 'data-name' => 'progress_display']) !!}
         {!! Form::label('progress_display', 'Progress Display') !!} {!! add_help('Decides what kind of information on the rewards for each step should be shown on the daily page.') !!}
+    </div>
+    <div class="form-group col">
+        {!! Form::checkbox('is_loop', 1, $daily->id ? $daily->is_loop : 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
+        {!! Form::label('is_loop', 'Set Loop', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If turned off, each of 
+        the '.__('dailies.daily').' rewards will only be able to be claimed once.') !!}
     </div>
     <div class="form-group col">
         {!! Form::checkbox('is_active', 1, $daily->id ? $daily->is_active : 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
