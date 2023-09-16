@@ -55,7 +55,7 @@ class DailyController extends Controller
         return view('dailies.dailies', [
             'daily' => $daily,
             'dailies' => Daily::where('is_active', 1)->orderBy('sort', 'DESC')->get(),
-            'timer' => DailyTimer::where('daily_id', $daily->id)->where("user_id", Auth::user()->id)->first()
+            'timer' => (Auth::user()) ? DailyTimer::where('daily_id', $daily->id)->where("user_id", Auth::user()->id)->first() : null
         ]);
     }
 
