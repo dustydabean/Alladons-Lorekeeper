@@ -27,7 +27,7 @@ true]) !!}
     {!! Form::label(__('dailies.daily').' Image (Optional)') !!} {!! add_help('This image is used on the '.__('dailies.daily').' index and on the '.__('dailies.daily').'
      page as a header.') !!}
     <div>{!! Form::file('image') !!}</div>
-    <div class="text-muted">Recommended size: None (Choose a standard size for all {{__('dailies.daily')}} images)</div>
+    <div class="text-muted">Recommended size: None (Choose a standard size for all {{__('dailies.daily')}} images). File type: png.</div>
     @if($daily->has_image)
     <div class="form-check">
         {!! Form::checkbox('remove_image', 1, false, ['class' => 'form-check-input']) !!}
@@ -39,7 +39,7 @@ true]) !!}
 <div class="form-group">
     {!! Form::label('Button Image (Optional)') !!} {!! add_help('This image is used for the button instead of the generic Collect Reward button.') !!}
     <div>{!! Form::file('button_image') !!}</div>
-    <div class="text-muted">Recommended size: 200x200px or something small.</div>
+    <div class="text-muted">Recommended size: 200x200px or something small. File type: png.</div>
     @if($daily->has_button_image)
     <div class="form-check">
         {!! Form::checkbox('remove_button_image', 1, false, ['class' => 'form-check-input']) !!}
