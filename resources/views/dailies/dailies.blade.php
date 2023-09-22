@@ -43,7 +43,7 @@
     @endif
 
     @if($daily->progress_display != 'none')
-    <div class="card">
+    <div class="card mt-5">
         <div class="card-header">
             <h4>Progress</h4>
         </div>
