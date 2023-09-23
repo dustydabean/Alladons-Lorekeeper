@@ -145,7 +145,7 @@ class RecycleService extends Service {
   }
 
   /**
-   * Acts upon the item when used from the inventory.
+   * Code executed by the act post url being hit (expected from the user-side blade file at resources/views/activities/modules/recycle.blade.php)
    *
    * @param  \App\Models\User\UserItem  $stacks
    * @param  \App\Models\User\User      $user
