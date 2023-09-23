@@ -20,10 +20,6 @@ return [] +
   // Requires:: Collection Extension
   (class_exists('\App\Models\Collection\Collection') ? ['collection' => "Collection"] : []);
 
-  
-  // Look into seeing how much trouble it would be to have this like optionally tied to collection code rather than code it from scratch
-  // 'showcase' => 'Showcase',
-
   //********* Future Module Ideas ***********
   // Turn in Currency / nothing, limited by time, to get randomized rewards
   // 'wishingWell => 'Wishing Well'
