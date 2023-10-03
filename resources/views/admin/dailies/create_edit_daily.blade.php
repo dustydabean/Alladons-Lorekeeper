@@ -68,6 +68,10 @@ true]) !!}
         the '.__('dailies.daily').' rewards will only be able to be claimed once.') !!}
     </div>
     <div class="form-group col">
+        {!! Form::checkbox('is_streak', 1, $daily->id ? $daily->is_streak : 0, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
+        {!! Form::label('is_streak', 'Is Streak', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If turned on, should the user miss a day of claiming, the rewards start over from day 1.') !!}
+    </div>
+    <div class="form-group col">
         {!! Form::checkbox('is_active', 1, $daily->id ? $daily->is_active : 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
         {!! Form::label('is_active', 'Set Active', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If turned off,
         the '.__('dailies.daily').' will not be visible to regular users.') !!}
@@ -101,10 +105,8 @@ true]) !!}
 
 <h3>Rewards</h3>
 <p>Please add what reward the {{__('dailies.daily')}} should award users each day. If you would like  an element of chance in it, linking a loot table here is recommended.</p>
-<p>The step field is needed for progressable {{__('dailies.dailies')}}. It defines what rewards the user can get at each step as. One the end of the steps is reached, the rewards start over from step 1. 
-    If you have no need for progression, simply always leave it at step 1.
-</p>
-
+<p>The step field is needed for progressable {{__('dailies.dailies')}}. It defines what rewards the user can get at each step as. One the end of the steps is reached, the rewards start over from step 1. </p>
+<b>If you have no need for progression, simply always leave it at step 1. If you want to set a default reward that is picked for all steps with no reward set, you may specify it as step 0.</b> Beware that the default reward will not be shown on the progress.
 @include('dailies._loot_select', ['loots' => $daily->rewards, 'showLootTables' => true, 'showRaffles' => true])
 
 

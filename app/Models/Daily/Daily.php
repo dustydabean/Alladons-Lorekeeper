@@ -15,7 +15,7 @@ class Daily extends Model
      */
     protected $fillable = [
         'name', 'sort', 'has_image', 'has_button_image', 'description', 'parsed_description', 'is_active', 'is_progressable', 'is_timed_daily', 'start_at', 'end_at', 'daily_timeframe', 
-        'progress_display', 'is_loop'
+        'progress_display', 'is_loop', 'is_streak'
     ];
 
     /**
@@ -177,6 +177,29 @@ class Daily extends Model
                 break;
             case "daily":
                 $date = date("Y-m-d H:i:s", strtotime('midnight'));
+                break;
+            default:
+                $date = null;
+        }
+        return $date;
+    }
+
+    /*
+     * Gets the date associated with the next daily pickup.
+     */
+    public function getNextDateAttribute() {
+        switch($this->daily_timeframe) {
+            case "yearly":
+                $date = date("Y-m-d H:i:s", strtotime("+1 Year", strtotime('January 1st'))); 
+                break;
+            case "monthly":
+                $date = date("Y-m-d H:i:s", strtotime("+1 Month", strtotime('midnight first day of this month'))); 
+                break;
+            case "weekly":
+                $date = date("Y-m-d H:i:s", strtotime("+1 Week",strtotime('last sunday'))); 
+                break;
+            case "daily":
+                $date = date("Y-m-d H:i:s", strtotime("+1 Day",strtotime('midnight')));
                 break;
             default:
                 $date = null;

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Auth;
+use \Datetime;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -46,20 +47,24 @@ class DailyController extends Controller
      * @param  int  $id
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getDaily($id)
+    public function getDaily($id, DailyService $service)
     {
         $daily = Daily::where('id', $id)->where('is_active', 1)->first();
-
+        $timer = (Auth::user()) ? DailyTimer::where('daily_id', $daily->id)->where("user_id", Auth::user()->id)->first() : null;
         if(!$daily) abort(404);
+
+        
         
         return view('dailies.dailies', [
             'daily' => $daily,
             'dailies' => Daily::where('is_active', 1)->orderBy('sort', 'DESC')->get(),
-            'timer' => (Auth::user()) ? DailyTimer::where('daily_id', $daily->id)->where("user_id", Auth::user()->id)->first() : null
+            'timer' => $timer,
+            'cooldown' => $service->getDailyCooldown($daily, $timer)
         ]);
     }
 
-    
+
+
     /**
      * Handles a daily roll.
      * 
@@ -85,12 +90,8 @@ class DailyController extends Controller
             }
             if($rolledRewards <= 0) flash('You received nothing. Better luck next time!');
         }
-        return view('dailies.dailies', [
-            'daily' => $daily,
-            'dailies' => Daily::where('is_active', 1)->orderBy('sort', 'DESC')->get(),
-            'timer' => DailyTimer::where('daily_id', $daily->id)->where("user_id", Auth::user()->id)->first(),
-            'rewards'=> $rewards,
-        ]);
+        return redirect()->back();
+
     }
 
 }

@@ -4,6 +4,7 @@ use App\Services\Service;
 
 use DB;
 use Config;
+use \Datetime;
 
 use Illuminate\Support\Arr;
 use App\Models\Daily\Daily;
@@ -140,6 +141,7 @@ class DailyService extends Service
         if(isset($data['description']) && $data['description']) $data['parsed_description'] = parse($data['description']);
         $data['is_active'] = isset($data['is_active']);
         $data['is_loop'] = isset($data['is_loop']);
+        $data['is_streak'] = isset($data['is_streak']);
 
         //set progressable automatically
         if(isset($data['step'])){
@@ -287,12 +289,14 @@ class DailyService extends Service
                     'step' => 1
                 ]);
             } else {
+                $dailyTimer->step = $this->getNextStep($daily, $dailyTimer, $maxStep);
                 $dailyTimer->rolled_at = Carbon::now();
-                $dailyTimer->step = $this->getNextStep($dailyTimer, $maxStep);
             }
 
             //build reward data to the correct format used for grants, make sure to only grant the current step
             $dailyRewards = $daily->rewards()->where('step', $dailyTimer->step)->get();
+            //if there is no reward, check if step 0 rewards (Default) are set and pick that instead
+            if($dailyRewards->count() <= 0) $dailyRewards = $daily->rewards()->where('step', 0)->get();
 
             $rewardData = [];
             $rewardData['rewardable_type'] = [];
@@ -329,13 +333,33 @@ class DailyService extends Service
     }
 
 
-    private function getNextStep($dailyTimer, $maxStep){
+    private function getNextStep($daily, $dailyTimer, $maxStep){
         $step = $dailyTimer->step;
 
+        //if streak daily, check if a day was missed and if so, set dailytimer step to 1
+        if($daily->is_streak && !$this->isActiveStreak($daily, $dailyTimer)) return 1;
         if($step == $maxStep) return 1;
         if($step < $maxStep) return $step += 1;
         if($step > $maxStep) throw new \Exception("There was an issue with assigning the next daily step.");
 
+    }
+
+    private function isActiveStreak($daily, $dailyTimer){
+        $date1 = new DateTime($daily->dailyTimeframeDate);
+        $date2 = new DateTime($dailyTimer->rolled_at);
+        $interval = $date1->diff($date2);
+        switch($daily->daily_timeframe) {
+            case "yearly":
+                return $interval->y < 1;
+            case "monthly":
+                return $interval->m < 1;
+            case "weekly":
+                return $interval->d < 7;
+            case "daily":
+                return $interval->d < 1;
+            default:
+                return false;
+        }
     }
 
     /**
@@ -410,6 +434,30 @@ class DailyService extends Service
         }
         return $assets;
         
+    }
+
+    public function getDailyCooldown($daily, $timer)
+    {
+
+        // If there is no timer, the cooldown is null
+        if(!$timer) return null;
+        // If the timer is up/we are good, cooldown is also null
+        if($timer->rolled_at < $daily->dailyTimeframeDate) return null;
+
+        $lastRoll = Carbon::createFromFormat('Y-m-d H:i:s', $timer->rolled_at);
+        $date1 = new DateTime($daily->nextDate);
+        $date2 = new DateTime($timer->rolled_at);
+        $interval = $date1->diff($date2);
+
+        $lastRoll->addMinutes($interval->i);
+        $lastRoll->addHours($interval->h);
+        $lastRoll->addSeconds($interval->s);
+        $lastRoll->addYears($interval->y);
+        $lastRoll->addDays($interval->d);
+        $lastRoll->addMonths($interval->m);
+
+        // return interval
+        return $lastRoll;
     }
 
 }
