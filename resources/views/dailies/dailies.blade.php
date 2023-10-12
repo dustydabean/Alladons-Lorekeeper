@@ -50,7 +50,7 @@
     @if($daily->progress_display != 'none')
     <div class="card mt-5">
         <div class="card-header">
-            <h4 class="m-0 align-items-center">Progress {!! add_help(($daily->is_streak) ? 'Progress will reset if you miss collecting your reward in the given timeframe.' : 'Progress is safe even if you miss collecting your reward in the given timeframe.') !!}</h4> 
+            <h4 class="m-0 align-items-center">Progress ({{$timer->step}}/{{$daily->maxStep}}) {!! add_help(($daily->is_streak) ? 'Progress will reset if you miss collecting your reward in the given timeframe.' : 'Progress is safe even if you miss collecting your reward in the given timeframe.') !!}</h4> 
         </div>
 
         <div class="card-body row p-0 m-auto w-100">

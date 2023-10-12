@@ -154,6 +154,15 @@ class Daily extends Model
         return url(__('dailies.dailies').'/'.$this->id);
     }
 
+    /**
+     * Gets the max step of the daily rewards.
+     *
+     * @return string
+     */
+    public function getMaxStepAttribute()
+    {
+        return $this->rewards()->get()->max(function ($reward) { return $reward->step; });
+    }
 
     /**********************************************************************************************
 
