@@ -8,6 +8,11 @@ return [
     'lorekeeper',
     'world',
     'species',
-    'guidelines'
+    'guidelines',
+    'redesigns',
+    'myos',
+    'items',
+    'prompts',
+    'events'
 
 ];

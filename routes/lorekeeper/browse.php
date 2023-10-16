@@ -179,5 +179,4 @@ Route::group(['prefix' => 'reports', 'namespace' => 'Users'], function () {
 Route::group(['prefix' => 'faq',], function () {
     Route::get('/', 'BrowseController@getFaq');
     Route::get('/search', 'BrowseController@getFaqSearch');
-    Route::get('{slug}', 'BrowseController@getFaqQuestion');
 });

@@ -27,7 +27,7 @@
     <script>
         $(document).ready(function() {
             $('#tags').selectize({
-                maxItems: 3
+                maxItems: 5
             });
 
             // search on keyword change

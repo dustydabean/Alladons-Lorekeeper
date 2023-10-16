@@ -14,12 +14,12 @@
     </div>
 
     <div>
-        {!! Form::open(['method' => 'GET', 'class' => 'form-inline justify-content-end']) !!}
+        {!! Form::open(['method' => 'GET', 'class' => 'text-right justify-content-end']) !!}
         <div class="form-group mr-3 mb-3">
-            {!! Form::text('name', Request::get('name'), ['class' => 'form-control', 'placeholder' => 'Name']) !!}
+            {!! Form::text('content', Request::get('content'), ['class' => 'form-control col-md-6 ml-auto', 'placeholder' => 'Question or Answer Content']) !!}
         </div>
         <div class="form-group mr-3 mb-3">
-            {!! Form::select('tags', $tags, Request::get('tags'), ['class' => 'form-control']) !!}
+            {!! Form::select('tags[]', $tags, Request::get('tags'), ['class' => 'form-control selectize col-md-6 ml-auto', 'multiple', 'placeholder' => 'Select Tags']) !!}
         </div>
         <div class="form-group mb-3">
             {!! Form::submit('Search', ['class' => 'btn btn-primary']) !!}
@@ -81,4 +81,11 @@
         </div>
         {!! $faqs->render() !!}
     @endif
+@endsection
+@section('scripts')
+    <script>
+        $(document).ready(function() {
+            $('.selectize').selectize();
+        });
+    </script>
 @endsection

@@ -645,8 +645,12 @@ class BrowseController extends Controller {
         $tags = Config::get('lorekeeper.faq');
         // tags is an array of names, make it so their key is their name also
         $tags = array_combine($tags, $tags);
+        $tags = array_map(function ($tag) {
+            return ucwords($tag);
+        }, $tags);
+        ksort($tags);
         return view('browse.faq', [
-            'faqs' => Faq::visible(Auth::check() ? Auth::user() : null)->get(),
+            'faqs' => Faq::visible(Auth::check() ? Auth::user() : null)->orderBy('created_at', 'DESC')->get(),
             'tags' => $tags,
         ]);
     }
@@ -673,7 +677,7 @@ class BrowseController extends Controller {
                         $query->where('question', 'LIKE', '%'.$content.'%')->orWhere('answer', 'LIKE', '%'.$content.'%');
                     });
                 }
-            })->get(),
+            })->orderBy('created_at', 'DESC')->get(),
         ]);
     }
 }

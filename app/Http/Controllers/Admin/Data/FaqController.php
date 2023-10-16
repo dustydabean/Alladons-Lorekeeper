@@ -26,14 +26,28 @@ class FaqController extends Controller {
      */
     public function getFaqIndex(Request $request) {
         $query = Faq::query();
-        $data = $request->only(['faq_category_id', 'name']);
-        if (isset($data['faq_category_id']) && $data['faq_category_id'] != 'none') {
-            $query->where('faq_category_id', $data['faq_category_id']);
-        }
-        if (isset($data['name'])) {
-            $query->where('name', 'LIKE', '%'.$data['name'].'%');
+        $data = $request->only(['content', 'tags']);
+        if (isset($data['content'])) {
+            $content = $data['content'];
+            $query->where(function ($query) use ($content) {
+                $query->where('question', 'LIKE', '%'.$content.'%')->orWhere('answer', 'LIKE', '%'.$content.'%');
+            });
         }
 
+        if (isset($data['tags'])) {
+            foreach ($data['tags'] as $tag) {
+                // json decode the tag column
+                $query->whereJsonContains('tags', $tag);
+            }
+        }
+
+        $tags = Config::get('lorekeeper.faq');
+        // tags is an array of names, make it so their key is their name also
+        $tags = array_combine($tags, $tags);
+        $tags = array_map(function ($tag) {
+            return ucwords($tag);
+        }, $tags);
+        ksort($tags);
         return view('admin.faq.faq', [
             'faqs' => $query->paginate(20)->appends($request->query()),
             'tags' => Config::get('lorekeeper.faq'),
@@ -49,10 +63,13 @@ class FaqController extends Controller {
         $tags = Config::get('lorekeeper.faq');
         // tags is an array of names, make it so their key is their name also
         $tags = array_combine($tags, $tags);
+        $tags = array_map(function ($tag) {
+            return ucwords($tag);
+        }, $tags);
+        ksort($tags);
         return view('admin.faq.create_edit_question', [
             'faq'  => new Faq,
             'tags' => $tags,
-
         ]);
     }
 
@@ -71,6 +88,10 @@ class FaqController extends Controller {
         $tags = Config::get('lorekeeper.faq');
         // tags is an array of names, make it so their key is their name also
         $tags = array_combine($tags, $tags);
+        $tags = array_map(function ($tag) {
+            return ucwords($tag);
+        }, $tags);
+        ksort($tags);
         return view('admin.faq.create_edit_question', [
             'faq'  => $faq,
             'tags' => $tags,
@@ -115,7 +136,7 @@ class FaqController extends Controller {
     public function getDeleteFaqQuestion($id) {
         $faq = Faq::find($id);
 
-        return view('admin.faqs._delete_faq', [
+        return view('admin.faq._delete_question', [
             'faq' => $faq,
         ]);
     }
@@ -137,6 +158,6 @@ class FaqController extends Controller {
             }
         }
 
-        return redirect()->to('admin/data/faqs');
+        return redirect()->to('admin/data/faq');
     }
 }

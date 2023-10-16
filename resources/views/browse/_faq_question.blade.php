@@ -5,7 +5,8 @@
         @endif
         {{ $faq->question }}
         @if ($faq->tags)
-            @foreach (json_decode($faq->tags) as $tag)
+            @php $question_tags = json_decode($faq->tags); ksort($question_tags); @endphp
+            @foreach ($question_tags as $tag)
                 <div class="badge badge-primary mx-1" style="float: right;">{{ $tag }}</div>
             @endforeach
         @endif
