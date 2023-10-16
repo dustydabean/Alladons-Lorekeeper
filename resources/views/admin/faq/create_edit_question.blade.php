@@ -46,7 +46,6 @@
         <h3>Preview</h3>
         @include('browse._faq_question', ['faq' => $faq])
     @endif
-
 @endsection
 
 @section('scripts')

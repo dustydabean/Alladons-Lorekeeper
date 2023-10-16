@@ -22,7 +22,6 @@
     <div id="results">
         @include('browse._faq_content', ['faqs' => $faqs])
     </div>
-
 @endsection
 @section('scripts')
     <script>
@@ -38,7 +37,7 @@
                 var tags = $('#tags').val();
                 // ajax
                 $.ajax({
-                    url: '{{ url("faq/search") }}',
+                    url: '{{ url('faq/search') }}',
                     type: 'GET',
                     data: {
                         content: search,
@@ -59,7 +58,7 @@
                 var tags = $(this).val();
                 // ajax
                 $.ajax({
-                    url: '{{ url("faq/search") }}',
+                    url: '{{ url('faq/search') }}',
                     type: 'GET',
                     data: {
                         content: search,
