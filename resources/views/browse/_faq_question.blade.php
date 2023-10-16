@@ -10,5 +10,8 @@
     </h4>
     <div class="card-text">
         {!! $faq->parsed_answer !!}
+        <div class="float-right">
+            <b>Last Updated:</b> {!! pretty_date($faq->updated_at) !!}
+        </div>
     </div>
 </div>
