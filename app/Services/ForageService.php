@@ -209,7 +209,7 @@ class ForageService extends Service
             if($user->foraging->stamina < 1) throw new \Exception('You have exhausted yourself already! Come back tomorrow.');
 
             // check if a distribute_at already exists
-            if ($user->foraging->distribute_at) throw new \Exception('You have already begun foraging.');
+            if ($user->foraging->forage_id && $user->foraging->distribute_at) throw new \Exception('You have already begun foraging.');
 
             // check if the forage has a cost and decrement currency accordingly
             $forage = Forage::findOrFail($id);
