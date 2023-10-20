@@ -1,5 +1,5 @@
-@if($pet)
-    {!! Form::open(['url' => 'admin/data/pets/delete/'.$pet->id]) !!}
+@if ($pet)
+    {!! Form::open(['url' => 'admin/data/pets/delete/' . $pet->id]) !!}
 
     <p>You are about to delete the pet <strong>{{ $pet->name }}</strong>. This is not reversible. If this pet exists in at least one user's possession, you will not be able to delete this pet.</p>
     <p>Are you sure you want to delete <strong>{{ $pet->name }}</strong>?</p>
@@ -9,6 +9,6 @@
     </div>
 
     {!! Form::close() !!}
-@else 
+@else
     Invalid pet selected.
 @endif

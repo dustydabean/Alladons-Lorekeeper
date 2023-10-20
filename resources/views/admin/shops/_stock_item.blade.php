@@ -3,7 +3,7 @@
 
 
 <script>
-    $( document ).ready(function() {
+    $(document).ready(function() {
         $('.selectize').selectize();
     });
 </script>

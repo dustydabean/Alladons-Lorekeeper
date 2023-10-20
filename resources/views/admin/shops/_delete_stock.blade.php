@@ -1,5 +1,5 @@
-@if($stock)
-    {!! Form::open(['url' => 'admin/data/shops/stock/delete/'.$stock->id]) !!}
+@if ($stock)
+    {!! Form::open(['url' => 'admin/data/shops/stock/delete/' . $stock->id]) !!}
 
     <p>You are about to delete the stock <strong>{{ $stock->item->name }}</strong>.</p>
     <p>Are you sure you want to delete <strong>{{ $stock->item->name }}</strong>?</p>
@@ -9,6 +9,6 @@
     </div>
 
     {!! Form::close() !!}
-@else 
+@else
     Invalid stock selected.
 @endif

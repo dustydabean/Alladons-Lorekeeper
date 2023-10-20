@@ -42,17 +42,27 @@
                 {!! Form::submit('Search', ['class' => 'btn btn-primary']) !!}
             </div>
         </div>
-    @foreach ($items as $item)
+        @foreach ($items as $item)
             <div class="card-body">
                 <?php
-                $shops = App\Models\Shop\Shop::where(function($shops) {
-                    if(Auth::check() && Auth::user()->isStaff) return $shops;
+                $shops = App\Models\Shop\Shop::where(function ($shops) {
+                    if (Auth::check() && Auth::user()->isStaff) {
+                        return $shops;
+                    }
                     return $shops->where('is_staff', 0);
-                })->whereIn('id', App\Models\Shop\ShopStock::where('item_id', $item->id)->pluck('shop_id')->toArray())->orderBy('sort', 'DESC')->get();
+                })
+                    ->whereIn(
+                        'id',
+                        App\Models\Shop\ShopStock::where('item_id', $item->id)
+                            ->pluck('shop_id')
+                            ->toArray(),
+                    )
+                    ->orderBy('sort', 'DESC')
+                    ->get();
                 ?>
                 @include('world._item_entry', ['imageUrl' => $item->imageUrl, 'name' => $item->displayName, 'description' => $item->parsed_description, 'idUrl' => $item->idUrl, 'shops' => $shops])
             </div>
-        </div>
+    </div>
     @endforeach
     {!! $items->render() !!}
 

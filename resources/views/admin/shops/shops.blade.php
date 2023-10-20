@@ -13,21 +13,25 @@
     <p>The sorting order reflects the order in which the shops will be listed on the shop index.</p>
 
     <div class="text-right mb-3"><a class="btn btn-primary" href="{{ url('admin/data/shops/create') }}"><i class="fas fa-plus"></i> Create New Shop</a></div>
-    @if(!count($shops))
+    @if (!count($shops))
         <p>No item shops found.</p>
     @else
         <table class="table table-sm shop-table">
             <tbody id="sortable" class="sortable">
-                @foreach($shops as $shop)
+                @foreach ($shops as $shop)
                     <tr class="sort-item" data-id="{{ $shop->id }}">
                         <td>
                             <a class="fas fa-arrows-alt-v handle mr-3" href="#"></a>
-                            @if($shop->is_staff)<i class="fas fa-crown mr-1"></i>@endif
+                            @if ($shop->is_staff)
+                                <i class="fas fa-crown mr-1"></i>
+                            @endif
                             {!! $shop->displayName !!}
-                            @if($shop->is_timed_shop)<i class="fas fa-clock"></i>  @endif
+                            @if ($shop->is_timed_shop)
+                                <i class="fas fa-clock"></i>
+                            @endif
                         </td>
                         <td class="text-right">
-                            <a href="{{ url('admin/data/shops/edit/'.$shop->id) }}" class="btn btn-primary">Edit</a>
+                            <a href="{{ url('admin/data/shops/edit/' . $shop->id) }}" class="btn btn-primary">Edit</a>
                         </td>
                     </tr>
                 @endforeach

@@ -125,11 +125,13 @@
                 @endif
 
                 <div class="mb-1">
-                    <div><h5>Pets</h5></div>
+                    <div>
+                        <h5>Pets</h5>
+                    </div>
                     <div class="text-center row">
-                        @foreach($image->character->pets as $pet)
+                        @foreach ($image->character->pets as $pet)
                             <div class="ml-2 mr-3">
-                                <img src="{{ $pet->pet->variantImage($pet->id) }}" style="max-width: 75px;"/>
+                                <img src="{{ $pet->pet->variantImage($pet->id) }}" style="max-width: 75px;" />
                                 <br>
                                 <span class="text-light badge badge-dark" style="font-size:95%;">{!! $pet->pet_name !!}</span>
                             </div>

@@ -1,4 +1,4 @@
-{!! Form::open(['url' => 'admin/data/pets/edit/'.$pet->id.'/variants/'. ($variant->id ? 'edit/'. $variant->id : 'create'), 'files' => true]) !!}
+{!! Form::open(['url' => 'admin/data/pets/edit/' . $pet->id . '/variants/' . ($variant->id ? 'edit/' . $variant->id : 'create'), 'files' => true]) !!}
 
 <div class="form-group">
     {!! Form::text('variant_name', $variant->id ? $variant->variant_name : null, ['class' => 'form-control mr-2 feature-select', 'placeholder' => 'Variant Name']) !!}
@@ -8,7 +8,7 @@
     {!! Form::label('Image (Optional)') !!}
     <div>{!! Form::file('variant_image') !!}</div>
     <div class="text-muted">Recommended size: 200px x 200px</div>
-    @if($variant->has_image)
+    @if ($variant->has_image)
         <div class="form-check">
             {!! Form::checkbox('remove_image', 1, false, ['class' => 'form-check-input']) !!}
             {!! Form::label('remove_image', 'Remove current image', ['class' => 'form-check-label']) !!}

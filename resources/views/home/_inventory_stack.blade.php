@@ -3,8 +3,8 @@
         Invalid stack selected.</div>
 @else
     <div class="text-center">
-        @if($item->has_image)
-            <div class="mb-1"><a href="{{ $item->url }}"><img src="{{ $item->imageUrl }}" class="img-fluid" alt="{{ $item->name }}"/></a></div>
+        @if ($item->has_image)
+            <div class="mb-1"><a href="{{ $item->url }}"><img src="{{ $item->imageUrl }}" class="img-fluid" alt="{{ $item->name }}" /></a></div>
         @endif
         <div @if (count($item->tags)) class="mb-1" @endif><a href="{{ $item->idUrl }}">{{ $item->name }}</a></div>
         @if (count($item->tags))

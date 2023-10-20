@@ -1,33 +1,31 @@
 @php $namespace = (Request::url() == url('pets/view/'.$pet->id)) && (Auth::check() && Auth::user()->id == $pet->user_id); @endphp
-@extends(($namespace ? 'home' : 'user').'.layout')
+@extends(($namespace ? 'home' : 'user') . '.layout')
 
 @section($namespace ? 'title' : 'profile-title')
-    {{ $pet->pet_name ? $pet->pet_name . ' ('.$pet->pet->name.')' : $user->name."'s ".$pet->pet->name }}
+    {{ $pet->pet_name ? $pet->pet_name . ' (' . $pet->pet->name . ')' : $user->name . "'s " . $pet->pet->name }}
 @endsection
 
 @section($namespace ? 'content' : 'profile-content')
 
-    {!! $namespace ?
-        breadcrumbs(['Pets' => 'pets', $pet->pet_name ? $pet->pet_name . ' ('.$pet->pet->name.')' : $user->name."'s ".$pet->pet->name => $pet->url]) :
-        breadcrumbs(['Users' => 'users', $user->name => $user->url, 'Pets' => $user->url . '/pets',
-        $pet->pet_name ? $pet->pet_name . ' ('.$pet->pet->name.')' : $user->name."'s ".$pet->pet->name => $pet->url])
-    !!}
+    {!! $namespace
+        ? breadcrumbs(['Pets' => 'pets', $pet->pet_name ? $pet->pet_name . ' (' . $pet->pet->name . ')' : $user->name . "'s " . $pet->pet->name => $pet->url])
+        : breadcrumbs(['Users' => 'users', $user->name => $user->url, 'Pets' => $user->url . '/pets', $pet->pet_name ? $pet->pet_name . ' (' . $pet->pet->name . ')' : $user->name . "'s " . $pet->pet->name => $pet->url]) !!}
 
     <h1>
-        {!! $pet->pet_name ?
-            $pet->pet_name . ' ('. $user->displayName."'s ". ($pet->variant_id ? $pet->variant->variant_name .' ' : '') . $pet->pet->displayName.')'
-            : $user->name."'s ".($pet->variant_id ? $pet->variant->variant_name .' ' : '') . $pet->pet->displayName !!}
+        {!! $pet->pet_name
+            ? $pet->pet_name . ' (' . $user->displayName . "'s " . ($pet->variant_id ? $pet->variant->variant_name . ' ' : '') . $pet->pet->displayName . ')'
+            : $user->name . "'s " . ($pet->variant_id ? $pet->variant->variant_name . ' ' : '') . $pet->pet->displayName !!}
     </h1>
 
-    @if(!$namespace)
+    @if (!$namespace)
         <div class="container justify-content-right text-right my-3">
-            <a href="{{ $user->url.'/pets' }}">
+            <a href="{{ $user->url . '/pets' }}">
                 <div class="btn btn-primary">Return to Pets</div>
             </a>
         </div>
     @endif
 
-    @if(Auth::check() && ($pet->user_id !== Auth::user()->id && Auth::user()->hasPower('edit_inventories')))
+    @if (Auth::check() && ($pet->user_id !== Auth::user()->id && Auth::user()->hasPower('edit_inventories')))
         <div class="alert alert-warning">
             You are editing this pet as a staff member.
         </div>
@@ -40,10 +38,10 @@
         <div class="col-md-9">
             <div class="row col-12 world-entry-text">
                 <div class="col-md-4 mb-2">
-                    @if($pet->character)
+                    @if ($pet->character)
                         <h2 class="h5">Attached to {{ $pet->character->fullName }}</h2>
                         <a href="{{ $pet->character->url }}">
-                            <img src="{{ $pet->character->image->thumbnailUrl }}" class="rounded img-thumbnail" alt="Thumbnail for {{ $pet->character->fullName }}"/>
+                            <img src="{{ $pet->character->image->thumbnailUrl }}" class="rounded img-thumbnail" alt="Thumbnail for {{ $pet->character->fullName }}" />
                         </a>
                     @endif
                     @if ($pet->evolution)
@@ -53,7 +51,7 @@
                         </p>
                     @endif
                 </div>
-                @if($pet->pet->hasDrops)
+                @if ($pet->pet->hasDrops)
                     <div class="col-md-8 mb-2">
                         @include('user._pet_drops', ['pet' => $pet, 'drops' => $pet->drops])
                     </div>
@@ -62,11 +60,11 @@
         </div>
     </div>
     <div class="pl-2 pr-2 pb-2">
-        @if($pet->has_image)
+        @if ($pet->has_image)
             <div>
                 <p class="alert alert-info">
                     This pet is displaying custom art!
-                    @if(isset($pet->petArtist) && $pet->petArtist)
+                    @if (isset($pet->petArtist) && $pet->petArtist)
                         <b>Artist:</b> {!! $pet->petArtist !!}
                     @else
                         No credits given.
@@ -75,7 +73,7 @@
 
             </div>
         @endif
-        @if($pet->description)
+        @if ($pet->description)
             <hr>
             <div>
                 <h2 class="h5">Profile</h2>
