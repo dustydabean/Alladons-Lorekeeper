@@ -104,9 +104,9 @@ return [
             ],
             [
                 'name' => 'Pet Grants',
-                'url' => 'admin/grants/pets'
+                'url'  => 'admin/grants/pets',
             ],
-        ]
+        ],
     ],
     'Masterlist' => [
         'power' => 'manage_characters',
@@ -190,9 +190,9 @@ return [
             ],
             [
                 'name' => 'Pets',
-                'url' => 'admin/data/pets'
+                'url'  => 'admin/data/pets',
             ],
-        ]
+        ],
     ],
     'Raffles'    => [
         'power' => 'manage_raffles',

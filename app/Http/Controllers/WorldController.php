@@ -7,14 +7,14 @@ use App\Models\Feature\Feature;
 use App\Models\Feature\FeatureCategory;
 use App\Models\Item\Item;
 use App\Models\Item\ItemCategory;
+use App\Models\Pet\Pet;
+use App\Models\Pet\PetCategory;
 use App\Models\Rarity;
 use App\Models\Shop\Shop;
 use App\Models\Shop\ShopStock;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
 use App\Models\User\User;
-use App\Models\Pet\PetCategory;
-use App\Models\Pet\Pet;
 use Auth;
 use Config;
 use Illuminate\Http\Request;
@@ -382,10 +382,13 @@ class WorldController extends Controller {
             'name'        => $item->displayName,
             'description' => $item->parsed_description,
             'categories'  => $categories->keyBy('id'),
-            'shops'       => Shop::where(function($shops) {
-                                if(Auth::check() && Auth::user()->isStaff) return $shops;
-                                return $shops->where('is_staff', 0);
-                            })->whereIn('id', ShopStock::where('item_id', $item->id)->pluck('shop_id')->unique()->toArray())->orderBy('sort', 'DESC')->get()
+            'shops'       => Shop::where(function ($shops) {
+                if (Auth::check() && Auth::user()->isStaff) {
+                    return $shops;
+                }
+
+                return $shops->where('is_staff', 0);
+            })->whereIn('id', ShopStock::where('item_id', $item->id)->pluck('shop_id')->unique()->toArray())->orderBy('sort', 'DESC')->get(),
         ]);
     }
 
@@ -409,14 +412,15 @@ class WorldController extends Controller {
     /**
      * Shows the pet categories page.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getPetCategories(Request $request)
-    {
+    public function getPetCategories(Request $request) {
         $query = PetCategory::query();
         $name = $request->get('name');
-        if($name) $query->where('name', 'LIKE', '%'.$name.'%');
+        if ($name) {
+            $query->where('name', 'LIKE', '%'.$name.'%');
+        }
+
         return view('world.pet_categories', [
             'categories' => $query->orderBy('sort', 'DESC')->paginate(20)->appends($request->query()),
         ]);
@@ -425,21 +429,20 @@ class WorldController extends Controller {
     /**
      * Shows the pets page.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getPets(Request $request)
-    {
+    public function getPets(Request $request) {
         $query = Pet::with('category');
         $data = $request->only(['pet_category_id', 'name', 'sort']);
-        if(isset($data['pet_category_id']) && $data['pet_category_id'] != 'none')
+        if (isset($data['pet_category_id']) && $data['pet_category_id'] != 'none') {
             $query->where('pet_category_id', $data['pet_category_id']);
-        if(isset($data['name']))
+        }
+        if (isset($data['name'])) {
             $query->where('name', 'LIKE', '%'.$data['name'].'%');
+        }
 
-        if(isset($data['sort']))
-        {
-            switch($data['sort']) {
+        if (isset($data['sort'])) {
+            switch ($data['sort']) {
                 case 'alpha':
                     $query->sortAlphabetical();
                     break;
@@ -456,22 +459,24 @@ class WorldController extends Controller {
                     $query->sortOldest();
                     break;
             }
+        } else {
+            $query->sortCategory();
         }
-        else $query->sortCategory();
 
         return view('world.pets', [
-            'pets' => $query->paginate(20)->appends($request->query()),
-            'categories' => ['none' => 'Any Category'] + PetCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray()
+            'pets'       => $query->paginate(20)->appends($request->query()),
+            'categories' => ['none' => 'Any Category'] + PetCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
         ]);
     }
 
     /**
      * Gets a specific pet page.
      *
+     * @param mixed $id
      */
-    public function getPet($id)
-    {
+    public function getPet($id) {
         $pet = Pet::with('category')->findOrFail($id);
+
         return view('world.pet_page', [
             'pet' => $pet,
         ]);

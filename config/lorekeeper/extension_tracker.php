@@ -1,4 +1,5 @@
 <?php
+
 return [
 
     // FORMAT EXAMPLE.
@@ -13,7 +14,7 @@ return [
     // ],
 
     'shop_features' => [
-        'key' => 'shop_features',
+        'key'      => 'shop_features',
         'wiki_key' => 'Shop_Features',
         'creators' => json_encode([
             'Newt' => 'https://github.com/ne-wt/',

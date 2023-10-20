@@ -12,12 +12,11 @@ use App\Models\Gallery\GalleryCharacter;
 use App\Models\Gallery\GallerySubmission;
 use App\Models\Item\Item;
 use App\Models\Item\ItemCategory;
-use App\Models\User\UserPet;
 use App\Models\Pet\Pet;
 use App\Models\Pet\PetCategory;
-use App\Models\Pet\PetLog;
 use App\Models\User\User;
 use App\Models\User\UserCurrency;
+use App\Models\User\UserPet;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
@@ -227,38 +226,40 @@ class UserController extends Controller {
     /**
      * Shows a user's pets.
      *
-     * @param  string  $name
+     * @param string $name
+     *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getUserPets($name)
-    {
+    public function getUserPets($name) {
         $categories = PetCategory::orderBy('sort', 'DESC')->get();
         $pets = count($categories) ? $this->user->pets()->orderByRaw('FIELD(pet_category_id,'.implode(',', $categories->pluck('id')->toArray()).')')->orderBy('name')->orderBy('updated_at')->get()->groupBy('pet_category_id') : $this->user->pets()->orderBy('name')->orderBy('updated_at')->get()->groupBy('pet_category_id');
+
         return view('user.pets', [
-            'user' => $this->user,
-            'categories' => $categories->keyBy('id'),
-            'pets' => $pets,
+            'user'        => $this->user,
+            'categories'  => $categories->keyBy('id'),
+            'pets'        => $pets,
             'userOptions' => User::where('id', '!=', $this->user->id)->orderBy('name')->pluck('name', 'id')->toArray(),
-            'user' => $this->user,
-            'logs' => $this->user->getPetLogs()
+            'user'        => $this->user,
+            'logs'        => $this->user->getPetLogs(),
         ]);
     }
 
     /**
      * Shows a user's pets.
      *
-     * @param  string  $name
+     * @param string $name
+     * @param mixed  $id
+     *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getUserPet($name, $id)
-    {
+    public function getUserPet($name, $id) {
         $pet = UserPet::findOrFail($id);
 
         return view('user.pet', [
-            'user' => $this->user,
-            'pet' => $pet,
+            'user'        => $this->user,
+            'pet'         => $pet,
             'userOptions' => User::where('id', '!=', $this->user->id)->orderBy('name')->pluck('name', 'id')->toArray(),
-            'logs' => $this->user->getPetLogs()
+            'logs'        => $this->user->getPetLogs(),
         ]);
     }
 
@@ -313,18 +314,19 @@ class UserController extends Controller {
         ]);
     }
 
-     /**
+    /**
      * Shows a user's pet logs.
      *
-     * @param  string  $name
+     * @param string $name
+     *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getUserPetLogs($name)
-    {
+    public function getUserPetLogs($name) {
         $user = $this->user;
+
         return view('user.pet_logs', [
             'user' => $this->user,
-            'logs' => $this->user->getPetLogs(0)
+            'logs' => $this->user->getPetLogs(0),
         ]);
     }
 

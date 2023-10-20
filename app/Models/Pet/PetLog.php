@@ -2,20 +2,18 @@
 
 namespace App\Models\Pet;
 
-use Config;
 use App\Models\Model;
 
-class PetLog extends Model
-{
+class PetLog extends Model {
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'sender_id', 'recipient_id', 
+        'sender_id', 'recipient_id',
         'log', 'log_type', 'data',
-        'pet_id', 'quantity', 'stack_id'
+        'pet_id', 'quantity', 'stack_id',
     ];
 
     /**
@@ -33,7 +31,7 @@ class PetLog extends Model
     public $timestamps = true;
 
     /**********************************************************************************************
-    
+
         RELATIONS
 
     **********************************************************************************************/
@@ -41,24 +39,21 @@ class PetLog extends Model
     /**
      * Get the user who initiated the logged action.
      */
-    public function sender() 
-    {
+    public function sender() {
         return $this->belongsTo('App\Models\User\User', 'sender_id');
     }
 
     /**
      * Get the user who received the logged action.
      */
-    public function recipient() 
-    {
+    public function recipient() {
         return $this->belongsTo('App\Models\User\User', 'recipient_id');
     }
 
     /**
      * Get the pet that is the target of the action.
      */
-    public function pet() 
-    {
+    public function pet() {
         return $this->belongsTo('App\Models\Pet\Pet');
     }
 }

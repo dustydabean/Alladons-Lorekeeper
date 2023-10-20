@@ -333,27 +333,27 @@ return [
     ],
     // PET_REMOVAL
     241 => [
-        'name' => 'Pet Removal',
+        'name'    => 'Pet Removal',
         'message' => '{pet_name} (×{pet_quantity}) was removed from your inventory by <a href="{sender_url}">{sender_name}</a>. (<a href="{url}">View Inventory</a>)',
-        'url' => 'pets'
+        'url'     => 'pets',
     ],
     // PET_TRANSFER
     242 => [
-        'name' => 'Pet Transfer',
+        'name'    => 'Pet Transfer',
         'message' => 'You have received {pet_name} (×{pet_quantity}) from <a href="{sender_url}">{sender_name}</a>. (<a href="{url}">View Inventory</a>)',
-        'url' => 'pets'
+        'url'     => 'pets',
     ],
     // FORCED_PET_TRANSFER
     243 => [
-        'name' => 'Forced Pet Transfer',
+        'name'    => 'Forced Pet Transfer',
         'message' => '{pet_name} (×{pet_quantity}) was transferred out of your inventory by <a href="{sender_url}">{sender_name}</a>. (<a href="{url}">View Inventory</a>)',
-        'url' => 'pets'
+        'url'     => 'pets',
     ],
     // PET_GRANT
     244 => [
-        'name' => 'Pet Grant',
+        'name'    => 'Pet Grant',
         'message' => 'You have received a staff grant of {pet_name} (×{pet_quantity}) from <a href="{sender_url}">{sender_name}</a>. (<a href="{url}">View Inventory</a>)',
-        'url' => 'pets'
+        'url'     => 'pets',
     ],
     // CHARACTER_ITEM_GRANT
     501 => [

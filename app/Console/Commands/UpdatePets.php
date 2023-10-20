@@ -2,13 +2,11 @@
 
 namespace App\Console\Commands;
 
+use File;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Storage;
-use File;
 
-class UpdatePets extends Command
-{
+class UpdatePets extends Command {
     /**
      * The name and signature of the console command.
      *
@@ -25,11 +23,8 @@ class UpdatePets extends Command
 
     /**
      * Create a new command instance.
-     *
-     * @return void
      */
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
     }
 
@@ -38,28 +33,26 @@ class UpdatePets extends Command
      *
      * @return mixed
      */
-    public function handle()
-    {
+    public function handle() {
         // add new col
         // check if col exists
         if (Schema::hasTable('pet_variant_drop_data')) {
             $this->info('Already updated tables, updating data.');
-        }
-        else {
-            Schema::table('pet_drop_data', function($table) {
+        } else {
+            Schema::table('pet_drop_data', function ($table) {
                 $table->string('name')->default('drop');
                 $table->integer('frequency');
                 $table->string('interval')->default('Hour');
                 $table->integer('cap')->default(null)->nullable();
                 $table->boolean('override')->default(false);
             });
-            Schema::table('pet_categories', function($table) {
+            Schema::table('pet_categories', function ($table) {
                 $table->integer('limit')->default(null)->nullable();
             });
-            Schema::table('pets', function($table) {
+            Schema::table('pets', function ($table) {
                 $table->integer('limit')->default(null)->nullable();
             });
-            Schema::create('pet_variant_drop_data', function($table) {
+            Schema::create('pet_variant_drop_data', function ($table) {
                 $table->increments('id');
                 $table->integer('variant_id')->unsigned();
                 $table->json('data')->default(null)->nullable();
@@ -69,52 +62,51 @@ class UpdatePets extends Command
 
         // convert old data
         $drop_data = \App\Models\Pet\PetDropData::all();
-        foreach($drop_data as $drop) {
+        foreach ($drop_data as $drop) {
             // check if 'assets' offset exists on $drop->data, if it does continue
             if (isset($drop->data['assets'])) {
-                $this->line('Skipping drop data for pet: ' . $drop->pet->name . '...');
+                $this->line('Skipping drop data for pet: '.$drop->pet->name.'...');
             } else {
-                $this->line('Converting drop data for pet: ' . $drop->pet->name . '...');
+                $this->line('Converting drop data for pet: '.$drop->pet->name.'...');
                 $drop->name = $drop->data['drop_name'];
                 $drop->frequency = $drop->data['frequency']['frequency'];
                 $drop->interval = $drop->data['frequency']['interval'];
                 $drop->cap = $drop->data['cap'];
                 $this->convertItems($drop, $drop->data['items']);
-                $this->info('Converted drop data for pet: ' . $drop->pet->name . '.');
+                $this->info('Converted drop data for pet: '.$drop->pet->name.'.');
             }
         }
 
         // update variant images to use ID instead of name
         $variants = \App\Models\Pet\PetVariant::all();
-        foreach($variants as $variant) {
-            $this->line('Updating variant image for variant: ' . $variant->variant_name . '...');
+        foreach ($variants as $variant) {
+            $this->line('Updating variant image for variant: '.$variant->variant_name.'...');
             // rename image
-            $old_image = $variant->imageDirectory . '/' . $variant->pet_id .'-'. $variant->variant_name .'-image.png';
+            $old_image = $variant->imageDirectory.'/'.$variant->pet_id.'-'.$variant->variant_name.'-image.png';
             // rename
-            if(File::exists(public_path($old_image))) {
-                $new_image = $variant->imageDirectory . '/' . $variant->pet_id .'-variant-'. $variant->id .'-image.png';
+            if (File::exists(public_path($old_image))) {
+                $new_image = $variant->imageDirectory.'/'.$variant->pet_id.'-variant-'.$variant->id.'-image.png';
                 File::move(public_path($old_image), public_path($new_image));
             }
         }
     }
 
     private function convertItems($drop, $data) {
-        foreach($data as $key => $group) {
-            $this->line('Converting group: ' . $key . '...');
+        foreach ($data as $key => $group) {
+            $this->line('Converting group: '.$key.'...');
             // if it's the base pet, put it on the data table
-            if($key == "pet") {
+            if ($key == 'pet') {
                 $assets = [];
-                foreach($group as $name => $item) {
+                foreach ($group as $name => $item) {
                     $assets[strtolower($name)]['items'][$item['item_id']] = [
                         'min_quantity' => $item['min'],
                         'max_quantity' => $item['max'],
                     ];
                 }
                 $drop->data = ['assets' => $assets];
-            }
-            else {
+            } else {
                 $assets = [];
-                foreach($group as $name => $item) {
+                foreach ($group as $name => $item) {
                     $assets[strtolower($name)]['items'][$item['item_id']] = [
                         'min_quantity' => $item['min'],
                         'max_quantity' => $item['max'],
@@ -123,7 +115,7 @@ class UpdatePets extends Command
                 // if not "pet" we create a PetVariantDropData entry with the data
                 \App\Models\Pet\PetVariantDropData::create([
                     'variant_id' => $key,
-                    'data' => json_encode(['assets' => $assets]),
+                    'data'       => json_encode(['assets' => $assets]),
                 ]);
             }
         }

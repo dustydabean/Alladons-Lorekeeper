@@ -106,8 +106,11 @@ function getAssetModelString($type, $namespaced = true) {
             break;
 
         case 'pets': case 'pet':
-            if($namespaced) return '\App\Models\Pet\Pet';
-            else return 'Pet';
+            if ($namespaced) {
+                return '\App\Models\Pet\Pet';
+            } else {
+                return 'Pet';
+            }
             break;
 
         case 'raffle_tickets':
@@ -239,15 +242,20 @@ function getDataReadyAssets($array, $isCharacter = false) {
  * Adds an asset to the given array.
  * If the asset already exists, it adds to the quantity.
  *
- * @param  array  $array
- * @param  mixed  $asset
- * @param  int    $quantity
+ * @param array $array
+ * @param mixed $asset
+ * @param mixed $min_quantity
+ * @param mixed $max_quantity
  */
-function addDropAsset(&$array, $asset, $min_quantity = 1, $max_quantity = 1)
-{
-    if(!$asset) return;
-    if(isset($array[$asset->assetType][$asset->id])) return;
-    else $array[$asset->assetType][$asset->id] = ['asset' => $asset, 'min_quantity' => $min_quantity, 'max_quantity' => $max_quantity];
+function addDropAsset(&$array, $asset, $min_quantity = 1, $max_quantity = 1) {
+    if (!$asset) {
+        return;
+    }
+    if (isset($array[$asset->assetType][$asset->id])) {
+        return;
+    } else {
+        $array[$asset->assetType][$asset->id] = ['asset' => $asset, 'min_quantity' => $min_quantity, 'max_quantity' => $max_quantity];
+    }
 }
 
 /**
@@ -255,24 +263,22 @@ function addDropAsset(&$array, $asset, $min_quantity = 1, $max_quantity = 1)
  * where each asset is listed in [id => quantity] format.
  * json_encode this and store in the data attribute.
  *
- * @param  array  $array
- * @param  bool   $isCharacter
+ * @param array $array
+ *
  * @return array
  */
-function getDataReadyDropAssets($array)
-{
+function getDataReadyDropAssets($array) {
     $result = [];
-    foreach($array as $group => $types)
-    {
+    foreach ($array as $group => $types) {
         $result[$group] = [];
-        foreach($types as $type => $key)
-        {
-            if($type && !isset($result[$group][$type])) $result[$group][$type] = [];
-            foreach($key as $assetId => $assetData)
-            {
+        foreach ($types as $type => $key) {
+            if ($type && !isset($result[$group][$type])) {
+                $result[$group][$type] = [];
+            }
+            foreach ($key as $assetId => $assetData) {
                 $result[$group][$type][$assetId] = [
                     'min_quantity' => $assetData['min_quantity'],
-                    'max_quantity' => $assetData['max_quantity']
+                    'max_quantity' => $assetData['max_quantity'],
                 ];
             }
             if (empty($result[$group][$type])) {
@@ -280,6 +286,7 @@ function getDataReadyDropAssets($array)
             }
         }
     }
+
     return $result;
 }
 
@@ -299,11 +306,11 @@ function parseDropAssetData($array) {
         foreach ($types as $type => $contents) {
             $model = getAssetModelString($type);
             if ($model) {
-                foreach($contents as $id => $data) {
+                foreach ($contents as $id => $data) {
                     $result[$group][$type][$id] = [
-                        'asset' => $model::find($id),
+                        'asset'        => $model::find($id),
                         'min_quantity' => $data['min_quantity'],
-                        'max_quantity' => $data['max_quantity']
+                        'max_quantity' => $data['max_quantity'],
                     ];
                 }
             }
@@ -377,10 +384,12 @@ function fillUserAssets($assets, $sender, $recipient, $logType, $data) {
                     return false;
                 }
             }
-        } elseif($key == 'pets' && count($contents)) {
+        } elseif ($key == 'pets' && count($contents)) {
             $service = new \App\Services\PetManager;
-            foreach($contents as $asset) {
-                if(!$service->creditPet($sender, $recipient, $logType, $data, $asset['asset'], $asset['quantity'])) return false;
+            foreach ($contents as $asset) {
+                if (!$service->creditPet($sender, $recipient, $logType, $data, $asset['asset'], $asset['quantity'])) {
+                    return false;
+                }
             }
         } elseif ($key == 'raffle_tickets' && count($contents)) {
             $service = new \App\Services\RaffleManager;
@@ -461,17 +470,20 @@ function fillCharacterAssets($assets, $sender, $recipient, $logType, $data, $sub
 /**
  * Creates a rewards string from an asset array.
  *
- * @param  array  $array
+ * @param array $array
+ *
  * @return string
  */
-function createRewardsString($array)
-{
+function createRewardsString($array) {
     $string = [];
-    foreach($array as $key => $contents)
-    {
-        foreach($contents as $asset)
-            $string[] = $asset['asset']->displayName . ' x'.$asset['quantity'];
+    foreach ($array as $key => $contents) {
+        foreach ($contents as $asset) {
+            $string[] = $asset['asset']->displayName.' x'.$asset['quantity'];
+        }
     }
-    if (!count ($string)) return;
-    return implode(', ', array_slice($string, 0, count($string) - 1)) . (count($string) > 2 ? ', and ' : ' and ') . end($string);
+    if (!count($string)) {
+        return;
+    }
+
+    return implode(', ', array_slice($string, 0, count($string) - 1)).(count($string) > 2 ? ', and ' : ' and ').end($string);
 }

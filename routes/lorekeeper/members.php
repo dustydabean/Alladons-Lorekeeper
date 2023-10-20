@@ -59,7 +59,7 @@ Route::group(['prefix' => 'inventory', 'namespace' => 'Users'], function () {
     Route::get('selector', 'InventoryController@getSelector');
 });
 
-Route::group(['prefix' => 'pets', 'namespace' => 'Users'], function() {
+Route::group(['prefix' => 'pets', 'namespace' => 'Users'], function () {
     Route::get('/', 'PetController@getIndex');
     Route::post('transfer/{id}', 'PetController@postTransfer');
     Route::post('delete/{id}', 'PetController@postDelete');

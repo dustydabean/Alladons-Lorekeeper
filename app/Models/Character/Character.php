@@ -172,11 +172,10 @@ class Character extends Model {
         return $this->belongsTo('App\Models\Rarity', 'rarity_id');
     }
 
-    public function pets()
-    {
+    public function pets() {
         return $this->hasMany('App\Models\User\UserPet', 'chara_id');
     }
-    
+
     /**
      * Get the character's associated gallery submissions.
      */

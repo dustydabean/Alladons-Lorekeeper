@@ -1,18 +1,14 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-class AddPetDropTables extends Migration
-{
+class AddPetDropTables extends Migration {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
-    {
+    public function up() {
         //
         Schema::create('pet_drop_data', function (Blueprint $table) {
             $table->engine = 'InnoDB';
@@ -42,17 +38,13 @@ class AddPetDropTables extends Migration
 
             // Timestamp at which next drop becomes available
             $table->timestamp('next_day')->nullable()->default(null);
-
         });
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
-    {
+    public function down() {
         //
         Schema::dropIfExists('pet_drop_data');
         Schema::dropIfExists('pet_drops');

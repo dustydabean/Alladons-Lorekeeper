@@ -5,23 +5,15 @@ namespace App\Models\Pet;
 use App\Models\Model;
 use File;
 
-class PetEvolution extends Model
-{
+class PetEvolution extends Model {
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'pet_id', 'evolution_name', 'evolution_stage'
+        'pet_id', 'evolution_name', 'evolution_stage',
     ];
-
-    /**
-     * Whether the model contains timestamps to be saved and updated.
-     *
-     * @var string
-     */
-    public $timestamps = false;
 
     /**
      * The table associated with the model.
@@ -29,6 +21,13 @@ class PetEvolution extends Model
      * @var string
      */
     protected $table = 'pet_evolutions';
+
+    /**
+     * Whether the model contains timestamps to be saved and updated.
+     *
+     * @var string
+     */
+    public $timestamps = false;
 
     /**********************************************************************************************
 
@@ -39,8 +38,7 @@ class PetEvolution extends Model
     /**
      * Get the pet associated with this pet stack.
      */
-    public function pet()
-    {
+    public function pet() {
         return $this->belongsTo('App\Models\Pet\Pet');
     }
 
@@ -55,8 +53,7 @@ class PetEvolution extends Model
      *
      * @return string
      */
-    public function getDisplayNameAttribute()
-    {
+    public function getDisplayNameAttribute() {
         return '<a href="'.$this->pet->idUrl.'" class="display-item">'.$this->name.' '.$this->pet->name.'</a>';
     }
 
@@ -65,8 +62,7 @@ class PetEvolution extends Model
      *
      * @return string
      */
-    public function getImageDirectoryAttribute()
-    {
+    public function getImageDirectoryAttribute() {
         return 'images/data/pets/evolutions';
     }
 
@@ -75,9 +71,8 @@ class PetEvolution extends Model
      *
      * @return string
      */
-    public function getImageFileNameAttribute()
-    {
-        return $this->pet_id .'-evolution-'. $this->id .'-image.png';
+    public function getImageFileNameAttribute() {
+        return $this->pet_id.'-evolution-'.$this->id.'-image.png';
     }
 
     /**
@@ -85,8 +80,7 @@ class PetEvolution extends Model
      *
      * @return string
      */
-    public function getImagePathAttribute()
-    {
+    public function getImagePathAttribute() {
         return public_path($this->imageDirectory);
     }
 
@@ -95,9 +89,8 @@ class PetEvolution extends Model
      *
      * @return string
      */
-    public function getImageUrlAttribute()
-    {
-        return asset($this->imageDirectory . '/' . $this->imageFileName);
+    public function getImageUrlAttribute() {
+        return asset($this->imageDirectory.'/'.$this->imageFileName);
     }
 
     /**********************************************************************************************
@@ -111,19 +104,19 @@ class PetEvolution extends Model
      *
      * @return string
      */
-    public function getVariantImageDirectoryAttribute()
-    {
+    public function getVariantImageDirectoryAttribute() {
         return 'images/data/pets/evolutions';
     }
 
     /**
      * Gets the file name of the model's variant image.
      *
+     * @param mixed $id
+     *
      * @return string
      */
-    public function variantImageFileName($id)
-    {
-        return $this->pet_id .'-evolution-'. $this->id .'-variant-'. $id .'-image.png';
+    public function variantImageFileName($id) {
+        return $this->pet_id.'-evolution-'.$this->id.'-variant-'.$id.'-image.png';
     }
 
     /**
@@ -131,26 +124,27 @@ class PetEvolution extends Model
      *
      * @return string
      */
-    public function getVariantImagePathAttribute()
-    {
+    public function getVariantImagePathAttribute() {
         return public_path($this->variantImageDirectory);
     }
 
     /**
      * Gets the URL of the model's variant image.
      *
+     * @param mixed $id
+     *
      * @return string
      */
-    public function variantImageUrl($id)
-    {
-        return asset($this->variantImageDirectory . '/' . $this->variantImageFileName($id));
+    public function variantImageUrl($id) {
+        return asset($this->variantImageDirectory.'/'.$this->variantImageFileName($id));
     }
 
     /**
-     * checks if variant image file exists
+     * checks if variant image file exists.
+     *
+     * @param mixed $id
      */
-    public function variantImageExists($id)
-    {
-        return File::exists($this->variantImagePath . '/' . $this->variantImageFileName($id));
+    public function variantImageExists($id) {
+        return File::exists($this->variantImagePath.'/'.$this->variantImageFileName($id));
     }
 }

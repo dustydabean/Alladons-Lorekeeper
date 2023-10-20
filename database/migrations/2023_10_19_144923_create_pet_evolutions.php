@@ -4,15 +4,11 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePetEvolutions extends Migration
-{
+class CreatePetEvolutions extends Migration {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
-    {
+    public function up() {
         Schema::create('pet_evolutions', function (Blueprint $table) {
             $table->id();
             $table->integer('pet_id');
@@ -28,11 +24,8 @@ class CreatePetEvolutions extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
-    {
+    public function down() {
         Schema::dropIfExists('pet_evolutions');
         Schema::table('user_pets', function (Blueprint $table) {
             $table->dropColumn('evolution_id');

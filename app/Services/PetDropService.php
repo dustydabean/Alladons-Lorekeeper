@@ -1,23 +1,19 @@
-<?php namespace App\Services;
+<?php
 
-use App\Services\Service;
+namespace App\Services;
 
-use DB;
-use Config;
-use Carbon\Carbon;
-use Illuminate\Support\Arr;
-use App\Models\Item\Item;
 use App\Models\Currency\Currency;
+use App\Models\Item\Item;
 use App\Models\Loot\LootTable;
 use App\Models\Pet\Pet;
-use App\Models\Pet\PetVariant;
-use App\Models\Pet\PetDropData;
 use App\Models\Pet\PetDrop;
+use App\Models\Pet\PetDropData;
 use App\Models\Pet\PetVariantDropData;
 use App\Models\User\UserPet;
+use Carbon\Carbon;
+use DB;
 
-class PetDropService extends Service
-{
+class PetDropService extends Service {
     /*
     |--------------------------------------------------------------------------
     | Pet Drop Service
@@ -30,49 +26,54 @@ class PetDropService extends Service
     /**
      * Creates pet drop data.
      *
-     * @param  array  $data
-     * @return bool|\App\Models\Pet\PetDropData
+     * @param array $data
+     *
+     * @return \App\Models\Pet\PetDropData|bool
      */
-    public function createPetDrop($data)
-    {
+    public function createPetDrop($data) {
         DB::beginTransaction();
 
         try {
             // Check to see if pet exists
             $pet = Pet::find($data['pet_id']);
-            if(!$pet) throw new \Exception('The selected pet is invalid.');
+            if (!$pet) {
+                throw new \Exception('The selected pet is invalid.');
+            }
 
             // Collect parameter data and encode it
             $paramData = [];
-            foreach($data['label'] as $key => $param) $paramData[$param] = $data['weight'][$key];
+            foreach ($data['label'] as $key => $param) {
+                $paramData[$param] = $data['weight'][$key];
+            }
 
             $drop = PetDropData::create([
-                'pet_id' => $data['pet_id'],
+                'pet_id'     => $data['pet_id'],
                 'parameters' => json_encode($paramData),
-                'frequency' => $data['drop_frequency'],
-                'interval' => $data['drop_interval'],
-                'is_active' => $data['is_active'] ?? 0,
-                'cap' => $data['drop_cap'] ?? 0,
-                'name' => $data['drop_name'] ?? 'drop',
-                'override' => $data['override'] ?? 0
+                'frequency'  => $data['drop_frequency'],
+                'interval'   => $data['drop_interval'],
+                'is_active'  => $data['is_active'] ?? 0,
+                'cap'        => $data['drop_cap'] ?? 0,
+                'name'       => $data['drop_name'] ?? 'drop',
+                'override'   => $data['override'] ?? 0,
             ]);
 
             return $this->commitReturn($drop);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
+
         return $this->rollbackReturn(false);
     }
 
     /**
      * Updates pet drop data.
      *
-     * @param  \App\Models\Pet\PetDropData  $drop
-     * @param  array                                    $data
-     * @return bool|\App\Models\Pet\PetDropData
+     * @param \App\Models\Pet\PetDropData $drop
+     * @param array                       $data
+     *
+     * @return \App\Models\Pet\PetDropData|bool
      */
-    public function updatePetDrop($drop, $data)
-    {
+    public function updatePetDrop($drop, $data) {
         DB::beginTransaction();
 
         try {
@@ -85,39 +86,42 @@ class PetDropService extends Service
 
             // Collect parameter data and encode it
             $paramData = [];
-            foreach($data['label'] as $key => $param) $paramData[$param] = $data['weight'][$key];
+            foreach ($data['label'] as $key => $param) {
+                $paramData[$param] = $data['weight'][$key];
+            }
 
-            $data['rewardable_type'] = $data['rewardable_type'] ?? null;
-            $data['rewardable_id'] = $data['rewardable_id'] ?? null;
-            $data['min_quantity'] = $data['min_quantity'] ?? null;
-            $data['max_quantity'] = $data['max_quantity'] ?? null;
+            $data['rewardable_type'] ??= null;
+            $data['rewardable_id'] ??= null;
+            $data['min_quantity'] ??= null;
+            $data['max_quantity'] ??= null;
 
             $drop->update([
                 'parameters' => json_encode($paramData),
-                'frequency' => $data['drop_frequency'],
-                'interval' => $data['drop_interval'],
-                'is_active' => $data['is_active'] ?? 0,
-                'name' => $data['drop_name'] ?? 'drop',
-                'cap' => $data['cap'] ?? null,
-                'data' => $this->populateAssetData($data['rewardable_type'], $data['rewardable_id'], $data['min_quantity'], $data['max_quantity']),
-                'override' => $data['override'] ?? 0
+                'frequency'  => $data['drop_frequency'],
+                'interval'   => $data['drop_interval'],
+                'is_active'  => $data['is_active'] ?? 0,
+                'name'       => $data['drop_name'] ?? 'drop',
+                'cap'        => $data['cap'] ?? null,
+                'data'       => $this->populateAssetData($data['rewardable_type'], $data['rewardable_id'], $data['min_quantity'], $data['max_quantity']),
+                'override'   => $data['override'] ?? 0,
             ]);
 
             return $this->commitReturn($drop);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
+
         return $this->rollbackReturn(false);
     }
 
     /**
      * Deletes pet drop data.
      *
-     * @param  \App\Models\Pet\PetDropData  $drop
+     * @param \App\Models\Pet\PetDropData $drop
+     *
      * @return bool
      */
-    public function deletePetDrop($drop)
-    {
+    public function deletePetDrop($drop) {
         DB::beginTransaction();
 
         try {
@@ -126,8 +130,8 @@ class PetDropService extends Service
             $variants = $drop->pet->variants()->has('dropData')->get();
 
             // Delete variant drop data
-            if($variants->count()) {
-                foreach($variants as $variant) {
+            if ($variants->count()) {
+                foreach ($variants as $variant) {
                     $variant->dropData()->delete();
                 }
             }
@@ -135,12 +139,12 @@ class PetDropService extends Service
             $drop->delete();
 
             return $this->commitReturn(true);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
+
         return $this->rollbackReturn(false);
     }
-
 
     /**********************************************************************************************
 
@@ -149,20 +153,23 @@ class PetDropService extends Service
     **********************************************************************************************/
 
     /**
-     * Creates a pet variant drop
+     * Creates a pet variant drop.
+     *
+     * @param mixed $data
      */
-    public function createPetVariantDrop($data)
-    {
+    public function createPetVariantDrop($data) {
         DB::beginTransaction();
 
         try {
-            $data['rewardable_type'] = $data['rewardable_type'] ?? null;
-            $data['rewardable_id'] = $data['rewardable_id'] ?? null;
-            $data['min_quantity'] = $data['min_quantity'] ?? null;
-            $data['max_quantity'] = $data['max_quantity'] ?? null;
+            $data['rewardable_type'] ??= null;
+            $data['rewardable_id'] ??= null;
+            $data['min_quantity'] ??= null;
+            $data['max_quantity'] ??= null;
 
             // check if drop data with this variant id exists
-            if(PetVariantDropData::where('variant_id', $data['variant_id'])->exists()) throw new \Exception('This pet variant already has drop data. Consider editing the existing data instead.');
+            if (PetVariantDropData::where('variant_id', $data['variant_id'])->exists()) {
+                throw new \Exception('This pet variant already has drop data. Consider editing the existing data instead.');
+            }
 
             PetVariantDropData::create([
                 'variant_id' => $data['variant_id'],
@@ -170,52 +177,56 @@ class PetDropService extends Service
             ]);
 
             return $this->commitReturn(true);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
+
         return $this->rollbackReturn(false);
     }
 
     /**
-     * Edits a pet variant drop
+     * Edits a pet variant drop.
+     *
+     * @param mixed $drop
+     * @param mixed $data
      */
-    public function editPetVariantDrop($drop, $data)
-    {
+    public function editPetVariantDrop($drop, $data) {
         DB::beginTransaction();
 
         try {
-
-            $data['rewardable_type'] = $data['rewardable_type'] ?? null;
-            $data['rewardable_id'] = $data['rewardable_id'] ?? null;
-            $data['min_quantity'] = $data['min_quantity'] ?? null;
-            $data['max_quantity'] = $data['max_quantity'] ?? null;
+            $data['rewardable_type'] ??= null;
+            $data['rewardable_id'] ??= null;
+            $data['min_quantity'] ??= null;
+            $data['max_quantity'] ??= null;
 
             $drop->update([
                 'data' => $this->populateAssetData($data['rewardable_type'], $data['rewardable_id'], $data['min_quantity'], $data['max_quantity']),
             ]);
 
             return $this->commitReturn(true);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
+
         return $this->rollbackReturn(false);
     }
 
     /**
-     * Deletes a pet variant drop
+     * Deletes a pet variant drop.
+     *
+     * @param mixed $drop
      */
-    public function deletePetVariantDrop($drop)
-    {
+    public function deletePetVariantDrop($drop) {
         DB::beginTransaction();
 
         try {
-
             $drop->delete();
 
             return $this->commitReturn(true);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
+
         return $this->rollbackReturn(false);
     }
 
@@ -231,24 +242,27 @@ class PetDropService extends Service
     /**
      * Claim pet drops and credit user the items from the drop.
      *
-     * @param  \App\Models\User\UserPet             $pet
+     * @param mixed $flash
+     *
      * @return bool
      */
-    public function claimPetDrops(UserPet $pet, $flash = true)
-    {
+    public function claimPetDrops(UserPet $pet, $flash = true) {
         DB::beginTransaction();
 
         try {
-
-            if(!$pet->drops->drops_available) throw new \Exception('This pet doesn\'t have any available drops.');
-            if(!$pet->drops->dropData->isActive) throw new \Exception('Drops are not currently active for this pet.');
+            if (!$pet->drops->drops_available) {
+                throw new \Exception('This pet doesn\'t have any available drops.');
+            }
+            if (!$pet->drops->dropData->isActive) {
+                throw new \Exception('Drops are not currently active for this pet.');
+            }
 
             $rewards = createAssetsArray();
             // these are handled like prompt rewards
             for ($i = 0; $i < $pet->drops->drops_available; $i++) {
-                foreach($pet->availableDrops as $drops) {
-                    if(isset($drops->rewards(false)[strtolower($pet->drops->parameters)])) {
-                        foreach($drops->rewards(false)[strtolower($pet->drops->parameters)] as $data) {
+                foreach ($pet->availableDrops as $drops) {
+                    if (isset($drops->rewards(false)[strtolower($pet->drops->parameters)])) {
+                        foreach ($drops->rewards(false)[strtolower($pet->drops->parameters)] as $data) {
                             // get object
                             switch ($data->rewardable_type) {
                                 case 'Item':
@@ -274,31 +288,41 @@ class PetDropService extends Service
                     }
                 }
             }
-            if(!$final_rewards = fillUserAssets($rewards, null, $pet->user, 'Pet Drop', [
-                'data' => 'Collected from '.($pet->pet_name ? $pet->pet_name.' the '.$pet->pet->name : $pet->pet->name ),
-                'notes' => 'Collected ' . format_date(Carbon::now())
-            ])) throw new \Exception("Failed to distribute drops.");
+            if (!$final_rewards = fillUserAssets($rewards, null, $pet->user, 'Pet Drop', [
+                'data'  => 'Collected from '.($pet->pet_name ? $pet->pet_name.' the '.$pet->pet->name : $pet->pet->name),
+                'notes' => 'Collected '.format_date(Carbon::now()),
+            ])) {
+                throw new \Exception('Failed to distribute drops.');
+            }
 
-            if ($flash) flash("You received: " . createRewardsString($final_rewards))->info();
+            if ($flash) {
+                flash('You received: '.createRewardsString($final_rewards))->info();
+            }
 
             // Clear the number of available drops
             $pet->drops->update(['drops_available' => 0]);
 
             return $this->commitReturn($rewards);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
+
         return $this->rollbackReturn(false);
     }
 
     /**
      * Creates pet drop and pet variant drop data.
+     *
+     * @param mixed $rewardable_type
+     * @param mixed $rewardable_id
+     * @param mixed $min_quantity
+     * @param mixed $max_quantity
      */
     private function populateAssetData($rewardable_type, $rewardable_id, $min_quantity, $max_quantity) {
         $assets = [];
         if (isset($rewardable_type) && $rewardable_type) {
             foreach ($rewardable_type as $group => $types) {
-                foreach($types as $key=>$type) {
+                foreach ($types as $key=>$type) {
                     if (!isset($assets[$group])) {
                         $assets[$group] = createAssetsArray();
                     }
@@ -324,7 +348,7 @@ class PetDropService extends Service
                 }
             }
         }
+
         return ['assets' => getDataReadyDropAssets($assets)];
     }
-
 }

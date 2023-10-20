@@ -161,7 +161,7 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::get('items/tag/{id}', 'ItemController@getAddItemTag');
     Route::post('items/tag/{id}', 'ItemController@postAddItemTag');
 
-    # PETS
+    // PETS
     Route::get('pet-categories', 'PetController@getIndex');
     Route::get('pet-categories/create', 'PetController@getCreatePetCategory');
     Route::get('pet-categories/edit/{id}', 'PetController@getEditPetCategory');
@@ -208,7 +208,7 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::get('pets/drops/edit/{pet_id}/variants/delete/{variant_id}', 'PetController@getDeleteVariantDrop');
     Route::post('pets/drops/edit/{pet_id}/variants/delete/{variant_id}', 'PetController@postDeleteVariantDrop');
 
-    # SHOPS
+    // SHOPS
     Route::get('shops', 'ShopController@getIndex');
     Route::get('shops/create', 'ShopController@getCreateShop');
     Route::get('shops/edit/{id}', 'ShopController@getEditShop');
@@ -218,7 +218,7 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('shops/delete/{id}', 'ShopController@postDeleteShop');
     Route::post('shops/sort', 'ShopController@postSortShop');
     Route::post('shops/restrictions/{id}', 'ShopController@postRestrictShop');
-    # stock
+    // stock
     // create
     Route::get('shops/stock/{id}', 'ShopController@getCreateShopStock');
     Route::post('shops/stock/{id}', 'ShopController@postCreateShopStock');
@@ -353,8 +353,8 @@ Route::group(['prefix' => 'grants', 'namespace' => 'Users', 'middleware' => 'pow
     Route::get('item-search', 'GrantController@getItemSearch');
 });
 
-# PETS
-Route::group(['prefix' => 'pets', 'middleware' => 'power:edit_inventories'], function() {
+// PETS
+Route::group(['prefix' => 'pets', 'middleware' => 'power:edit_inventories'], function () {
     Route::post('pet/{id}', 'Data\PetController@postEditPetDrop');
 });
 

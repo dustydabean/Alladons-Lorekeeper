@@ -4,15 +4,11 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddCustomPetTables extends Migration
-{
+class AddCustomPetTables extends Migration {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
-    {
+    public function up() {
         Schema::table('user_pets', function (Blueprint $table) {
             $table->boolean('has_image')->default(0);
             $table->text('description')->nullable()->default(null);
@@ -23,11 +19,8 @@ class AddCustomPetTables extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
-    {
+    public function down() {
         Schema::table('user_pets', function (Blueprint $table) {
             $table->dropColumn('has_image');
             $table->dropColumn('description');

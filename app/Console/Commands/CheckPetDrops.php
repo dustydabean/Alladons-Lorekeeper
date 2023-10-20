@@ -2,15 +2,11 @@
 
 namespace App\Console\Commands;
 
-use DB;
-use Carbon\Carbon;
 use App\Models\Pet\PetDrop;
-
+use Carbon\Carbon;
 use Illuminate\Console\Command;
-use App\Services\NewsService;
 
-class CheckPetDrops extends Command
-{
+class CheckPetDrops extends Command {
     /**
      * The name and signature of the console command.
      *
@@ -27,11 +23,8 @@ class CheckPetDrops extends Command
 
     /**
      * Create a new command instance.
-     *
-     * @return void
      */
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
     }
 
@@ -40,18 +33,17 @@ class CheckPetDrops extends Command
      *
      * @return mixed
      */
-    public function handle()
-    {
+    public function handle() {
         //
         $updateDrops = PetDrop::requiresUpdate()->get();
         foreach ($updateDrops as $drop) {
-            if((!isset($drop->dropData->cap) || $drop->dropData->cap == 0) || $drop->drops_available < $drop->dropData->cap) {
+            if ((!isset($drop->dropData->cap) || $drop->dropData->cap == 0) || $drop->drops_available < $drop->dropData->cap) {
                 $drop->update([
                     'drops_available' => $drop->drops_available += 1,
-                    'next_day' => Carbon::now()->add(
+                    'next_day'        => Carbon::now()->add(
                         $drop->dropData->frequency,
                         $drop->dropData->interval,
-                    )->startOf($drop->dropData->interval)
+                    )->startOf($drop->dropData->interval),
                 ]);
             }
         }
