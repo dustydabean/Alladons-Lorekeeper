@@ -2,11 +2,9 @@
 
 namespace App\Models\Shop;
 
-use Config;
 use App\Models\Model;
 
-class Shop extends Model
-{
+class Shop extends Model {
     /**
      * The attributes that are mass assignable.
      *
@@ -25,13 +23,11 @@ class Shop extends Model
 
     /**
      * Validation rules for creation.
-     *
-     * @var array
      */
     public static $createRules = [
-        'name' => 'required|unique:item_categories|between:3,100',
+        'name'        => 'required|unique:item_categories|between:3,100',
         'description' => 'nullable',
-        'image' => 'mimes:png',
+        'image'       => 'mimes:png',
     ];
 
     /**
@@ -40,9 +36,9 @@ class Shop extends Model
      * @var array
      */
     public static $updateRules = [
-        'name' => 'required|between:3,100',
+        'name'        => 'required|between:3,100',
         'description' => 'nullable',
-        'image' => 'mimes:png',
+        'image'       => 'mimes:png',
     ];
 
     /**********************************************************************************************
@@ -54,8 +50,7 @@ class Shop extends Model
     /**
      * Get the shop stock.
      */
-    public function stock()
-    {
+    public function stock() {
         return $this->hasMany('App\Models\Shop\ShopStock');
     }
 
@@ -89,8 +84,7 @@ class Shop extends Model
      *
      * @return string
      */
-    public function getDisplayNameAttribute()
-    {
+    public function getDisplayNameAttribute() {
         return '<a href="'.$this->url.'" class="display-shop">'.$this->name.'</a>';
     }
 
@@ -99,8 +93,7 @@ class Shop extends Model
      *
      * @return string
      */
-    public function getImageDirectoryAttribute()
-    {
+    public function getImageDirectoryAttribute() {
         return 'images/data/shops';
     }
 
@@ -109,9 +102,8 @@ class Shop extends Model
      *
      * @return string
      */
-    public function getShopImageFileNameAttribute()
-    {
-        return $this->id . '-image.png';
+    public function getShopImageFileNameAttribute() {
+        return $this->id.'-image.png';
     }
 
     /**
@@ -119,8 +111,7 @@ class Shop extends Model
      *
      * @return string
      */
-    public function getShopImagePathAttribute()
-    {
+    public function getShopImagePathAttribute() {
         return public_path($this->imageDirectory);
     }
 
@@ -129,10 +120,12 @@ class Shop extends Model
      *
      * @return string
      */
-    public function getShopImageUrlAttribute()
-    {
-        if (!$this->has_image) return null;
-        return asset($this->imageDirectory . '/' . $this->shopImageFileName);
+    public function getShopImageUrlAttribute() {
+        if (!$this->has_image) {
+            return null;
+        }
+
+        return asset($this->imageDirectory.'/'.$this->shopImageFileName);
     }
 
     /**
@@ -140,8 +133,7 @@ class Shop extends Model
      *
      * @return string
      */
-    public function getUrlAttribute()
-    {
+    public function getUrlAttribute() {
         return url('shops/'.$this->id);
     }
 
@@ -160,5 +152,23 @@ class Shop extends Model
         // Get the coupons from the id in allowed_coupons
         $coupons = \App\Models\Item\Item::whereIn('id', json_decode($this->allowed_coupons, 1))->get();
         return $coupons;
+    }
+
+    /**
+     * Gets the admin edit URL.
+     *
+     * @return string
+     */
+    public function getAdminUrlAttribute() {
+        return url('admin/data/shops/edit/'.$this->id);
+    }
+
+    /**
+     * Gets the power required to edit this model.
+     *
+     * @return string
+     */
+    public function getAdminPowerAttribute() {
+        return 'edit_data';
     }
 }
