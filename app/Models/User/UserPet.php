@@ -16,7 +16,8 @@ class UserPet extends Model
      * @var array
      */
     protected $fillable = [
-        'data', 'pet_id', 'user_id', 'attached_at', 'pet_name', 'has_image', 'artist_url', 'artist_id', 'description'
+        'data', 'pet_id', 'user_id', 'attached_at', 'pet_name', 'has_image', 'artist_url', 'artist_id', 'description',
+        'evolution_id'
     ];
 
     /**
@@ -69,6 +70,14 @@ class UserPet extends Model
     public function variant()
     {
         return $this->belongsTo('App\Models\Pet\PetVariant','variant_id');
+    }
+
+    /**
+     * Get the evolution associated with this pet stack.
+     */
+    public function evolution()
+    {
+        return $this->belongsTo('App\Models\Pet\PetEvolution','evolution_id');
     }
 
     /**

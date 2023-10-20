@@ -21,12 +21,14 @@
         <div class="{{ $pet->imageUrl ? 'col-md-9' : 'col-12' }}">
             <div class="world-entry-text">
                 {!! $pet->description !!}
-                <h5 class="card-header inventory-header">
-                    <a class="inventory-collapse-toggle collapse-toggle collapsed" href="#drop-collapse" data-toggle="collapse">Show Drops</a></h3>
-                </h5>
-                <div class="collapse" id="drop-collapse">
-                    @include('world._pet_drop_entry', ['pet' => $pet])
-                </div>
+                @if($pet->hasDrops)
+                    <h5 class="card-header inventory-header">
+                        <a class="inventory-collapse-toggle collapse-toggle collapsed" href="#drop-collapse" data-toggle="collapse">Show Drops</a></h3>
+                    </h5>
+                    <div class="collapse" id="drop-collapse">
+                        @include('world._pet_drop_entry', ['pet' => $pet])
+                    </div>
+                @endif
             </div>
         </div>
     </div>
@@ -50,9 +52,30 @@
                 </div>
             @endforeach
         @endif
+        @if ($pet->evolutions->count())
+            <hr />
+            <h2 class="h4 pl-2">Evolutions</h2>
+            @foreach($pet->evolutions->sortBy('evolution_stage')->chunk(4) as $chunk)
+                <div class="row">
+                    @foreach($chunk as $evolution)
+                        <div class="col">
+                            <div class="card h-100 mb-3 border-0">
+                                <div class="card-body text-center">
+                                <a href="{{ $evolution->imageUrl }}" data-lightbox="entry" data-title="{{ $evolution->evolution_name }}">
+                                    <img src="{{ $evolution->imageUrl }}" class="img-fluid" style="max-height: 10em;" alt="{{ $evolution->evolution_name }}" data-toggle="tooltip" data-title="{{ $evolution->evolution_name }}" style="max-height:200px" />
+                                </a>
+                                <div class="h5 my-2">
+                                    {{ $evolution->evolution_name }} (Stage {{ $evolution->evolution_stage }})
+                                    @if(!$loop->last)
+                                        <i class="fas fa-arrow-right fa-lg mt-2"></i>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            @endforeach
+        @endif
     </div>
-
-
-
-
 @endsection

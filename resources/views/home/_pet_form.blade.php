@@ -63,7 +63,12 @@
 <li class="list-group-item">
     <a class="card-title h5 collapse-title"  data-toggle="collapse" href="#userVariantForm">Change Pet Variant</a>
     {!! Form::open(['url' => 'pets/variant/'.$pet->id, 'id' => 'userVariantForm', 'class' => 'collapse']) !!}
-    <p>This will use a splice item!</p>
+    <p>
+        This will use a splice item!
+        @if ($pet->variant_id)
+            <br>Current Variant: {{ $pet->variant->variant_name }}
+        @endif
+    </p>
         <div class="form-group">
             {!! Form::select('stack_id', $splices, null, ['class'=>'form-control', 'placeholder' => 'Select Item']) !!}
         </div>
@@ -86,10 +91,27 @@
             {!! Form::hidden('is_staff', 1) !!}
             <div class="form-group">
                 @php $variants = ['0' => 'Default'] + $pet->pet->variants()->pluck('variant_name', 'id')->toArray() @endphp
-                {!! Form::select('variant_id', $variants, $pet->variant_id, ['class'=>'form-control']) !!}
+                {!! Form::select('variant_id', $variants, $pet->variant_id, ['class'=>'form-control mt-2']) !!}
             </div>
             <div class="text-right">
                 {!! Form::submit('Change Variant', ['class' => 'btn btn-primary']) !!}
+            </div>
+        {!! Form::close() !!}
+    </li>
+
+    {{-- evolution --}}
+    <li class="list-group-item">
+        <a class="card-title h5 collapse-title"  data-toggle="collapse" href="#evolutionForm">[ADMIN] Change Pet Evolution</a>
+        {!! Form::open(['url' => 'pets/evolution/'.$pet->id, 'id' => 'evolutionForm', 'class' => 'collapse']) !!}
+            {!! Form::hidden('is_staff', 1) !!}
+            <div class="form-group">
+                @php
+                    $evolutions = ['0' => 'Default'] + $pet->pet->evolutions()->pluck('evolution_name', 'id')->toArray();
+                @endphp
+                {!! Form::select('evolution_id', $evolutions, $pet->evolution_id, ['class'=>'form-control mt-2']) !!}
+            </div>
+            <div class="text-right">
+                {!! Form::submit('Change Evolution', ['class' => 'btn btn-primary']) !!}
             </div>
         {!! Form::close() !!}
     </li>

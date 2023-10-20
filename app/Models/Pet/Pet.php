@@ -16,7 +16,7 @@ class Pet extends Model
      * @var array
      */
     protected $fillable = [
-        'pet_category_id', 'name', 'has_image', 'description', 'parsed_description', 'allow_transfer', 'limit'
+        'pet_category_id', 'name', 'has_image', 'description', 'parsed_description', 'allow_transfer', 'limit', 'evolution_stage'
     ];
 
     /**
@@ -64,9 +64,20 @@ class Pet extends Model
         return $this->belongsTo('App\Models\Pet\PetCategory', 'pet_category_id');
     }
 
+    /**
+     * get all the pet variants
+     */
     public function variants()
     {
         return $this->hasMany('App\Models\Pet\PetVariant', 'pet_id');
+    }
+
+    /**
+     * get the pets evolutions
+     */
+    public function evolutions()
+    {
+        return $this->hasMany('App\Models\Pet\PetEvolution', 'pet_id');
     }
 
     /**
@@ -216,13 +227,24 @@ class Pet extends Model
         return 'pets';
     }
 
+    /**
+     * returns the variant image for the pet
+     */
     public function VariantImage($id = null)
     {
         if(!$id) return $this->imageUrl;
+
         $userpet = UserPet::find($id);
         if (!$userpet) return $this->imageUrl;
+
+        // custom image takes prescendence over all other images
         else if ($userpet->has_image) return $userpet->imageUrl;
+        // check if there is an evolution and variant
+        else if ($userpet->evolution_id && $userpet->variant_id) return $userpet->evolution->variantImageUrl($userpet->variant_id);
+        // evolution > variant
+        else if ($userpet->evolution_id) return $userpet->evolution->imageUrl;
         else if ($userpet->variant_id) return $userpet->variant->imageUrl;
+        //default
         return $this->imageUrl;
     }
 

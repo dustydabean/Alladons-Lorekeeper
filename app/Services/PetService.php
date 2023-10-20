@@ -8,6 +8,7 @@ use Config;
 use App\Models\Pet\PetCategory;
 use App\Models\Pet\PetVariant;
 use App\Models\Pet\Pet;
+use App\Models\Pet\PetEvolution;
 use App\Models\User\UserPet;
 
 class PetService extends Service
@@ -244,7 +245,7 @@ class PetService extends Service
             if(DB::table('user_pets')->where('pet_id', $pet->id)->where('count', '>', 0)->where('deleted_at', '!=', null)->exists()) throw new \Exception("At least one user currently owns this pet. Please remove the pet(s) before deleting it.");
             if(DB::table('loots')->where('rewardable_type', 'Pet')->where('rewardable_id', $pet->id)->exists()) throw new \Exception("A loot table currently distributes this pet as a potential reward. Please remove the pet before deleting it.");
             if(DB::table('prompt_rewards')->where('rewardable_type', 'Pet')->where('rewardable_id', $pet->id)->exists()) throw new \Exception("A prompt currently distributes this pet as a reward. Please remove the pet before deleting it.");
-            if(DB::table('user_pet_logs')->where('pet_id', $pet->id)->exists()) throw new \Exception("At least one log currently has this pet. Please remove the log(s) before deleting it.");
+            if(DB::table('user_pets_logs')->where('pet_id', $pet->id)->exists()) throw new \Exception("At least one log currently has this pet. Please remove the log(s) before deleting it.");
             if(DB::table('shop_stock')->where('item_id', $pet->id)->where('stock_type', 'Pet')->exists()) throw new \Exception("A shop currently stocks this pet. Please remove the pet before deleting it.");
 
             // Delete character drops and drop data if they exist
@@ -311,7 +312,7 @@ class PetService extends Service
         try {
 
             // check name is unique
-            if(PetVariant::where('variant_name', $data['variant_name'])->where('pet_id', $variant->pet->id)->exists()) throw new \Exception("The name has already been taken.");
+            if(PetVariant::where('variant_name', $data['variant_name'])->where('pet_id', $variant->pet->id)->where('id', '!=', $variant->id)->exists()) throw new \Exception("The name has already been taken.");
 
             if(isset($data['remove_image']))
             {
@@ -332,7 +333,7 @@ class PetService extends Service
 
             $variant->update([
                 'variant_name' => $data['variant_name'],
-                'has_image'    => $data['has_image'],
+                'has_image'    => isset($data['has_image']) ? $data['has_image'] : $variant->has_image,
             ]);
 
             if ($image) $this->handleImage($image, $variant->imagePath, $variant->imageFileName);
@@ -340,6 +341,9 @@ class PetService extends Service
             if (isset($data['delete']) && $data['delete']) {
                 // check that no user pets exist with this variant before deleting
                 if(UserPet::where('variant_id', $variant->id)->exists()) throw new \Exception("At least one user pet currently is this variant. Please remove the pet(s) before deleting it.");
+
+                // delete image
+                if ($variant->has_image) $this->deleteImage($variant->imagePath, $variant->imageFileName);
                 $variant->delete();
                 flash('Variant deleted successfully.')->success();
             }
@@ -414,5 +418,111 @@ class PetService extends Service
         return $data;
     }
 
+    /**********************************************************************************************
 
+        PET EVOLUTIONS
+
+    **********************************************************************************************/
+
+    /**
+     * Creates a pet evolution
+     */
+    public function createEvolution($pet, $data)
+    {
+        DB::beginTransaction();
+
+        try {
+            if (!isset($data['evolution_name']) || !$data['evolution_name']) throw new \Exception("Please enter a valid evolution name.");
+            // check name is unique
+            if(PetEvolution::where('evolution_name', $data['evolution_name'])->where('pet_id', $pet->id)->exists()) throw new \Exception("The name has already been taken.");
+
+            $image = null;
+            if(isset($data['evolution_image']) && $data['evolution_image']) {
+                $data['has_image'] = 1;
+                $image = $data['evolution_image'];
+                unset($data['evolution_image']);
+            }
+
+            $data['pet_id'] = $pet->id;
+
+            if (!$image) throw new \Exception("Please upload an image for this evolution.");
+
+            $evolution = PetEvolution::create($data);
+
+            if ($image) $this->handleImage($image, $evolution->imagePath, $evolution->imageFileName);
+
+            return $this->commitReturn(true);
+        } catch(\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Edits the evolutions on a pet
+     */
+    public function editEvolution($evolution, $data)
+    {
+        DB::beginTransaction();
+
+        try {
+            if (!isset($data['evolution_name']) || !$data['evolution_name']) throw new \Exception("Please enter a valid evolution name.");
+            if(PetEvolution::where('evolution_name', $data['evolution_name'])->where('pet_id', $evolution->pet->id)->where('id', '!=', $evolution->id)->exists()) throw new \Exception("The name has already been taken.");
+            if(!isset($data['evolution_stage']) || !$data['evolution_stage']) throw new \Exception("Please enter a valid evolution stage.");
+
+            $image = null;
+            if(isset($data['evolution_image']) && $data['evolution_image']) {
+                $image = $data['evolution_image'];
+                unset($data['evolution_image']);
+            }
+
+            $evolution->update([
+                'evolution_name'  => $data['evolution_name'],
+                'evolution_stage' => $data['evolution_stage'],
+            ]);
+
+            if ($image) $this->handleImage($image, $evolution->imagePath, $evolution->imageFileName);
+
+            // variant images
+            if(isset($data['variant_id']) && $data['variant_id']) {
+                foreach($data['variant_id'] as $key => $variant_id) {
+                    $variant = PetVariant::find($variant_id);
+                    if($variant) {
+                        $variant_image = null;
+                        if(isset($data['variant_image'][$key]) && $data['variant_image'][$key]) {
+                            $variant_image = $data['variant_image'][$key];
+                            unset($data['variant_image'][$key]);
+                        }
+
+                        if ($variant_image) $this->handleImage($variant_image, $evolution->variantImageDirectory, $evolution->variantImageFileName($variant->id));
+                    }
+                }
+            }
+
+            if (isset($data['delete']) && $data['delete']) {
+                // check that no user pets exist with this evolution before deleting
+                if(UserPet::where('evolution_id', $evolution->id)->exists()) throw new \Exception("At least one user pet currently is this evolution. Please remove the pet(s) before deleting it.");
+                // delete image
+                $this->deleteImage($evolution->imagePath, $evolution->imageFileName);
+                // delete all variant images
+                foreach($evolution->pet->variants as $variant) {
+                    // check if file exists
+                    if($evolution->variantImageExists($variant->id))
+                    {
+                        $this->deleteImage($evolution->variantImageDirectory, $evolution->variantImageFileName($variant->id));
+                    }
+                }
+                $evolution->delete();
+                flash('Evolution deleted successfully.')->success();
+            }
+            else {
+                flash('Evolution updated successfully.')->success();
+            }
+
+            return $this->commitReturn(true);
+        } catch(\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+        return $this->rollbackReturn(false);
+    }
 }

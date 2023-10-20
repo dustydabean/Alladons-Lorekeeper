@@ -46,6 +46,12 @@
                             <img src="{{ $pet->character->image->thumbnailUrl }}" class="rounded img-thumbnail" alt="Thumbnail for {{ $pet->character->fullName }}"/>
                         </a>
                     @endif
+                    @if ($pet->evolution)
+                        <h2 class="h5">Evolved</h2>
+                        <p>
+                            {{ $pet->evolution->evolution_name }} (Stage {{ $pet->evolution->evolution_stage }})
+                        </p>
+                    @endif
                 </div>
                 @if($pet->pet->hasDrops)
                     <div class="col-md-8 mb-2">

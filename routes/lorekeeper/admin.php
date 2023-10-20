@@ -168,10 +168,17 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('pets/edit/{id?}', 'PetController@postCreateEditPet');
     Route::post('pets/delete/{id}', 'PetController@postDeletePet');
 
+    // variants
     Route::get('pets/edit/{pet_id}/variants/create', 'PetController@getCreateEditVariant');
     Route::get('pets/edit/{pet_id}/variants/edit/{id}', 'PetController@getCreateEditVariant');
     Route::post('pets/edit/{pet_id}/variants/create', 'PetController@postCreateEditVariant');
     Route::post('pets/edit/{pet_id}/variants/edit/{id}', 'PetController@postCreateEditVariant');
+
+    // evolutions
+    Route::get('pets/edit/{pet_id}/evolution/create', 'PetController@getCreateEditEvolution');
+    Route::get('pets/edit/{pet_id}/evolution/edit/{id}', 'PetController@getCreateEditEvolution');
+    Route::post('pets/edit/{pet_id}/evolution/create', 'PetController@postCreateEditEvolution');
+    Route::post('pets/edit/{pet_id}/evolution/edit/{id}', 'PetController@postCreateEditEvolution');
 
     Route::get('pets/drops', 'PetController@getDropIndex');
     Route::get('pets/drops/create', 'PetController@getCreateDrop');

@@ -94,7 +94,12 @@
                 <li class="list-group-item">
                     <a class="card-title h5 collapse-title"  data-toggle="collapse" href="#userVariantForm">Change Pet Variant</a>
                     {!! Form::open(['url' => 'pets/variant/'.$stack->id, 'id' => 'userVariantForm', 'class' => 'collapse']) !!}
-                    <p>This will use a splice item!</p>
+                    <p>
+                        This will use a splice item!
+                        @if ($stack->variant_id)
+                            <br><b>Current variant:</b> {{ $stack->variant->variant_name }}
+                        @endif
+                    </p>
                         <div class="form-group">
                             {!! Form::select('stack_id', $splices, null, ['class'=>'form-control', 'placeholder' => 'Select Item']) !!}
                         </div>
@@ -114,12 +119,38 @@
                         <a class="card-title h5 collapse-title"  data-toggle="collapse" href="#variantForm">[ADMIN] Change Pet Variant</a>
                         {!! Form::open(['url' => 'pets/variant/'.$stack->id, 'id' => 'variantForm', 'class' => 'collapse']) !!}
                             {!! Form::hidden('is_staff', 1) !!}
+                            <p>
+                                @if ($stack->variant_id)
+                                    <br><b>Current variant:</b> {{ $stack->variant->variant_name }}
+                                @endif
+                            </p>
                             <div class="form-group">
                                 @php $variants = ['0' => 'Default'] + $stack->pet->variants()->pluck('variant_name', 'id')->toArray() @endphp
-                                {!! Form::select('variant_id', $variants, $stack->variant_id, ['class'=>'form-control']) !!}
+                                {!! Form::select('variant_id', $variants, $stack->variant_id, ['class'=>'form-control mt-2']) !!}
                             </div>
                             <div class="text-right">
                                 {!! Form::submit('Change Variant', ['class' => 'btn btn-primary']) !!}
+                            </div>
+                        {!! Form::close() !!}
+                    </li>
+                    {{-- evolution --}}
+                    <li class="list-group-item">
+                        <a class="card-title h5 collapse-title"  data-toggle="collapse" href="#evolutionForm">[ADMIN] Change Pet Evolution</a>
+                        {!! Form::open(['url' => 'pets/evolution/'.$stack->id, 'id' => 'evolutionForm', 'class' => 'collapse']) !!}
+                            {!! Form::hidden('is_staff', 1) !!}
+                            <p>
+                                @if ($stack->evolution_id)
+                                    <br><b>Current evolution:</b> {{ $stack->evolution->evolution_name }} (Stage {{ $stack->evolution->evolution_stage }})
+                                @endif
+                            </p>
+                            <div class="form-group">
+                                @php
+                                    $evolutions = ['0' => 'Default'] + $stack->pet->evolutions()->pluck('evolution_name', 'id')->toArray();
+                                @endphp
+                                {!! Form::select('evolution_id', $evolutions, $stack->evolution_id, ['class'=>'form-control mt-2']) !!}
+                            </div>
+                            <div class="text-right">
+                                {!! Form::submit('Change Evolution', ['class' => 'btn btn-primary']) !!}
                             </div>
                         {!! Form::close() !!}
                     </li>

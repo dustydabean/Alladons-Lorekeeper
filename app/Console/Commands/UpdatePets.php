@@ -4,22 +4,24 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
+use File;
 
-class UpdatePetDrops extends Command
+class UpdatePets extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'update-pet-drops';
+    protected $signature = 'update-pets';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Converts old format drop data and adds variant_data column to pet_drop_data table.';
+    protected $description = 'Updates pets. Converts old format drop data and adds variant_data column to pet_drop_data table.';
 
     /**
      * Create a new command instance.
@@ -79,6 +81,19 @@ class UpdatePetDrops extends Command
                 $drop->cap = $drop->data['cap'];
                 $this->convertItems($drop, $drop->data['items']);
                 $this->info('Converted drop data for pet: ' . $drop->pet->name . '.');
+            }
+        }
+
+        // update variant images to use ID instead of name
+        $variants = \App\Models\Pet\PetVariant::all();
+        foreach($variants as $variant) {
+            $this->line('Updating variant image for variant: ' . $variant->variant_name . '...');
+            // rename image
+            $old_image = $variant->imageDirectory . '/' . $variant->pet_id .'-'. $variant->variant_name .'-image.png';
+            // rename
+            if(File::exists(public_path($old_image))) {
+                $new_image = $variant->imageDirectory . '/' . $variant->pet_id .'-variant-'. $variant->id .'-image.png';
+                File::move(public_path($old_image), public_path($new_image));
             }
         }
     }

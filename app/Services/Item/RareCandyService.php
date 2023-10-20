@@ -12,14 +12,14 @@ use App\Models\Loot\LootTable;
 use App\Models\Raffle\Raffle;
 use App\Models\Pet\Pet;
 
-class SpliceService extends Service
+class RareCandyService extends Service
 {
     /*
     |--------------------------------------------------------------------------
-    | Splice Service
+    | RareCandy Service
     |--------------------------------------------------------------------------
     |
-    | Handles the editing and usage of splice type items.
+    | Handles the editing and usage of Rare Candy type items.
     |
     */
 

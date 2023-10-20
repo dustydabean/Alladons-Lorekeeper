@@ -9,6 +9,7 @@ use Auth;
 use App\Models\Pet\PetCategory;
 use App\Models\Pet\Pet;
 use App\Models\Pet\PetVariant;
+use App\Models\Pet\PetEvolution;
 use App\Models\Pet\PetDropData;
 use App\Models\Pet\PetVariantDropData;
 use App\Services\PetService;
@@ -18,8 +19,6 @@ use App\Models\User\UserPet;
 use App\Models\Item\Item;
 
 use App\Http\Controllers\Controller;
-
-use function PHPSTORM_META\type;
 
 class PetController extends Controller
 {
@@ -270,6 +269,12 @@ class PetController extends Controller
         return redirect()->to('admin/data/pets');
     }
 
+    /**********************************************************************************************
+
+        VARIANTS
+
+    **********************************************************************************************/
+
     /**
      * Gets the create / edit pet variant page.
      */
@@ -291,7 +296,7 @@ class PetController extends Controller
      */
     public function postCreateEditVariant(Request $request, PetService $service, $pet_id, $id = null)
     {
-        $data = $request->only(['variant_name', 'variant_image']);
+        $data = $request->only(['variant_name', 'variant_image', 'remove_image', 'delete']);
         if($id && $service->editVariant(PetVariant::findOrFail($id), $data)) {
             // we dont flash in case we are deleting the variant
         }
@@ -303,6 +308,47 @@ class PetController extends Controller
         }
         return redirect()->back();
     }
+
+    /**********************************************************************************************
+
+        EVOLUTIONS
+
+    **********************************************************************************************/
+
+    /**
+     * Gets the create / edit pet evolution page.
+     */
+    public function getCreateEditEvolution($pet_id, $id = null)
+    {
+        return view('admin.pets._create_edit_pet_evolution', [
+            'pet'     => Pet::find($pet_id),
+            'evolution' => $id ? PetEvolution::find($id) : new PetEvolution,
+        ]);
+    }
+
+    /**
+     * Edits pet evolutions
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  App\Services\PetService  $service
+     * @param  int                       $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postCreateEditEvolution(Request $request, PetService $service, $pet_id, $id = null)
+    {
+        $data = $request->only(['evolution_name', 'evolution_image', 'evolution_stage', 'delete', 'variant_id', 'variant_image']);
+        if($id && $service->editEvolution(PetEvolution::findOrFail($id), $data)) {
+            // we dont flash in case we are deleting the evolution
+        }
+        else if (!$id && $service->createEvolution(Pet::find($pet_id), $data)) {
+            flash('Evolution created successfully.')->success();
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back();
+    }
+
 
     /**********************************************************************************************
 

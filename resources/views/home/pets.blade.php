@@ -33,8 +33,22 @@
                             </div>
                             <div>
                                 <a href="{{ url('pets/view/'.$pet->pivot->id) }}" class="{{ $pet->pivot->pet_name ? 'btn-dark' : 'btn-primary' }} btn btn-sm my-1">
-                                    {!! $pet->pivot->pet_name ?? $pet->name !!}
-                                    @if($pet->pivot->chara_id) <span data-toggle="tooltip" title="Attached to a character."><i class="fas fa-link ml-1"></i></span> @endif
+                                    {!!
+                                        $pet->pivot->pet_name ??
+                                        ($pet->pivot->evolution_id ?
+                                        $pet->evolutions->where('id', $pet->pivot->evolution_id)->first()->evolution_name: $pet->name)
+                                    !!}
+                                    @if($pet->pivot->has_image)
+                                        <i class="fas fa-brush ml-1"  data-toggle="tooltip" title="This pet has custom art."></i>
+                                    @endif
+                                    @if($pet->pivot->chara_id)
+                                        <span data-toggle="tooltip" title="Attached to a character."><i class="fas fa-link ml-1"></i></span>
+                                    @endif
+                                    @if($pet->pivot->evolution_id)
+                                        <span data-toggle="tooltip" title="This pet has evolved. Stage
+                                            {{ $pet->evolutions->where('id', $pet->pivot->evolution_id)->first()->evolution_stage}}."><i class="fas fa-angle-double-up ml-1"></i>
+                                        </span>
+                                    @endif
                                 </a>
                             </div>
 

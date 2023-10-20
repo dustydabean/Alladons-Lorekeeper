@@ -40,7 +40,7 @@ class PetController extends Controller
     public function getIndex()
     {
         $categories = PetCategory::orderBy('sort', 'DESC')->get();
-        $pets = count($categories) ? Auth::user()->pets()->orderByRaw('FIELD(pet_category_id,'.implode(',', $categories->pluck('id')->toArray()).')')->orderBy('name')->get()->groupBy('pet_category_id') : Auth::user()->pets()->orderBy('name')->get()->groupBy('pet_category_id');
+        $pets = count($categories) ? Auth::user()->pets()->orderByRaw('FIELD(pet_category_id,'.implode(',', $categories->pluck('id')->toArray()).')')->orderBy('pet_name')->get()->groupBy('pet_category_id') : Auth::user()->pets()->orderBy('pet_name')->get()->groupBy('pet_category_id');
         return view('home.pets', [
             'categories' => $categories->keyBy('id'),
             'pets' => $pets,
@@ -181,6 +181,25 @@ class PetController extends Controller
         $pet = UserPet::find($id);
         if($service->editVariant($request->input('variant_id'), $pet, $request->input('stack_id'), $request->input('is_staff'))) {
             flash('Pet variant changed successfully.')->success();
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back();
+    }
+
+    /**
+     * Changes evolution
+     *
+     * @param  \Illuminate\Http\Request       $request
+     * @param  App\Services\CharacterManager  $service
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postEvolution(Request $request, PetManager $service, $id, $isStaff = false)
+    {
+        $pet = UserPet::find($id);
+        if($service->editEvolution($request->input('evolution_id'), $pet, $request->input('stack_id'), $request->input('is_staff'))) {
+            flash('Pet evolution changed successfully.')->success();
         }
         else {
             foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
