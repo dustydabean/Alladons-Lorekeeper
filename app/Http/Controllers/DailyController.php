@@ -50,8 +50,8 @@ class DailyController extends Controller
     public function getDaily($id, DailyService $service)
     {
         $daily = Daily::where('id', $id)->where('is_active', 1)->first();
-        $timer = (Auth::user()) ? DailyTimer::where('daily_id', $daily->id)->where("user_id", Auth::user()->id)->first() : null;
         if(!$daily) abort(404);
+        $timer = (Auth::user()) ? DailyTimer::where('daily_id', $daily->id)->where("user_id", Auth::user()->id)->first() : null;
 
         
         

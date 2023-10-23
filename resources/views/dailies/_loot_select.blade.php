@@ -4,7 +4,7 @@
 <table class="table table-sm" id="lootTable">
     <thead>
         <tr>
-            <th width="5%">Step</th>
+            <th width="5%">@if($daily->type == 'Wheel') Segment  @else Step @endif</th>
             <th width="30%">Reward Type</th>
             <th width="35%">Reward</th>
             <th width="20%">Quantity</th>

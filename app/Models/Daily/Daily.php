@@ -15,7 +15,7 @@ class Daily extends Model
      */
     protected $fillable = [
         'name', 'sort', 'has_image', 'has_button_image', 'description', 'parsed_description', 'is_active', 'is_progressable', 'is_timed_daily', 'start_at', 'end_at', 'daily_timeframe', 
-        'progress_display', 'is_loop', 'is_streak'
+        'progress_display', 'is_loop', 'is_streak', 'type'
     ];
 
     /**
@@ -70,6 +70,16 @@ class Daily extends Model
     {
         return $this->hasMany('App\Models\Daily\DailyTimer', 'daily_id');
     }
+
+    /**
+     * Get wheel.
+     */
+    public function wheel()
+    {
+        return $this->hasOne('App\Models\Daily\DailyWheel', 'daily_id');
+    }
+
+
 
     /**
      * Displays the daily's name, linked to its purchase page.
