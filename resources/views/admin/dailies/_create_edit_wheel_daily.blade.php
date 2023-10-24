@@ -58,15 +58,15 @@
 <p> The images for the wheel! Keep in mind that if you use an image as the wheel, the segments must align with how a non-image wheel would look like, or your reward distribution will be off.</p>
 <div class="card-body row">
     <div class="form-group col-md-6">
-        @if($daily->wheel?->wheel_extension)
-        <a href="{{$daily->wheel->wheelUrl}}"><img src="{{$daily->wheel->wheelUrl}}" class="mw-100 float-left mr-3"
+        @if($wheel?->wheel_extension)
+        <a href="{{$wheel->wheelUrl}}"><img src="{{$wheel->wheelUrl}}" class="mw-100 float-left mr-3"
                 style="max-height:125px"></a>
         @endif
         {!! Form::label('Wheel Image (Optional)') !!}
         <div>{!! Form::file('wheel_image') !!}</div>
         <div class="text-muted">Recommended size: The size of your chosen Wheel. Make sure that the segments align
             correctly.</div>
-        @if(isset($daily->wheel?->wheel_extension))
+        @if(isset($wheel?->wheel_extension))
         <div class="form-check">
             {!! Form::checkbox('remove_wheel', 1, false, ['class' => 'form-check-input', 'data-toggle' => 'toggle',
             'data-off' => 'Leave Wheel As-Is', 'data-on' => 'Remove Wheel Image']) !!}
@@ -75,14 +75,14 @@
     </div>
 
     <div class="form-group col-md-6">
-        @if($daily->wheel?->stopper_extension)
-        <a href="{{$daily->wheel->stopperUrl}}"><img src="{{$daily->wheel->stopperUrl}}" class="mw-100 float-left mr-3"
+        @if($wheel?->stopper_extension)
+        <a href="{{$wheel->stopperUrl}}"><img src="{{$wheel->stopperUrl}}" class="mw-100 float-left mr-3"
                 style="max-height:125px"></a>
         @endif
         {!! Form::label('Stopper Image (Optional)') !!}
         <div>{!! Form::file('stopper_image') !!}</div>
         <div class="text-muted">Recommended size: 50 x 50px.</div>
-        @if(isset($daily->wheel?->stopper_extension))
+        @if(isset($wheel?->stopper_extension))
         <div class="form-check">
             {!! Form::checkbox('remove_stopper', 1, false, ['class' => 'form-check-input', 'data-toggle' => 'toggle',
             'data-off' => 'Leave Stopper As-Is', 'data-on' => 'Remove Stopper Image']) !!}
@@ -91,14 +91,14 @@
     </div>
 
     <div class="form-group col-md-6">
-        @if($daily->wheel?->background_extension)
-        <a href="{{$daily->wheel->backgroundUrl}}"><img src="{{$daily->wheel->backgroundUrl}}"
+        @if($wheel?->background_extension)
+        <a href="{{$wheel->backgroundUrl}}"><img src="{{$wheel->backgroundUrl}}"
                 class="mw-100 float-left mr-3" style="max-height:125px"></a>
         @endif
         {!! Form::label('Background Image (Optional)') !!}
         <div>{!! Form::file('background_image') !!}</div>
         <div class="text-muted">Recommended size: Any, just play around until it looks good!</div>
-        @if(isset($daily->wheel?->background_extension))
+        @if(isset($wheel?->background_extension))
         <div class="form-check">
             {!! Form::checkbox('remove_background', 1, false, ['class' => 'form-check-input', 'data-toggle' => 'toggle',
             'data-off' => 'Leave Background As-Is', 'data-on' => 'Remove Background Image']) !!}
@@ -109,30 +109,31 @@
 
 <hr>
 <h3>Wheel Style </h3>
-<div class="row p-4">
-    <div class="form-group col">
-        {!! Form::number('size', $daily->wheel->size ?? 400, ['class' => 'form-control']) !!}
+<div class="row p-3">
+    <div class="form-group col-lg col-6">
+        {!! Form::number('size', $wheel->size ?? 400, ['class' => 'form-control']) !!}
         {!! Form::label('size', 'Size') !!} {!! add_help('The pixel size of the wheel.') !!}
     </div>
-    <div class="form-group col">
-        {!! Form::select('alignment', ["center" => "Center", "left" => "Left", "right" => "Right"] , $daily->wheel->alignment ?? "center", ['class' => 'form-control']) !!}
+    <div class="form-group col-lg col-6">
+        {!! Form::select('alignment', ["center" => "Center", "left" => "Left", "right" => "Right"] , $wheel->alignment ?? "center", ['class' => 'form-control']) !!}
         {!! Form::label('alignment', 'Alignment') !!} {!! add_help('Whether the wheel should load on the left, right or center.') !!}
     </div>
-    <div class="form-group col">
-        {!! Form::number('segment_number' , $daily->wheel->segment_number ?? 1, ['class' => 'form-control']) !!}
+    <div class="form-group col-lg col-6">
+        {!! Form::number('segment_number' , $wheel->segment_number ?? 1, ['class' => 'form-control']) !!}
         {!! Form::label('segment_number', 'Segment Number') !!} {!! add_help('How many segments does the wheel have?') !!}
     </div>
-</div>
-<div class="row p-4">
-<div class="form-group col">
-        {!! Form::select('text_orientation', ["curved" => "Curved", "vertical" => "Vertical"] , $daily->wheel->text_orientation ?? "curved", ['class' => 'form-control']) !!}
+    <div class="form-group col-lg col-6">
+        {!! Form::select('text_orientation', ["curved" => "Curved", "vertical" => "Vertical"] , $wheel->text_orientation ?? "curved", ['class' => 'form-control']) !!}
         {!! Form::label('text_orientation', 'Text Orientation') !!} {!! add_help('How text on the wheel should be displayed.') !!}
     </div>
-    <div class="form-group col">
-        {!! Form::number('text_fontsize' , $daily->wheel->text_fontsize ?? 24, ['class' => 'form-control']) !!}
+    <div class="form-group col-lg col-6">
+        {!! Form::number('text_fontsize' , $wheel->text_fontsize ?? 24, ['class' => 'form-control']) !!}
         {!! Form::label('text_fontsize', 'Text Font Size') !!} {!! add_help('Font size of the text on the wheel.') !!}
     </div>
 </div>
+
+
+@include('dailies._segment_style', ['segments' => $wheel->segmentStyles, 'totalSegments' => $wheel->segment_number])
 
 <hr>
 

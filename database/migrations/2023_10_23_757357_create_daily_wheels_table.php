@@ -26,7 +26,7 @@ class CreateDailyWheelsTable extends Migration
             $table->string('alignment')->default('center');
 
             $table->integer('segment_number')->unsigned()->default(1); // segment number
-            $table->string('segment_style')->nullable()->default(null); // segment data in json form used for whinwheel lib if no image is used
+            $table->text('segment_style')->nullable()->default(null); // segment data in json form used for whinwheel lib if no image is used
             
             $table->string('text_orientation')->nullable()->default('curved');
             $table->integer('text_fontsize')->nullable()->default(24);

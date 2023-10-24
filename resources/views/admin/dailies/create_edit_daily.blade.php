@@ -42,7 +42,7 @@ true]) !!}
     @if($daily->type == 'Button')
         @include('admin.dailies._create_edit_button_daily')
     @elseif($daily->type == 'Wheel')
-        @include('admin.dailies._create_edit_wheel_daily')
+        @include('admin.dailies._create_edit_wheel_daily', ['wheel' => $daily->wheel])
     @endif
 
 @endif

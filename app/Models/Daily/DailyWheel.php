@@ -150,6 +150,25 @@ class DailyWheel extends Model
         return url(__('dailies.dailies') . '/' . $this->id);
     }
 
+    /**
+     * Get the segment_style as an associative array.
+     *
+     * @return array
+     */
+    public function getSegmentStylesAttribute()
+    {
+        return json_decode($this->attributes["segment_style"], true);
+    }
+
+    /**
+     * Get the segment_style as an associative array.
+     *
+     * @return array
+     */
+    public function getSegmentStyleReplaceAttribute()
+    {
+        return str_replace('"', "'", $this->attributes["segment_style"]);
+    }
 
 
     /**********************************************************************************************

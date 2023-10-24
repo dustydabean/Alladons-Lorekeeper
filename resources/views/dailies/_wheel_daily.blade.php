@@ -38,7 +38,6 @@
     </div>
 </div>
 @endif
-
 @section('scripts')
 <script>
     let theWheel = new Winwheel({
@@ -50,52 +49,12 @@
         'textOrientation': "{{ $wheel->text_orientation }}", // curved or vertical editable from admin panel
         'textAlignment': 'outer',
         'textMargin': 5,
-        'textFontFamily': 'sans-serif',
-        'textLineWidth': 2,
+        'textFontFamily': 'monospace',
+        'textLineWidth': 1,
         'textFillStyle': 'black',
         'responsive': true, // This wheel is responsive!
 
-        'segments': // Define segments.
-            [ // font size and text colour overridden on backrupt segments.
-                {
-                    'fillStyle': '#ee1c24',
-                    'text': '300',
-                    'number': 1
-                },
-                {
-                    'fillStyle': '#3cb878',
-                    'text': '450',
-                    'number': 2
-                },
-                {
-                    'fillStyle': '#f6989d',
-                    'text': '600',
-                    'number': 3
-                },
-                {
-                    'fillStyle': '#00aef0',
-                    'text': '750',
-                    'number': 4
-                },
-                {
-                    'fillStyle': '#f26522',
-                    'text': '500',
-                    'number': 5
-                },
-                {
-                    'fillStyle': '#000000',
-                    'text': 'BANKRUPT',
-                    'textFontSize': 16,
-                    'textFillStyle': '#ffffff',
-                    'number': 6
-                },
-                {
-                    'fillStyle': '#e70697',
-                    'text': '3000',
-                    'number': 7
-                },
-
-            ],
+        'segments': {!! $wheel->segmentStyleReplace !!},
         'animation': // Specify the animation to use.
         {
             'type': 'spinToStop',
@@ -136,6 +95,7 @@
             // Set to true so that power can't be changed and spin button re-enabled during
             // the current animation. The user will have to reset before spinning again.
             wheelSpinning = true;
+
         }
     }
 
@@ -150,6 +110,7 @@
     function alertPrize(indicatedSegment) {
         // Do basic alert of the segment text.
         alert("The segment is " + indicatedSegment.number);
+
         resetWheel();
     }
 </script>
