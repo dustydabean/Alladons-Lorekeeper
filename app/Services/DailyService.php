@@ -55,6 +55,10 @@ class DailyService extends Service
 
             $daily = Daily::create($data);
 
+            if ($daily->type == 'Wheel') {
+                $wheel = $this->populateWheel($data, $daily);
+            }
+
             return $this->commitReturn($daily);
         } catch (\Exception $e) {
             $this->setError('error', $e->getMessage());
@@ -175,11 +179,11 @@ class DailyService extends Service
         $styleObject = [];
         //set segment style if it applies
         if (isset($data['segment_style'])) {
-            foreach ($data['segment_style']['color'] as $key => $list) {
+            for ($i = 0; $i < $data['segment_number']; $i++) {
                     $styleObject[] = [
-                        'fillStyle' => $data['segment_style']['color'][$key],
-                        'text' => $data['segment_style']['text'][$key],
-                        'number' => $data['segment_style']['number'][$key]
+                        'fillStyle' => $data['segment_style']['color'][$i] ?? null,
+                        'text' => $data['segment_style']['text'][$i] ?? null,
+                        'number' => $i + 1
                     ];
             }
         }
@@ -199,13 +203,15 @@ class DailyService extends Service
         $daily->rewards()->delete();
         if (isset($data['rewardable_type'])) {
             foreach ($data['rewardable_type'] as $key => $type) {
-                DailyReward::create([
-                    'daily_id'       => $daily->id,
-                    'rewardable_type' => $type,
-                    'rewardable_id'   => $data['rewardable_id'][$key],
-                    'quantity'        => $data['quantity'][$key],
-                    'step'        => $data['step'][$key],
-                ]);
+                if($type != null){
+                    DailyReward::create([
+                        'daily_id'       => $daily->id,
+                        'rewardable_type' => $type,
+                        'rewardable_id'   => $data['rewardable_id'][$key],
+                        'quantity'        => $data['quantity'][$key],
+                        'step'        => $data['step'][$key],
+                    ]);
+                }
             }
         }
     }
