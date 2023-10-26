@@ -1,15 +1,39 @@
 
-
 <div class="text-{{ $wheel->alignment }}" style="background-size:cover; background-image:url('{{$wheel->backgroundUrl}}');">
     <div class="row justify-content-center {{ $wheel->marginAlignment() }}" style="width:{{ $wheel->size }}px;height:50px;">
         <img src="{{ $wheel->stopperUrl }}" style="width:50px;height:50px;">
     </div>
-    <canvas class="@if($wheel->alignment == 'left') ml-lg-5 ml-2 @endif @if($wheel->alignment == 'right') mr-5 @endif" id='canvas' width="{{ $wheel->size }}" height="{{ $wheel->size }}" 
+    <canvas class="@if($wheel->alignment == 'left') ml-lg-5 ml-0 @endif @if($wheel->alignment == 'right') mr-5 @endif" id='canvas' width="{{ $wheel->size }}" height="{{ $wheel->size }}" 
         data-responsiveMargin="50" data-responsiveScaleHeight="true" data-responsiveminwidth="180" onClick="startSpin();" style="cursor: pointer;">
         Canvas not supported, use another browser.
     </canvas>
-
 </div>
+
+<div class="text-center">
+    <p>{!! $daily->parsed_description !!}</p>
+</div>
+
+@if(Auth::user())
+<div class="text-center">
+        <hr>
+        <small>
+            @if($daily->daily_timeframe == 'lifetime')
+            You will be able to collect rewards once.
+            @else
+            You will be able to collect rewards {!! $daily->daily_timeframe !!}.
+            @endif
+            @if(Auth::check() && isset($cooldown))
+            You can collect rewards {!! pretty_date($cooldown) !!}!
+            @endif
+        </small>
+    </div>
+@else
+    <div class="row mt-2 mb-2 justify-content-center">
+        <div class="alert alert-danger" role="alert">
+            You must be logged in to collect {{ __('dailies.dailies') }}!
+        </div>
+    </div>
+@endif
 
 @if($daily->progress_display != 'none')
 <div class="card mt-5">
@@ -79,7 +103,7 @@
     loadedImg.src = "{{ $wheel->wheelUrl }}";
 
     let wheelSpinning = false;
-    if("{{isset($cooldown)}}") {
+    if("{{isset($cooldown) || !Auth::user() }}") {
         //disable wheel if user is on cooldown
         $('#canvas').addClass('disabled')
     }
