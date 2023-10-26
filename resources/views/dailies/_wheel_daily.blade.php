@@ -10,10 +10,12 @@
     <div class="row justify-content-center {{ $wheel->marginAlignment() }}" style="width:{{ $wheel->size }}px;height:50px;">
         <img src="{{ $wheel->stopperUrl }}" style="width:50px;height:50px;">
     </div>
-    <canvas class="@if($wheel->alignment == 'left') ml-lg-5 ml-0 @endif @if($wheel->alignment == 'right') mr-5 @endif" id='canvas' width="{{ $wheel->size }}" height="{{ $wheel->size }}" 
-        data-responsiveMargin="50" data-responsiveScaleHeight="true" data-responsiveminwidth="180" onClick="startSpin();" style="cursor: pointer;">
-        Canvas not supported, use another browser.
-    </canvas>
+    <div id="#canvas-container" class="w-100 @if($wheel->alignment == 'left') ml-lg-5 ml-0 @endif @if($wheel->alignment == 'right') mr-5 @endif @if($wheel->alignment == 'center') m-auto @endif" style="max-width:{{ $wheel->size }}px;max-height:{{ $wheel->size}}px;">
+        <canvas class="" id='canvas' width="{{ $wheel->size }}" height="{{ $wheel->size }}" 
+            onClick="startSpin();" style="cursor: pointer;">
+            Canvas not supported, use another browser.
+        </canvas>
+    </div>
 </div>
 
 <div class="text-center">
@@ -74,6 +76,8 @@
 @endif
 @section('scripts')
 <script>
+
+    // initialize the wheel!
     let theWheel = new Winwheel({
         'numSegments': "{{ $wheel->segment_number }}", // Specify number of segments editable from admin panel
         'outerRadius': "{{ $wheel->size / 2 - 10 }}", // Set outer radius so wheel fits inside the background. Derived from size from admin panel.
@@ -85,8 +89,8 @@
         'textMargin': 5,
         'textFontFamily': 'monospace',
         'textLineWidth': 1,
+        'imageOverlay': true,
         'textFillStyle': 'black',
-        'responsive': true, // This wheel is responsive!
         'rotationAngle': (sessionStorage.getItem("rotationAngle")) ? parseInt(sessionStorage.getItem("rotationAngle")) : 0,
         'segments': {!! $wheel->segmentStyleReplace !!},
         'animation': // Specify the animation to use.
@@ -97,22 +101,38 @@
             'callbackFinished': alertPrize
         }
     });
-    // Create new image object in memory.
-    let loadedImg = new Image();
 
-    // Create callback to execute once the image has finished loading.
+    window.onresize = resize; // make the wheel responsive
+
+    // Load in the image if one was set
+    let loadedImg = new Image();
     loadedImg.onload = function() {
         theWheel.wheelImage = loadedImg; // Make wheelImage equal the loaded image object.
         theWheel.draw(); // Also call draw function to render the wheel.
     }
-
-    // Set the image source, once complete this will trigger the onLoad callback (above).
     loadedImg.src = "{{ $wheel->wheelUrl }}";
 
+    //it is not spinning right now
     let wheelSpinning = false;
+
+    //disable wheel if user is on cooldown or not logged in
     if("{{isset($cooldown) || !Auth::user() }}") {
-        //disable wheel if user is on cooldown
         $('#canvas').addClass('disabled')
+    }
+
+    //resize initially
+    resize();
+    function resize () {
+        var container = document.getElementById("#canvas-container");
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientWidth;
+        theWheel.outerRadius = container.clientWidth/2 - 10;
+        theWheel.centerX = container.clientWidth / 2;
+        theWheel.centerY = container.clientHeight / 2;
+        loadedImg.width = container.clientWidth;
+        loadedImg.height = container.clientWidth;
+        theWheel.wheelImage = loadedImg; 
+        theWheel.draw()
     }
 
     // spin the wheel!
@@ -148,7 +168,6 @@
     // Called when the animation has finished.
     function alertPrize(indicatedSegment) {
         // Do basic alert of the segment text.
-        console.log("The segment is " + indicatedSegment.number);
         //ajax call to the backend to roll the daily reward
         $.ajax({
             type: "POST",
@@ -156,8 +175,6 @@
             data: {daily_id: "{{$daily->id}}", step: indicatedSegment.number, _token: '{{csrf_token()}}'},
         }).done(function(res) {
             // we dont want the wheel to reset after a spin
-            console.log("The segment is " + theWheel.getRotationPosition());
-
             sessionStorage.setItem("rotationAngle", theWheel.getRotationPosition());
             window.location.reload();
         }).fail(function(jqXHR, textStatus, errorThrown) {
