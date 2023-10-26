@@ -1,8 +1,11 @@
-<div class="text-{{ $wheel->alignment }} h-auto w-100" style="background-size:cover; background-image:url('{{$wheel->backgroundUrl}}');">
+
+
+<div class="text-{{ $wheel->alignment }}" style="background-size:cover; background-image:url('{{$wheel->backgroundUrl}}');">
     <div class="row justify-content-center {{ $wheel->marginAlignment() }}" style="width:{{ $wheel->size }}px;height:50px;">
         <img src="{{ $wheel->stopperUrl }}" style="width:50px;height:50px;">
     </div>
-    <canvas class="@if($wheel->alignment == 'left') ml-5 @endif @if($wheel->alignment == 'right') mr-5 @endif" id='canvas' width="{{$wheel->size}}" height="{{$wheel->size}}" data-responsiveMargin="60" onClick="startSpin();">
+    <canvas class="@if($wheel->alignment == 'left') ml-lg-5 ml-2 @endif @if($wheel->alignment == 'right') mr-5 @endif" id='canvas' width="{{ $wheel->size }}" height="{{ $wheel->size }}" 
+        data-responsiveMargin="50" data-responsiveScaleHeight="true" data-responsiveminwidth="180" onClick="startSpin();" style="cursor: pointer;">
         Canvas not supported, use another browser.
     </canvas>
 
@@ -53,7 +56,7 @@
         'textLineWidth': 1,
         'textFillStyle': 'black',
         'responsive': true, // This wheel is responsive!
-
+        'rotationAngle': (sessionStorage.getItem("rotationAngle")) ? parseInt(sessionStorage.getItem("rotationAngle")) : 0,
         'segments': {!! $wheel->segmentStyleReplace !!},
         'animation': // Specify the animation to use.
         {
@@ -63,7 +66,6 @@
             'callbackFinished': alertPrize
         }
     });
-
     // Create new image object in memory.
     let loadedImg = new Image();
 
@@ -77,17 +79,23 @@
     loadedImg.src = "{{ $wheel->wheelUrl }}";
 
     let wheelSpinning = false;
+    if("{{isset($cooldown)}}") {
+        //disable wheel if user is on cooldown
+        $('#canvas').addClass('disabled')
+    }
 
     // spin the wheel!
     function startSpin() {
         // Ensure that spinning can't be clicked again while already running.
-        if (wheelSpinning == false) {
+        if (wheelSpinning == false && !$('#canvas').hasClass('disabled')) {
+            // reset to 0 so it always spins well
+            theWheel.rotationAngle = 0;
             // Based on the power level selected adjust the number of spins for the wheel, the more times is has
             // to rotate with the duration of the animation the quicker the wheel spins.
             theWheel.animation.spins = 5;
 
             // Disable the spin button so can't click again while wheel is spinning.
-            document.getElementById('canvas').disabled = true;
+            $('#canvas').addClass('disabled');
 
             // Begin the spin animation by calling startAnimation on the wheel object.
             theWheel.startAnimation();
@@ -109,8 +117,21 @@
     // Called when the animation has finished.
     function alertPrize(indicatedSegment) {
         // Do basic alert of the segment text.
-        alert("The segment is " + indicatedSegment.number);
+        console.log("The segment is " + indicatedSegment.number);
+        //ajax call to the backend to roll the daily reward
+        $.ajax({
+            type: "POST",
+            url: "{{ url(__('dailies.dailies').'/'. $daily->id) }}",
+            data: {daily_id: "{{$daily->id}}", step: indicatedSegment.number, _token: '{{csrf_token()}}'},
+        }).done(function(res) {
+            // we dont want the wheel to reset after a spin
+            console.log("The segment is " + theWheel.getRotationPosition());
 
+            sessionStorage.setItem("rotationAngle", theWheel.getRotationPosition());
+            window.location.reload();
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            alert("AJAX call failed: " + textStatus + ", " + errorThrown);
+        });
         resetWheel();
     }
 </script>

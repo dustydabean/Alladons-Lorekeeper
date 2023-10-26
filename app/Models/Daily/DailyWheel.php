@@ -183,10 +183,10 @@ class DailyWheel extends Model
     {
         switch ($this->alignment) {
             case 'left':
-                return 'mr-auto ml-5';
+                return 'mr-auto ml-lg-5 ml-0';
                 break;
             case 'right':
-                return 'ml-auto mr-5';
+                return 'ml-auto mr-lg-5 mr-0';
                 break;
             case 'center':
                 return 'm-auto';

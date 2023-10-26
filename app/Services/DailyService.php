@@ -354,7 +354,11 @@ class DailyService extends Service
             }
 
             //build reward data to the correct format used for grants, make sure to only grant the current step
-            $dailyRewards = $daily->rewards()->where('step', $dailyTimer->step)->get();
+            if($daily->type == 'Wheel') // wheel actually always gets the step sent from the ajax call/wheel spin (segment that was hit)
+                $dailyRewards = $daily->rewards()->where('step', $data['step'])->get();
+            else //other dailies just grab whatever step they are at!
+                $dailyRewards = $daily->rewards()->where('step', $dailyTimer->step)->get();
+
             //if there is no reward, check if step 0 rewards (Default) are set and pick that instead
             if ($dailyRewards->count() <= 0) $dailyRewards = $daily->rewards()->where('step', 0)->get();
 
@@ -399,6 +403,7 @@ class DailyService extends Service
         $maxStep = $daily->maxStep;
 
         //if streak daily, check if a day was missed and if so, set dailytimer step to 1
+        if ($daily->type == 'Wheel') return 0;
         if ($daily->is_streak && !$this->isActiveStreak($daily, $dailyTimer)) return 1;
         if ($step == $maxStep) return 1;
         if ($step < $maxStep) return $step += 1;
