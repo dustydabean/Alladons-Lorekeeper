@@ -241,12 +241,12 @@ class DailyService extends Service
                 'wheel_extension' => $data['wheel_extension'] ?? null,
                 'background_extension' => $data['background_extension'] ?? null,
                 'stopper_extension' => $data['stopper_extension'] ?? null,
-                'size' => $data['size'],
-                'alignment' => $data['alignment'],
-                'segment_number' => $data['segment_number'],
+                'size' => $data['size'] ?? 400,
+                'alignment' => $data['alignment'] ?? 'center',
+                'segment_number' => $data['segment_number'] ?? 4,
                 'segment_style' => $this->populateSegmentStyle($data),
-                'text_orientation' => $data['text_orientation'],
-                'text_fontsize' => $data['text_fontsize'],
+                'text_orientation' => $data['text_orientation'] ?? 'curved',
+                'text_fontsize' => $data['text_fontsize'] ?? '18',
             ]);
             return $wheel;
         }
@@ -524,13 +524,15 @@ class DailyService extends Service
 
     private function handleImages($data, $daily, $wheel)
     {
-        if ($daily->type == 'Button') {
-            $image = null;
-            if (isset($data['image']) && $data['image']) {
+        $image = null;
+        if (isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
                 $image = $data['image'];
                 unset($data['image']);
-            }
+        }
+        if ($image) $this->handleImage($image, $daily->dailyImagePath, $daily->dailyImageFileName);
+
+        if ($daily->type == 'Button') {
 
             $buttonImage = null;
             if (isset($data['button_image']) && $data['button_image']) {
@@ -539,7 +541,6 @@ class DailyService extends Service
                 unset($data['button_image']);
             }
 
-            if ($image) $this->handleImage($image, $daily->dailyImagePath, $daily->dailyImageFileName);
             if ($buttonImage) $this->handleImage($buttonImage, $daily->dailyImagePath, $daily->buttonImageFileName);
         }
 

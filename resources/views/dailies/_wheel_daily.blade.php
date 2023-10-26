@@ -1,4 +1,11 @@
 
+
+<div class="text-center">
+    @if($daily->has_image && !$wheel->backgroundUrl)
+    <img src="{{ $daily->dailyImageUrl }}" style="max-width:100%" alt="{{ $daily->name }}" />
+    @endif
+</div>
+
 <div class="text-{{ $wheel->alignment }}" style="background-size:cover; background-image:url('{{$wheel->backgroundUrl}}');">
     <div class="row justify-content-center {{ $wheel->marginAlignment() }}" style="width:{{ $wheel->size }}px;height:50px;">
         <img src="{{ $wheel->stopperUrl }}" style="width:50px;height:50px;">

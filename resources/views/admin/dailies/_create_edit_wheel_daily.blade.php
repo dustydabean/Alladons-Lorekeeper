@@ -58,6 +58,21 @@
 <p> The images for the wheel! Keep in mind that if you use an image as the wheel, the segments must align with how a non-image wheel would look like, or your reward distribution will be off.</p>
 <div class="card-body row">
     <div class="form-group col-md-6">
+        @if($daily->has_image)
+        <a href="{{$daily->imageUrl}}"><img src="{{$daily->dailyImageUrl}}" class="mw-100 float-left mr-3"
+                style="max-height:125px"></a>
+        @endif
+        {!! Form::label(__('dailies.daily').' Image (Optional)') !!} {!! add_help('This image is used on the '.__('dailies.daily').' index and above the wheel IF no background is set.') !!}
+        <div>{!! Form::file('image') !!}</div>
+        <div class="text-muted">Recommended size: None (Choose a standard size for all {{__('dailies.daily')}} images). File type: png.</div>
+        @if($daily->has_image)
+        <div class="form-check">
+            {!! Form::checkbox('remove_image', 1, false, ['class' => 'form-check-input', 'data-toggle' => 'toggle',
+            'data-off' => 'Leave Daily Image As-Is', 'data-on' => 'Remove Daily Image']) !!}
+        </div>
+        @endif
+    </div>
+    <div class="form-group col-md-6">
         @if($wheel?->wheel_extension)
         <a href="{{$wheel->wheelUrl}}"><img src="{{$wheel->wheelUrl}}" class="mw-100 float-left mr-3"
                 style="max-height:125px"></a>
@@ -95,7 +110,7 @@
         <a href="{{$wheel->backgroundUrl}}"><img src="{{$wheel->backgroundUrl}}"
                 class="mw-100 float-left mr-3" style="max-height:125px"></a>
         @endif
-        {!! Form::label('Background Image (Optional)') !!}
+        {!! Form::label('Background Image (Optional)') !!} {!! add_help('This image is used as a wheel background and will take the place of the daily image.') !!}
         <div>{!! Form::file('background_image') !!}</div>
         <div class="text-muted">Recommended size: Any, just play around until it looks good!</div>
         @if(isset($wheel?->background_extension))

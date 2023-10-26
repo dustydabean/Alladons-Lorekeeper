@@ -9,6 +9,7 @@
     {{ $daily->name }}
 </h1>
 
+
 @if($daily->type == 'Wheel' && $daily->wheel)
 @include('dailies._wheel_daily', ['wheel' => $daily->wheel])
 @endif
