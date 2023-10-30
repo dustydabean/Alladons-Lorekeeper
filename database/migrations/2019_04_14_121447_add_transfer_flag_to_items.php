@@ -1,18 +1,14 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-class AddTransferFlagToItems extends Migration
-{
+class AddTransferFlagToItems extends Migration {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
-    {
+    public function up() {
         Schema::table('items', function (Blueprint $table) {
             // Flag for whether the item can be transferred between users.
             // This flag can be overridden when the item is granted to users,
@@ -23,11 +19,8 @@ class AddTransferFlagToItems extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
-    {
+    public function down() {
         Schema::table('items', function (Blueprint $table) {
             //
             $table->dropColumn('allow_transfer');

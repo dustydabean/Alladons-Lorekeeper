@@ -1,19 +1,15 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-class MakeCharacterImageIdNullable extends Migration
-{
+class MakeCharacterImageIdNullable extends Migration {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
-    {
-        // Realised I couldn't attach an image to a character without making either the 
+    public function up() {
+        // Realised I couldn't attach an image to a character without making either the
         // character's image ID nullable, or making the image's character ID nullable...
         // Also, since characters can now be credited to users who don't have an
         // account, make this column nullable.
@@ -37,7 +33,7 @@ class MakeCharacterImageIdNullable extends Migration
         // Modifying these to log user alias,
         // since characters created before the site was created will
         // need to be credited to users who don't have an account
-        // and new sales may need to be credited to users before they 
+        // and new sales may need to be credited to users before they
         // create an account.
         // However, retaining the recipient ID since characters
         // may also need to be logged to an account without an alias.
@@ -67,11 +63,8 @@ class MakeCharacterImageIdNullable extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
-    {
+    public function down() {
         //
         Schema::table('character_features', function (Blueprint $table) {
             $table->dropColumn('data');
@@ -106,7 +99,7 @@ class MakeCharacterImageIdNullable extends Migration
         Schema::table('characters', function (Blueprint $table) {
             $table->integer('user_id')->unsigned();
             $table->integer('character_image_id')->unsigned();
-            
+
             $table->foreign('user_id')->references('id')->on('users');
         });
     }

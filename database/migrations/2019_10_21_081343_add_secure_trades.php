@@ -1,18 +1,14 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-class AddSecureTrades extends Migration
-{
+class AddSecureTrades extends Migration {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
-    {
+    public function up() {
         //
         Schema::create('trades', function (Blueprint $table) {
             $table->engine = 'InnoDB';
@@ -27,7 +23,7 @@ class AddSecureTrades extends Migration
             $table->boolean('is_recipient_confirmed')->default(0);
             $table->boolean('is_confirmed')->default(0);
             $table->boolean('is_approved')->default(0);
-            
+
             // Reason for the transfer being rejected by a mod
             $table->text('reason')->nullable()->default(null);
 
@@ -40,16 +36,12 @@ class AddSecureTrades extends Migration
             // Fill this with a trade ID so we can tell if the character is busy
             $table->integer('trade_id')->unsigned()->nullable()->default(null);
         });
-
-    } 
+    }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
-    {
+    public function down() {
         //
         Schema::table('characters', function (Blueprint $table) {
             $table->dropColumn('trade_id');

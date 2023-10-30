@@ -2,18 +2,16 @@
 
 namespace App\Models\Species;
 
-use Config;
 use App\Models\Model;
 
-class Subtype extends Model
-{
+class Subtype extends Model {
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'species_id', 'name', 'sort', 'has_image', 'description', 'parsed_description'
+        'species_id', 'name', 'sort', 'has_image', 'description', 'parsed_description',
     ];
 
     /**
@@ -22,58 +20,55 @@ class Subtype extends Model
      * @var string
      */
     protected $table = 'subtypes';
-    
-    
-    /**
-     * Validation rules for creation.
-     *
-     * @var array
-     */
-    public static $createRules = [
-        'species_id' => 'required',
-        'name' => 'required|between:3,100',
-        'description' => 'nullable',
-        'image' => 'mimes:png',
-    ];
-    
-    
-    /**
-     * Validation rules for updating.
-     *
-     * @var array
-     */
-    public static $updateRules = [
-        'species_id' => 'required',
-        'name' => 'required|between:3,100',
-        'description' => 'nullable',
-        'image' => 'mimes:png',
-    ];
-    
+
     /**
      * Accessors to append to the model.
      *
      * @var array
      */
     protected $appends = [
-        'name_with_species'
+        'name_with_species',
+    ];
+
+    /**
+     * Validation rules for creation.
+     *
+     * @var array
+     */
+    public static $createRules = [
+        'species_id'  => 'required',
+        'name'        => 'required|between:3,100',
+        'description' => 'nullable',
+        'image'       => 'mimes:png',
+    ];
+
+    /**
+     * Validation rules for updating.
+     *
+     * @var array
+     */
+    public static $updateRules = [
+        'species_id'  => 'required',
+        'name'        => 'required|between:3,100',
+        'description' => 'nullable',
+        'image'       => 'mimes:png',
     ];
 
     /**********************************************************************************************
-    
+
         RELATIONS
 
     **********************************************************************************************/
-    
+
     /**
      * Get the species the subtype belongs to.
      */
-    public function species() 
-    {
+    public function species() {
         return $this->belongsTo('App\Models\Species\Species', 'species_id');
     }
 
     /**********************************************************************************************
-    
+
         ACCESSORS
 
     **********************************************************************************************/
@@ -83,18 +78,16 @@ class Subtype extends Model
      *
      * @return string
      */
-    public function getNameWithSpeciesAttribute()
-    {
-        return $this->name . ' [' . $this->species->name . ' Subtype]';
+    public function getNameWithSpeciesAttribute() {
+        return $this->name.' ['.$this->species->name.' Subtype]';
     }
-    
+
     /**
      * Displays the model's name, linked to its encyclopedia page.
      *
      * @return string
      */
-    public function getDisplayNameAttribute()
-    {
+    public function getDisplayNameAttribute() {
         return '<a href="'.$this->url.'" class="display-subtype">'.$this->name.'</a>';
     }
 
@@ -103,8 +96,7 @@ class Subtype extends Model
      *
      * @return string
      */
-    public function getImageDirectoryAttribute()
-    {
+    public function getImageDirectoryAttribute() {
         return 'images/data/subtypes';
     }
 
@@ -113,9 +105,8 @@ class Subtype extends Model
      *
      * @return string
      */
-    public function getSubtypeImageFileNameAttribute()
-    {
-        return $this->id . '-image.png';
+    public function getSubtypeImageFileNameAttribute() {
+        return $this->id.'-image.png';
     }
 
     /**
@@ -123,20 +114,21 @@ class Subtype extends Model
      *
      * @return string
      */
-    public function getSubtypeImagePathAttribute()
-    {
+    public function getSubtypeImagePathAttribute() {
         return public_path($this->imageDirectory);
     }
-    
+
     /**
      * Gets the URL of the model's image.
      *
      * @return string
      */
-    public function getSubtypeImageUrlAttribute()
-    {
-        if (!$this->has_image) return null;
-        return asset($this->imageDirectory . '/' . $this->subtypeImageFileName);
+    public function getSubtypeImageUrlAttribute() {
+        if (!$this->has_image) {
+            return null;
+        }
+
+        return asset($this->imageDirectory.'/'.$this->subtypeImageFileName);
     }
 
     /**
@@ -144,8 +136,7 @@ class Subtype extends Model
      *
      * @return string
      */
-    public function getUrlAttribute()
-    {
+    public function getUrlAttribute() {
         return url('world/subtypes?name='.$this->name);
     }
 
@@ -154,8 +145,7 @@ class Subtype extends Model
      *
      * @return string
      */
-    public function getSearchUrlAttribute()
-    {
+    public function getSearchUrlAttribute() {
         return url('masterlist?subtype_id='.$this->id);
     }
 }
