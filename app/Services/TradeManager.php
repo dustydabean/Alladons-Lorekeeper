@@ -387,13 +387,10 @@ class TradeManager extends Service {
                     'trade_id' => $trade->id,
                 ]);
 
-<<<<<<< HEAD
-=======
                 if (!$this->logAdminAction($user, 'Rejected Trade', 'Rejected trade <a href="'.$trade->url.'">#'.$trade->id.'</a>')) {
                     throw new \Exception('Failed to log admin action.');
                 }
 
->>>>>>> 0bd8f60b4c180aa79b99b732be933ad2eeed2a5f
                 $trade->reason = $data['reason'] ?? '';
                 $trade->status = 'Rejected';
                 $trade->staff_id = $user->id;
@@ -431,12 +428,8 @@ class TradeManager extends Service {
             // First return any item stacks attached to the trade
 
             if (isset($tradeData[$type]['user_items'])) {
-<<<<<<< HEAD
-                foreach ($tradeData[$type]['user_items'] as $userItemId=>$quantity) {
-=======
                 foreach ($tradeData[$type]['user_items'] as $userItemId=> $quantity) {
                     $quantity = (int) $quantity;
->>>>>>> 0bd8f60b4c180aa79b99b732be933ad2eeed2a5f
                     $userItemRow = UserItem::find($userItemId);
                     if (!$userItemRow) {
                         throw new \Exception('Cannot return an invalid item. ('.$userItemId.')');
@@ -453,12 +446,8 @@ class TradeManager extends Service {
             // This is stored in the data attribute
             $currencyManager = new CurrencyManager;
             if (isset($tradeData[$type]['currencies'])) {
-<<<<<<< HEAD
-                foreach ($tradeData[$type]['currencies'] as $currencyId=>$quantity) {
-=======
                 foreach ($tradeData[$type]['currencies'] as $currencyId=> $quantity) {
                     $quantity = (int) $quantity;
->>>>>>> 0bd8f60b4c180aa79b99b732be933ad2eeed2a5f
                     $currencyManager->creditCurrency(null, $user, null, null, $currencyId, $quantity);
                 }
             }
@@ -484,11 +473,7 @@ class TradeManager extends Service {
                     if (!$stack->item->allow_transfer || isset($stack->data['disallow_transfer'])) {
                         throw new \Exception('One or more of the selected items cannot be transferred.');
                     }
-<<<<<<< HEAD
-                    $stack->trade_count += $data['stack_quantity'][$stackId];
-=======
                     $stack->trade_count += intval($data['stack_quantity'][$stackId]);
->>>>>>> 0bd8f60b4c180aa79b99b732be933ad2eeed2a5f
                     $stack->save();
 
                     addAsset($userAssets, $stack, intval($data['stack_quantity'][$stackId]));
@@ -507,20 +492,12 @@ class TradeManager extends Service {
                 //dd([$data['currency_id'], $data['currency_quantity']]);
                 $data['currency_id'] = $data['currency_id']['user-'.$user->id];
                 $data['currency_quantity'] = $data['currency_quantity']['user-'.$user->id];
-<<<<<<< HEAD
-                foreach ($data['currency_id'] as $key=>$currencyId) {
-=======
                 foreach ($data['currency_id'] as $key=> $currencyId) {
->>>>>>> 0bd8f60b4c180aa79b99b732be933ad2eeed2a5f
                     $currency = Currency::where('allow_user_to_user', 1)->where('id', $currencyId)->first();
                     if (!$currency) {
                         throw new \Exception('Invalid currency selected.');
                     }
-<<<<<<< HEAD
-                    if (!$currencyManager->debitCurrency($user, null, null, null, $currency, $data['currency_quantity'][$key])) {
-=======
                     if (!$currencyManager->debitCurrency($user, null, null, null, $currency, intval($data['currency_quantity'][$key]))) {
->>>>>>> 0bd8f60b4c180aa79b99b732be933ad2eeed2a5f
                         throw new \Exception('Invalid currency/quantity selected.');
                     }
 
@@ -590,10 +567,7 @@ class TradeManager extends Service {
             foreach (['sender', 'recipient'] as $type) {
                 if (isset($tradeData[$type]['user_items'])) {
                     foreach ($tradeData[$type]['user_items'] as $userItemId => $quantity) {
-<<<<<<< HEAD
-=======
                         $quantity = (int) $quantity;
->>>>>>> 0bd8f60b4c180aa79b99b732be933ad2eeed2a5f
                         $userItemRow = UserItem::find($userItemId);
                         if (!$userItemRow) {
                             throw new \Exception('Cannot return an invalid item. ('.$userItemId.')');
@@ -612,10 +586,7 @@ class TradeManager extends Service {
             foreach (['sender', 'recipient'] as $type) {
                 if (isset($tradeData[$type]['currencies'])) {
                     foreach ($tradeData[$type]['currencies'] as $currencyId => $quantity) {
-<<<<<<< HEAD
-=======
                         $quantity = (int) $quantity;
->>>>>>> 0bd8f60b4c180aa79b99b732be933ad2eeed2a5f
                         $currency = Currency::find($currencyId);
                         if (!$currency) {
                             throw new \Exception('Cannot return an invalid currency. ('.$currencyId.')');
@@ -666,17 +637,10 @@ class TradeManager extends Service {
                     $inventoryManager->moveStack($trade->sender, $trade->recipient, 'Trade', ['data' => 'Received in trade [<a href="'.$trade->url.'">#'.$trade->id.'</a>]'], $stack, $quantity);
                     $userItemRow = UserItem::find($stack->id);
                     if (!$userItemRow) {
-<<<<<<< HEAD
-                        throw new \Exception('Cannot return an invalid item. ('.$userItemId.')');
-                    }
-                    if ($userItemRow->trade_count < $quantity) {
-                        throw new \Exception('Cannot return more items than was held. ('.$userItemId.')');
-=======
                         throw new \Exception('Cannot return an invalid item. ('.$userItemRow->id.')');
                     }
                     if ($userItemRow->trade_count < $quantity) {
                         throw new \Exception('Cannot return more items than was held. ('.$userItemRow->id.')');
->>>>>>> 0bd8f60b4c180aa79b99b732be933ad2eeed2a5f
                     }
                     $userItemRow->trade_count -= $quantity;
                     $userItemRow->save();
@@ -689,17 +653,10 @@ class TradeManager extends Service {
                     $inventoryManager->moveStack($trade->recipient, $trade->sender, 'Trade', ['data' => 'Received in trade [<a href="'.$trade->url.'">#'.$trade->id.'</a>]'], $stack, $quantity);
                     $userItemRow = UserItem::find($stack->id);
                     if (!$userItemRow) {
-<<<<<<< HEAD
-                        throw new \Exception('Cannot return an invalid item. ('.$userItemId.')');
-                    }
-                    if ($userItemRow->trade_count < $quantity) {
-                        throw new \Exception('Cannot return more items than was held. ('.$userItemId.')');
-=======
                         throw new \Exception('Cannot return an invalid item. ('.$userItemRow->id.')');
                     }
                     if ($userItemRow->trade_count < $quantity) {
                         throw new \Exception('Cannot return more items than was held. ('.$userItemRow->id.')');
->>>>>>> 0bd8f60b4c180aa79b99b732be933ad2eeed2a5f
                     }
                     $userItemRow->trade_count -= $quantity;
                     $userItemRow->save();
@@ -731,10 +688,7 @@ class TradeManager extends Service {
                 $recipientType = ($type == 'sender') ? 'recipient' : 'sender';
                 if (isset($tradeData[$type]['currencies'])) {
                     foreach ($tradeData[$type]['currencies'] as $currencyId => $quantity) {
-<<<<<<< HEAD
-=======
                         $quantity = (int) $quantity;
->>>>>>> 0bd8f60b4c180aa79b99b732be933ad2eeed2a5f
                         $currency = Currency::find($currencyId);
                         if (!$currency) {
                             throw new \Exception('Cannot credit an invalid currency. ('.$currencyId.')');
