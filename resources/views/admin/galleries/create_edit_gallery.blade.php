@@ -105,7 +105,7 @@
         @foreach ($gallery->criteria as $criterion)
             <div class="card p-3 mb-2 pl-0">
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                    <a class="col-1 p-0" data-toggle="collapse" href="#collapsable-{{$criterion->id}}">
+                    <a class="col-1 p-0" data-toggle="collapse" href="#collapsable-{{ $criterion->id }}">
                         <i class="fas fa-angle-down" style="font-size: 24px"></i>
                     </a>
                     <div class="flex-grow-1 mr-2">
@@ -115,7 +115,7 @@
                         <button class="btn btn-danger delete-calc" type="button"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>
-                <div id="collapsable-{{$criterion->id}}" class="form collapse">
+                <div id="collapsable-{{ $criterion->id }}" class="form collapse">
                     @include('criteria._minimum_requirements', ['criterion' => $criterion->criterion, 'minRequirements' => $criterion->minRequirements, 'id' => $criterion->criterion_id])
                 </div>
             </div>
@@ -137,7 +137,7 @@
                 {!! Form::select('criterion_id[]', $criteria, null, ['class' => 'form-control criterion-select', 'placeholder' => 'Select a Criterion to set Minimum Requirements']) !!}
             </div>
             <div>
-               <button class="btn btn-danger delete-calc" type="button"><i class="fas fa-trash"></i></button>
+                <button class="btn btn-danger delete-calc" type="button"><i class="fas fa-trash"></i></button>
             </div>
         </div>
         <div id="collapsable-" class="form collapse">Select a criterion to populate this area.</div>
@@ -153,7 +153,7 @@
                 loadModal("{{ url('admin/data/galleries/delete') }}/{{ $gallery->id }}", 'Delete Gallery');
             });
 
-            $( ".datepicker" ).datetimepicker({
+            $(".datepicker").datetimepicker({
                 dateFormat: "yy-mm-dd",
                 timeFormat: 'HH:mm:ss',
             });
@@ -173,22 +173,24 @@
 
             $('.delete-calc').on('click', deleteCriterion);
 
-            function deleteCriterion (e) {
+            function deleteCriterion(e) {
                 e.preventDefault();
                 var toDelete = $(this).closest('.card');
                 toDelete.remove();
             }
 
-            function loadForm (e) {
+            function loadForm(e) {
                 var id = $(this).val();
-                if(id) {
+                if (id) {
                     var form = $(this).closest('.card').find('.form');
-                    form.load("{{ url('criteria') }}/" + id, ( response, status, xhr ) => {
-                        if ( status == "error" ) {
+                    form.load("{{ url('criteria') }}/" + id, (response, status, xhr) => {
+                        if (status == "error") {
                             var msg = "Error: ";
-                            console.error( msg + xhr.status + " " + xhr.statusText );
+                            console.error(msg + xhr.status + " " + xhr.statusText);
                         } else {
-                            form.find('[data-toggle=tooltip]').tooltip({html: true});
+                            form.find('[data-toggle=tooltip]').tooltip({
+                                html: true
+                            });
                             form.find('[data-toggle=toggle]').bootstrapToggle();
                         }
                     });

@@ -39,7 +39,7 @@
                                 <?php
                                 $tradesSent = $trades->where('sender_id', Auth::user()->id);
                                 $tradesReceived = $trades->where('recipient_id', Auth::user()->id);
-
+                                
                                 // Collect hold location IDs and quantities
                                 $holdLocations = [];
                                 if (isset($item->trade_count) && $item->trade_count > 0) {
@@ -68,7 +68,7 @@
                                         }
                                     }
                                 }
-
+                                
                                 // Format a string with all the places a stack is held
                                 $held = [];
                                 if (isset($holdLocations['trade'])) {

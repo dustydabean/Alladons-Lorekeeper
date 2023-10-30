@@ -79,14 +79,21 @@
             </div>
         @endif
 
-        @if(isset($submission->data['criterion']))
+        @if (isset($submission->data['criterion']))
             <h2 class="mt-5">Criteria Rewards</h2>
-            @foreach($submission->data['criterion'] as $key => $criterionData)
+            @foreach ($submission->data['criterion'] as $key => $criterionData)
                 <div class="card p-3 mb-2">
-                @php $criterion = \App\Models\Criteria\Criterion::where('id', $criterionData['id'])->first() @endphp
-                <h3>{!! $criterion->displayName !!}</h3>
-                {!! Form::hidden('criterion['.$key.'][id]', $criterionData['id']) !!}
-                @include('criteria._minimum_requirements', ['criterion' => $criterion, 'values' => $criterionData, 'minRequirements' => $submission->prompt->criteria->where('criterion_id', $criterionData['id'])->first()->minRequirements ?? null, 'title' => 'Selections', 'limitByMinReq' => true, 'id' => $key])
+                    @php $criterion = \App\Models\Criteria\Criterion::where('id', $criterionData['id'])->first() @endphp
+                    <h3>{!! $criterion->displayName !!}</h3>
+                    {!! Form::hidden('criterion[' . $key . '][id]', $criterionData['id']) !!}
+                    @include('criteria._minimum_requirements', [
+                        'criterion' => $criterion,
+                        'values' => $criterionData,
+                        'minRequirements' => $submission->prompt->criteria->where('criterion_id', $criterionData['id'])->first()->minRequirements ?? null,
+                        'title' => 'Selections',
+                        'limitByMinReq' => true,
+                        'id' => $key,
+                    ])
                 </div>
             @endforeach
         @endif
