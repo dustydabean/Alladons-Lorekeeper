@@ -23,7 +23,6 @@ class CurrencyLog extends Model {
      * @var string
      */
     protected $table = 'currencies_log';
-
     /**
      * Whether the model contains timestamps to be saved and updated.
      *

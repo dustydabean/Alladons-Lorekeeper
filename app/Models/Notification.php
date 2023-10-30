@@ -90,7 +90,6 @@ class Notification extends Model {
     public static function getNotificationId($type) {
         return constant('self::'.$type);
     }
-
     /**********************************************************************************************
 
         CONSTANTS
@@ -137,6 +136,8 @@ class Notification extends Model {
     public const BOOKMARK_IMAGE = 37;
     public const CHARACTER_TRANSFER_ACCEPTABLE = 38;
     public const BOOKMARK_GIFT_WRITING = 39;
+    public const USER_REACTIVATED = 103;
+    public const USER_DEACTIVATED = 104;
     public const REPORT_ASSIGNED = 220;
     public const REPORT_CLOSED = 221;
     public const COMMENT_MADE = 239;

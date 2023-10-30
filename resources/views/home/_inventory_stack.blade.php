@@ -41,7 +41,7 @@
             </thead>
             <tbody>
                 @foreach ($stack as $itemRow)
-                    <tr id ="itemRow{{ $itemRow->id }}" class="d-flex {{ $itemRow->isTransferrable ? '' : 'accountbound' }}">
+                    <tr id="itemRow{{ $itemRow->id }}" class="d-flex {{ $itemRow->isTransferrable ? '' : 'accountbound' }}">
                         @if ($user && !$readOnly && ($stack->first()->user_id == $user->id || $user->hasPower('edit_inventories')))
                             <td class="col-1">{!! Form::checkbox('ids[]', $itemRow->id, false, ['class' => 'item-check', 'onclick' => 'updateQuantities(this)']) !!}</td>
                             <td class="col-4">{!! array_key_exists('data', $itemRow->data) ? ($itemRow->data['data'] ? $itemRow->data['data'] : 'N/A') : 'N/A' !!}</td>
@@ -80,7 +80,7 @@
             <ul class="list-group list-group-flush">
                 @if (count($item->tags))
                     @foreach ($item->tags as $tag)
-                        @if (View::exists('inventory._' . $tag->tag))
+                        @if ($tag->is_active && View::exists('inventory._' . $tag->tag))
                             @include('inventory._' . $tag->tag, ['stack' => $stack, 'tag' => $tag])
                         @endif
                     @endforeach

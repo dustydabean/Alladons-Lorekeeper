@@ -134,7 +134,7 @@ class GalleryManager extends Service {
 
             if (isset($data['collaborator_id']) && $collaborators->count()) {
                 // Attach any collaborators to the submission
-                foreach ($data['collaborator_id'] as $key=>$collaborator) {
+                foreach ($data['collaborator_id'] as $key=> $collaborator) {
                     GalleryCollaborator::create([
                         'user_id'               => $collaborator,
                         'gallery_submission_id' => $submission->id,
@@ -155,7 +155,7 @@ class GalleryManager extends Service {
 
             if (isset($data['participant_id']) && $participants->count()) {
                 // Attach any participants to the submission
-                foreach ($data['participant_id'] as $key=>$participant) {
+                foreach ($data['participant_id'] as $key=> $participant) {
                     GalleryCollaborator::create([
                         'user_id'               => $participant,
                         'gallery_submission_id' => $submission->id,
@@ -209,6 +209,12 @@ class GalleryManager extends Service {
                 throw new \Exception('Please submit either text or an image.');
             }
 
+            if ($user->isStaff) {
+                if (!$this->logAdminAction($user, 'Edited Gallery Submission', 'Edited gallery submission '.$submission->displayName)) {
+                    throw new \Exception('Failed to log admin action.');
+                }
+            }
+
             // If still pending, perform validation on and process collaborators and participants
             if ($submission->status == 'Pending') {
                 // Check that associated collaborators exist
@@ -228,7 +234,7 @@ class GalleryManager extends Service {
 
                 if (isset($data['collaborator_id']) && $collaborators->count()) {
                     // Attach any collaborators to the submission
-                    foreach ($data['collaborator_id'] as $key=>$collaborator) {
+                    foreach ($data['collaborator_id'] as $key=> $collaborator) {
                         GalleryCollaborator::create([
                             'user_id'               => $collaborator,
                             'gallery_submission_id' => $submission->id,
@@ -253,7 +259,7 @@ class GalleryManager extends Service {
 
                 if (isset($data['participant_id']) && $participants->count()) {
                     // Attach any participants to the submission
-                    foreach ($data['participant_id'] as $key=>$participant) {
+                    foreach ($data['participant_id'] as $key=> $participant) {
                         GalleryCollaborator::create([
                             'user_id'               => $participant,
                             'gallery_submission_id' => $submission->id,
@@ -443,7 +449,7 @@ class GalleryManager extends Service {
             // Count up the existing votes to see if the required number has been reached
             $rejectSum = 0;
             $approveSum = 0;
-            foreach ($submission->voteData as $voter=>$vote) {
+            foreach ($submission->voteData as $voter=> $vote) {
                 if ($vote == 1) {
                     $rejectSum += 1;
                 }
@@ -454,10 +460,14 @@ class GalleryManager extends Service {
 
             // And if so, process the submission
             if ($action == 'reject' && $rejectSum >= $submission->gallery->votes_required) {
-                $this->rejectSubmission($submission);
+                $this->rejectSubmission($submission, $user);
             }
             if ($action == 'accept' && $approveSum >= $submission->gallery->votes_required) {
                 $this->acceptSubmission($submission);
+            }
+
+            if (!$this->logAdminAction($user, 'Voted on Gallery Submission', 'Voted on gallery submission '.$submission->displayName)) {
+                throw new \Exception('Failed to log admin action.');
             }
 
             return $this->commitReturn(true);
@@ -537,6 +547,12 @@ class GalleryManager extends Service {
                 throw new \Exception("You can't archive this submission.");
             }
 
+            if ($user->isStaff) {
+                if (!$this->logAdminAction($user, 'Archived Gallery Submission', 'Archived gallery submission '.$submission->displayName)) {
+                    throw new \Exception('Failed to log admin action.');
+                }
+            }
+
             if ($submission->is_visible) {
                 $submission->update(['is_visible' => 0]);
             } else {
@@ -585,7 +601,7 @@ class GalleryManager extends Service {
                 $awardQuantity = [];
                 $currency = [];
 
-                $shouldDivideRewards = Settings::get('gallery_rewards_divided') === '1';
+                $shouldDivideRewards = Settings::get('gallery_rewards_divided') == '1';
 
                 if (isset($data['criterion'])) {
                     foreach ($data['criterion'] as $criterionData) {
@@ -649,11 +665,15 @@ class GalleryManager extends Service {
                     'is_valued' => 1,
                 ]);
 
+                if (!$this->logAdminAction($user, 'Awarded Gallery Submission', 'Awarded gallery submission '.$submission->displayName)) {
+                    throw new \Exception('Failed to log admin action.');
+                }
+
                 // Send a notification to each user that received a currency award
-                foreach ($grantedList as $key=>$grantedUser) {
+                foreach ($grantedList as $key=> $grantedUser) {
                     Notifications::create('GALLERY_SUBMISSION_VALUED', $grantedUser, [
                         'currency_quantity' => $awardQuantity[$key],
-                        'currency_name'     => $currency[$key]->name,
+                        'currency_name'     => $currency->name,
                         'submission_title'  => $submission->title,
                         'submission_id'     => $submission->id,
                     ]);
@@ -725,6 +745,45 @@ class GalleryManager extends Service {
                     ]);
                 }
             }
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Processes rejection for a submission.
+     *
+     * @param \App\Models\Gallery\GallerySubmission $submission
+     * @param mixed                                 $user
+     *
+     * @return \App\Models\Gallery\GallerySubmission|bool
+     */
+    public function rejectSubmission($submission, $user) {
+        DB::beginTransaction();
+
+        try {
+            // Check that the submission exists and is pending
+            if (!$submission) {
+                throw new \Exception('Invalid submission selected.');
+            }
+            if ($submission->status != 'Pending') {
+                throw new \Exception("This submission isn't pending.");
+            }
+
+            if (!$this->logAdminAction($user, 'Rejected Gallery Submission', 'Rejected gallery submission '.$submission->displayName)) {
+                throw new \Exception('Failed to log admin action.');
+            }
+
+            $submission->update(['status' => 'Rejected']);
+
+            Notifications::create('GALLERY_SUBMISSION_REJECTED', $submission->user, [
+                'submission_title' => $submission->title,
+                'submission_id'    => $submission->id,
+            ]);
 
             return $this->commitReturn(true);
         } catch (\Exception $e) {
@@ -844,40 +903,6 @@ class GalleryManager extends Service {
                     }
                 }
             }
-
-            return $this->commitReturn(true);
-        } catch (\Exception $e) {
-            $this->setError('error', $e->getMessage());
-        }
-
-        return $this->rollbackReturn(false);
-    }
-
-    /**
-     * Processes rejection for a submission.
-     *
-     * @param \App\Models\Gallery\GallerySubmission $submission
-     *
-     * @return \App\Models\Gallery\GallerySubmission|bool
-     */
-    private function rejectSubmission($submission) {
-        DB::beginTransaction();
-
-        try {
-            // Check that the submission exists and is pending
-            if (!$submission) {
-                throw new \Exception('Invalid submission selected.');
-            }
-            if ($submission->status != 'Pending') {
-                throw new \Exception("This submission isn't pending.");
-            }
-
-            $submission->update(['status' => 'Rejected']);
-
-            Notifications::create('GALLERY_SUBMISSION_REJECTED', $submission->user, [
-                'submission_title' => $submission->title,
-                'submission_id'    => $submission->id,
-            ]);
 
             return $this->commitReturn(true);
         } catch (\Exception $e) {

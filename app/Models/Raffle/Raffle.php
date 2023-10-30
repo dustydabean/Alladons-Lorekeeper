@@ -11,7 +11,7 @@ class Raffle extends Model {
      * @var array
      */
     protected $fillable = [
-        'name', 'is_active', 'winner_count', 'group_id', 'order',
+        'name', 'is_active', 'winner_count', 'group_id', 'order', 'ticket_cap',
     ];
 
     /**
@@ -20,7 +20,6 @@ class Raffle extends Model {
      * @var string
      */
     protected $table = 'raffles';
-
     /**
      * Dates on the model to convert to Carbon instances.
      *
@@ -102,6 +101,24 @@ class Raffle extends Model {
      */
     public function getUrlAttribute() {
         return url('raffles/view/'.$this->id);
+    }
+
+    /**
+     * Gets the admin edit URL.
+     *
+     * @return string
+     */
+    public function getAdminUrlAttribute() {
+        return url('admin/raffles'); // Raffles are edited via a modal so don't have a unique raffle edit page
+    }
+
+    /**
+     * Gets the power required to edit this model.
+     *
+     * @return string
+     */
+    public function getAdminPowerAttribute() {
+        return 'manage_raffles';
     }
 
     /**********************************************************************************************

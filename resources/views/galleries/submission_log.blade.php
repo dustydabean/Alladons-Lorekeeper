@@ -173,7 +173,6 @@
         @endif
     </div>
 
-
     <script>
         $('input[name*=criterion]').on('change input', () => {
             const disabledInputs = $('input[name*=criterion]').filter('[disabled]');

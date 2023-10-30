@@ -21,7 +21,6 @@ class UserCharacterLog extends Model {
      * @var string
      */
     protected $table = 'user_character_log';
-
     /**
      * Whether the model contains timestamps to be saved and updated.
      *

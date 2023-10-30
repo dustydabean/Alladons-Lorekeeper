@@ -194,6 +194,7 @@ class GallerySubmission extends Model {
      * Scope a query to only include submissions the user has either submitted or collaborated on.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param mixed                                 $user
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -403,7 +404,7 @@ class GallerySubmission extends Model {
      */
     public function getCreditsAttribute() {
         if ($this->collaborators->count()) {
-            foreach ($this->collaborators as $count=>$collaborator) {
+            foreach ($this->collaborators as $count=> $collaborator) {
                 $collaboratorList[] = $collaborator->user->displayName;
             }
 
@@ -420,7 +421,7 @@ class GallerySubmission extends Model {
      */
     public function getCreditsPlainAttribute() {
         if ($this->collaborators->count()) {
-            foreach ($this->collaborators as $count=>$collaborator) {
+            foreach ($this->collaborators as $count=> $collaborator) {
                 $collaboratorList[] = $collaborator->user->name;
             }
 

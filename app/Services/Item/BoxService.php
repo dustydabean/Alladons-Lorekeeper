@@ -2,10 +2,7 @@
 
 namespace App\Services\Item;
 
-use App\Models\Currency\Currency;
 use App\Models\Item\Item;
-use App\Models\Loot\LootTable;
-use App\Models\Raffle\Raffle;
 use App\Services\InventoryManager;
 use App\Services\Service;
 use DB;
@@ -26,13 +23,7 @@ class BoxService extends Service {
      * @return array
      */
     public function getEditData() {
-        return [
-            'characterCurrencies' => Currency::where('is_character_owned', 1)->orderBy('sort_character', 'DESC')->pluck('name', 'id'),
-            'items'               => Item::orderBy('name')->pluck('name', 'id'),
-            'currencies'          => Currency::where('is_user_owned', 1)->orderBy('name')->pluck('name', 'id'),
-            'tables'              => LootTable::orderBy('name')->pluck('name', 'id'),
-            'raffles'             => Raffle::where('rolled_at', null)->where('is_active', 1)->orderBy('name')->pluck('name', 'id'),
-        ];
+        return [];
     }
 
     /**
@@ -124,7 +115,7 @@ class BoxService extends Service {
         DB::beginTransaction();
 
         try {
-            foreach ($stacks as $key=>$stack) {
+            foreach ($stacks as $key=> $stack) {
                 // We don't want to let anyone who isn't the owner of the box open it,
                 // so do some validation...
                 if ($stack->user_id != $user->id) {

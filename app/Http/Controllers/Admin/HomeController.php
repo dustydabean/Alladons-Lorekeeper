@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AdminLog;
 use App\Models\Character\CharacterDesignUpdate;
 use App\Models\Character\CharacterTransfer;
 use App\Models\Gallery\GalleryCriterion;
@@ -10,7 +11,11 @@ use App\Models\Gallery\GallerySubmission;
 use App\Models\Report\Report;
 use App\Models\Submission\Submission;
 use App\Models\Trade;
+use App\Models\User\User;
 use Auth;
+use Config;
+use DB;
+use Illuminate\Http\Request;
 use Settings;
 
 class HomeController extends Controller {
@@ -38,5 +43,66 @@ class HomeController extends Controller {
             'gallerySubmissionCount' => GallerySubmission::collaboratorApproved()->where('status', 'Pending')->count(),
             'galleryAwardCount'      => GallerySubmission::requiresAward()->where('is_valued', 0)->count(),
         ]);
+    }
+
+    /**
+     * Show admin logs.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getLogs(Request $request) {
+        // get all staff users so we can search by them
+        // have to check rank relation
+        $staff = User::whereHas('rank', function ($query) {
+            // check rank id = 1 OR the rank has existing relation powers
+            $query->where('id', 1)->orWhereHas('powers');
+        })->get()->pluck('name', 'id');
+
+        $query = AdminLog::query();
+
+        $data = $request->only(['user_id', 'action']);
+        if (isset($data['user_id']) && $data['user_id'] != '') {
+            $query->where('user_id', $data['user_id']);
+        }
+        if (isset($data['action']) && $data['action'] != '') {
+            $query->where('action', $data['action']);
+        }
+
+        $query->orderBy('created_at', 'DESC');
+
+        return view('admin.logs', [
+            'logs'    => $query->paginate(20)->appends($request->query()),
+            'staff'   => $staff,
+            'actions' => AdminLog::pluck('action', 'action')->unique(),
+        ]);
+    }
+
+    /**
+     * Shows the staff reward settings index.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getStaffRewardSettings() {
+        return view('admin.staff_reward_settings', [
+            'currency' => Currency::find(Config::get('lorekeeper.extensions.staff_rewards.currency_id')),
+            'settings' => DB::table('staff_actions')->orderBy('key')->paginate(20),
+        ]);
+    }
+
+    /**
+     * Edits a staff reward setting.
+     *
+     * @param string $key
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postEditStaffRewardSetting(Request $request, $key) {
+        if (DB::table('staff_actions')->where('key', $key)->update(['value' => $request->get('value')])) {
+            flash('Setting updated successfully.')->success();
+        } else {
+            flash('Invalid setting selected.')->success();
+        }
+
+        return redirect()->back();
     }
 }

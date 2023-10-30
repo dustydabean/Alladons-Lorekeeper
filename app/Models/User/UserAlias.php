@@ -12,7 +12,7 @@ class UserAlias extends Model {
      * @var array
      */
     protected $fillable = [
-        'user_id', 'site', 'alias', 'is_visible', 'is_primary_alias',
+        'user_id', 'site', 'alias', 'is_visible', 'is_primary_alias', 'user_snowflake',
     ];
 
     /**
@@ -26,7 +26,7 @@ class UserAlias extends Model {
 
         RELATIONS
 
-    **********************************************************************************************/
+     **********************************************************************************************/
 
     /**
      * Get the user this set of settings belongs to.
@@ -39,7 +39,7 @@ class UserAlias extends Model {
 
         SCOPES
 
-    **********************************************************************************************/
+     **********************************************************************************************/
 
     /**
      * Scope a query to only include visible aliases.
@@ -56,7 +56,7 @@ class UserAlias extends Model {
 
         ACCESSORS
 
-    **********************************************************************************************/
+     **********************************************************************************************/
 
     /**
      * Gets the URL for the user's account on a given site.
@@ -65,7 +65,9 @@ class UserAlias extends Model {
      */
     public function getUrlAttribute() {
         if ($this->site == 'tumblr') {
-            return 'https://'.$this->alias.Config::get('lorekeeper.sites.tumblr.link');
+            return 'https://'.$this->alias.'.'.Config::get('lorekeeper.sites.tumblr.link');
+        } elseif ($this->site == 'discord') {
+            return null;
         } else {
             return 'https://'.Config::get('lorekeeper.sites.'.$this->site.'.link').'/'.$this->alias;
         }
@@ -77,7 +79,11 @@ class UserAlias extends Model {
      * @return string
      */
     public function getDisplayAliasAttribute() {
-        return '<a href="'.$this->url.'">'.$this->alias.'@'.$this->siteDisplayName.'</a>';
+        if ($this->site == 'discord') {
+            return '<span>'.$this->alias.'@'.$this->siteDisplayName.'</span>';
+        } else {
+            return '<a href="'.$this->url.'">'.$this->alias.'@'.$this->siteDisplayName.'</a>';
+        }
     }
 
     /**

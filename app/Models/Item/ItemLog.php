@@ -23,7 +23,6 @@ class ItemLog extends Model {
      * @var string
      */
     protected $table = 'items_log';
-
     /**
      * Whether the model contains timestamps to be saved and updated.
      *

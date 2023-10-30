@@ -23,7 +23,6 @@ class Submission extends Model {
      * @var string
      */
     protected $table = 'submissions';
-
     /**
      * Whether the model contains timestamps to be saved and updated.
      *

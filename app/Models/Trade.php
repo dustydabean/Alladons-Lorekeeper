@@ -23,7 +23,6 @@ class Trade extends Model {
      * @var string
      */
     protected $table = 'trades';
-
     /**
      * Whether the model contains timestamps to be saved and updated.
      *

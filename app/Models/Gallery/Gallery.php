@@ -24,7 +24,6 @@ class Gallery extends Model {
      * @var string
      */
     protected $table = 'galleries';
-
     /**
      * Dates on the model to convert to Carbon instances.
      *
@@ -161,6 +160,24 @@ class Gallery extends Model {
      */
     public function getUrlAttribute() {
         return url('gallery/'.$this->id);
+    }
+
+    /**
+     * Gets the admin edit URL.
+     *
+     * @return string
+     */
+    public function getAdminUrlAttribute() {
+        return url('admin/data/galleries/edit/'.$this->id);
+    }
+
+    /**
+     * Gets the power required to edit this model.
+     *
+     * @return string
+     */
+    public function getAdminPowerAttribute() {
+        return 'edit_data';
     }
 
     /**

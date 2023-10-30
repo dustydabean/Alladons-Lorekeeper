@@ -3,6 +3,7 @@
 namespace App\Models\Gallery;
 
 use App\Models\Model;
+use Settings;
 
 class GalleryCollaborator extends Model {
     /**

@@ -9,6 +9,7 @@ use App\Models\Gallery\GallerySubmission;
 use App\Services\GalleryManager;
 use Auth;
 use Illuminate\Http\Request;
+use Settings;
 
 class GalleryController extends Controller {
     /**

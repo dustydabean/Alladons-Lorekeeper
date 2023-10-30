@@ -20,7 +20,6 @@ class CharacterProfile extends Model {
      * @var string
      */
     protected $table = 'character_profiles';
-
     /**
      * The primary key of the model.
      *

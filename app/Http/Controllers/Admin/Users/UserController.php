@@ -93,6 +93,12 @@ class UserController extends Controller {
         } elseif (!Auth::user()->canEditRank($user->rank)) {
             flash('You cannot edit the information of a user that has a higher rank than yourself.')->error();
         } else {
+            if (!(new UserService)->logAdminAction(Auth::user(), 'Edited User', 'Edited '.$user->displayname)) {
+                flash('Failed to log admin action.')->error();
+
+                return redirect()->back();
+            }
+
             $request->validate([
                 'name' => 'required|between:3,25',
             ]);
@@ -143,6 +149,12 @@ class UserController extends Controller {
                     }
                 }
             }
+            if (!(new UserService)->logAdminAction(Auth::user(), 'Edited User', 'Cleared '.$user->displayname.'\' alias')) {
+                flash('Failed to log admin action.')->error();
+
+                return redirect()->back();
+            }
+
             UserUpdateLog::create(['staff_id' => Auth::user()->id, 'user_id' => $user->id, 'data' => json_encode($logData), 'type' => 'Clear Alias']);
             flash('Cleared user\'s alias successfully.')->success();
         } else {
@@ -160,6 +172,12 @@ class UserController extends Controller {
         } elseif (!Auth::user()->canEditRank($user->rank)) {
             flash('You cannot edit the information of a user that has a higher rank than yourself.')->error();
         } elseif ($user->settings->update(['is_fto' => $request->get('is_fto') ?: 0])) {
+            if (!(new UserService)->logAdminAction(Auth::user(), 'Edited User', 'Edited '.$user->displayname)) {
+                flash('Failed to log admin action.')->error();
+
+                return redirect()->back();
+            }
+
             UserUpdateLog::create(['staff_id' => Auth::user()->id, 'user_id' => $user->id, 'data' => json_encode(['is_fto' => $request->get('is_fto') ? 'Yes' : 'No']), 'type' => 'FTO Status Change']);
             flash('Updated user\'s account information successfully.')->success();
         } else {
@@ -182,6 +200,11 @@ class UserController extends Controller {
 
         $formatDate = Carbon::parse($date);
         $logData = ['old_date' => $user->birthday ? $user->birthday->isoFormat('DD-MM-YYYY') : Carbon::now()->isoFormat('DD-MM-YYYY')] + ['new_date' => $date];
+        if (!(new UserService)->logAdminAction(Auth::user(), 'Edited User', 'Edited '.$user->displayname.' birthday')) {
+            flash('Failed to log admin action.')->error();
+
+            return redirect()->back();
+        }
 
         if ($service->updateBirthday($formatDate, $user)) {
             UserUpdateLog::create(['staff_id' => Auth::user()->id, 'user_id' => $user->id, 'data' => json_encode($logData), 'type' => 'Birth Date Change']);
@@ -299,6 +322,99 @@ class UserController extends Controller {
             flash('You cannot edit the information of a user that has a higher rank than yourself.')->error();
         } elseif ($service->unban($user, Auth::user())) {
             flash('User unbanned successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
+    }
+
+    /**
+     * Show a user's deactivate page.
+     *
+     * @param mixed $name
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getDeactivate($name) {
+        $user = User::where('name', $name)->first();
+
+        if (!$user) {
+            abort(404);
+        }
+
+        return view('admin.users.user_deactivate', [
+            'user' => $user,
+        ]);
+    }
+
+    /**
+     * Show a user's deactivate confirmation page.
+     *
+     * @param mixed $name
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getDeactivateConfirmation($name) {
+        $user = User::where('name', $name)->first();
+
+        if (!$user) {
+            abort(404);
+        }
+
+        return view('admin.users._user_deactivate_confirmation', [
+            'user' => $user,
+        ]);
+    }
+
+    public function postDeactivate(Request $request, UserService $service, $name) {
+        $user = User::where('name', $name)->with('settings')->first();
+        $wasDeactivated = $user->is_deactivated;
+        if (!$user) {
+            flash('Invalid user.')->error();
+        } elseif (!Auth::user()->canEditRank($user->rank)) {
+            flash('You cannot edit the information of a user that has a higher rank than yourself.')->error();
+        } elseif ($service->deactivate(['deactivate_reason' => $request->get('deactivate_reason')], $user, Auth::user())) {
+            flash($wasDeactivated ? 'User deactivation reason edited successfully.' : 'User deactivated successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
+    }
+
+    /**
+     * Show a user's reactivate confirmation page.
+     *
+     * @param mixed $name
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getReactivateConfirmation($name) {
+        $user = User::where('name', $name)->with('settings')->first();
+
+        if (!$user) {
+            abort(404);
+        }
+
+        return view('admin.users._user_reactivate_confirmation', [
+            'user' => $user,
+        ]);
+    }
+
+    public function postReactivate(Request $request, UserService $service, $name) {
+        $user = User::where('name', $name)->first();
+
+        if (!$user) {
+            flash('Invalid user.')->error();
+        } elseif (!Auth::user()->canEditRank($user->rank)) {
+            flash('You cannot edit the information of a user that has a higher rank than yourself.')->error();
+        } elseif ($service->reactivate($user, Auth::user())) {
+            flash('User reactivated successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();

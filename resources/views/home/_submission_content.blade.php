@@ -102,7 +102,8 @@
 <h2 class="mt-4">Characters</h2>
 @foreach ($submission->characters as $character)
     <div class="submission-character-row mb-2">
-        <div class="submission-character-thumbnail"><a href="{{ $character->character->url }}"><img src="{{ $character->character->image->thumbnailUrl }}" class="img-thumbnail" alt="Thumbnail for {{ $character->character->fullName }}" /></a></div>
+        <div class="submission-character-thumbnail"><a href="{{ $character->character->url }}"><img src="{{ $character->character->image->thumbnailUrl }}" class="img-thumbnail" alt="Thumbnail for {{ $character->character->fullName }}" /></a>
+        </div>
         <div class="submission-character-info card ml-2">
             <div class="card-body">
                 <div class="submission-character-info-content">
@@ -125,9 +126,7 @@
                                     @endforeach
                                 @endforeach
 
-                                {{--
-
-                            If you want to "Categorize" the rewards by type, uncomment this and comment or remove the above @foreach.
+                                {{-- If you want to "Categorize" the rewards by type, uncomment this and comment or remove the above @foreach.
 
                             @foreach (parseAssetData($character->data) as $key => $type)
                                 @if (count($type))
@@ -139,9 +138,7 @@
                                         </tr>
                                     @endforeach
                                 @endif
-                            @endforeach
-
-                            --}}
+                            @endforeach --}}
                             </tbody>
                         </table>
                     </div>

@@ -66,8 +66,10 @@
     </div>
     {!! Form::close() !!}
 
-    @include('widgets._character_select', ['characterCurrencies' => $characterCurrencies])
-    @include('widgets._loot_select_row', ['items' => $items, 'currencies' => $currencies, 'showLootTables' => false])
+    @include('widgets._character_select', [
+        'characterCurrencies' => \App\Models\Currency\Currency::where('is_character_owned', 1)->orderBy('sort_character', 'DESC')->pluck('name', 'id'),
+    ])
+    @include('widgets._loot_select_row', ['showLootTables' => false])
 
 
     <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog">
@@ -78,8 +80,8 @@
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <p>This will submit the form and put it into the {{ $isClaim ? 'claims' : 'prompt' }} approval queue. You will not be able to edit the contents after the {{ $isClaim ? 'claim' : 'submission' }} has been made. Click the Confirm button
-                        to complete the {{ $isClaim ? 'claim' : 'submission' }}.</p>
+                    <p>This will submit the form and put it into the {{ $isClaim ? 'claims' : 'prompt' }} approval queue. You will not be able to edit the contents after the {{ $isClaim ? 'claim' : 'submission' }} has been made. Click the Confirm
+                        button to complete the {{ $isClaim ? 'claim' : 'submission' }}.</p>
                     <div class="text-right">
                         <a href="#" id="formSubmit" class="btn btn-primary">Confirm</a>
                     </div>

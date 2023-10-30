@@ -35,6 +35,19 @@ class AccountController extends Controller {
     }
 
     /**
+     * Shows the deactivation page.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getDeactivated() {
+        if (!Auth::user()->is_deactivated) {
+            return redirect()->to('/');
+        } else {
+            return view('account.deactivated');
+        }
+    }
+
+    /**
      * Shows the user settings page.
      *
      * @return \Illuminate\Contracts\Support\Renderable
@@ -83,10 +96,16 @@ class AccountController extends Controller {
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postPassword(Request $request, UserService $service) {
+        $user = Auth::user();
+        if (!isset($user->password) && (!isset($user->email) || !isset($user->email_verified_at))) {
+            flash('Please set and verify an email before setting a password for email login.')->error();
+
+            return redirect()->back();
+        }
+
         $request->validate([
-            'old_password' => 'required|string',
             'new_password' => 'required|string|min:8|confirmed',
-        ]);
+        ] + (isset($user->password) ? ['old_password' => 'required|string'] : []));
         if ($service->updatePassword($request->only(['old_password', 'new_password', 'new_password_confirmation']), Auth::user())) {
             flash('Password updated successfully.')->success();
         } else {
@@ -179,7 +198,7 @@ class AccountController extends Controller {
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postClearNotifications($type = null) {
-        if (isset($type) && $type) {
+        if (isset($type)) {
             Auth::user()->notifications()->where('notification_type_id', $type)->delete();
         } else {
             Auth::user()->notifications()->delete();
@@ -279,6 +298,58 @@ class AccountController extends Controller {
     public function postRemoveAlias(LinkService $service, $id) {
         if ($service->removeAlias($id, Auth::user())) {
             flash('Your alias has been removed successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
+    }
+
+    /**
+     * Show a user's deactivate confirmation page.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getDeactivate() {
+        return view('account.deactivate');
+    }
+
+    /**
+     * Show a user's deactivate confirmation page.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getDeactivateConfirmation() {
+        return view('account._deactivate_confirmation');
+    }
+
+    public function postDeactivate(Request $request, UserService $service) {
+        $wasDeactivated = Auth::user()->is_deactivated;
+        if ($service->deactivate(['deactivate_reason' => $request->get('deactivate_reason')], Auth::user(), null)) {
+            flash($wasDeactivated ? 'Deactivation reason edited successfully.' : 'Your account has successfully been deactivated. We hope to see you again and wish you the best!')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
+    }
+
+    /**
+     * Show a user's reactivate confirmation page.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getReactivateConfirmation() {
+        return view('account._reactivate_confirmation');
+    }
+
+    public function postReactivate(Request $request, UserService $service) {
+        if ($service->reactivate(Auth::user(), null)) {
+            flash('You have reactivated successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();

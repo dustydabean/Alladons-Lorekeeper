@@ -20,7 +20,6 @@ class ShopLog extends Model {
      * @var string
      */
     protected $table = 'shop_log';
-
     /**
      * Whether the model contains timestamps to be saved and updated.
      *
