@@ -89,7 +89,7 @@
         'textMargin': 5,
         'textFontFamily': 'monospace',
         'textLineWidth': 1,
-        'imageOverlay': true,
+        'imageOverlay': false, //if ya want to see red lines of the wheel overlaid on the image set this to true but not in production!
         'textFillStyle': 'black',
         'rotationAngle': (sessionStorage.getItem("rotationAngle")) ? parseInt(sessionStorage.getItem("rotationAngle")) : 0,
         'segments': {!! $wheel->segmentStyleReplace !!},

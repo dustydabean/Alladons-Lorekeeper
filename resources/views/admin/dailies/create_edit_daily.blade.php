@@ -31,10 +31,21 @@ true]) !!}
     @endif
 </div>
 
-
 <div class="form-group">
     {!! Form::label('Description (Optional)') !!}
     {!! Form::textarea('description', $daily->description, ['class' => 'form-control wysiwyg']) !!}
+</div>
+
+<div class="row">
+    <div class="form-group col">
+        {!! Form::label('Fee') !!} {!! add_help('Add a fee here if the user should pay for rolling the daily.') !!}
+        {!! Form::text('fee', $daily->fee ?? 0, ['class' => 'form-control']) !!}
+
+    </div>
+    <div class="form-group col">
+        {!! Form::label('currency_id', 'Currency') !!} {!! add_help('Which currency the fee should be in.') !!}
+        {!! Form::select('currency_id', $currencies, $daily->currency_id ?? null, ['class' => 'form-control', 'placeholder' => 'Select Currency']) !!}
+    </div>
 </div>
 
 @if($daily->id)

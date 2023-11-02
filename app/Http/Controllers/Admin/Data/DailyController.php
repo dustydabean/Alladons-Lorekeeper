@@ -63,7 +63,7 @@ class DailyController extends Controller
     public function getEditDaily($id)
     {
         $daily = Daily::find($id);
-        if(!$daily) abort(404);
+        if (!$daily) abort(404);
 
 
         return view('admin.dailies.create_edit_daily', [
@@ -87,19 +87,18 @@ class DailyController extends Controller
     {
         $id ? $request->validate(Daily::$updateRules) : $request->validate(Daily::$createRules);
         $data = $request->only([
-            'name', 'description', 'image', 'button_image' ,'remove_image','remove_button_image', 'has_image', 'has_button_image', 'step', 'rewardable_type', 'rewardable_id', 'quantity', 
+            'name', 'description', 'image', 'button_image', 'remove_image', 'remove_button_image', 'has_image', 'has_button_image', 'step', 'rewardable_type', 'rewardable_id', 'quantity',
             'is_active', 'is_progressable', 'is_timed_daily', 'start_at', 'end_at', 'daily_timeframe', 'progress_display', 'is_loop', 'is_streak', 'type',
-            'wheel_image', 'background_image', 'stopper_image', 'remove_wheel', 'remove_background', 'remove_stopper', 'size', 'alignment', 'segment_number', 'segment_style', 'text_orientation', 'text_fontsize'
+            'wheel_image', 'background_image', 'stopper_image', 'remove_wheel', 'remove_background', 'remove_stopper', 'size', 'alignment', 'segment_number', 'segment_style', 'text_orientation', 'text_fontsize',
+            'fee', 'currency_id'
         ]);
-        if($id && $service->updateDaily(Daily::find($id), $data, Auth::user())) {
-            flash('The '.__('dailies.daily').' was updated successfully.')->success();
-        }
-        else if (!$id && $daily = $service->createDaily($data, Auth::user())) {
-            flash('The '.__('dailies.daily').' was created successfully.')->success();
-            return redirect()->to('admin/data/dailies/edit/'.$daily->id);
-        }
-        else {
-            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        if ($id && $service->updateDaily(Daily::find($id), $data, Auth::user())) {
+            flash('The ' . __('dailies.daily') . ' was updated successfully.')->success();
+        } else if (!$id && $daily = $service->createDaily($data, Auth::user())) {
+            flash('The ' . __('dailies.daily') . ' was created successfully.')->success();
+            return redirect()->to('admin/data/dailies/edit/' . $daily->id);
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) flash($error)->error();
         }
         return redirect()->back();
     }
@@ -129,11 +128,10 @@ class DailyController extends Controller
      */
     public function postDeleteDaily(Request $request, DailyService $service, $id)
     {
-        if($id && $service->deleteDaily(Daily::find($id))) {
-            flash('The '.__('dailies.daily').' was deleted successfully.')->success();
-        }
-        else {
-            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        if ($id && $service->deleteDaily(Daily::find($id))) {
+            flash('The ' . __('dailies.daily') . ' was deleted successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) flash($error)->error();
         }
         return redirect()->to('admin/data/dailies');
     }
@@ -147,13 +145,11 @@ class DailyController extends Controller
      */
     public function postSortDaily(Request $request, DailyService $service)
     {
-        if($service->sortDaily($request->get('sort'))) {
-            flash('The '.__('dailies.daily').' order was updated successfully.')->success();
-        }
-        else {
-            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        if ($service->sortDaily($request->get('sort'))) {
+            flash('The ' . __('dailies.daily') . ' order was updated successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) flash($error)->error();
         }
         return redirect()->back();
     }
-
 }

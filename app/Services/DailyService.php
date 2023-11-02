@@ -180,11 +180,11 @@ class DailyService extends Service
         //set segment style if it applies
         if (isset($data['segment_style'])) {
             for ($i = 0; $i < $data['segment_number']; $i++) {
-                    $styleObject[] = [
-                        'fillStyle' => $data['segment_style']['color'][$i] ?? null,
-                        'text' => $data['segment_style']['text'][$i] ?? null,
-                        'number' => $i + 1
-                    ];
+                $styleObject[] = [
+                    'fillStyle' => $data['segment_style']['color'][$i] ?? null,
+                    'text' => $data['segment_style']['text'][$i] ?? null,
+                    'number' => $i + 1
+                ];
             }
         }
         return json_encode($styleObject);
@@ -203,7 +203,7 @@ class DailyService extends Service
         $daily->rewards()->delete();
         if (isset($data['rewardable_type'])) {
             foreach ($data['rewardable_type'] as $key => $type) {
-                if($type != null){
+                if ($type != null) {
                     DailyReward::create([
                         'daily_id'       => $daily->id,
                         'rewardable_type' => $type,
@@ -338,6 +338,11 @@ class DailyService extends Service
             // Check if the user has not done the daily that day
             if (!$this->canRoll($daily, $user)) throw new \Exception("You have already received your reward.");
 
+            // Check and debit the fee in case the daily has a fee
+            if ($daily->currency && $daily->fee > 0) {
+                if (!(new CurrencyManager)->debitCurrency($user, null, 'Daily Fee', 'Paid fee for ' . __('dailies.daily') . ' (<a href="' . $daily->viewUrl . '">#' . $daily->id . '</a>)', $daily->currency, $daily->fee)) throw new \Exception("You do not own enough currency to roll this daily.");
+            }
+
             //get daily timer now that we know we can roll. if none exists, create one.
             $dailyTimer = DailyTimer::where('daily_id', $daily->id)->where('user_id', $user->id)->first();
 
@@ -354,7 +359,7 @@ class DailyService extends Service
             }
 
             //build reward data to the correct format used for grants, make sure to only grant the current step
-            if($daily->type == 'Wheel') // wheel actually always gets the step sent from the ajax call/wheel spin (segment that was hit)
+            if ($daily->type == 'Wheel') // wheel actually always gets the step sent from the ajax call/wheel spin (segment that was hit)
                 $dailyRewards = $daily->rewards()->where('step', $data['step'])->get();
             else //other dailies just grab whatever step they are at!
                 $dailyRewards = $daily->rewards()->where('step', $dailyTimer->step)->get();
@@ -526,9 +531,9 @@ class DailyService extends Service
     {
         $image = null;
         if (isset($data['image']) && $data['image']) {
-                $data['has_image'] = 1;
-                $image = $data['image'];
-                unset($data['image']);
+            $data['has_image'] = 1;
+            $image = $data['image'];
+            unset($data['image']);
         }
         if ($image) $this->handleImage($image, $daily->dailyImagePath, $daily->dailyImageFileName);
 

@@ -8,7 +8,9 @@
 <h1>
     {{ $daily->name }}
 </h1>
-
+@if($daily->currency)
+<h4><span class="badge badge-warning"><i class="fas fa-exclamation-triangle"></i> This {{ __('dailies.daily') }} takes a {!! $daily->currency->display($daily->fee) !!} fee to play!</span></h4>
+@endif
 
 @if($daily->type == 'Wheel' && $daily->wheel)
 @include('dailies._wheel_daily', ['wheel' => $daily->wheel])
