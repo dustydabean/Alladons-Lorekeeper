@@ -8,7 +8,7 @@
 
 <div class="text-{{ $wheel->alignment }}" style="background-size:cover; background-image:url('{{$wheel->backgroundUrl}}');">
     <div class="row justify-content-center {{ $wheel->marginAlignment() }}" style="width:{{ $wheel->size }}px;height:50px;">
-        <img src="{{ $wheel->stopperUrl }}" style="width:50px;height:50px;">
+        <img src="{{ $wheel->stopperUrl }}" style="max-height:50px;">
     </div>
     <div id="#canvas-container" class="w-100 @if($wheel->alignment == 'left') ml-lg-5 ml-0 @endif @if($wheel->alignment == 'right') mr-5 @endif @if($wheel->alignment == 'center') m-auto @endif" style="max-width:{{ $wheel->size }}px;max-height:{{ $wheel->size}}px;">
         <canvas class="" id='canvas' width="{{ $wheel->size }}" height="{{ $wheel->size }}" 
