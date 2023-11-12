@@ -10,10 +10,10 @@
         happen on UTC time.') !!}
     </div>
     <div class="form-group col">
-        {!! Form::select('progress_display', ["none" => "None", "hidden" => "Rewards hidden until collected", "all" =>
+        {!! Form::select('progress_display', ["none" => "None", "all" =>
         "All rewards shown"] , $daily ? $daily->progress_display : 0, ['class' => 'form-control stock-field',
         'data-name' => 'progress_display']) !!}
-        {!! Form::label('progress_display', 'Progress/Prize Display') !!} {!! add_help('Decides what kind of information
+        {!! Form::label('progress_display', 'Prize Display') !!} {!! add_help('Decides what kind of information
         on the rewards for each segment should be shown on the daily page.') !!}
     </div>
     <div class="form-group col">

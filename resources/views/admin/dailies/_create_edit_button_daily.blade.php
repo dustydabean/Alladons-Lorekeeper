@@ -7,7 +7,7 @@
     </div>
     <div class="form-group col">
         {!! Form::select('progress_display', ["none" => "None", "hidden" => "Rewards hidden until collected", "all" => "All rewards shown"] , $daily ? $daily->progress_display : 0, ['class' => 'form-control stock-field', 'data-name' => 'progress_display']) !!}
-        {!! Form::label('progress_display', 'Progress/Prize Display') !!} {!! add_help('Decides what kind of information on the rewards for each step should be shown on the daily page.') !!}
+        {!! Form::label('progress_display', 'Progress Display') !!} {!! add_help('Decides what kind of information on the rewards for each step should be shown on the daily page.') !!}
     </div>
     <div class="form-group col">
         {!! Form::checkbox('is_loop', 1, $daily->id ? $daily->is_loop : 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
