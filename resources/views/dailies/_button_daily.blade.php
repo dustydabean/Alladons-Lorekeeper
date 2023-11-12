@@ -10,7 +10,7 @@
     <div class="row justify-content-center mt-2">
         <form action="" method="post">
             @csrf
-            <button class="btn" style="background-color:transparent;" name="daily_id" value="{{ $daily->id }}">
+            <button class="btn" style="background-color:transparent;" name="daily_id" value="{{ $daily->id }}" @if($isDisabled) disabled @endif>
                 <img src="{{ $daily->buttonImageUrl }}" class="w-100" style="max-width:200px;" />
             </button>
         </form>
@@ -19,7 +19,7 @@
     <div class="row justify-content-center mt-2">
         <form action="" method="post">
             @csrf
-            <button class="btn btn-primary" name="daily_id" value="{{ $daily->id }}">Collect Reward!</button>
+            <button class="btn btn-primary" name="daily_id" value="{{ $daily->id }}" @if($isDisabled) disabled @endif>Collect Reward!</button>
         </form>
     </div>
     @endif

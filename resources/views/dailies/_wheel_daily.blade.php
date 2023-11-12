@@ -1,5 +1,4 @@
 
-
 <div class="text-center">
     @if($daily->has_image && !$wheel->backgroundUrl)
     <img src="{{ $daily->dailyImageUrl }}" style="max-width:100%" alt="{{ $daily->name }}" />
@@ -11,7 +10,7 @@
         <img src="{{ $wheel->stopperUrl }}" style="max-height:50px;">
     </div>
     <div id="#canvas-container" class="w-100 @if($wheel->alignment == 'left') ml-lg-5 ml-0 @endif @if($wheel->alignment == 'right') mr-5 @endif @if($wheel->alignment == 'center') m-auto @endif" style="max-width:{{ $wheel->size }}px;max-height:{{ $wheel->size}}px;">
-        <canvas class="" id='canvas' width="{{ $wheel->size }}" height="{{ $wheel->size }}" 
+        <canvas class="@if($isDisabled) disabled @endif" id='canvas' width="{{ $wheel->size }}" height="{{ $wheel->size }}" 
             onClick="startSpin();" style="cursor: pointer;">
             Canvas not supported, use another browser.
         </canvas>
@@ -115,11 +114,6 @@
     //it is not spinning right now
     let wheelSpinning = false;
 
-    //disable wheel if user is on cooldown or not logged in
-    if("{{isset($cooldown) || !Auth::user() }}") {
-        $('#canvas').addClass('disabled')
-    }
-
     //resize initially
     resize();
     function resize () {
@@ -178,7 +172,7 @@
             sessionStorage.setItem("rotationAngle", theWheel.getRotationPosition());
             window.location.reload();
         }).fail(function(jqXHR, textStatus, errorThrown) {
-            alert("AJAX call failed: " + textStatus + ", " + errorThrown);
+            alert("Woops- something went wrong! Please refresh the page and try again. If the error persists, please report it to the site owners!");
         });
         resetWheel();
     }
