@@ -18,7 +18,7 @@ return [
         'creators' => json_encode([
             'Cylunny' => 'https://toyhou.se/cylunny',
         ]),
-        'version' => '1.1.0', 
+        'version' => '2.0.0', 
     ],
 
 ];
