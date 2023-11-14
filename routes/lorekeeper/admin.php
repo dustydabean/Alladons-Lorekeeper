@@ -349,6 +349,7 @@ Route::group(['prefix' => 'grants', 'namespace' => 'Users', 'middleware' => 'pow
 
     Route::get('pets', 'GrantController@getPets');
     Route::post('pets', 'GrantController@postPets');
+    Route::get('pets/variants/{id}', 'GrantController@getPetVariants');
 
     Route::get('item-search', 'GrantController@getItemSearch');
 });

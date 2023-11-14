@@ -84,28 +84,4 @@ class PetDrop extends Model {
             return null;
         }
     }
-
-    /**********************************************************************************************
-
-        OTHER FUNCTIONS
-
-    **********************************************************************************************/
-
-    /**
-     * Create drop info for a user pet.
-     *
-     * @param int        $id
-     * @param mixed|null $parameters
-     */
-    public function createDrop($id, $parameters = null) {
-        $user_pet = UserPet::find($id);
-        $dropData = $user_pet->pet->dropData;
-        $drop = $this->create([
-            'drop_id'         => $dropData->id,
-            'user_pet_id'     => $id,
-            'parameters'      => $parameters ? $parameters : $dropData->rollParameters(),
-            'drops_available' => 0,
-            'next_day'        => Carbon::now()->add($dropData->frequency, $dropData->interval)->startOf($dropData->interval),
-        ]);
-    }
 }

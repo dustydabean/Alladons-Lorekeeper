@@ -2,6 +2,7 @@
 
 namespace App\Models\User;
 
+use Carbon\Carbon;
 use App\Models\Model;
 use App\Models\Pet\PetDrop;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -16,7 +17,7 @@ class UserPet extends Model {
      */
     protected $fillable = [
         'data', 'pet_id', 'user_id', 'attached_at', 'pet_name', 'has_image', 'artist_url', 'artist_id', 'description',
-        'evolution_id',
+        'evolution_id', 'variant_id',
     ];
 
     /**
@@ -82,12 +83,27 @@ class UserPet extends Model {
             return $this->belongsTo('App\Models\Loot\Loot', 'rewardable_id', 'loot_table_id')->whereNull('loot_table_id');
         }
         if (!PetDrop::where('user_pet_id', $this->id)->first()) {
-            $drop = new PetDrop;
-            $drop->createDrop($this->id);
+            PetDrop::create([
+                'drop_id'         => $this->pet->dropData->id,
+                'user_pet_id'     => $this->id,
+                'parameters'      => $this->pet->dropData->rollParameters(),
+                'drops_available' => 0,
+                'next_day'        => Carbon::now()
+                                    ->add($this->pet->dropData->frequency, $this->pet->dropData->interval)
+                                    ->startOf($this->pet->dropData->interval),
+            ]);
+        // if we delete old drop data, populate with new
         } elseif (!PetDrop::where('user_pet_id', $this->id)->where('drop_id', $this->pet->dropData->id)->first()) {
-            PetDrop::where('user_pet_id', $this->id)->delete;
-            $drop = new PetDrop;
-            $drop->createDrop($this->id);
+            PetDrop::where('user_pet_id', $this->id)->delete();
+            PetDrop::create([
+                'drop_id'         => $this->pet->dropData->id,
+                'user_pet_id'     => $this->id,
+                'parameters'      => $this->pet->dropData->rollParameters(),
+                'drops_available' => 0,
+                'next_day'        => Carbon::now()
+                                    ->add($this->pet->dropData->frequency, $this->pet->dropData->interval)
+                                    ->startOf($this->pet->dropData->interval),
+            ]);
         }
 
         return $this->hasOne('App\Models\Pet\PetDrop', 'user_pet_id');

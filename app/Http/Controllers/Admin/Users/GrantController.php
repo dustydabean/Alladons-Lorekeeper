@@ -97,6 +97,17 @@ class GrantController extends Controller {
     }
 
     /**
+     * Gets all variants of a pet.
+     *
+     * @param  \Illuminate\Http\Request $request
+     *
+     */
+    public function getPetVariants($id) {
+        $pet = Pet::find($id);
+        return $pet->variants->pluck('variant_name', 'id')->toArray();
+    }
+
+    /**
      * Grants or removes pets from multiple users.
      *
      * @param App\Services\InvenntoryManager $service
@@ -104,7 +115,7 @@ class GrantController extends Controller {
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postPets(Request $request, PetManager $service) {
-        $data = $request->only(['names', 'pet_ids', 'quantities', 'data', 'disallow_transfer', 'notes']);
+        $data = $request->only(['names', 'pet_ids', 'quantities', 'data', 'disallow_transfer', 'notes', 'variant']);
         if ($service->grantPets($data, Auth::user())) {
             flash('Pets granted successfully.')->success();
         } else {

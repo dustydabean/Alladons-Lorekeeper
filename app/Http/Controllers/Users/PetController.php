@@ -8,12 +8,14 @@ use App\Models\Item\ItemTag;
 use App\Models\Pet\Pet;
 use App\Models\Pet\PetCategory;
 use App\Models\Pet\PetDrop;
+use App\Models\Pet\PetVariant;
 use App\Models\User\User;
 use App\Models\User\UserItem;
 use App\Models\User\UserPet;
 use App\Services\PetDropService;
 use App\Services\PetManager;
 use Auth;
+use Log;
 use Illuminate\Http\Request;
 
 class PetController extends Controller {
@@ -57,7 +59,19 @@ class PetController extends Controller {
 
         $readOnly = $request->get('read_only') ?: ((Auth::check() && $stack && !$stack->deleted_at && ($stack->user_id == Auth::user()->id || Auth::user()->hasPower('edit_inventories'))) ? 0 : 1);
 
-        $tags = ItemTag::where('tag', 'splice')->where('is_active', 1)->pluck('item_id');
+        // if the tag has data['variant_ids'], only show if the userpet->pet has a variant that matches
+        $tags = ItemTag::where('tag', 'splice')->where('is_active', 1)->get();
+        $tags = $tags->filter(function ($tag) use ($stack) {
+            if (isset($tag->data['variant_ids'])) {
+                // if "default" is an option, then it's always available
+                if (in_array('default', $tag->data['variant_ids'])) {
+                    return true;
+                }
+                return PetVariant::whereIn('id', $tag->data['variant_ids'])->where('pet_id', $stack->pet_id)->exists();
+            } else {
+                return true;
+            }
+        })->pluck('item_id');
         $splices = UserItem::where('user_id', $stack->user_id)->whereIn('item_id', $tags)->where('count', '>', 0)->with('item')->get()->pluck('item.name', 'id');
 
         return view('home._pet_stack', [
@@ -238,7 +252,19 @@ class PetController extends Controller {
     public function getPetPage($id) {
         $pet = UserPet::findOrFail($id);
         $user = $pet->user;
-        $tags = ItemTag::where('tag', 'splice')->where('is_active', 1)->pluck('item_id');
+
+        // if the tag has data['variant_ids'], only show if the userpet->pet has a variant that matches
+        $tags = ItemTag::where('tag', 'splice')->where('is_active', 1)->get();
+        $tags = $tags->filter(function ($tag) use ($pet) {
+            if (isset($tag->data['variant_ids'])) {
+                if (in_array('default', $tag->data['variant_ids'])) {
+                    return true;
+                }
+                return PetVariant::whereIn('id', $tag->data['variant_ids'])->where('pet_id', $pet->pet_id)->exists();
+            } else {
+                return true;
+            }
+        })->pluck('item_id');
         $splices = UserItem::where('user_id', $user->id)->whereIn('item_id', $tags)->where('count', '>', 0)->with('item')->get()->pluck('item.name', 'id');
 
         return view('user.pet', [

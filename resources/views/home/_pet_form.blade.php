@@ -80,7 +80,7 @@
     </li>
 @endif
 
-@if ($user && $splices && $user->id == $pet->user_id)
+@if ($user && count($splices) && $user->id == $pet->user_id)
     <li class="list-group-item">
         <a class="card-title h5 collapse-title" data-toggle="collapse" href="#userVariantForm">Change Pet Variant</a>
         {!! Form::open(['url' => 'pets/variant/' . $pet->id, 'id' => 'userVariantForm', 'class' => 'collapse']) !!}

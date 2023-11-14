@@ -24,15 +24,11 @@
             <div class="d-flex mb-2">
                 {!! Form::select('pet_ids[]', $pets, null, ['class' => 'form-control mr-2 default pet-select', 'placeholder' => 'Select Pet']) !!}
                 {!! Form::text('quantities[]', 1, ['class' => 'form-control mr-2', 'placeholder' => 'Quantity']) !!}
+                {!! Form::select('variant[]', ['none' => 'No Variant', 'randomize' => 'Randomize Variant'], null, ['class' => 'form-control mr-2 variant-select']) !!}
                 <a href="#" class="remove-pet btn btn-danger mb-2 disabled">×</a>
             </div>
         </div>
         <div><a href="#" class="btn btn-primary" id="add-pet">Add Pet</a></div>
-        <div class="pet-row hide mb-2">
-            {!! Form::select('pet_ids[]', $pets, null, ['class' => 'form-control mr-2 pet-select', 'placeholder' => 'Select Pet']) !!}
-            {!! Form::text('quantities[]', 1, ['class' => 'form-control mr-2', 'placeholder' => 'Quantity']) !!}
-            <a href="#" class="remove-pet btn btn-danger mb-2">×</a>
-        </div>
     </div>
 
     <div class="form-group">
@@ -58,6 +54,13 @@
 
     {!! Form::close() !!}
 
+    <div class="pet-row hide mb-2">
+        {!! Form::select('pet_ids[]', $pets, null, ['class' => 'form-control mr-2 pet-select', 'placeholder' => 'Select Pet']) !!}
+        {!! Form::text('quantities[]', 1, ['class' => 'form-control mr-2', 'placeholder' => 'Quantity']) !!}
+        {!! Form::select('variant[]', ['none' => 'No Variant', 'randomize' => 'Randomize Variant'], null, ['class' => 'form-control mr-2 variant-select']) !!}
+        <a href="#" class="remove-pet btn btn-danger mb-2">×</a>
+    </div>
+
     <script>
         $(document).ready(function() {
             $('#usernameList').selectize({
@@ -72,10 +75,11 @@
                 e.preventDefault();
                 removePetRow($(this));
             })
+            addPetListener($('.pet-select'));
 
             function addPetRow() {
                 var $rows = $("#petList > div")
-                if ($rows.length === 1) {
+                if ($rows.length == 1) {
                     $rows.find('.remove-pet').removeClass('disabled')
                 }
                 var $clone = $('.pet-row').clone();
@@ -86,7 +90,32 @@
                     e.preventDefault();
                     removePetRow($(this));
                 })
+                $clone.addPetListener($clone.find('.pet-select'));
                 $clone.find('.pet-select').selectize();
+            }
+
+            function addPetListener(node) {
+                node.on('change', function(e) {
+                    // ajax request to get all pet variants
+                    let pet_id = $(this).val();
+                    let $variantSelect = $(this).parent().find('.variant-select');
+                    $variantSelect.html('');
+                    // loading symbol until ajax request is done
+                    $variantSelect.append('<option value="loading">Loading...</option>');
+                    $.ajax({
+                        url: "{{ url('admin/grants/pets/variants') }}/" + pet_id,
+                        type: 'GET',
+                        success: function(data) {
+                            $variantSelect.html('');
+                            $variantSelect.append('<option value="none">No Variant</option>');
+                            $variantSelect.append('<option value="randomize">Randomize Variant</option>');
+                            $.each(data, function(key, value) {
+                                $variantSelect.append('<option value="' + key + '">' + value + '</option>');
+                            });
+
+                        }
+                    });
+                });
             }
 
             function removePetRow($trigger) {

@@ -106,7 +106,7 @@
                         <a class="card-title h5">You cannot currently attach / detach this pet! It is under cooldown.</a>
                     @endif
                 </li>
-                @if ($user && $splices && $user->id == $stack->user_id)
+                @if ($user && count($splices) && $user->id == $stack->user_id)
                     <li class="list-group-item">
                         <a class="card-title h5 collapse-title" data-toggle="collapse" href="#userVariantForm">Change Pet Variant</a>
                         {!! Form::open(['url' => 'pets/variant/' . $stack->id, 'id' => 'userVariantForm', 'class' => 'collapse']) !!}
