@@ -99,11 +99,11 @@ class GrantController extends Controller {
     /**
      * Gets all variants of a pet.
      *
-     * @param  \Illuminate\Http\Request $request
-     *
+     * @param mixed $id
      */
     public function getPetVariants($id) {
         $pet = Pet::find($id);
+
         return $pet->variants->pluck('variant_name', 'id')->toArray();
     }
 

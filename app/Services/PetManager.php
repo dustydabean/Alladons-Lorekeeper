@@ -57,7 +57,7 @@ class PetManager extends Service {
 
             $keyed_variant = [];
             array_walk($data['pet_ids'], function ($id, $key) use (&$keyed_variant, $data) {
-                if ($id != null && ! in_array($id, array_keys($keyed_variant), true)) {
+                if ($id != null && !in_array($id, array_keys($keyed_variant), true)) {
                     $keyed_variant[$id] = $data['variant'][$key];
                 }
             });
@@ -363,7 +363,9 @@ class PetManager extends Service {
                     throw new \Exception('No item selected.');
                 }
 
-                if ($id == 0) $id = "default";
+                if ($id == 0) {
+                    $id = 'default';
+                }
 
                 // check if user has item
                 $item = UserItem::find($stack_id);
@@ -385,7 +387,7 @@ class PetManager extends Service {
             }
             // else logAdminAction($pet->user, 'Pet Variant Changed', ['pet' => $pet->id, 'variant' => $id]); // for when develop is merged
 
-            $pet['variant_id'] = $id == "default" ? null : $id;
+            $pet['variant_id'] = $id == 'default' ? null : $id;
             $pet->save();
 
             return $this->commitReturn(true);
@@ -510,6 +512,7 @@ class PetManager extends Service {
      * @param array                 $data
      * @param \App\Models\Pet\Pet   $pet
      * @param int                   $quantity
+     * @param mixed                 $variant_id
      *
      * @return bool
      */
@@ -518,7 +521,6 @@ class PetManager extends Service {
 
         try {
             for ($i = 0; $i < $quantity; $i++) {
-
                 if ($variant_id == 'randomize' && count($pet->variants)) {
                     // randomly get a variant
                     $variant = $pet->variants->random();
@@ -526,11 +528,9 @@ class PetManager extends Service {
                     if (rand(1, 4) == 1) {
                         $variant = null;
                     }
-                }
-                else if ($variant_id == 'none') {
+                } elseif ($variant_id == 'none') {
                     $variant = null;
-                }
-                else {
+                } else {
                     $variant = $pet->variants->where('id', $variant_id)->first();
                 }
 
@@ -540,7 +540,6 @@ class PetManager extends Service {
                     'data'       => json_encode($data),
                     'variant_id' => $variant?->id,
                 ]);
-
             }
 
             // Create drop information for the pet, if relevant
@@ -551,8 +550,8 @@ class PetManager extends Service {
                     'parameters'      => $user_pet->pet->dropData->rollParameters(),
                     'drops_available' => 0,
                     'next_day'        => Carbon::now()
-                                        ->add($user_pet->pet->dropData->frequency, $user_pet->pet->dropData->interval)
-                                        ->startOf($user_pet->pet->dropData->interval),
+                        ->add($user_pet->pet->dropData->frequency, $user_pet->pet->dropData->interval)
+                        ->startOf($user_pet->pet->dropData->interval),
                 ]);
                 if (!$drop) {
                     throw new \Exception('Failed to create drop.');

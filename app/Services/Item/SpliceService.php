@@ -37,23 +37,21 @@ class SpliceService extends Service {
     /**
      * Processes the data attribute of the tag and returns it in the preferred format.
      *
-     * @param  $tag
-     *
      * @return mixed
      */
     public function getTagData($tag) {
         $displayVariants = [];
         if ($tag->data['variant_ids']) {
             foreach ($tag->data['variant_ids'] as $variantId) {
-                if ($variantId == "default") {
+                if ($variantId == 'default') {
                     $displayVariants[] = 'Default';
-                }
-                else {
+                } else {
                     $variant = PetVariant::find($variantId);
-                    $displayVariants[] = '<a href="'. $variant->pet->url .'" target="_blank">'. $variant->variant_name .' ('. $variant->pet->name .')</a>';
+                    $displayVariants[] = '<a href="'.$variant->pet->url.'" target="_blank">'.$variant->variant_name.' ('.$variant->pet->name.')</a>';
                 }
             }
         }
+
         return [
             'variant_ids' => $tag->data['variant_ids'] ?? null,
             'variants'    => $tag->data['variant_ids'] ? PetVariant::whereIn('id', $tag->data['variant_ids'])->get() : null,
@@ -65,7 +63,7 @@ class SpliceService extends Service {
      * Processes the data attribute of the tag and returns it in the preferred format.
      *
      * @param mixed $tag
-     * @param array  $data
+     * @param array $data
      *
      * @return bool
      */
@@ -73,7 +71,6 @@ class SpliceService extends Service {
         DB::beginTransaction();
 
         try {
-
             $tag->data = json_encode([
                 'variant_ids' => $data['variant_ids'],
             ]);

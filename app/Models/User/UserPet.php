@@ -2,9 +2,9 @@
 
 namespace App\Models\User;
 
-use Carbon\Carbon;
 use App\Models\Model;
 use App\Models\Pet\PetDrop;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class UserPet extends Model {
@@ -89,8 +89,8 @@ class UserPet extends Model {
                 'parameters'      => $this->pet->dropData->rollParameters(),
                 'drops_available' => 0,
                 'next_day'        => Carbon::now()
-                                    ->add($this->pet->dropData->frequency, $this->pet->dropData->interval)
-                                    ->startOf($this->pet->dropData->interval),
+                    ->add($this->pet->dropData->frequency, $this->pet->dropData->interval)
+                    ->startOf($this->pet->dropData->interval),
             ]);
         // if we delete old drop data, populate with new
         } elseif (!PetDrop::where('user_pet_id', $this->id)->where('drop_id', $this->pet->dropData->id)->first()) {
@@ -101,8 +101,8 @@ class UserPet extends Model {
                 'parameters'      => $this->pet->dropData->rollParameters(),
                 'drops_available' => 0,
                 'next_day'        => Carbon::now()
-                                    ->add($this->pet->dropData->frequency, $this->pet->dropData->interval)
-                                    ->startOf($this->pet->dropData->interval),
+                    ->add($this->pet->dropData->frequency, $this->pet->dropData->interval)
+                    ->startOf($this->pet->dropData->interval),
             ]);
         }
 

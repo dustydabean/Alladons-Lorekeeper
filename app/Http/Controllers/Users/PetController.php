@@ -15,7 +15,6 @@ use App\Models\User\UserPet;
 use App\Services\PetDropService;
 use App\Services\PetManager;
 use Auth;
-use Log;
 use Illuminate\Http\Request;
 
 class PetController extends Controller {
@@ -67,6 +66,7 @@ class PetController extends Controller {
                 if (in_array('default', $tag->data['variant_ids'])) {
                     return true;
                 }
+
                 return PetVariant::whereIn('id', $tag->data['variant_ids'])->where('pet_id', $stack->pet_id)->exists();
             } else {
                 return true;
@@ -260,6 +260,7 @@ class PetController extends Controller {
                 if (in_array('default', $tag->data['variant_ids'])) {
                     return true;
                 }
+
                 return PetVariant::whereIn('id', $tag->data['variant_ids'])->where('pet_id', $pet->pet_id)->exists();
             } else {
                 return true;
