@@ -50,12 +50,13 @@
         <div class="card mb-3">
             <div class="card-body">
                 <?php
-                    $shops = App\Models\Shop\Shop::where(function ($shops) {
-                        if (Auth::check() && Auth::user()->isStaff) {
-                            return $shops;
-                        }
-                        return $shops->where('is_staff', 0);
-                    })->whereIn(
+                $shops = App\Models\Shop\Shop::where(function ($shops) {
+                    if (Auth::check() && Auth::user()->isStaff) {
+                        return $shops;
+                    }
+                    return $shops->where('is_staff', 0);
+                })
+                    ->whereIn(
                         'id',
                         App\Models\Shop\ShopStock::where('item_id', $item->id)
                             ->pluck('shop_id')
