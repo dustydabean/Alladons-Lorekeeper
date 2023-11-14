@@ -173,7 +173,7 @@
         </div>
         <div class="col-md">
             {!! Form::label('Pet Artist (Optional)') !!} {!! add_help('Provide the artist\'s username if they are on
-                                    site or, failing that, a link.') !!}
+                                                site or, failing that, a link.') !!}
             <div class="row">
                 <div class="col-md">
                     <div class="form-group">
@@ -184,7 +184,7 @@
                     <div class="form-group">
                         {!! Form::text('artist_url', $pet->artist_url ? $pet->artist_url : '', [
                             'class' => 'form-control
-                                                                        mr-2',
+                                                                                                mr-2',
                             'placeholder' => 'Artist URL',
                         ]) !!}
                     </div>
