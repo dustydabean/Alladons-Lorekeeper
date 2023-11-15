@@ -116,6 +116,7 @@ class DailyService extends Service
         $data['is_active'] = isset($data['is_active']);
         $data['is_loop'] = isset($data['is_loop']);
         $data['is_streak'] = isset($data['is_streak']);
+        if($data['fee'] == null) $data['fee'] = 0;
 
         //set progressable automatically
         if (isset($data['step'])) {

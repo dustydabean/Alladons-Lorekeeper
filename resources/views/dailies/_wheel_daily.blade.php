@@ -1,15 +1,18 @@
 
+<!--comment this in if you want the daily image to show on the daily page as well and not only on the index --->
+<!---
 <div class="text-center">
     @if($daily->has_image && !$wheel->backgroundUrl)
     <img src="{{ $daily->dailyImageUrl }}" style="max-width:100%" alt="{{ $daily->name }}" />
     @endif
 </div>
+--->
 
 <div class="text-{{ $wheel->alignment }}" style="background-size:cover; background-image:url('{{$wheel->backgroundUrl}}');">
     <div class="row justify-content-center {{ $wheel->marginAlignment() }}" style="width:{{ $wheel->size }}px;height:50px;">
         <img src="{{ $wheel->stopperUrl }}" style="max-height:50px;">
     </div>
-    <div id="#canvas-container" class="w-100 @if($wheel->alignment == 'left') ml-lg-5 ml-0 @endif @if($wheel->alignment == 'right') mr-5 @endif @if($wheel->alignment == 'center') m-auto @endif" style="max-width:{{ $wheel->size }}px;max-height:{{ $wheel->size}}px;">
+    <div id="#canvas-container" class="w-100 {{ $wheel->marginAlignment() }}" style="max-width:{{ $wheel->size }}px;max-height:{{ $wheel->size}}px;">
         <canvas class="@if($isDisabled) disabled @endif" id='canvas' width="{{ $wheel->size }}" height="{{ $wheel->size }}" 
             onClick="startSpin();" style="cursor: pointer;">
             Canvas not supported, use another browser.

@@ -62,7 +62,7 @@
         <a href="{{$daily->imageUrl}}"><img src="{{$daily->dailyImageUrl}}" class="mw-100 float-left mr-3"
                 style="max-height:125px"></a>
         @endif
-        {!! Form::label(__('dailies.daily').' Image (Optional)') !!} {!! add_help('This image is used on the '.__('dailies.daily').' index and above the wheel IF no background is set.') !!}
+        {!! Form::label(__('dailies.daily').' Image (Optional)') !!} {!! add_help('This image is used on the '.__('dailies.daily').' index.') !!}
         <div>{!! Form::file('image') !!}</div>
         <div class="text-muted">Recommended size: None (Choose a standard size for all {{__('dailies.daily')}} images). File type: png.</div>
         @if($daily->has_image)
@@ -91,8 +91,8 @@
 
     <div class="form-group col-md-6">
         @if($wheel?->stopper_extension)
-        <a href="{{$wheel->stopperUrl}}"><img src="{{$wheel->stopperUrl}}" class="mw-100 float-left mr-3"
-                style="max-height:125px"></a>
+        <a href="{{$wheel->stopperUrl}}"><img src="{{$wheel->stopperUrl}}" class="w-100 float-left mr-3"
+                style="max-height:125px;max-width:125px;"></a>
         @endif
         {!! Form::label('Stopper Image (Optional)') !!}
         <div>{!! Form::file('stopper_image') !!}</div>
