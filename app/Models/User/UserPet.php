@@ -92,7 +92,7 @@ class UserPet extends Model {
                     ->add($this->pet->dropData->frequency, $this->pet->dropData->interval)
                     ->startOf($this->pet->dropData->interval),
             ]);
-        // if we delete old drop data, populate with new
+            // if we delete old drop data, populate with new
         } elseif (!PetDrop::where('user_pet_id', $this->id)->where('drop_id', $this->pet->dropData->id)->first()) {
             PetDrop::where('user_pet_id', $this->id)->delete();
             PetDrop::create([

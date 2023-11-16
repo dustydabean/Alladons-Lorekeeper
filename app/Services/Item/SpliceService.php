@@ -37,6 +37,8 @@ class SpliceService extends Service {
     /**
      * Processes the data attribute of the tag and returns it in the preferred format.
      *
+     * @param mixed $tag
+     *
      * @return mixed
      */
     public function getTagData($tag) {
