@@ -41,6 +41,10 @@
                                 <td>Between {{ $reward->min_quantity . ' and ' . $reward->max_quantity }}</td>
                             </tr>
                         @endforeach
+                    @else
+                        <tr>
+                            <td>No drops available for this pet.</td>
+                        </tr>
                     @endif
                 @endforeach
             </tbody>
