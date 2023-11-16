@@ -516,7 +516,7 @@ class PetManager extends Service {
      *
      * @return bool
      */
-    public function creditPet($sender, $recipient, $type, $data, $pet, $quantity, $variant_id) {
+    public function creditPet($sender, $recipient, $type, $data, $pet, $quantity, $variant_id = null) {
         DB::beginTransaction();
 
         try {
