@@ -12,7 +12,7 @@ class AddLongestSideToCharacterImages extends Migration {
      */
     public function up() {
         Schema::table('character_images', function (Blueprint $table) {
-            $table->enum('longest_side', ['height', 'width']);
+            $table->enum('longest_side', ['height', 'width'])->nullable()->default(null);
         });
     }
 

@@ -878,6 +878,8 @@ class CharacterManager extends Service
         DB::beginTransaction();
 
         try {
+            //Clear out longest side measurement since it might not be accurate anymore
+            $image->longest_side = null; // this will get saved via either side of the if check here
             if(Config::get('lorekeeper.settings.masterlist_image_format') != null) {
                 // Remove old versions so that images in various filetypes don't pile up
                 unlink($image->imagePath . '/' . $image->imageFileName);
