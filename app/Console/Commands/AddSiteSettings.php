@@ -103,7 +103,7 @@ class AddSiteSettings extends Command
 
         $this->addSiteSetting('group_currency', 1, 'ID of the group currency to award from gallery submissions (if enabled).');
 
-        $this->addSiteSetting('default_side', 0, 'The default "longest side" of a character image if the image is actually square. 1 = height, 0 = width');
+        $this->addSiteSetting('default_side', 0, 'The default "longest side" of a character image if the image is actually square. 0 = square, 1 = width, 2 = height');
 
         $this->line("\nSite settings up to date!");
 

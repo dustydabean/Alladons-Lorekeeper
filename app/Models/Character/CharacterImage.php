@@ -291,7 +291,8 @@ class CharacterImage extends Model
             $height = $image->height();
             if ($width > $height) $longestSide = 'width';
             else if ($height > $width) $longestSide = 'height';
-            else if (Settings::get('default_side') === 0) $longestSide = 'width';
+            else if (Settings::get('default_side') === 0) $longestSide = 'square';
+            else if (Settings::get('default_side') === 1) $longestSide = 'width';
             else $longestSide = 'height';
         }
         return $longestSide;

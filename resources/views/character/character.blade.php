@@ -16,7 +16,7 @@
 {{-- Main Image --}}
 <div class="row mb-3">
     <div @class([
-        "col-md-7" => $character->image->longestSide === 'height',
+        "col-md-7" => $character->image->longestSide === 'height' || $character->image->longestSide === 'square',
         "col-md-12" => $character->image->longestSide === 'width'
     ])>
         <div class="text-center">
