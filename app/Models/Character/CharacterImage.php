@@ -4,6 +4,9 @@ namespace App\Models\Character;
 
 use Config;
 use DB;
+use File;
+use Settings;
+use Image;
 use App\Models\Model;
 use App\Models\Feature\FeatureCategory;
 use App\Models\Character\CharacterCategory;
@@ -23,7 +26,7 @@ class CharacterImage extends Model
         'extension', 'use_cropper', 'hash', 'fullsize_hash', 'sort',
         'x0', 'x1', 'y0', 'y1',
         'description', 'parsed_description',
-        'is_valid',
+        'is_valid', 'longest_side',
     ];
 
     /**
@@ -272,5 +275,25 @@ class CharacterImage extends Model
     public function getThumbnailUrlAttribute()
     {
         return asset($this->imageDirectory . '/' . $this->thumbnailFileName);
+    }
+
+
+    /**
+     * Gets the longest side of the image if it hasn't already been calculated
+     *
+     * @return string
+     */
+    public function getLongestSideAttribute($value) {
+        $longestSide = $value;
+        if (!isset($longestSide) && File::exists($this->imagePath . '/' . $this->imageFileName)) {
+            $image = Image::make($this->imagePath . '/' . $this->imageFileName);
+            $width = $image->width();
+            $height = $image->height();
+            if ($width > $height) $longestSide = 'width';
+            else if ($height > $width) $longestSide = 'height';
+            else if (Settings::get('default_side') === 0) $longestSide = 'width';
+            else $longestSide = 'height';
+        }
+        return $longestSide;
     }
 }
