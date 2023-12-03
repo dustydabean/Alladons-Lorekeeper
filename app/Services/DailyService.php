@@ -511,20 +511,8 @@ class DailyService extends Service
         // If the timer is up/we are good, cooldown is also null
         if ($timer->rolled_at < $daily->dailyTimeframeDate) return null;
 
-        $lastRoll = Carbon::createFromFormat('Y-m-d H:i:s', $timer->rolled_at);
-        $date1 = new DateTime($daily->nextDate);
-        $date2 = new DateTime($timer->rolled_at);
-        $interval = $date1->diff($date2);
-
-        $lastRoll->addMinutes($interval->i);
-        $lastRoll->addHours($interval->h);
-        $lastRoll->addSeconds($interval->s);
-        $lastRoll->addYears($interval->y);
-        $lastRoll->addDays($interval->d);
-        $lastRoll->addMonths($interval->m);
-
-        // return interval
-        return $lastRoll;
+        // return next date
+        return  Carbon::createFromFormat('Y-m-d H:i:s', $daily->nextDate);
     }
 
 
