@@ -232,7 +232,7 @@ class Daily extends Model
                 $date = date("Y-m-d H:i:s", strtotime("+1 Month", strtotime('midnight first day of this month'))); 
                 break;
             case "weekly":
-                $date = date("Y-m-d H:i:s", strtotime("+1 Week",strtotime('last sunday'))); 
+                $date = date("Y-m-d H:i:s", strtotime("+1 Week +1 Day",strtotime('last sunday')));
                 break;
             case "daily":
                 $date = date("Y-m-d H:i:s", strtotime("+1 Day",strtotime('midnight')));
