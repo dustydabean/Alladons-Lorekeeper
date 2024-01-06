@@ -14,12 +14,8 @@
                     <div class="img-thumbnail"><img class="greyscale" src="{{ $ingredient->ingredient->image_url }}" /></div>
                 @endif
         @endswitch
+        <div class="text-center">{!! $ingredient->ingredient->displayName !!}</div>
     </div> 
-@endforeach
-</div>
-<div class="square-grid">
-@foreach($collection->ingredients as $ingredient)
-    <div class="text-center">{!! $ingredient->ingredient->displayName !!}</div>
 @endforeach
 </div>
 
