@@ -103,7 +103,7 @@
 @include('widgets._loot_select', ['loots' => $prompt->rewards, 'showLootTables' => true, 'showRaffles' => true])
 
 <h3 class="mt-5">Criteria Rewards <button class="btn btn-primary float-right add-calc" type="button">+ Criterion</a></h3>
-<p>Criteria can be used in addition to or in replacment of rewards. They can be created under the "criterion" section of the admin panel,
+<p>Criteria can be used in addition to or in replacement of rewards. They can be created under the "criterion" section of the admin panel,
 and allow for dynamic reward amounts to be generated based on user / admin selected criteria like the type of art, or the number of words.</p>
 <div id="criteria">
 @foreach ($prompt->criteria as $criterion)
