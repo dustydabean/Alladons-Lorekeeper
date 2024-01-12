@@ -14,7 +14,7 @@
     </div>
     <div id="#canvas-container" class="w-100 {{ $wheel->marginAlignment() }}" style="max-width:{{ $wheel->size }}px;max-height:{{ $wheel->size}}px;">
         <canvas class="@if($isDisabled) disabled @endif" id='canvas' width="{{ $wheel->size }}" height="{{ $wheel->size }}" 
-            onClick="startSpin();" style="cursor: pointer;">
+            onClick="calcPrize();" style="cursor: pointer;">
             Canvas not supported, use another browser.
         </canvas>
     </div>
@@ -132,52 +132,48 @@
         theWheel.draw()
     }
 
-    // spin the wheel!
-    function startSpin() {
-        // Ensure that spinning can't be clicked again while already running.
-        if (wheelSpinning == false && !$('#canvas').hasClass('disabled')) {
-            // reset to 0 so it always spins well
-            theWheel.rotationAngle = 0;
-            // Based on the power level selected adjust the number of spins for the wheel, the more times is has
-            // to rotate with the duration of the animation the quicker the wheel spins.
-            theWheel.animation.spins = 5;
 
-            // Disable the spin button so can't click again while wheel is spinning.
-            $('#canvas').addClass('disabled');
+    function calcPrize(){
+        if(!$('#canvas').hasClass('disabled')){
+        //ajax call to the backend to roll the prize when the wheel is clicked.
+            $.ajax({
+                    type: "POST",
+                    url: "{{ url(__('dailies.dailies').'/'. $daily->id) }}",
+                    data: {daily_id: "{{$daily->id}}", _token: '{{csrf_token()}}'},
+            }).done(function(res) {
+                var prizeSegment = res;
+                // Ensure that spinning can't be clicked again while already running.
+                if (prizeSegment && wheelSpinning == false) {
+                    var stopAt = theWheel.getRandomForSegment(prizeSegment);
+                    // set stop angle for the prize
+                    theWheel.animation.stopAngle = stopAt;
+                    // reset to 0 so it always spins well
+                    theWheel.rotationAngle = 0;
+                    // Based on the power level selected adjust the number of spins for the wheel, the more times is has
+                    // to rotate with the duration of the animation the quicker the wheel spins.
+                    theWheel.animation.spins = 5;
 
-            // Begin the spin animation by calling startAnimation on the wheel object.
-            theWheel.startAnimation();
+                    // Disable the spin button so can't click again while wheel is spinning.
+                    $('#canvas').addClass('disabled');
 
-            // Set to true so that power can't be changed and spin button re-enabled during
-            // the current animation. The user will have to reset before spinning again.
-            wheelSpinning = true;
+                    // Begin the spin animation by calling startAnimation on the wheel object.
+                    theWheel.startAnimation();
 
+                    // Set to true so that power can't be changed and spin button re-enabled during
+                    // the current animation. The user will have to reset before spinning again.
+                    wheelSpinning = true;
+                }
+            }).fail(function(jqXHR, textStatus, errorThrown) {
+                    alert("Woops- something went wrong! Please refresh the page and try again. If the error persists, please report it to the site owners!");
+            });
         }
-    }
-
-    // reset wheel!
-    function resetWheel() {
-        theWheel.stopAnimation(false); // Stop the animation, false as param so does not call callback function.
-        theWheel.draw(); // Call draw to render changes to the wheel.
-        wheelSpinning = false; // Reset to false to power buttons and spin can be clicked again.
     }
 
     // Called when the animation has finished.
     function alertPrize(indicatedSegment) {
-        // Do basic alert of the segment text.
-        //ajax call to the backend to roll the daily reward
-        $.ajax({
-            type: "POST",
-            url: "{{ url(__('dailies.dailies').'/'. $daily->id) }}",
-            data: {daily_id: "{{$daily->id}}", step: indicatedSegment.number, _token: '{{csrf_token()}}'},
-        }).done(function(res) {
-            // we dont want the wheel to reset after a spin
-            sessionStorage.setItem("rotationAngle", theWheel.getRotationPosition());
-            window.location.reload();
-        }).fail(function(jqXHR, textStatus, errorThrown) {
-            alert("Woops- something went wrong! Please refresh the page and try again. If the error persists, please report it to the site owners!");
-        });
-        resetWheel();
+        // we dont want the wheel to reset after a spin
+        sessionStorage.setItem("rotationAngle", theWheel.getRotationPosition());
+        window.location.reload();
     }
 </script>
 @endsection
