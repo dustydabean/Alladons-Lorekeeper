@@ -650,12 +650,21 @@ tr.accountbound {
 .square-grid {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 5%;
     justify-content: center;
 }
 
 .square-grid > div {
     flex: 0 0 12%;
+}
+
+
+.square-grid.lg > div {
+    flex: 0 0 30%;
+}
+
+.square-grid.xl > div {
+    flex: 0 0 47%;
 }
 
 .square-grid .square-column img {
