@@ -64,7 +64,7 @@
                 </div>
                 <div class="d-flex align-items-center justify-content-center"><i style="font-size: 2rem;" class="fas fa-random"></i></div>
                 <div style="flex: 1">
-                    <div class="square-grid xl justify-content-start">
+                    <div class="square-grid @if (count($recipes) === 1) lg @else xl @endif justify-content-start">
                         @foreach ($recipe->reward_items as $type)
                             @foreach ($type as $reward)
                                 <div class="square-column text-center">
