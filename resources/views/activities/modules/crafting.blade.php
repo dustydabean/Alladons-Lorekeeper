@@ -19,7 +19,7 @@
                     </div>
                 @endif
             </div>
-            <div class="d-flex align-items-stretch" style="gap: 10px;">
+            <div class="d-flex" style="gap: 10px;">
                 <div style="flex: 1">
                     <div class="square-grid @if (count($recipes) === 1) lg @else xl @endif justify-content-end">
                         @foreach ($recipe->ingredients as $ingredient)
