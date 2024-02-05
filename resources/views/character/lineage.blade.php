@@ -75,12 +75,12 @@
                     @include('character._lineage_tree', [
                         'character' => $character->lineage?->parent_1,
                         'max_depth' => config('lorekeeper.lineage.lineage_depth') - 1,
-                        'parent' => $character->lineage?->parent_1->parentType ?? "Parent",
+                        'parent' => $character->lineage?->parent_1->parentType ?? 'Parent',
                     ])
                     @include('character._lineage_tree', [
                         'character' => $character->lineage?->parent_2,
                         'max_depth' => config('lorekeeper.lineage.lineage_depth') - 1,
-                        'parent' => $character->lineage?->parent_2->parentType ?? "Parent",
+                        'parent' => $character->lineage?->parent_2->parentType ?? 'Parent',
                     ])
                 </div>
             </div>

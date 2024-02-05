@@ -92,7 +92,7 @@
                                     <div>No colours listed.</div>
                                     @if (Auth::check() && Auth::user()->hasPower('manage_characters') && !$image->character->is_myo_slot)
                                         {!! Form::open(['url' => 'admin/character/image/' . $image->id . '/colours']) !!}
-                                            {!! Form::submit('Generate', ['class' => 'btn btn-outline-info btn-sm ml-3 py-0']) !!}
+                                        {!! Form::submit('Generate', ['class' => 'btn btn-outline-info btn-sm ml-3 py-0']) !!}
                                         {!! Form::close() !!}
                                     @endif
                                 </div>

@@ -70,7 +70,8 @@
 
         @if ($request->character->is_myo_slot && $request->character->image->colours && config('lorekeeper.character_pairing.colours'))
             <div class="alert alert-info">
-                This is a pairing slot with predefined colours. Colours are a general guideline that your MYO should follow. You may deviate from these colours, but they should be recognizable as the same character. If you have any questions, please contact staff.
+                This is a pairing slot with predefined colours. Colours are a general guideline that your MYO should follow. You may deviate from these colours, but they should be recognizable as the same character. If you have any questions, please
+                contact staff.
                 <div class="mt-2 mb-0">{!! $request->character->image->displayColours() !!}</div>
             </div>
         @endif

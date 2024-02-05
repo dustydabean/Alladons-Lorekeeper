@@ -15,12 +15,12 @@
             @include('character._tab_lineage_col', [
                 'character' => $character?->lineage?->parent_1,
                 'max_depth' => $max_depth - 1,
-                'parent' => $parent . "'s " . ($character?->lineage?->parent_1?->parentType ?? "Parent"),
+                'parent' => $parent . "'s " . ($character?->lineage?->parent_1?->parentType ?? 'Parent'),
             ])
             @include('character._tab_lineage_col', [
                 'character' => $character?->lineage?->parent_2,
                 'max_depth' => $max_depth - 1,
-                'parent' => $parent . "'s " . ($character?->lineage?->parent_2?->parentType ?? "Parent"),
+                'parent' => $parent . "'s " . ($character?->lineage?->parent_2?->parentType ?? 'Parent'),
             ])
         </div>
     @endif
