@@ -319,7 +319,7 @@ function fillUserAssets($assets, $sender, $recipient, $logType, $data) {
         } elseif ($key == 'user_items' && count($contents)) {
             $service = new \App\Services\InventoryManager;
             foreach ($contents as $asset) {
-                if (!$service->moveStack($sender, $recipient, $logType, $data, $asset['asset'])) {
+                if (!$service->moveStack($sender, $recipient, $logType, $data, $asset['asset'], $asset['quantity'])) {
                     return false;
                 }
             }

@@ -20,7 +20,6 @@ class Raffle extends Model {
      * @var string
      */
     protected $table = 'raffles';
-
     /**
      * The attributes that should be cast to native types.
      *

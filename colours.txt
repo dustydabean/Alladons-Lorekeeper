@@ -1,0 +1,78 @@
+$image = Image::make($character_image->imagePath.'/'.$character_image->imageFileName);
+// make image background black so we can distinguish between transparent and white
+$canvas = Image::canvas($image->width(), $image->height(), '#000000');
+$image = $canvas->insert($image);
+
+$width = $image->width();
+$height = $image->height();
+
+// Calculate sampling intervals for width and height
+$xStep = max(1, round($width / config('lorekeeper.character_pairing.colour_granularity')));
+$yStep = max(1, round($height / config('lorekeeper.character_pairing.colour_granularity')));
+
+$colours = [];
+
+for ($x = 0; $x < $width; $x += $xStep) {
+    for ($y = 0; $y < $height; $y += $yStep) {
+        $colour = $image->pickColor($x, $y, 'hex');
+        if (!isset($colours[$colour])) {
+            $colours[$colour] = 0;
+        }
+        $colours[$colour]++;
+    }
+}
+
+// remove black
+unset($colours['#000000']);
+
+// check if any colours are very similar to each other
+$rgbs = [];
+foreach ($colours as $colour => $count) {
+    // Convert hex color string to RGB values
+    $hex = str_replace("#", "", $colour);
+    if (strlen($hex) == 3) {
+        $r = hexdec(substr($hex,0,1).substr($hex,0,1));
+        $g = hexdec(substr($hex,1,1).substr($hex,1,1));
+        $b = hexdec(substr($hex,2,1).substr($hex,2,1));
+    } else {
+        $r = hexdec(substr($hex,0,2));
+        $g = hexdec(substr($hex,2,2));
+        $b = hexdec(substr($hex,4,2));
+    }
+    $rgbs[$colour] = [$r, $g, $b];
+}
+
+function colourDistance($rgb1, $rgb2) {
+    return sqrt(pow($rgb1[0] - $rgb2[0], 2) + pow($rgb1[1] - $rgb2[1], 2) + pow($rgb1[2] - $rgb2[2], 2));
+}
+
+// Remove colors that are within a certain distance of each other
+$final_colours = [];
+
+foreach ($rgbs as $colour => $rgb) {
+    $isSimilar = false;
+    foreach ($final_colours as $uniqueColour => $details) {
+        // check if the colour is close to black
+        if (colourDistance($rgb, [0, 0, 0]) < config('lorekeeper.character_pairing.colour_distance')) {
+            $isSimilar = true;
+            break;
+        }
+        if (colourDistance($rgb, $details['rgb']) < config('lorekeeper.character_pairing.colour_distance')) {
+            $isSimilar = true;
+            break;
+        }
+    }
+    if (!$isSimilar) {
+        $final_colours[$colour] = [
+            'count' => $colours[$colour],
+            'rgb' => $rgb
+        ];
+    }
+}
+
+// Sort the colours based on count
+uasort($final_colours, function($a, $b) {
+    return $b['count'] - $a['count'];
+});
+
+$colours = array_slice(array_keys($final_colours), 0, config('lorekeeper.character_pairing.colour_count'), true);

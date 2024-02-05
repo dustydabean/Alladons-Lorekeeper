@@ -44,10 +44,21 @@
         {!! Form::textarea('description', $subtype->description, ['class' => 'form-control wysiwyg']) !!}
     </div>
 
+    <div class="col form-group">
+        {!! Form::label('Chance to inherit') !!} {!! add_help('For pairings, how likely this subtype is to be passed on in percent. Must be a number between 1-100. Defaults to 50. Does not guarantee a subtypes is inherited 100% of the time as the chances for both subtypes are added!') !!}
+        {!! Form::number('inherit_chance', $subtype->inherit_chance ?? 50, ['class' => 'form-control']) !!}
+    </div>
+
     <div class="form-group">
         {!! Form::checkbox('is_visible', 1, $subtype->id ? $subtype->is_visible : 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
         {!! Form::label('is_visible', 'Is Visible', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If turned off, the subtype will not be visible in the subtypes list or available for selection in search and design updates. Permissioned staff will still be able to add them to characters, however.') !!}
     </div>
+
+    @include('admin.lineage._edit_lineage_blacklist', [
+        'lineageBlacklist' => $lineageBlacklist,
+        'type' => 'subtype',
+    ])
+
     <div class="text-right">
         {!! Form::submit($subtype->id ? 'Edit' : 'Create', ['class' => 'btn btn-primary']) !!}
     </div>

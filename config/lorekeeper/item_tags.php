@@ -24,4 +24,16 @@ return [
         'text_color'       => '#ffffff',
         'background_color' => '#1fd1a7',
     ],
+
+    'pairing' => [
+        'name'             => 'Pairing',
+        'text_color'       => 'antiquewhite',
+        'background_color' => '#ff5050',
+    ],
+
+    'boost' => [
+        'name'             => 'Boost',
+        'text_color'       => 'antiquewhite',
+        'background_color' => '#cc33ff',
+    ],
 ];

@@ -73,6 +73,14 @@ Route::group(['prefix' => 'characters', 'namespace' => 'Users'], function () {
     Route::post('transfer/act/{id}', 'CharacterController@postHandleTransfer');
 
     Route::get('myos', 'CharacterController@getMyos');
+
+    Route::get('pairings', 'PairingController@getPairings')->where('type', 'new|pending|approval|closed');
+    Route::get('pairings/check', 'PairingController@checkPairings');
+    Route::post('pairings/create', 'PairingController@createPairings');
+    Route::post('pairings/cancel/{id}', 'PairingController@cancelPairing');
+    Route::post('pairings/approve/{id}', 'PairingController@approvePairing');
+    Route::post('pairings/reject/{id}', 'PairingController@rejectPairing');
+    Route::post('pairings/complete/{id}', 'PairingController@createMyos');
 });
 
 Route::group(['prefix' => 'bank', 'namespace' => 'Users'], function () {
@@ -112,6 +120,10 @@ Route::group(['prefix' => 'character', 'namespace' => 'Characters'], function ()
 
     Route::post('{slug}/approval', 'CharacterController@postCharacterApproval');
     Route::get('{slug}/approval', 'CharacterController@getCharacterApproval');
+
+    Route::get('{slug}/image/colours', function ($slug) {
+        return \App\Models\Character\Character::where('slug', $slug)->first()?->image->displayColours();
+    });
 });
 Route::group(['prefix' => 'myo', 'namespace' => 'Characters'], function () {
     Route::get('{id}/profile/edit', 'MyoController@getEditCharacterProfile');

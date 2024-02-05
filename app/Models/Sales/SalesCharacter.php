@@ -5,6 +5,7 @@ namespace App\Models\Sales;
 use App\Models\Character\Character;
 use App\Models\Character\CharacterImage;
 use App\Models\Model;
+use Config;
 
 class SalesCharacter extends Model {
     /**
@@ -65,6 +66,13 @@ class SalesCharacter extends Model {
      */
     public function image() {
         return $this->belongsTo(CharacterImage::class, 'image_id');
+    }
+
+    /**
+     * Get the image being attached to the sale.
+     */
+    public function image() {
+        return $this->belongsTo('App\Models\Character\CharacterImage', 'image_id');
     }
 
     /**********************************************************************************************

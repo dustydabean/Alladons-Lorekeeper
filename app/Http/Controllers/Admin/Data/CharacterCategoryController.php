@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Data;
 
 use App\Http\Controllers\Controller;
 use App\Models\Character\CharacterCategory;
+use App\Models\Character\CharacterLineageBlacklist;
 use App\Models\Character\Sublist;
 use App\Services\CharacterCategoryService;
 use Illuminate\Http\Request;
@@ -37,6 +38,7 @@ class CharacterCategoryController extends Controller {
      */
     public function getCreateCharacterCategory() {
         return view('admin.characters.create_edit_character_category', [
+            'lineageBlacklist' => null,
             'category' => new CharacterCategory,
             'sublists' => [0 => 'No Sublist'] + Sublist::orderBy('name', 'DESC')->pluck('name', 'id')->toArray(),
         ]);
@@ -51,11 +53,13 @@ class CharacterCategoryController extends Controller {
      */
     public function getEditCharacterCategory($id) {
         $category = CharacterCategory::find($id);
+        $lineageBlacklist = CharacterLineageBlacklist::where('type', 'category')->where('type_id', $category->id)->get()->first();
         if (!$category) {
             abort(404);
         }
 
         return view('admin.characters.create_edit_character_category', [
+            'lineageBlacklist' => $lineageBlacklist,
             'category' => $category,
             'sublists' => [0 => 'No Sublist'] + Sublist::orderBy('name', 'DESC')->pluck('name', 'id')->toArray(),
         ]);
@@ -72,7 +76,7 @@ class CharacterCategoryController extends Controller {
     public function postCreateEditCharacterCategory(Request $request, CharacterCategoryService $service, $id = null) {
         $id ? $request->validate(CharacterCategory::$updateRules) : $request->validate(CharacterCategory::$createRules);
         $data = $request->only([
-            'code', 'name', 'description', 'image', 'remove_image', 'masterlist_sub_id', 'is_visible',
+            'code', 'name', 'description', 'image', 'remove_image', 'masterlist_sub_id', 'is_visible', 'lineage-blacklist',
         ]);
         if ($id && $service->updateCharacterCategory(CharacterCategory::find($id), $data, Auth::user())) {
             flash('Category updated successfully.')->success();
