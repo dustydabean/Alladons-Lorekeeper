@@ -195,7 +195,9 @@ class PairingManager extends Service {
                 throw new \Exception('Invalid Character(s) set.');
             }
 
-            $this->checkCharacterPairingBasics($character_codes);
+            if (!$this->checkCharacterPairingBasics($character_codes)) {
+                throw new \Exception('Pairing failed validation.');
+            }
 
             // set and check tag
             $tag = $pairing_item->tag('pairing');
