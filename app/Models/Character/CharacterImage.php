@@ -270,7 +270,7 @@ class CharacterImage extends Model {
      *
      * @return string
      */
-    public function displayColours($breaks = false) {
+    public function displayColours() {
         // return the images as a row of colour boxes
         if (!$this->colours) {
             return '';

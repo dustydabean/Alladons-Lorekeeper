@@ -166,10 +166,12 @@
                             $parent.find('.character-rewards').removeClass('hide');
                         });
                     // load colour palette
-                    $parent.find('.character-image-colours').load('{{ url('character') }}/' + $(this).val() + '/image/colours',
-                        function(response, status, xhr) {
-                            $parent.find('.character-image-colours').html(response);
-                        });
+                    if ("{{ config('lorekeeper.character_pairing.colours') }}" == 1) {
+                        $parent.find('.character-image-colours').load('{{ url('character') }}/' + $(this).val() + '/image/colours',
+                            function(response, status, xhr) {
+                                $parent.find('.character-image-colours').html(response);
+                            });
+                    }
                     // check if both parents are selected
                     if ($char_1.find('.character-code').val() && $char_2.find('.character-code').val()) {
                         // get request to check if they are compatible

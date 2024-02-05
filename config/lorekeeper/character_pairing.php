@@ -23,6 +23,9 @@ return [
     //  Recommended to leave these settings alone unless you know what you're doing
     /////////////////////////////////////
 
+    // 0: Disabled, 1: Enabled
+    'colours' => 0,
+
     // if colours from parents should be inherited, entirely visual, no actual colour checks occur,
     // just a colour palette generated from parents and displayed on the pairing slots
     'inherit_colours' => 1, // 0: Disabled, 1: Enabled
