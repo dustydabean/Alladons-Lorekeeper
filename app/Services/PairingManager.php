@@ -68,7 +68,7 @@ class PairingManager extends Service {
             $character_1 = Character::where('slug', $data['character_codes'][0])->first();
             $character_2 = Character::where('slug', $data['character_codes'][1])->first();
 
-            //check cooldown if set to do so.
+            // check cooldown if set to do so.
             $cooldown_days = config('lorekeeper.character_pairing.cooldown');
             if ($cooldown_days) {
                 if (Pairing::whereIn('status', ['IN PROGRESS'])->where('created_at', '>', Carbon::now()->subDays($cooldown_days))
@@ -276,7 +276,12 @@ class PairingManager extends Service {
                     throw new \Exception('Pairings can only be created between characters with a defined sex.');
                 }
             }
-            
+
+            // check both characters lineageblacklistlevel is 0
+            if ($character_1->getLineageBlacklistLevel() || $character_2->getLineageBlacklistLevel()) {
+                throw new \Exception('Characters are blacklisted from pairing due to lineage restrictions.');
+            }
+
             // check if characters are within lineage_depth, both for lineage and descendants
             $lineage_depth = config('lorekeeper.lineage.lineage_depth');
 
@@ -290,18 +295,29 @@ class PairingManager extends Service {
             for ($i = 0; $i < $lineage_depth && $i < count($lineage); $i++) {
                 foreach($lineage[$i] as $parents) {
                     if ($parents) {
-                        $lineage[] = [$parents[0]?->lineage?->parents, $parents[0]?->lineage?->parents];
-                        $lineage[] = [$parents[1]?->lineage?->parents, $parents[1]?->lineage?->parents];
+                        $lineage[] = [$parents[0]?->lineage?->parents, $parents[1]?->lineage?->parents];
                     }
                 }
             }
 
             // flatten the array and remove nulls
             $lineage = array_filter(array_merge(...$lineage));
+            $seen_ids = [];
             foreach ($lineage as $parents) {
+                Log::info("parents: " . $parents[0]?->id . ' ' . $parents[1]?->id);
+                // this checks if one character is an ancestor of the other
                 if ($parents[0]?->id == $character_1->id || $parents[1]?->id == $character_1->id || $parents[0]?->id == $character_2->id || $parents[1]?->id == $character_2->id) {
                     throw new \Exception('Characters are too closely related to be paired.');
                 }
+
+                // now check if they share common ancestors
+                if (($parents[0]?->id && in_array($parents[0]?->id, $seen_ids)) || ($parents[1]?->id && in_array($parents[1]?->id, $seen_ids))) {
+                    throw new \Exception('Characters are too closely related to be paired.');
+                }
+
+                // add parents to seen ids, to see if these characters are related
+                $seen_ids[] = $parents[0]?->id;
+                $seen_ids[] = $parents[1]?->id;
             }
 
             return true;
@@ -312,7 +328,7 @@ class PairingManager extends Service {
 
     /**
      * Creates colour_palette_count colour palettes for the pairing.
-     * 
+     *
      */
     public function createColourPalettes($character_codes, $user, $is_myo = false) {
         try {
@@ -573,6 +589,39 @@ class PairingManager extends Service {
             }
             $tag = $pairing_item->tag('pairing');
 
+            $characters = [$pairing->character_1, $pairing->character_2];
+            $species = [$pairing->character_1->image->species, $pairing->character_2->image->species];
+            $myoAmount = random_int($tag->getData()['min'], $tag->getData()['max']);
+
+            //loop over for each myo
+            for ($i = 0; $i < $myoAmount; $i++) {
+                $sex = $this->getSex($boosts);
+                $inherit_traits_from_both = $this->getInheritTraitsFromBoth($boosts);
+                $species_id = $this->getSpeciesId($tag, $species, $inherit_traits_from_both);
+                $subtype_id = $this->getSubtypeId($tag, $species, $characters, $species_id);
+                //
+                $feature_pool = $this->getFeaturePool($tag, $characters, $boosts, $species_id, $subtype_id, $inherit_traits_from_both);
+                $chosen_features_ids = $this->getChosenFeatures($tag, $characters, $feature_pool, $boosts);
+                $feature_data = $this->getFeatureData($tag, $characters, $species, $chosen_features_ids, $species_id, $subtype_id);
+                $rarity_id = $this->getRarityId($boosts, $chosen_features_ids);
+                $palette =  $this->createColourPalettes([$pairing->character_1->slug, $pairing->character_2->slug], $user, true);
+
+                //create MYO
+                if (!$myo = $this->saveMyo(
+                    $user,
+                    $sex,
+                    $species_id,
+                    $subtype_id,
+                    $rarity_id,
+                    array_unique(array_keys($chosen_features_ids)),
+                    $feature_data,
+                    $characters,
+                    $palette[0],
+                )) {
+                    throw new \Exception('Error creating pairing slot(s).');
+                }
+            }
+
             // Remove any added items, hold counts, and add logs
             $inventoryManager = new InventoryManager;
             if (isset($pairing->data['user']['user_items'])) {
@@ -600,40 +649,6 @@ class PairingManager extends Service {
                 }
             }
 
-            $characters = [$pairing->character_1, $pairing->character_2];
-            $species = [$pairing->character_1->image->species, $pairing->character_2->image->species];
-            $myoAmount = random_int($tag->getData()['min'], $tag->getData()['max']);
-
-            //loop over for each myo
-            for ($i = 0; $i < $myoAmount; $i++) {
-                $sex = $this->getSex($boosts);
-                $inherit_traits_from_both = $this->getInheritTraitsFromBoth($boosts);
-                $species_id = $this->getSpeciesId($tag, $species, $inherit_traits_from_both);
-                $subtype_id = $this->getSubtypeId($tag, $species, $characters, $species_id);
-                //
-                $feature_pool = $this->getFeaturePool($tag, $characters, $boosts, $species_id, $subtype_id, $inherit_traits_from_both);
-                $chosen_features_ids = $this->getChosenFeatures($tag, $characters, $feature_pool, $boosts);
-                $feature_data = $this->getFeatureData($tag, $characters, $species, $chosen_features_ids, $species_id, $subtype_id);
-                $rarity_id = $this->getRarityId($boosts, $chosen_features_ids);
-                $palette =  $this->createColourPalettes([$pairing->character_1->slug, $pairing->character_2->slug], $user, true);
-
-                //create MYO
-                $myo = $this->saveMyo(
-                    $user,
-                    $sex,
-                    $species_id,
-                    $subtype_id,
-                    $rarity_id,
-                    array_unique(array_keys($chosen_features_ids)),
-                    $feature_data,
-                    $characters,
-                    $palette[0],
-                );
-
-                if (!$myo) {
-                    throw new \Exception('Could not create MYO slot.');
-                }
-            }
             //update status
             $pairing->status = 'COMPLETE';
             $pairing->save();
@@ -1052,7 +1067,7 @@ class PairingManager extends Service {
                 $rarity = $feature->rarity;
                 $rarity_sorts[] = $rarity->sort;
             }
-    
+
             //WARNING this assumes the highest rarity has the highest sort number and sort 0 is the lowest
             $rarity_sort = count($rarity_sorts) > 0 ? max($rarity_sorts) : 0;
 
@@ -1135,7 +1150,7 @@ class PairingManager extends Service {
             $characterData['is_visible'] = true;
             $characterData['sale_value'] = 0;
 
-            //species info
+            // species info
             $characterData['sex'] = $sex;
             $characterData['species_id'] = $species_id;
             $characterData['subtype_id'] = isset($subtype_id) && $subtype_id ? $subtype_id : null;
@@ -1151,10 +1166,14 @@ class PairingManager extends Service {
             $charService = new CharacterManager;
             $character = $charService->createCharacter($characterData, $user, true);
             if (!$character) {
-                throw new \Exception('Could not create MYO slot.');
+                // get the service error
+                foreach ($charService->errors()->getMessages()['error'] as $error) {
+                    $this->setError('error', $error);
+                }
+                throw new \Exception('Failed to create MYO.');
             }
 
-            if (config('lorekeeper.character_pairing.inherit_colours') && $palette) {
+            if (config('lorekeeper.character_pairing.colours') && config('lorekeeper.character_pairing.inherit_colours') && $palette) {
                 $character->image->colours = $palette;
                 $character->image->save();
             }
