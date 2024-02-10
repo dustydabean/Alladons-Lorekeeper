@@ -188,6 +188,9 @@ class SlotService extends Service {
                         if ($character = $charService->createCharacter($characterData, $user, true)) {
                             flash('<a href="'.$character->url.'">MYO slot</a> created successfully.')->success();
                         } else {
+                            foreach ($charService->errors()->getMessages()['error'] as $error) {
+                                flash($error)->error();
+                            }
                             throw new \Exception('Failed to use slot.');
                         }
                     }

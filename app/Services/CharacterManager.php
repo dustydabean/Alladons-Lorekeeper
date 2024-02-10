@@ -137,9 +137,11 @@ class CharacterManager extends Service {
             }
 
             // Create character lineage
-            $lineage = $this->handleCharacterLineage($data, $character, $isMyo);
-            if (!$lineage) {
-                throw new \Exception('Error happened while trying to create lineage.');
+            if (isset($data['parent_1_id']) || isset($data['parent_1_name']) || isset($data['parent_2_id']) || isset($data['parent_2_name'])) {
+                $lineage = $this->handleCharacterLineage($data, $character);
+                if (!$lineage) {
+                    throw new \Exception('Error happened while trying to create lineage.');
+                }
             }
 
             // Create character image
@@ -2122,7 +2124,7 @@ class CharacterManager extends Service {
             if(!$user->hasPower('manage_characters')) throw new \Exception('You do not have the required permissions to do this.');
 
             if (!$character->lineage) {
-                return $this->handleCharacterLineage($data, $character, $character->is_myo_slot);
+                return $this->handleCharacterLineage($data, $character);
             } else {
                 $character->lineage->update([
                     'parent_1_id'   => $data['parent_1_id'] ?? null,
@@ -2149,9 +2151,13 @@ class CharacterManager extends Service {
      * @param  bool                             $isMyo
      * @return \App\Models\Character\CharacterLineage|bool
      */
-    private function handleCharacterLineage($data, $character, $isMyo = false)
+    private function handleCharacterLineage($data, $character)
     {
         try {
+
+            if (!isset($data['parent_1_id']) && !isset($data['parent_1_name']) && !isset($data['parent_2_id']) && !isset($data['parent_2_name'])) {
+                throw new \Exception('No lineage data provided.');
+            }
 
             // check parent ids if set to see if character exists
             if (isset($data['parent_1_id']) && $data['parent_1_id']) {
