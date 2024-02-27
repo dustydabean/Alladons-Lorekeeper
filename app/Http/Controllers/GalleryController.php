@@ -6,7 +6,9 @@ use App\Facades\Settings;
 use App\Models\Character\Character;
 use App\Models\Comment\Comment;
 use App\Models\Currency\Currency;
+use App\Models\Criteria\Criterion;
 use App\Models\Gallery\Gallery;
+use App\Models\Gallery\GalleryCriterion;
 use App\Models\Gallery\GallerySubmission;
 use App\Models\Prompt\Prompt;
 use App\Models\User\User;
@@ -231,11 +233,25 @@ class GalleryController extends Controller {
             abort(404);
         }
 
+        $totals = [];
+        if(isset($submission->data['criterion'])) {
+            foreach($submission->data['criterion'] as $key => $criterionData) {
+                $criterion = Criterion::where('id', $criterionData['id'])->first();
+                $totals[$key] = [
+                    'value' => $criterion->calculateReward($criterionData),
+                    'name' => $criterion->name,
+                    'currency' => $criterion->currency
+                ];
+            }
+        }
+
         return view('galleries.submission_log', [
-            'submission'  => $submission,
-            'currency'    => Currency::find(Settings::get('group_currency')),
-            'galleryPage' => true,
-            'sideGallery' => $submission->gallery,
+            'submission'         => $submission,
+            // 'currency'    => Currency::find(Settings::get('group_currency')),
+            'galleryPage'        => true,
+            'sideGallery'        => $submission->gallery,
+            'totals'             => $totals,
+            'collaboratorsCount' => $submission->collaborators->count() + ($submission->collaborators->where('user_id', $submission->user_id)->first() === null ? 1 : 0),
         ]);
     }
 
@@ -276,6 +292,8 @@ class GalleryController extends Controller {
         $gallery = Gallery::find($id);
         $closed = !Settings::get('gallery_submissions_open');
 
+        $galleryCriteria = GalleryCriterion::where('gallery_id', $id)->pluck('criterion_id')->toArray();
+
         return view('galleries.create_edit_submission', [
             'closed' => $closed,
         ] + ($closed ? [] : [
@@ -283,9 +301,10 @@ class GalleryController extends Controller {
             'submission'  => new GallerySubmission,
             'prompts'     => Prompt::active()->sortAlphabetical()->pluck('name', 'id')->toArray(),
             'users'       => User::visible()->orderBy('name')->pluck('name', 'id')->toArray(),
-            'currency'    => Currency::find(Settings::get('group_currency')),
+            // 'currency'    => Currency::find(Settings::get('group_currency')),
             'galleryPage' => true,
             'sideGallery' => $gallery,
+            'criteria' => Criterion::active()->whereIn('id', $galleryCriteria)->orderBy('name')->pluck('name', 'id'),
         ]));
     }
 
@@ -312,6 +331,7 @@ class GalleryController extends Controller {
 
         // Show inactive prompts in the event of being edited by an admin after acceptance
         $prompts = Auth::user()->hasPower('manage_submissions') && $submission->status == 'Pending' ? Prompt::query() : Prompt::active();
+        $galleryCriteria = GalleryCriterion::where('gallery_id', $id)->pluck('criterion_id')->toArray();
 
         return view('galleries.create_edit_submission', [
             'closed'         => false,
@@ -320,9 +340,10 @@ class GalleryController extends Controller {
             'prompts'        => $prompts->sortAlphabetical()->pluck('name', 'id')->toArray(),
             'submission'     => $submission,
             'users'          => User::visible()->orderBy('name')->pluck('name', 'id')->toArray(),
-            'currency'       => Currency::find(Settings::get('group_currency')),
+            // 'currency'       => Currency::find(Settings::get('group_currency')),
             'galleryPage'    => true,
             'sideGallery'    => $submission->gallery,
+            'criteria'        => Criterion::active()->whereIn('id', $galleryCriteria)->orderBy('name')->pluck('name', 'id'),
         ]);
     }
 
@@ -366,10 +387,14 @@ class GalleryController extends Controller {
      */
     public function postCreateEditGallerySubmission(Request $request, GalleryManager $service, $id = null) {
         $id ? $request->validate(GallerySubmission::$updateRules) : $request->validate(GallerySubmission::$createRules);
-        $data = $request->only(['image', 'text', 'title', 'description', 'slug', 'collaborator_id', 'collaborator_data', 'participant_id', 'participant_type', 'gallery_id', 'alert_user', 'prompt_id', 'content_warning']);
+
+        $data = $request->only(['image', 'text', 'title', 'description', 'slug', 'collaborator_id', 'collaborator_data', 'participant_id', 'participant_type', 'gallery_id', 'alert_user', 'prompt_id', 'content_warning',
+            'criterion', 'criterion_id'
+        ]);
 
         if (!$id && Settings::get('gallery_submissions_reward_currency')) {
-            $currencyFormData = $request->only(collect(config('lorekeeper.group_currency_form'))->keys()->toArray());
+            // $currencyFormData = $request->only(collect(config('lorekeeper.group_currency_form'))->keys()->toArray());
+            $currencyFormData = $request->only(['criterion']);
         } else {
             $currencyFormData = null;
         }

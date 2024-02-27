@@ -69,6 +69,33 @@
     @endif
 </div>
 
+@if(isset($submission->data['criterion']))
+    <div class="card mb-3">
+        <div class="card-header h2">Criteria Rewards</div>
+        <div class="card-body">
+            @foreach($submission->data['criterion'] as $criterionData)
+                <div class="card p-3 mb-2">
+                @php $criterion = \App\Models\Criteria\Criterion::where('id', $criterionData['id'])->first() @endphp
+                <h3>{!! $criterion->displayName !!} <span class="text-secondary"> - {!! $criterion->currency->display($criterion->calculateReward($criterionData)) !!}</span></h3>
+                @foreach($criterion->steps->where('is_active', 1) as $step)
+                    <div class="d-flex">
+                        <span class="mr-1 text-secondary">{{ $step->name }}:</span>
+                        @if($step->type === 'options')
+                            @php $stepOption = $step->options->where('id', $criterionData[$step->id])->first() @endphp
+                            <span>{{ isset($stepOption) ? $stepOption->name : 'Not Selected' }}</span>
+                        @elseif($step->type === 'boolean')
+                            <span>{{ isset($criterionData[$step->id]) ? 'On' : 'Off' }}
+                        @elseif($step->type === 'input')
+                            <span> {{ $criterionData[$step->id] ?? 0 }}</span>
+                        @endif
+                    </div>
+                @endforeach
+                </div>
+            @endforeach
+        </div>
+    </div>
+@endif
+
 @if (array_filter(parseAssetData(isset($submission->data['rewards']) ? $submission->data['rewards'] : $submission->data)))
     <div class="card mb-3">
         <div class="card-header h2">Rewards</div>
