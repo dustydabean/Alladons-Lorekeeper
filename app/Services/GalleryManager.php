@@ -681,7 +681,7 @@ class GalleryManager extends Service
 
                 // Collect and json encode existing as well as new data for storage
                 $valueData = collect([
-                    'criterion' => isset($submission->data['criterion']) ? $submission->data['criterion'] : null,
+                    'criterion' => isset($data['criterion']) ? $data['criterion'] : null,
                     'awardQuantity' => $awardQuantity,
                     'staff' => $user->id,
                 ])->toJson();
