@@ -141,6 +141,10 @@
     </div>
 </div>
 
+@if (!$isClaim)
+    @include('widgets._submission_checklist', ['type' => 'prompt_submission'])
+@endif
+
 @if ($submission->status == 'Draft')
     <div class="text-right">
         <a href="#" class="btn btn-danger mr-2" id="cancelButton">Delete Draft</a>
