@@ -76,12 +76,6 @@ class CraftingService extends Service {
       $isComplete = $this->checkRecipe($user, $recipe);
       if (!$isComplete) throw new \Exception('You haven\'t gotten all the items yet for this recipe.');
 
-      // Credit rewards
-      $logType = 'Recipe Reward';
-      $rewardData = [
-        'data' => 'Received rewards from ' . $recipe->displayName . ' recipe'
-      ];
-
       // Complete the recipe ----  NOTE: This could be done with less code duplication with RecipeManager but hrmmm would be duplicative processing also.
       // Check for sufficient currencies
       $user_currencies = $user->getCurrencies(true);
@@ -113,7 +107,7 @@ class CraftingService extends Service {
         'data' => 'Received rewards from ' . $recipe->displayName . ' recipe'
       ];
 
-      if (!fillUserAssets($recipe->rewardItems, null, $user, $logType, $craftingData)) throw new \Exception("Failed to distribute rewards to user.");
+      if (!$rewards = fillUserAssets($recipe->rewardItems, null, $user, $logType, $craftingData)) throw new \Exception("Failed to distribute rewards to user.");
 
       flash(getRewardsString($rewards));
 
