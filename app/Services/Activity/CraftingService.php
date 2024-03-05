@@ -82,8 +82,6 @@ class CraftingService extends Service {
         'data' => 'Received rewards from ' . $recipe->displayName . ' recipe'
       ];
 
-      if (!$rewards = fillUserAssets($recipe->rewardItems, null, $user, $logType, $rewardData)) throw new \Exception("Failed to distribute rewards to user.");
-
       // Complete the recipe ----  NOTE: This could be done with less code duplication with RecipeManager but hrmmm would be duplicative processing also.
       // Check for sufficient currencies
       $user_currencies = $user->getCurrencies(true);
