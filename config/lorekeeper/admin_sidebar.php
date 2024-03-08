@@ -153,8 +153,8 @@ return [
                 'url' => 'admin/data/subtypes'
             ],
             [
-                'name' => 'Traits',
-                'url' => 'admin/data/traits'
+                'name' => 'Mutations',
+                'url' => 'admin/data/mutations'
             ],
             [
                 'name' => 'Shops',
