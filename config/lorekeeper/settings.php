@@ -48,7 +48,7 @@ return [
     | It is not, however, displayed on the site itself. This should be kept short and snappy!
     |
     */
-    'site_desc' => 'A Lorekeeper ARPG',
+    'site_desc' => 'Alladons Official',
 
     /*
     |--------------------------------------------------------------------------
@@ -139,7 +139,7 @@ return [
     'watermark_masterlist_images' => 0,
     'masterlist_image_dimension' => 0,
     'masterlist_image_format' => null,
-    'masterlist_image_background' => '#ffffff',
+    'masterlist_image_background' => 'png',
 
     /*
     |--------------------------------------------------------------------------
@@ -222,6 +222,6 @@ return [
     | Symbol for the (real world) currency used for sales posts.
     |
     */
-    'currency_symbol' => '$'
+    'currency_symbol' => '£'
 
 ];
