@@ -154,7 +154,7 @@ return [
             ],
             [
                 'name' => 'Mutations',
-                'url' => 'admin/data/mutations'
+                'url' => 'admin/data/traits'
             ],
             [
                 'name' => 'Shops',
