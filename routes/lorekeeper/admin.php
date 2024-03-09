@@ -5,7 +5,7 @@
 | Admin Routes
 |--------------------------------------------------------------------------
 |
-| Routes for users with powers.
+| Routes for users with powers. 
 |
 */
 
