@@ -153,7 +153,7 @@ return [
                 'url' => 'admin/data/subtypes'
             ],
             [
-                'name' => 'Mutations',
+                'name' => 'Traits',
                 'url' => 'admin/data/traits'
             ],
             [
