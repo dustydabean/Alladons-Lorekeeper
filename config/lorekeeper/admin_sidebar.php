@@ -10,7 +10,7 @@ return [
     | Admin panel sidebar links.
     | Add links here to have them show up in the admin panel.
     | Users that do not have the listed power will not be able to
-    | view the links in that section.
+    | view the links in that section. 
     |
     */
 
