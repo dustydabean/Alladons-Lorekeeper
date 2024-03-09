@@ -1,8 +1,8 @@
 <div class="character-masterlist-categories">
     @if(!$character->is_myo_slot)
-        {!! $character->category->displayName !!} ・ {!! $character->image->species->displayName !!} ・ {!! $character->image->rarity->displayName !!}
+        {!! $character->category->displayName ?? '' !!} ・ {!! $character->image->species->displayName ?? '' !!} ・ {!! $character->image->rarity->displayName ?? '' !!}
     @else
-        MYO Slot @if($character->image->species_id) ・ {!! $character->image->species->displayName !!}@endif @if($character->image->rarity_id) ・ {!! $character->image->rarity->displayName !!}@endif
+        MYO Slot @if($character->image->species_id) ・ {!! $character->image->species->displayName ?? '' !!}@endif @if($character->image->rarity_id) ・ {!! $character->image->rarity->displayName ?? '' !!}@endif
     @endif
 </div>
 <h1 class="mb-0">
@@ -23,7 +23,7 @@
     @if(Config::get('lorekeeper.extensions.character_TH_profile_link') && $character->profile->link)
             <a class="btn btn-outline-info float-right" data-character-id="{{ $character->id }}" href="{{ $character->profile->link }}"><i class="fas fa-home"></i> Profile</a>
         @endif
-    @if(!$character->is_visible) <i class="fas fa-eye-slash"></i> @endif {!! $character->displayName !!}
+    @if(!$character->is_visible) <i class="fas fa-eye-slash"></i> @endif {!! $character->displayName ?? '' !!}
 </h1>
 <div class="mb-3">
     Owned by {!! $character->displayOwner !!}
