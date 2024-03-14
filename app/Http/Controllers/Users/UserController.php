@@ -47,6 +47,7 @@ class UserController extends Controller
      */
     public function __construct()
     {
+        parent::__construct();
         $name = Route::current()->parameter('name');
         $this->user = User::where('name', $name)->first();
         if(!$this->user) abort(404);
@@ -65,7 +66,7 @@ class UserController extends Controller
     {
         $characters = $this->user->characters();
         if(!Auth::check() || !(Auth::check() && Auth::user()->hasPower('manage_characters'))) $characters->visible();
-        
+
         return view('user.profile', [
             'user' => $this->user,
             'items' => $this->user->items()->where('count', '>', 0)->orderBy('user_items.updated_at', 'DESC')->take(4)->get(),

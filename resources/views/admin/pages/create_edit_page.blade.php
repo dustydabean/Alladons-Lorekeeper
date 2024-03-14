@@ -66,12 +66,12 @@
 @section('scripts')
 @parent
 <script>
-$( document ).ready(function() {    
+$( document ).ready(function() {
     $('.delete-page-button').on('click', function(e) {
         e.preventDefault();
         loadModal("{{ url('admin/pages/delete') }}/{{ $page->id }}", 'Delete Page');
     });
 });
-    
+
 </script>
 @endsection
