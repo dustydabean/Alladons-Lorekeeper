@@ -237,16 +237,41 @@
         </div>
     </div>
 
+    <div class="form-group">
+        @php $dVis = Settings::get('genome_default_visibility'); @endphp
+        {!! Form::label('genome_visibility', 'Genome Visibility') !!}
+        {!! Form::select('genome_visibility', [0 => "Completely Hidden", 1 => "Half-Hidden", 2 => "Completely Visible"], $dVis, ['class' => "form-control"]) !!}
+        <span class="form-text text-muted">
+            The default site setting for genome visibility is <strong class="text-dark">{{ $dVis < 1 ? "Completely Hidden" : ($dVis == 1 ? "Half-Hidden" : "Fully Visible") }}</strong>.
+        </span>
+    </div>
+
+    <div class="form-group">
+        {!! Form::label('Genes') !!}
+        <div id="geneList"></div>
+        <div class="form-group inline">
+            <a href="#" class="add-genetics-row btn btn-primary mb-2">Add Gene</a>
+        </div>
+    </div>
+
     <div class="text-right">
         {!! Form::submit('Create Character', ['class' => 'btn btn-primary']) !!}
     </div>
     {!! Form::close() !!}
 @endif
 
+{{-- Genetics Helper Fields --}}
+<div class="genetics-row hide mb-2 d-flex">
+    {!! Form::select('gene_id[]', $genes, null, ['class' => 'form-control gene-select', 'placeholder' => 'Select Gene Group']) !!}
+    <div class="mx-2 gene-select-options input-group"></div>
+    <a href="#" class="btn btn-danger mb-2 delete-genetics-row"><i class="fas fa-times"></i></a>
+</div>
+
 @endsection
 
 @section('scripts')
 @parent
+@include('widgets._genome_create_edit_js')
 @include('widgets._character_create_options_js')
 @include('widgets._image_upload_js')
 @if(!$isMyo)
