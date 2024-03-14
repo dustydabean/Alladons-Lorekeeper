@@ -2,13 +2,10 @@
 
 namespace App\Models\Loot;
 
-use Config;
 use App\Models\Item\Item;
-
 use App\Models\Model;
 
-class LootTable extends Model
-{
+class LootTable extends Model {
     /**
      * The attributes that are mass assignable.
      *
@@ -24,14 +21,13 @@ class LootTable extends Model
      * @var string
      */
     protected $table = 'loot_tables';
-
     /**
      * Validation rules for creation.
      *
      * @var array
      */
     public static $createRules = [
-        'name' => 'required',
+        'name'         => 'required',
         'display_name' => 'required',
     ];
 
@@ -41,7 +37,7 @@ class LootTable extends Model
      * @var array
      */
     public static $updateRules = [
-        'name' => 'required',
+        'name'         => 'required',
         'display_name' => 'required',
     ];
 
@@ -54,9 +50,8 @@ class LootTable extends Model
     /**
      * Get the loot data for this loot table.
      */
-    public function loot()
-    {
-        return $this->hasMany('App\Models\Loot\Loot', 'loot_table_id');
+    public function loot() {
+        return $this->hasMany(Loot::class, 'loot_table_id');
     }
 
     /**********************************************************************************************
@@ -70,8 +65,7 @@ class LootTable extends Model
      *
      * @return string
      */
-    public function getDisplayNameAttribute()
-    {
+    public function getDisplayNameAttribute() {
         return '<span class="display-loot">'.$this->attributes['display_name'].'</span> '.add_help('This reward is random.');
     }
 
@@ -80,9 +74,26 @@ class LootTable extends Model
      *
      * @return string
      */
-    public function getAssetTypeAttribute()
-    {
+    public function getAssetTypeAttribute() {
         return 'loot_tables';
+    }
+
+    /**
+     * Gets the admin edit URL.
+     *
+     * @return string
+     */
+    public function getAdminUrlAttribute() {
+        return url('admin/data/loot-tables/edit/'.$this->id);
+    }
+
+    /**
+     * Gets the power required to edit this model.
+     *
+     * @return string
+     */
+    public function getAdminPowerAttribute() {
+        return 'edit_data';
     }
 
     /**********************************************************************************************
@@ -94,7 +105,8 @@ class LootTable extends Model
     /**
      * Rolls on the loot table and consolidates the rewards.
      *
-     * @param  int  $quantity
+     * @param int $quantity
+     *
      * @return \Illuminate\Support\Collection
      */
     public function roll($quantity = 1)
