@@ -8,8 +8,7 @@ use App\Models\Shop\Shop;
 use App\Models\Shop\ShopLog;
 use App\Models\Shop\ShopStock;
 use App\Models\User\UserItem;
-use Config;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class ShopManager extends Service {
     /*
@@ -33,7 +32,7 @@ class ShopManager extends Service {
         DB::beginTransaction();
 
         try {
-            $quantity = $data['quantity'];
+            $quantity = ceil($data['quantity']);
             if (!$quantity || $quantity == 0) {
                 throw new \Exception('Invalid quantity selected.');
             }
@@ -215,7 +214,7 @@ class ShopManager extends Service {
     }
 
     public function getStockPurchaseLimit($shopStock, $user) {
-        $limit = Config::get('lorekeeper.settings.default_purchase_limit');
+        $limit = config('lorekeeper.settings.default_purchase_limit');
         if ($shopStock->purchase_limit > 0) {
             $user_purchase_limit = $shopStock->purchase_limit - $this->checkUserPurchases($shopStock, $user);
             if ($user_purchase_limit < $limit) {

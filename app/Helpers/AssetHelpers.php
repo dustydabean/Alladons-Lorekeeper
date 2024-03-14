@@ -213,6 +213,25 @@ function addAsset(&$array, $asset, $quantity = 1) {
 }
 
 /**
+ * Removes an asset from the given array, if it exists.
+ *
+ * @param array $array
+ * @param mixed $asset
+ * @param int   $quantity
+ */
+function removeAsset(&$array, $asset, $quantity = 1) {
+    if (!$asset) {
+        return;
+    }
+    if (isset($array[$asset->assetType][$asset->id])) {
+        $array[$asset->assetType][$asset->id]['quantity'] -= $quantity;
+        if ($array[$asset->assetType][$asset->id]['quantity'] == 0) {
+            unset($array[$asset->assetType][$asset->id]);
+        }
+    }
+}
+
+/**
  * Get a clean version of the asset array to store in the database,
  * where each asset is listed in [id => quantity] format.
  * json_encode this and store in the data attribute.
@@ -432,7 +451,7 @@ function fillUserAssets($assets, $sender, $recipient, $logType, $data) {
  * @return array
  */
 function fillCharacterAssets($assets, $sender, $recipient, $logType, $data, $submitter = null) {
-    if (!Config::get('lorekeeper.extensions.character_reward_expansion.default_recipient') && $recipient->user) {
+    if (!config('lorekeeper.extensions.character_reward_expansion.default_recipient') && $recipient->user) {
         $item_recipient = $recipient->user;
     } else {
         $item_recipient = $submitter;
@@ -482,7 +501,11 @@ function createRewardsString($array) {
         }
     }
     if (!count($string)) {
-        return;
+        return 'Nothing. :('; // :(
+    }
+
+    if (count($string) == 1) {
+        return implode(', ', $string);
     }
 
     return implode(', ', array_slice($string, 0, count($string) - 1)).(count($string) > 2 ? ', and ' : ' and ').end($string);

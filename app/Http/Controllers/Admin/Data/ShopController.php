@@ -9,9 +9,9 @@ use App\Models\Pet\Pet;
 use App\Models\Shop\Shop;
 use App\Models\Shop\ShopStock;
 use App\Services\ShopService;
-use Auth;
 use Illuminate\Http\Request;
 use Log;
+use Illuminate\Support\Facades\Auth;
 
 class ShopController extends Controller {
     /*

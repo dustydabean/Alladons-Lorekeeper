@@ -1,7 +1,7 @@
 @extends('admin.layout')
 
 @section('admin-title')
-    Loot Tables
+    {{ $table->id ? 'Edit' : 'Create' }} Loot Table
 @endsection
 
 @section('admin-content')
@@ -57,7 +57,7 @@
                         <td>{!! Form::select(
                             'rewardable_type[]',
                             Config::get('lorekeeper.extensions.item_entry_expansion.loot_tables.enable')
-                                ? ['Item' => 'Item', 'ItemRarity' => 'Item Rarity', 'Pet' => 'Pet', 'Currency' => 'Currency', 'LootTable' => 'Loot Table', 'ItemCategory' => 'Item Category', 'ItemCategoryRarity' => 'Item Category (Conditional)', 'None' => 'None']
+                                ? ['Item' => 'Item', 'Pet' => 'Pet', 'ItemRarity' => 'Item Rarity', 'Currency' => 'Currency', 'LootTable' => 'Loot Table', 'ItemCategory' => 'Item Category', 'ItemCategoryRarity' => 'Item Category (Conditional)', 'None' => 'None']
                                 : ['Item' => 'Item', 'Pet' => 'Pet', 'Currency' => 'Currency', 'LootTable' => 'Loot Table', 'ItemCategory' => 'Item Category', 'None' => 'None'],
                             $loot->rewardable_type,
                             ['class' => 'form-control reward-type', 'placeholder' => 'Select Reward Type'],
@@ -110,7 +110,7 @@
                 <tr class="loot-row">
                     <td>{!! Form::select(
                         'rewardable_type[]',
-                        Config::get('lorekeeper.extensions.item_entry_expansion.loot_tables.enable')
+                        config('lorekeeper.extensions.item_entry_expansion.loot_tables.enable')
                             ? ['Item' => 'Item', 'ItemRarity' => 'Item Rarity', 'Currency' => 'Currency', 'LootTable' => 'Loot Table', 'ItemCategory' => 'Item Category', 'ItemCategoryRarity' => 'Item Category (Conditional)', 'None' => 'None']
                             : ['Item' => 'Item', 'Currency' => 'Currency', 'LootTable' => 'Loot Table', 'ItemCategory' => 'Item Category', 'None' => 'None'],
                         null,
