@@ -23,7 +23,7 @@ class PermalinkController extends Controller
      */
      public function getComment($id) {
 
-        $comments = Comment::withTrashed()->get();
+        $comments = Comment::all();
         //$comments = $comments->sortByDesc('created_at');
         $comment = $comments->find($id);
 

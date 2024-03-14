@@ -25,9 +25,9 @@ return [
         'background_color' => '#1fd1a7'
     ],
 
-    'gene_reveal' => [
-        'name' => 'Gene Reveal',
-        'text_color' => '#ffffff',
-        'background_color' => '#A8CE5E'
-    ],
+    'theme' => [
+        'name' => 'Theme',
+        'text_color' => "#ffffff",
+        'background_color' => '#573f7e'
+    ]
 ];
