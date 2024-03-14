@@ -218,15 +218,15 @@ class ForageService extends Service
                     throw new \Exception('Could not debit currency.');
             }
             if (!$forage->loot()->count()) throw new \Exception('This forage has no rewards.');
-            if(Config::get('lorekeeper.foraging.use_characters') && !$user->foraging->character_id) throw new \Exception('Please select a character.');
+            if(config('lorekeeper.foraging.use_characters') && !$user->foraging->character_id) throw new \Exception('Please select a character.');
 
             $user->foraging->forage_id = $id;
             $user->foraging->foraged_at = carbon::now();
-            $user->foraging->distribute_at = carbon::now()->addMinutes(Config::get('lorekeeper.foraging.forage_time'));
+            $user->foraging->distribute_at = carbon::now()->addMinutes(config('lorekeeper.foraging.forage_time'));
 
             // CHARACTER_STAMINA_DECREMENT
-            if(Config::get('lorekeeper.foraging.use_characters')) {
-                if (Config::get('lorekeeper.foraging.use_foraging_stamina')) {
+            if(config('lorekeeper.foraging.use_characters')) {
+                if (config('lorekeeper.foraging.use_foraging_stamina')) {
                     $user->foraging->stamina -= $user->foraging->forage->stamina_cost;
                     $user->foraging->save();
                 }
@@ -237,7 +237,7 @@ class ForageService extends Service
             }
             else {
                 // USER_STAMINA_DECREMENT
-                if (Config::get('lorekeeper.foraging.use_foraging_stamina')) {
+                if (config('lorekeeper.foraging.use_foraging_stamina')) {
                     $user->foraging->stamina -= $user->foraging->forage->stamina_cost;
                     $user->foraging->save();
                 }
@@ -273,7 +273,7 @@ class ForageService extends Service
             // check it's been forage_time since forage started
             $now = Carbon::now();
             // add forage time to foraged_at
-            $distribute = $user->foraging->foraged_at->addMinutes(Config::get('lorekeeper.foraging.forage_time'));
+            $distribute = $user->foraging->foraged_at->addMinutes(config('lorekeeper.foraging.forage_time'));
             if($now->lt($distribute)) throw new \Exception('You must wait until the forage is complete before claiming your rewards.');
             // check distribute_at also
             $distribute = $user->foraging->distribute_at;
@@ -292,7 +292,7 @@ class ForageService extends Service
             $user->foraging->distribute_at = null; // we can check against this to stop multi window claims
             $user->foraging->save();
 
-            if(Config::get('lorekeeper.foraging.use_characters')) $name = $user->foraging->character->fullName;
+            if(config('lorekeeper.foraging.use_characters')) $name = $user->foraging->character->fullName;
 
             flash($this->getRewardsString($rewards, $name ?? null))->success();
 
@@ -320,7 +320,7 @@ class ForageService extends Service
      */
     private function getRewardsString($rewards, $character_name = null)
     {
-        if(Config::get('lorekeeper.foraging.use_characters'))
+        if(config('lorekeeper.foraging.use_characters'))
             $results = $character_name . " has found: ";
         else $results = "You have received: ";
         $result_elements = [];
@@ -355,7 +355,7 @@ class ForageService extends Service
             if (!$character) {
                 throw new \Exception('Invalid character.');
             }
-            if ($character->user_id != $user->id && !Config::get('lorekeeper.foraging.npcs.enabled')) {
+            if ($character->user_id != $user->id && !config('lorekeeper.foraging.npcs.enabled')) {
                 throw new \Exception('You are not this characters owner.');
             }
 

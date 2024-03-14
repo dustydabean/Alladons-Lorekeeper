@@ -25,11 +25,14 @@ class UserForaging extends Model
     protected $table = 'user_foraging';
 
     /**
-     * Dates on the model to convert to Carbon instances.
+     * The attributes that should be cast to native types.
      *
      * @var array
      */
-     public $dates = ['foraged_at', 'distribute_at'];
+    protected $casts = [
+        'foraged_at' => 'datetime',
+        'distribute_at' => 'datetime',
+    ];
 
     /**********************************************************************************************
     

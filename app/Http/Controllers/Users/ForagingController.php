@@ -9,6 +9,7 @@ use Carbon\Carbon;
 
 use Illuminate\Http\Request;
 
+use App\Models\Character\Character;
 use App\Models\User\UserForaging;
 use App\Models\Foraging\Forage;
 
@@ -31,13 +32,13 @@ class ForagingController extends Controller
         }
 
         $characters = Auth::user()->characters()->pluck('slug', 'id');
-        if (!count($characters) && Config::get('lorekeeper.foraging.use_characters')) {
-            if (Config::get('lorekeeper.foraging.npcs.enabled')) {
+        if (!count($characters) && config('lorekeeper.foraging.use_characters')) {
+            if (config('lorekeeper.foraging.npcs.enabled')) {
                 // check if we're using ids or category/rarity
-                if (Config::get('lorekeeper.foraging.npcs.use_ids')) {
-                    $characters = Character::whereIn('id', Config::get('lorekeeper.foraging.npcs.ids'))->pluck('slug', 'id');
+                if (config('lorekeeper.foraging.npcs.use_ids')) {
+                    $characters = Character::whereIn('id', config('lorekeeper.foraging.npcs.ids'))->pluck('slug', 'id');
                 } else {
-                    $characters = Character::where(Config::get('lorekeeper.foraging.npcs.category_or_rarity'), Config::get('lorekeeper.foraging.npcs.code'))->pluck('slug', 'id');
+                    $characters = Character::where(config('lorekeeper.foraging.npcs.category_or_rarity'), config('lorekeeper.foraging.npcs.code'))->pluck('slug', 'id');
                 }
                 // if after all that there's still no characters
                 if (!count($characters)) {
