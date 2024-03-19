@@ -45,7 +45,7 @@ class PairingController extends Controller {
             $pairings = Pairing::where('user_id', $user->id)->whereIn('status', ['REJECTED', 'COMPLETE', 'CANCELLED'])->orderBy('id', 'DESC')->get()->paginate(10)->appends($request->query());
         }
 
-        $user_items = $user->items()->where('count', '>', 0)->get()->pluck('id')->toArray();
+        $user_items = $user->items()->whereNull('deleted_at')->where('count', '>', 0)->get()->pluck('id')->toArray();
         $user_pairing_items = UserItem::whereIn('item_id', $user_items)->whereIn('item_id', Item::whereRelation('tags', 'tag', 'pairing')->pluck('id')->toArray())->get();
         $user_boost_items = UserItem::whereIn('item_id', $user_items)->whereIn('item_id', Item::whereRelation('tags', 'tag', 'boost')->pluck('id')->toArray())->get();
 
