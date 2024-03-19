@@ -45,7 +45,7 @@
             <h5>
                 Purchase
                 <span class="float-right">
-                    In Inventory: {{ $userOwned->pluck('count')->sum() }}
+                    In Inventory: {{ $userOwned }}
                 </span>
             </h5>
             @if ($stock->is_limited_stock && $stock->quantity == 0)

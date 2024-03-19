@@ -213,6 +213,9 @@ class ShopManager extends Service {
         return $shopQuery->sum('quantity');
     }
 
+    /**
+     * Gets the purchase limit for a user for a shop item.
+     */
     public function getStockPurchaseLimit($shopStock, $user) {
         $limit = config('lorekeeper.settings.default_purchase_limit');
         if ($shopStock->purchase_limit > 0) {
@@ -228,5 +231,18 @@ class ShopManager extends Service {
         }
 
         return $limit;
+    }
+
+    /**
+     * Gets how many of a shop item a user owns.
+     */
+    public function getUserOwned($stock, $user) {
+        switch (strtolower($stock->stock_type)) {
+            case 'item':
+                return $user->items()->where('item_id', $stock->item_id)->count();
+            case 'pet':
+                return $user->pets()->where('pet_id', $stock->item_id)->count();
+            break;
+        }
     }
 }
