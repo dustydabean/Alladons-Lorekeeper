@@ -15,6 +15,7 @@
     <div class="text-right mb-3">
         <a class="btn btn-primary" href="{{ url('admin/data/pet-categories') }}"><i class="fas fa-folder mr-1"></i> Pet Categories</a>
         <a class="btn btn-primary" href="{{ url('admin/data/pets/drops') }}"><i class="fas fa-egg mr-1"></i> Pet Drops</a>
+        <a class="btn btn-primary" href="{{ url('admin/data/pets/levels') }}"><i class="fas fa-level-up-alt mr-1"></i> Pet Levels</a>
         <a class="btn btn-primary" href="{{ url('admin/data/pets/create') }}"><i class="fas fa-plus mr-1"></i> Create New Pet</a>
     </div>
 

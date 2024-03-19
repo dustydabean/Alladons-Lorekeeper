@@ -25,6 +25,7 @@
                 {!! Form::select('pet_ids[]', $pets, null, ['class' => 'form-control mr-2 default pet-select', 'placeholder' => 'Select Pet']) !!}
                 {!! Form::text('quantities[]', 1, ['class' => 'form-control mr-2', 'placeholder' => 'Quantity']) !!}
                 {!! Form::select('variant[]', ['none' => 'No Variant', 'randomize' => 'Randomize Variant'], null, ['class' => 'form-control mr-2 variant-select']) !!}
+                {!! Form::select('evolution[]', ['none' => 'No Evolution', 'randomize' => 'Randomize Evolution'], null, ['class' => 'form-control mr-2 evolution-select']) !!}
                 <a href="#" class="remove-pet btn btn-danger mb-2 disabled">×</a>
             </div>
         </div>
@@ -99,9 +100,12 @@
                     // ajax request to get all pet variants
                     let pet_id = $(this).val();
                     let $variantSelect = $(this).parent().find('.variant-select');
+                    let $evolutionSelect = $(this).parent().find('.evolution-select');
                     $variantSelect.html('');
+                    $evolutionSelect.html('');
                     // loading symbol until ajax request is done
                     $variantSelect.append('<option value="loading">Loading...</option>');
+                    $evolutionSelect.append('<option value="loading">Loading...</option>');
                     $.ajax({
                         url: "{{ url('admin/grants/pets/variants') }}/" + pet_id,
                         type: 'GET',
@@ -112,7 +116,18 @@
                             $.each(data, function(key, value) {
                                 $variantSelect.append('<option value="' + key + '">' + value + '</option>');
                             });
-
+                        }
+                    });
+                    $.ajax({
+                        url: "{{ url('admin/grants/pets/evolutions') }}/" + pet_id,
+                        type: 'GET',
+                        success: function(data) {
+                            $evolutionSelect.html('');
+                            $evolutionSelect.append('<option value="none">No Evolution</option>');
+                            $evolutionSelect.append('<option value="randomize">Randomize Evolution</option>');
+                            $.each(data, function(key, value) {
+                                $evolutionSelect.append('<option value="' + key + '">' + value + '</option>');
+                            });
                         }
                     });
                 });

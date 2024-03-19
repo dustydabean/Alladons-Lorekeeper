@@ -128,14 +128,39 @@
                     <div>
                         <h5>Pets</h5>
                     </div>
-                    <div class="text-center row">
-                        @foreach ($image->character->pets as $pet)
-                            <div class="ml-2 mr-3">
-                                <img src="{{ $pet->pet->variantImage($pet->id) }}" style="max-width: 75px;" />
-                                <br>
-                                <span class="text-light badge badge-dark" style="font-size:95%;">{!! $pet->pet_name !!}</span>
+                    <div class="row justify-content-center text-center">
+                        {{-- get one random pet --}}
+                        @php
+                            $pets = $image->character->pets()->orderBy('sort', 'DESC')->limit(config('lorekeeper.pets.display_pet_count'))->get();
+                        @endphp
+                        @foreach ($pets as $pet)
+                            <div class="col-md-12 mb-2">
+                                <div class="card d-flex flex-row align-items-center p-2 px-3">
+                                    <div class="col-md-4">
+                                        <img src="{{ $pet->pet->variantImage($pet->id) }}" class="rounded img-fluid" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        @if ($pet->pet_name)
+                                            <span class="text-light badge badge-dark mb-2 p-2" style="font-size:95%;">
+                                                {!! $pet->pet_name !!}
+                                            </span> the
+                                        @endif
+                                        {!! $pet->pet->displayName !!}
+                                        <div class="progress mb-2">
+                                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                                                style="width: {{ ($pet->level?->nextLevel?->bonding_required ? ($pet->level?->bonding / $pet->level?->nextLevel?->bonding_required) : 1 * 100) . '%' }}"
+                                                aria-valuenow="{{ $pet->level?->bonding }}" aria-valuemin="0" aria-valuemax="{{ $pet->level?->nextLevel?->bonding_required ?? 100 }}">
+                                                {{ $pet->level?->nextLevel?->bonding_required ? ($pet->level?->bonding .'/'. $pet->level?->nextLevel?->bonding_required) : 'Max' }}
+                                            </div>
+                                        </div>
+                                        {{ $pet->level?->levelName }}
+                                    </div>
+                                </div>
                             </div>
                         @endforeach
+                        <div class="ml-auto float-right mr-3">
+                            <a href="{{ $character->url . '/pets' }}" class="btn btn-outline-info btn-sm">View All</a>
+                        </div>
                     </div>
                 </div>
             </div>

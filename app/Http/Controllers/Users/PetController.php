@@ -379,4 +379,21 @@ class PetController extends Controller {
 
         return redirect()->back();
     }
+
+    /**
+     * Bonds with a pet.
+     */
+    public function postBond($id, Request $request, PetManager $service) {
+        $pet = UserPet::findOrFail($id);
+
+        if ($service->bondPet($pet, Auth::user())) {
+            flash('Pet bonded successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
+    }
 }

@@ -38,14 +38,14 @@ class PetVariant extends Model {
      * Get the pet associated with this pet stack.
      */
     public function pet() {
-        return $this->belongsTo('App\Models\Pet\Pet');
+        return $this->belongsTo(Pet::class);
     }
 
     /**
      * gets the variants drop data.
      */
     public function dropData() {
-        return $this->hasOne('App\Models\Pet\PetVariantDropData', 'variant_id');
+        return $this->hasOne(PetVariantDropData::class, 'variant_id');
     }
 
     /**********************************************************************************************

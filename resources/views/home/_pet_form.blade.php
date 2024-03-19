@@ -40,7 +40,7 @@
             $now = Carbon\Carbon::parse($pet->attached_at);
             $diff = $now->addDays(Settings::get('claymore_cooldown'));
         @endphp
-        @if ($pet->chara_id != null && $diff < Carbon\Carbon::now())
+        @if ($pet->character_id != null && $diff < Carbon\Carbon::now())
             <a class="card-title h5 collapse-title" data-toggle="collapse" href="#attachForm">
                 @if ($pet->user_id != $user->id)
                     [ADMIN]
@@ -52,7 +52,7 @@
                 {!! Form::submit('Detach', ['class' => 'btn btn-primary']) !!}
             </div>
             {!! Form::close() !!}
-        @elseif($pet->chara_id == null || $diff < Carbon\Carbon::now())
+        @elseif($pet->character_id == null || $diff < Carbon\Carbon::now())
             <a class="card-title h5 collapse-title" data-toggle="collapse" href="#attachForm">
                 @if ($pet->user_id != $user->id)
                     [ADMIN]
@@ -80,7 +80,7 @@
     </li>
 @endif
 
-@if ($user && count($splices) && $user->id == $pet->user_id)
+@if ($user && isset($splices) && count($splices) && $user->id == $pet->user_id)
     <li class="list-group-item">
         <a class="card-title h5 collapse-title" data-toggle="collapse" href="#userVariantForm">Change Pet Variant</a>
         {!! Form::open(['url' => 'pets/variant/' . $pet->id, 'id' => 'userVariantForm', 'class' => 'collapse']) !!}

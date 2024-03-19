@@ -5,8 +5,10 @@ namespace App\Services;
 use App\Models\Pet\Pet;
 use App\Models\Pet\PetCategory;
 use App\Models\Pet\PetEvolution;
+use App\Models\Pet\PetLevel;
 use App\Models\Pet\PetVariant;
 use App\Models\User\UserPet;
+use App\Models\User\UserPetLevel;
 use DB;
 
 class PetService extends Service {
@@ -606,5 +608,173 @@ class PetService extends Service {
         }
 
         return $data;
+    }
+
+    /**********************************************************************************************
+
+        PET LEVELS
+
+    **********************************************************************************************/
+
+    /**
+     * Creates a new pet level.
+     *
+     * @param array                 $data
+     * @param \App\Models\User\User $user
+     *
+     * @return \App\Models\Pet\PetLevel|bool
+     */
+    public function createPetLevel($data, $user) {
+        DB::beginTransaction();
+
+        try {
+
+            if (!isset($data['level']) || !$data['level']) {
+                throw new \Exception('Please enter a valid level.');
+            }
+            // check that level is unique
+            if (PetLevel::where('level', $data['level'])->exists()) {
+                throw new \Exception('The level has already been taken.');
+            }
+
+            $level = PetLevel::create($data);
+
+            return $this->commitReturn($level);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Updates a pet level.
+     *
+     * @param \App\Models\Pet\PetLevel $level
+     * @param array                    $data
+     * @param \App\Models\User\User    $user
+     *
+     * @return \App\Models\Pet\PetLevel|bool
+     */
+    public function updatePetLevel($level, $data, $user) {
+        DB::beginTransaction();
+
+        try {
+            if (!isset($data['level']) || !$data['level']) {
+                throw new \Exception('Please enter a valid level.');
+            }
+            // check that level is unique
+            if (PetLevel::where('level', $data['level'])->where('id', '!=', $level->id)->exists()) {
+                throw new \Exception('The level has already been taken.');
+            }
+
+            $rewards = createAssetsArray();
+            if (isset($data['rewardable_id']) && $data['rewardable_id']) {
+                foreach($data['rewardable_id'] as $key => $rewardable_id) {
+                    $reward = findReward($data['rewardable_type'][$key], $rewardable_id);
+                    $rewards[$reward->assetType] = [
+                        'rewardable_id'   => $rewardable_id,
+                        'rewardable_type' => $data['rewardable_type'][$key],
+                        'quantity'        => $data['quantity'][$key],
+                    ];
+                }
+            }
+
+            $level->update([
+                'name'             => $data['name'],
+                'level'            => $data['level'],
+                'bonding_required' => $data['bonding_required'],
+                'rewards'          => json_encode($rewards),
+            ]);
+
+            return $this->commitReturn($level);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Deletes a pet level.
+     *
+     * @param \App\Models\Pet\PetLevel $level
+     *
+     * @return bool
+     */
+    public function deletePetLevel($level) {
+        DB::beginTransaction();
+
+        try {
+            // make sure no pets are using this level
+            if (UserPetLevel::where('bonding_level', $level->level)->exists()) {
+                throw new \Exception('At least one user pet is currently using this level. Please remove the pet(s) before deleting it.');
+            }
+
+            $level->delete();
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Adds pets to a level.
+     */
+    public function addPetsToLevel($pet_ids, $level) {
+        DB::beginTransaction();
+
+        try {
+            $level->pets()->delete();
+
+            $pet_ids = array_unique($pet_ids);
+            foreach($pet_ids as $pet_id) {
+                $pet = Pet::find($pet_id);
+                $level->pets()->create([
+                    'pet_id' => $pet_id,
+                ]);
+            }
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Adds rewards to a pet on a level.
+     */
+    public function editPetLevelPetRewards($petLevel, $data) {
+        DB::beginTransaction();
+
+        try {
+
+            $rewards = createAssetsArray();
+            if (isset($data['rewardable_id']) && $data['rewardable_id']) {
+                foreach($data['rewardable_id'] as $key => $rewardable_id) {
+                    $reward = findReward($data['rewardable_type'][$key], $rewardable_id);
+                    $rewards[$reward->assetType] = [
+                        'rewardable_id'   => $rewardable_id,
+                        'rewardable_type' => $data['rewardable_type'][$key],
+                        'quantity'        => $data['quantity'][$key],
+                    ];
+                }
+            }
+
+            $petLevel->update([
+                'rewards' => json_encode($rewards),
+            ]);
+
+            return $this->commitReturn($petLevel);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
     }
 }

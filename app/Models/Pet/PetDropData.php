@@ -52,21 +52,21 @@ class PetDropData extends Model {
      * Get the pet to which the data pertains.
      */
     public function pet() {
-        return $this->belongsTo('App\Models\Pet\Pet', 'pet_id');
+        return $this->belongsTo(Pet::class, 'pet_id');
     }
 
     /**
      * Get the pet to which the data pertains.
      */
     public function user_pet() {
-        return $this->belongsTo('App\Models\Pet\Pet', 'pet_id');
+        return $this->belongsTo(Pet::class, 'pet_id');
     }
 
     /**
      * Get any pet drops using this data.
      */
     public function petDrops() {
-        return $this->hasMany('App\Models\Pet\PetDrop', 'drop_id');
+        return $this->hasMany(PetDrop::class, 'drop_id');
     }
 
     /**********************************************************************************************

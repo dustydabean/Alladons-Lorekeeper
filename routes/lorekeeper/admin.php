@@ -208,6 +208,21 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::get('pets/drops/edit/{pet_id}/variants/delete/{variant_id}', 'PetController@getDeleteVariantDrop');
     Route::post('pets/drops/edit/{pet_id}/variants/delete/{variant_id}', 'PetController@postDeleteVariantDrop');
 
+    // levels
+    Route::get('pets/levels', 'PetController@getLevelIndex');
+    Route::get('pets/levels/create', 'PetController@getCreateLevel');
+    Route::get('pets/levels/edit/{id}', 'PetController@getEditLevel');
+    Route::get('pets/levels/delete/{id}', 'PetController@getDeleteLevel');
+    Route::post('pets/levels/create', 'PetController@postCreateEditLevel');
+    Route::post('pets/levels/edit/{id}', 'PetController@postCreateEditLevel');
+    Route::post('pets/levels/delete/{id}', 'PetController@postDeleteLevel');
+
+    // level pets
+    Route::get('pets/levels/edit/{level_id}/pets/add', 'PetController@getAddPetToLevel');
+    Route::get('pets/levels/edit/{level_id}/pets/edit/{id}', 'PetController@getEditPetLevel');
+    Route::post('pets/levels/edit/{level_id}/pets/add', 'PetController@postAddPetToLevel');
+    Route::post('pets/levels/edit/{level_id}/pets/edit/{id}', 'PetController@postEditPetLevel');
+
     // SHOPS
     Route::get('shops', 'ShopController@getIndex');
     Route::get('shops/create', 'ShopController@getCreateShop');
@@ -351,6 +366,7 @@ Route::group(['prefix' => 'grants', 'namespace' => 'Users', 'middleware' => 'pow
     Route::get('pets', 'GrantController@getPets');
     Route::post('pets', 'GrantController@postPets');
     Route::get('pets/variants/{id}', 'GrantController@getPetVariants');
+    Route::get('pets/evolutions/{id}', 'GrantController@getPetEvolutions');
 
     Route::get('item-search', 'GrantController@getItemSearch');
 });

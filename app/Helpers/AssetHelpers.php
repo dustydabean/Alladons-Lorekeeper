@@ -510,3 +510,31 @@ function createRewardsString($array) {
 
     return implode(', ', array_slice($string, 0, count($string) - 1)).(count($string) > 2 ? ', and ' : ' and ').end($string);
 }
+
+/**
+ * Returns an asset from provided data.
+ */
+function findReward($type, $id, $isCharacter = false) {
+    $reward = null;
+    switch ($type) {
+        case 'Item':
+            $reward = \App\Models\Item\Item::find($id);
+            break;
+        case 'Currency':
+            $reward = \App\Models\Currency\Currency::find($id);
+            if (!$isCharacter && !$reward->is_user_owned) {
+                throw new \Exception('Invalid currency selected.');
+            }
+            break;
+        case 'Pet':
+            $reward = \App\Models\Pet\Pet::find($id);
+            break;
+        case 'LootTable':
+            $reward = \App\Models\Loot\LootTable::find($id);
+            break;
+        case 'Raffle':
+            $reward = \App\Models\Raffle\Raffle::find($id);
+            break;
+    }
+    return $reward;
+}

@@ -178,7 +178,7 @@ class Character extends Model {
     }
 
     public function pets() {
-        return $this->hasMany('App\Models\User\UserPet', 'chara_id');
+        return $this->hasMany('App\Models\User\UserPet', 'character_id');
     }
 
     /**

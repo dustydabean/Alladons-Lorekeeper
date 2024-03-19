@@ -41,14 +41,14 @@ class PetDrop extends Model {
      * Get the associated user pet.
      */
     public function user_pet() {
-        return $this->belongsTo('App\Models\User\UserPet', 'user_pet_id');
+        return $this->belongsTo(UserPet::class, 'user_pet_id');
     }
 
     /**
      * Get the category the user pet belongs to.
      */
     public function dropData() {
-        return $this->belongsTo('App\Models\Pet\PetDropData', 'drop_id');
+        return $this->belongsTo(PetDropData::class, 'drop_id');
     }
 
     /**********************************************************************************************

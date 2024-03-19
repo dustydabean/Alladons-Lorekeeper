@@ -83,11 +83,15 @@ Route::group(['prefix' => 'pets', 'namespace' => 'Users'], function () {
 
     Route::get('view/{id}', 'PetController@getPetPage')->where('id', '[0-9]+');
     Route::post('view/{id}/edit', 'PetController@postEditPetProfile')->where('id', '[0-9]+');
+
+    Route::post('bond/{id}', 'PetController@postBond');
 });
 
 Route::group(['prefix' => 'characters', 'namespace' => 'Users'], function () {
     Route::get('/', 'CharacterController@getIndex');
     Route::post('sort', 'CharacterController@postSortCharacters');
+
+    Route::post('{slug}/pets/sort', 'CharacterController@postSortCharacterPets');
 
     Route::get('transfers/{type}', 'CharacterController@getTransfers');
     Route::post('transfer/act/{id}', 'CharacterController@postHandleTransfer');

@@ -3,6 +3,7 @@
 namespace App\Models\Pet;
 
 use App\Models\Model;
+use App\Models\User\User;
 
 class PetLog extends Model {
     /**
@@ -40,20 +41,20 @@ class PetLog extends Model {
      * Get the user who initiated the logged action.
      */
     public function sender() {
-        return $this->belongsTo('App\Models\User\User', 'sender_id');
+        return $this->belongsTo(User::class, 'sender_id');
     }
 
     /**
      * Get the user who received the logged action.
      */
     public function recipient() {
-        return $this->belongsTo('App\Models\User\User', 'recipient_id');
+        return $this->belongsTo(User::class, 'recipient_id');
     }
 
     /**
      * Get the pet that is the target of the action.
      */
     public function pet() {
-        return $this->belongsTo('App\Models\Pet\Pet');
+        return $this->belongsTo(Pet::class);
     }
 }

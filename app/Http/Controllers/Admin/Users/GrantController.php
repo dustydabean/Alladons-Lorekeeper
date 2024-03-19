@@ -108,6 +108,17 @@ class GrantController extends Controller {
     }
 
     /**
+     * Gets all evlutions of a pet.
+     *
+     * @param mixed $id
+     */
+    public function getPetEvolutions($id) {
+        $pet = Pet::find($id);
+
+        return $pet->evolutions->pluck('evolution_name', 'id')->toArray();
+    }
+
+    /**
      * Grants or removes pets from multiple users.
      *
      * @param App\Services\InvenntoryManager $service
@@ -115,7 +126,7 @@ class GrantController extends Controller {
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postPets(Request $request, PetManager $service) {
-        $data = $request->only(['names', 'pet_ids', 'quantities', 'data', 'disallow_transfer', 'notes', 'variant']);
+        $data = $request->only(['names', 'pet_ids', 'quantities', 'data', 'disallow_transfer', 'notes', 'variant', 'evolution']);
         if ($service->grantPets($data, Auth::user())) {
             flash('Pets granted successfully.')->success();
         } else {

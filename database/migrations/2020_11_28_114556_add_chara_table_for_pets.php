@@ -11,7 +11,7 @@ class AddCharaTableForPets extends Migration {
     public function up() {
         //
         Schema::table('user_pets', function (Blueprint $table) {
-            $table->integer('chara_id')->nullable()->default(null);
+            $table->integer('character_id')->nullable()->default(null);
         });
     }
 
@@ -21,7 +21,7 @@ class AddCharaTableForPets extends Migration {
     public function down() {
         //
         Schema::table('user_pets', function (Blueprint $table) {
-            $table->dropColumn('chara_id');
+            $table->dropColumn('character_id');
         });
     }
 }

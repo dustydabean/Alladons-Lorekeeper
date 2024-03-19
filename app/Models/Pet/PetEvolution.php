@@ -39,7 +39,7 @@ class PetEvolution extends Model {
      * Get the pet associated with this pet stack.
      */
     public function pet() {
-        return $this->belongsTo('App\Models\Pet\Pet');
+        return $this->belongsTo(Pet::class);
     }
 
     /**********************************************************************************************

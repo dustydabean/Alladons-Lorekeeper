@@ -38,7 +38,7 @@
                                         @if ($pet->pivot->has_image)
                                             <i class="fas fa-brush ml-1" data-toggle="tooltip" title="This pet has custom art."></i>
                                         @endif
-                                        @if ($pet->pivot->chara_id)
+                                        @if ($pet->pivot->character_id)
                                             <span data-toggle="tooltip" title="Attached to a character."><i class="fas fa-link ml-1"></i></span>
                                         @endif
                                         @if ($pet->pivot->evolution_id)

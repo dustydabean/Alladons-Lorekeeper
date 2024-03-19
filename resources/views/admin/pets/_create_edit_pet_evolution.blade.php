@@ -9,7 +9,7 @@
 </p>
 <div class="form-group">
     {!! Form::label('Evolution Stage (Required)') !!}
-    {!! Form::number('evolution_stage', $evolution->id ? $evolution->evolution_stage : null, ['class' => 'form-control', 'placeholder' => 'Stage', 'min' => 1]) !!}
+    {!! Form::number('evolution_stage', $evolution->id ? $evolution->evolution_stage : null, ['class' => 'form-control', 'placeholder' => 'Stage (Number)', 'min' => 1]) !!}
 </div>
 
 <div class="form-group">

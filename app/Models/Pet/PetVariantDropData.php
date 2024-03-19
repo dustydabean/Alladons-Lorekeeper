@@ -52,14 +52,14 @@ class PetVariantDropData extends Model {
      * Get the pet to which the data pertains.
      */
     public function variant() {
-        return $this->belongsTo('App\Models\Pet\PetVariant', 'variant_id');
+        return $this->belongsTo(PetVariant::class, 'variant_id');
     }
 
     /**
      * Get any pet drops using this data.
      */
     public function petDrops() {
-        return $this->hasMany('App\Models\Pet\PetDrop', 'drop_id');
+        return $this->hasMany(PetDrop::class, 'drop_id');
     }
 
     /**********************************************************************************************

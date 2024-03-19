@@ -73,7 +73,7 @@
                         $now = Carbon\Carbon::parse($stack->attached_at);
                         $diff = $now->addDays(Settings::get('claymore_cooldown'));
                     @endphp
-                    @if ($stack->chara_id != null && $diff < Carbon\Carbon::now())
+                    @if ($stack->character_id != null && $diff < Carbon\Carbon::now())
                         <a class="card-title h5 collapse-title" data-toggle="collapse" href="#attachForm">
                             @if ($stack->user_id != $user->id)
                                 [ADMIN]
@@ -85,7 +85,7 @@
                             {!! Form::submit('Detach', ['class' => 'btn btn-primary']) !!}
                         </div>
                         {!! Form::close() !!}
-                    @elseif($stack->chara_id == null || $diff < Carbon\Carbon::now())
+                    @elseif($stack->character_id == null || $diff < Carbon\Carbon::now())
                         <a class="card-title h5 collapse-title" data-toggle="collapse" href="#attachForm">
                             @if ($stack->user_id != $user->id)
                                 [ADMIN]
@@ -232,7 +232,7 @@
                     </li>
                 @endif
                 @if ($stack->isTransferrable || $user->hasPower('edit_inventories'))
-                    @if (!$stack->chara_id)
+                    @if (!$stack->character_id)
                         <li class="list-group-item">
                             <a class="card-title h5 collapse-title" data-toggle="collapse" href="#transferForm">
                                 @if ($stack->user_id != $user->id)

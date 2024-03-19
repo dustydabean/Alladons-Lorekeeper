@@ -57,28 +57,28 @@ class Pet extends Model {
      * Get the category the pet belongs to.
      */
     public function category() {
-        return $this->belongsTo('App\Models\Pet\PetCategory', 'pet_category_id');
+        return $this->belongsTo(PetCategory::class, 'pet_category_id');
     }
 
     /**
      * get all the pet variants.
      */
     public function variants() {
-        return $this->hasMany('App\Models\Pet\PetVariant', 'pet_id');
+        return $this->hasMany(PetVariant::class, 'pet_id');
     }
 
     /**
      * get the pets evolutions.
      */
     public function evolutions() {
-        return $this->hasMany('App\Models\Pet\PetEvolution', 'pet_id');
+        return $this->hasMany(PetEvolution::class, 'pet_id');
     }
 
     /**
      * Get the drop data associated with this species.
      */
     public function dropData() {
-        return $this->hasOne('App\Models\Pet\PetDropData');
+        return $this->hasOne(PetDropData::class);
     }
 
     /**********************************************************************************************
@@ -109,7 +109,7 @@ class Pet extends Model {
     public function scopeSortCategory($query) {
         $ids = PetCategory::orderBy('sort', 'DESC')->pluck('id')->toArray();
 
-        return count($ids) ? $query->orderByRaw(DB::raw('FIELD(pet_category_id, '.implode(',', $ids).')')) : $query;
+        return count($ids) ? $query->orderBy(DB::raw('FIELD(pet_category_id, '.implode(',', $ids).')')) : $query;
     }
 
     /**

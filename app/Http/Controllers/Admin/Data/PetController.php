@@ -8,6 +8,8 @@ use App\Models\Pet\Pet;
 use App\Models\Pet\PetCategory;
 use App\Models\Pet\PetDropData;
 use App\Models\Pet\PetEvolution;
+use App\Models\Pet\PetLevel;
+use App\Models\Pet\PetLevelPet;
 use App\Models\Pet\PetVariant;
 use App\Models\Pet\PetVariantDropData;
 use App\Models\User\UserPet;
@@ -620,5 +622,162 @@ class PetController extends Controller {
         }
 
         return redirect()->to('admin/data/pets/drops/edit/'.$pet_id);
+    }
+
+    /**********************************************************************************************
+
+        PET LEVELS
+
+    **********************************************************************************************/
+
+    /**
+     * Shows the pet level index.
+     */
+    public function getLevelIndex() {
+        return view('admin.pets.levels.levels', [
+            'levels' => PetLevel::orderBy('level', 'ASC')->paginate(20),
+        ]);
+    }
+
+    /**
+     * Shows the create level page.
+     */
+    public function getCreateLevel() {
+        return view('admin.pets.levels.create_edit_level', [
+            'level' => new PetLevel,
+        ]);
+    }
+
+    /**
+     * Shows the edit level page.
+     *
+     * @param mixed $id
+     */
+    public function getEditLevel($id) {
+        $level = PetLevel::find($id);
+        if (!$level) {
+            abort(404);
+        }
+
+        return view('admin.pets.levels.create_edit_level', [
+            'level' => $level,
+        ]);
+    }
+
+    /**
+     * Creates or edits a pet level.
+     *
+     * @param mixed|null $id
+     */
+    public function postCreateEditLevel(Request $request, PetService $service, $id = null) {
+        $data = $request->only([
+            'name', 'level', 'bonding_required', 'rewardable_id', 'rewardable_type', 'quantity',
+        ]);
+        if ($id && $service->updatePetLevel(PetLevel::find($id), $data, Auth::user())) {
+            flash('Pet level updated successfully.')->success();
+        } elseif (!$id && $level = $service->createPetLevel($data, Auth::user())) {
+            flash('Pet level created successfully.')->success();
+
+            return redirect()->to('admin/data/pets/levels/edit/'.$level->id);
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
+    }
+
+    /**
+     * Gets the pet level deletion modal.
+     * 
+     * @param mixed $id
+     */
+    public function getDeleteLevel($id) {
+        $level = PetLevel::find($id);
+
+        return view('admin.pets.levels._delete_level', [
+            'level' => $level,
+        ]);
+    }
+
+    /**
+     * Deletes a pet level.
+     * 
+     * @param mixed $id
+     */
+    public function postDeleteLevel(Request $request, PetService $service, $id) {
+        if ($id && $service->deletePetLevel(PetLevel::find($id))) {
+            flash('Pet level deleted successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->to('admin/data/pets/levels');
+    }
+
+    /**
+     * Loads the add pet to level modal.
+     */
+    public function getAddPetToLevel($id) {
+        $level = PetLevel::find($id);
+        if (!$level) {
+            abort(404);
+        }
+
+        return view('admin.pets.levels._add_pet_to_level', [
+            'level'     => $level,
+            'pets'      => Pet::orderBy('name', 'DESC')->pluck('name', 'id')->toArray(),
+        ]);
+    }
+
+    /**
+     * Shows the edit pet on level page.
+     */
+    public function getEditPetLevel($id) {
+        $petLevel = PetLevelPet::find($id);
+        if (!$petLevel) {
+            abort(404);
+        }
+
+        return view('admin.pets.levels.edit_pet_level_rewards', [
+            'level'    => $petLevel->level,
+            'petLevel' => $petLevel,
+        ]);
+    }
+
+    /**
+     * Adds pet(s) to a level.
+     */
+    public function postAddPetToLevel(Request $request, PetService $service, $id) {
+        if ($service->addPetsToLevel($request->input('pet_ids'), PetLevel::find($id))) {
+            flash('Pet(s) added to level successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
+    }
+
+    /**
+     * Edits the rewards for a specific pet on a level.
+     */
+    public function postEditPetLevel(Request $request, PetService $service, $id) {
+        $data = $request->only([
+            'rewardable_id', 'rewardable_type', 'quantity',
+        ]);
+        if ($service->editPetLevelPetRewards(PetLevelPet::find($id), $data)) {
+            flash('Pet level rewards updated successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
     }
 }

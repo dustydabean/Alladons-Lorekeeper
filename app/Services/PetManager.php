@@ -62,6 +62,13 @@ class PetManager extends Service {
                 }
             });
 
+            $keyed_evolution = [];
+            array_walk($data['pet_ids'], function ($id, $key) use (&$keyed_evolution, $data) {
+                if ($id != null && !in_array($id, array_keys($keyed_evolution), true)) {
+                    $keyed_evolution[$id] = $data['evolution'][$key];
+                }
+            });
+
             // Process pet
             $pets = Pet::find($data['pet_ids']);
             if (!count($pets)) {
@@ -70,7 +77,7 @@ class PetManager extends Service {
 
             foreach ($users as $user) {
                 foreach ($pets as $pet) {
-                    if ($this->creditPet($staff, $user, 'Staff Grant', Arr::only($data, ['data', 'disallow_transfer', 'notes']), $pet, $keyed_quantities[$pet->id], $keyed_variant[$pet->id])) {
+                    if ($this->creditPet($staff, $user, 'Staff Grant', Arr::only($data, ['data', 'disallow_transfer', 'notes']), $pet, $keyed_quantities[$pet->id], $keyed_variant[$pet->id] ?? null, $keyed_evolution[$pet->id] ?? null)) {
                         Notifications::create('PET_GRANT', $user, [
                             'pet_name'     => $pet->name,
                             'pet_quantity' => $keyed_quantities[$pet->id],
@@ -247,9 +254,6 @@ class PetManager extends Service {
         try {
             // First, check user permissions
             $user = Auth::user();
-            if (!$user->hasAlias) {
-                throw new \Exception('Your deviantART account must be verified before you can perform this action.');
-            }
 
             // Next, why bother checking everything else if the pet isn't even attachable? Also determine if the user is the owner of the pet/has permission to attach.
             if (!$pet) {
@@ -263,14 +267,14 @@ class PetManager extends Service {
             }
 
             // Next, check if the character the pet is being attached to is valid and the user has permission to attach the pet to that character.
-            if ($id == null) {
+            if (!$id) {
                 throw new \Exception('No character selected.');
             }
             $character = Character::find($id);
             if (!$character) {
                 throw new \Exception('An invalid character was selected.');
             }
-            if ($character->user_id !== $user->id && !$user->hasPower('edit_inventories')) {
+            if ($character->user_id != $user->id && !$user->hasPower('edit_inventories')) {
                 throw new \Exception('You do not own this character.');
             }
 
@@ -303,9 +307,16 @@ class PetManager extends Service {
             }
 
             // If all checks pass, attach the pet to the character.
-            $pet['chara_id'] = $character->id;
-            $pet['attached_at'] = Carbon::now();
+            $pet->character_id = $character->id;
+            $pet->attached_at = Carbon::now();
             $pet->save();
+
+            if (!$pet->level && config('lorekeeper.pet_bonding_enabled')) {
+                $pet->level()->create([
+                    'bonding_level'   => 0,
+                    'bonding' => 0,
+                ]);
+            }
 
             return $this->commitReturn(true);
         } catch (\Exception $e) {
@@ -335,8 +346,78 @@ class PetManager extends Service {
                 throw new \Exception('You do not own this pet.');
             }
 
-            $pet['chara_id'] = null;
+            $pet['character_id'] = null;
             $pet->save();
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Bonds with a pet.
+     */
+    public function bondPet($pet, $user) {
+        DB::beginTransaction();
+
+        try {
+
+            if ($user->id != $pet->user_id) {
+                throw new \Exception('You do not own this pet.');
+            }
+
+            $pet->bonded_at = Carbon::now();
+            $pet->save();
+
+            if (!$pet->level) {
+                $pet->level()->create([
+                    'bonding_level'   => 0,
+                    'bonding' => 0,
+                ]);
+                $pet = $pet->fresh();
+            }
+
+            $bonding = $pet->level->bonding + 1;
+            // check if meets bonding requirement for next level
+            if ($pet->level->nextLevel && $bonding >= $pet->level->nextLevel?->bonding_required) {
+                // check if this level has rewards, or if it has pet rewards for this pet
+                $nextLevel = $pet->level->nextLevel;
+                $nextLevelRewards = $pet->level->nextLevel->rewards;
+                $petRewards = $nextLevel->pets()->where('pet_id', $pet->pet->id)->first()->rewards;
+                if ($nextLevelRewards || $petRewards) {
+                    $assets = createAssetsArray();
+
+                    if ($nextLevelRewards) {
+                        foreach ($nextLevelRewards as $reward) {
+                            addAsset($assets, findReward($reward->rewardable_type, $reward->rewardable_id), $reward->quantity);
+                        }
+                    }
+
+                    if ($petRewards) {
+                        foreach ($petRewards as $reward) {
+                            addAsset($assets, findReward($reward->rewardable_type, $reward->rewardable_id), $reward->quantity);
+                        }
+                    }
+
+                    // function fillUserAssets($assets, $sender, $recipient, $logType, $data) {
+                    fillUserAssets($assets, null, $pet->user, 'Pet Level Up', ['data' => 'Received rewards from leveling up '.$pet->pet->name]);
+
+                    flash('You received: '. createRewardsString($assets))->success();
+                }
+
+                // level up
+                $pet->level->bonding_level += 1;
+                $pet->level->bonding = 0;
+                $pet->level->save();
+
+                flash('Your pet has leveled up! They are now level '.$pet->level->level->level.'.')->success();
+            } else {
+                $pet->level->bonding = $bonding;
+                $pet->level->save();
+            }
 
             return $this->commitReturn(true);
         } catch (\Exception $e) {
@@ -516,7 +597,7 @@ class PetManager extends Service {
      *
      * @return bool
      */
-    public function creditPet($sender, $recipient, $type, $data, $pet, $quantity, $variant_id = null) {
+    public function creditPet($sender, $recipient, $type, $data, $pet, $quantity, $variant_id = null, $evolution_id = null) {
         DB::beginTransaction();
 
         try {
@@ -534,11 +615,25 @@ class PetManager extends Service {
                     $variant = $pet->variants->where('id', $variant_id)->first();
                 }
 
+                if ($evolution_id == 'randomize' && count($pet->evolutions)) {
+                    // randomly get an evolution
+                    $evolution = $pet->evolutions->random();
+                    // 25% chance to be no evolution
+                    if (rand(1, 4) == 1) {
+                        $evolution = null;
+                    }
+                } elseif ($evolution_id == 'none') {
+                    $evolution = null;
+                } else {
+                    $evolution = $pet->evolutions->where('id', $evolution_id)->first();
+                }
+
                 $user_pet = UserPet::create([
                     'user_id'    => $recipient->id,
                     'pet_id'     => $pet->id,
                     'data'       => json_encode($data),
                     'variant_id' => $variant?->id,
+                    'evolution_id' => $evolution?->id,
                 ]);
             }
 
