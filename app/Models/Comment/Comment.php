@@ -72,40 +72,25 @@ class Comment extends Model {
     /**
      * The model that was commented upon.
      */
-<<<<<<< HEAD:app/Models/Comment.php
     public function commentable()
     {
         return $this->morphTo();
-=======
-    public function commentable() {
-        return $this->morphTo()->withTrashed();
->>>>>>> ab4d5a48a085f6aaf0842e04462e32d6551af7ea:app/Models/Comment/Comment.php
     }
 
     /**
      * Returns all comments that this comment is the parent of.
      */
-<<<<<<< HEAD:app/Models/Comment.php
     public function children()
     {
         return $this->hasMany('App\Models\Comment', 'child_id');
-=======
-    public function children() {
-        return $this->hasMany(self::class, 'child_id')->withTrashed();
->>>>>>> ab4d5a48a085f6aaf0842e04462e32d6551af7ea:app/Models/Comment/Comment.php
     }
 
     /**
      * Returns the comment to which this comment belongs to.
      */
-<<<<<<< HEAD:app/Models/Comment.php
     public function parent()
     {
         return $this->belongsTo('App\Models\Comment', 'child_id');
-=======
-    public function parent() {
-        return $this->belongsTo(self::class, 'child_id')->withTrashed();
->>>>>>> ab4d5a48a085f6aaf0842e04462e32d6551af7ea:app/Models/Comment/Comment.php
     }
 
     /**
