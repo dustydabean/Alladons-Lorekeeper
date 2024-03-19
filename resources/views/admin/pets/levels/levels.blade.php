@@ -19,6 +19,12 @@
         <a class="btn btn-primary" href="{{ url('admin/data/pets/levels/create') }}"><i class="fas fa-plus mr-1"></i> Create New Level</a>
     </div>
 
+    @if (!config('lorekeeper.pets.pet_bonding_enabled'))
+        <p class="alert alert-info">
+            <strong>NOTE:</strong> Pet bonding is currently disabled. You can enable it in site config.
+        </p>
+    @endif
+
     @if (!count($levels))
         <p>No pet levels found.</p>
     @else

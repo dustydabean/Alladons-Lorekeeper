@@ -365,6 +365,10 @@ class PetManager extends Service {
 
         try {
 
+            if (!config('lorekeeper.pets.pet_bonding_enabled')) {
+                throw new \Exception('Pet bonding is not enabled.');
+            }
+
             if ($user->id != $pet->user_id) {
                 throw new \Exception('You do not own this pet.');
             }
