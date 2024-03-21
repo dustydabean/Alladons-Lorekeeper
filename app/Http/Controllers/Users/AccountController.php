@@ -46,15 +46,9 @@ class AccountController extends Controller {
      * @return \Illuminate\Contracts\Support\Renderable|\Illuminate\Http\RedirectResponse
      */
     public function getBanned() {
-<<<<<<< HEAD
-        if (Auth::user()->is_banned)
-            return view('account.banned');
-        else
-=======
         if (Auth::user()->is_banned) {
             return view('account.banned');
         } else {
->>>>>>> ab4d5a48a085f6aaf0842e04462e32d6551af7ea
             return redirect()->to('/');
         }
     }
