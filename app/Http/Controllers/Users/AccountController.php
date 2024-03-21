@@ -11,7 +11,6 @@ use App\Models\User\UserAlias;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use App\Models\Notification;
 use App\Models\ThemeEditor;
 
 use App\Services\UserService;
