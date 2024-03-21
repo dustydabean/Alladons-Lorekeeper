@@ -48,6 +48,11 @@
         @endif
     </div>
 
+    @include('admin.lineage._edit_lineage_blacklist', [
+        'lineageBlacklist' => $lineageBlacklist,
+        'type' => 'category',
+    ])
+
     <div class="form-group">
         {!! Form::label('Description (Optional)') !!}
         {!! Form::textarea('description', $category->description, ['class' => 'form-control wysiwyg']) !!}

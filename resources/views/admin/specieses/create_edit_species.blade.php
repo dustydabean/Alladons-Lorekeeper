@@ -45,9 +45,19 @@
     </div>
 
     <div class="form-group">
+        {!! Form::label('Chance to inherit') !!} {!! add_help('For pairings, how likely this species is to be passed on in percent. Must be a number between 1-100. Defaults to 50. Does not guarantee a species is inherited 100% of the time as the chances for both species are added!') !!}
+        {!! Form::number('inherit_chance', $species->inherit_chance ?? 50, ['class' => 'form-control']) !!}
+    </div>
+
+    <div class="form-group">
         {!! Form::checkbox('is_visible', 1, $species->id ? $species->is_visible : 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
         {!! Form::label('is_visible', 'Is Visible', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If turned off, the species will not be visible in the species list or available for selection in search and design updates. Permissioned staff will still be able to add them to characters, however.') !!}
     </div>
+
+    @include('admin.lineage._edit_lineage_blacklist', [
+        'lineageBlacklist' => $lineageBlacklist,
+        'type' => 'species',
+    ])
 
     <div class="text-right">
         {!! Form::submit($species->id ? 'Edit' : 'Create', ['class' => 'btn btn-primary']) !!}

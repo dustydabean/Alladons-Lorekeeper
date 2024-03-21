@@ -448,3 +448,15 @@ function prettyProfileName($url) {
         return $url;
     }
 }
+
+/**
+ * Returns the euclidean distance between two colours.
+ * 
+ * @param array $rgb1
+ * @param array $rgb2
+ * 
+ * @return float
+ */
+function colourDistance($rgb1, $rgb2) {
+    return sqrt(pow($rgb1[0] - $rgb2[0], 2) + pow($rgb1[1] - $rgb2[1], 2) + pow($rgb1[2] - $rgb2[2], 2));
+}

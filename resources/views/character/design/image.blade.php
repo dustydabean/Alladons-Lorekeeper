@@ -67,6 +67,15 @@
         @else
             <p>As a staff member, you may modify the thumbnail of the uploaded image and/or the credits, but not the image itself. If you have recropped the thumbnail, you may need to hard refresh to see the new one.</p>
         @endif
+
+        @if ($request->character->is_myo_slot && $request->character->image->colours && config('lorekeeper.character_pairing.colours'))
+            <div class="alert alert-info">
+                This is a pairing slot with predefined colours. Colours are a general guideline that your MYO should follow. You may deviate from these colours, but they should be recognizable as the same character. If you have any questions, please
+                contact staff.
+                <div class="mt-2 mb-0">{!! $request->character->image->displayColours() !!}</div>
+            </div>
+        @endif
+
         {!! Form::open(['url' => 'designs/' . $request->id . '/image', 'files' => true]) !!}
         @if ($request->status == 'Draft' && $request->user_id == Auth::user()->id)
             <div class="form-group">

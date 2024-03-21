@@ -13,7 +13,7 @@ class Species extends Model {
      * @var array
      */
     protected $fillable = [
-        'name', 'sort', 'has_image', 'description', 'parsed_description', 'masterlist_sub_id', 'is_visible', 'hash',
+        'name', 'sort', 'has_image', 'description', 'parsed_description', 'masterlist_sub_id', 'is_visible', 'inherit_chance', 'hash',
     ];
 
     /**
@@ -28,9 +28,10 @@ class Species extends Model {
      * @var array
      */
     public static $createRules = [
-        'name'        => 'required|unique:specieses|between:3,100',
-        'description' => 'nullable',
-        'image'       => 'mimes:png',
+        'name'           => 'required|unique:specieses|between:3,100',
+        'description'    => 'nullable',
+        'image'          => 'mimes:png',
+        'inherit_chance' => 'numeric|min:1|max:100',
     ];
 
     /**
@@ -39,9 +40,10 @@ class Species extends Model {
      * @var array
      */
     public static $updateRules = [
-        'name'        => 'required|between:3,100',
-        'description' => 'nullable',
-        'image'       => 'mimes:png',
+        'name'           => 'required|between:3,100',
+        'description'    => 'nullable',
+        'image'          => 'mimes:png',
+        'inherit_chance' => 'numeric|min:1|max:100',
     ];
 
     /**********************************************************************************************

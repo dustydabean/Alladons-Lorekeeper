@@ -29,7 +29,7 @@ class SubmissionManager extends Service {
     */
 
     /**
-     * Creates a new submission.
+     * Helper function to remove all empty/zero/falsey values.
      *
      * @param array                 $data
      * @param \App\Models\User\User $user

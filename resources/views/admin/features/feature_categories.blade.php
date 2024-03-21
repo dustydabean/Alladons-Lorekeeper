@@ -27,6 +27,9 @@
                             @endif
                             {!! $category->displayName !!}
                         </td>
+                        <td>
+                            Inheritable: {!! $category->min_inheritable !!}-{!! $category->max_inheritable !!}
+                        </td>
                         <td class="text-right">
                             <a href="{{ url('admin/data/trait-categories/edit/' . $category->id) }}" class="btn btn-primary">Edit</a>
                         </td>

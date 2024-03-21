@@ -23,6 +23,7 @@ class CharacterImage extends Model {
         'x0', 'x1', 'y0', 'y1',
         'description', 'parsed_description',
         'is_valid',
+        'sex', 'colours',
     ];
 
     /**
@@ -263,5 +264,60 @@ class CharacterImage extends Model {
      */
     public function getThumbnailUrlAttribute() {
         return asset($this->imageDirectory.'/'.$this->thumbnailFileName);
+    }
+
+    /**
+     * Gets the URL of the model's thumbnail image.
+     *
+     * @return string
+     */
+    public function displayColours() {
+        // return the images as a row of colour boxes
+        if (!$this->colours) {
+            return '';
+        }
+
+        $is_myo = $this->character->is_myo_slot;
+        $colours = json_decode($this->colours, true);
+        $display_colours = [];
+
+        // we will always display the blocks, but if blending is enabled, we will also display the gradient
+        $block_colours = [];
+        foreach ($colours as $key=>$colour) {
+            $block_colours[] = '<div style="background-color: '.$colour.'; width: 20px; height: 20px; display: inline-block; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd;'
+            .($key == 0 ? 'border-left: 1px solid #ddd;' : '').($key == count($colours)-1 ? 'border-right: 1px solid #ddd;' : '').'"></div>';
+        }
+        $display_colours[] = ($is_myo ? '<div class="row">' : '').implode(' ', $block_colours).($is_myo ? '</div>' : '');
+
+        // characters never have blended colours, so they can be displayed as blocks
+        if (!$is_myo) {
+            return implode(' ', $display_colours);
+        } else {
+            // if blending is enabled, we will also display the gradient
+            if (config('lorekeeper.character_pairing.blend_colours')) {
+                $display_colours[] = '<div class="row"><div style="background: linear-gradient(to right, '.implode(', ', $colours).'); width: '.config('lorekeeper.character_pairing.colour_count') * 20 * 2 .'px; height: 20px; display: inline-block;""></div></div>';
+            }
+
+            // now check if we are making alternative palettes
+            if (config('lorekeeper.character_pairing.alternative_palettes')) {
+
+                // if we are we also display the blocks for the alternative palettes
+                // generate two different palettes
+
+                $filters = [
+                    'hue-rotate(25deg) saturate(1.1) brightness(1.1)',
+                    'hue-rotate(-20deg) saturate(.8)',
+                ];
+
+                foreach ($filters as $filter) {
+                    $display_colours[] = '<div class="row" style="filter: '.$filter.'">'. implode(' ', $block_colours).'</div>';
+                    if (config('lorekeeper.character_pairing.blend_colours')) {
+                        $display_colours[] = '<div class="row"><div style="background: linear-gradient(to right, '.implode(', ', $colours).'); width: '.config('lorekeeper.character_pairing.colour_count') * 20 * 2 .'px; height: 20px; display: inline-block; filter: '.$filter.'"></div></div>';
+                    }
+                }
+            }
+        }
+
+        return implode(' ', $display_colours);
     }
 }

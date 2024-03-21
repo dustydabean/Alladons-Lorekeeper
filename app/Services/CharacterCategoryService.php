@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Character\Character;
 use App\Models\Character\CharacterCategory;
+use App\Models\Character\CharacterLineageBlacklist;
 use Illuminate\Support\Facades\DB;
 
 class CharacterCategoryService extends Service {
@@ -41,6 +42,7 @@ class CharacterCategoryService extends Service {
             }
 
             $category = CharacterCategory::create($data);
+            CharacterLineageBlacklist::searchAndSet($data['lineage-blacklist'], 'category', $category->id);
 
             if (!$this->logAdminAction($user, 'Created Character Category', 'Created '.$category->displayName)) {
                 throw new \Exception('Failed to log admin action.');
@@ -79,6 +81,7 @@ class CharacterCategoryService extends Service {
             }
 
             $data = $this->populateCategoryData($data, $category);
+            $blacklist = CharacterLineageBlacklist::searchAndSet($data['lineage-blacklist'], 'category', $category->id);
 
             $image = null;
             if (isset($data['image']) && $data['image']) {
@@ -120,7 +123,7 @@ class CharacterCategoryService extends Service {
         try {
             // Check first if the category is currently in use
             if (Character::where('character_category_id', $category->id)->exists()) {
-                throw new \Exception('An character with this category exists. Please change its category first.');
+                throw new \Exception('A character with this category exists. Please change its category first.');
             }
 
             if (!$this->logAdminAction($user, 'Deleted Character Category', 'Deleted '.$category->name)) {
@@ -131,6 +134,9 @@ class CharacterCategoryService extends Service {
                 $this->deleteImage($category->categoryImagePath, $category->categoryImageFileName);
             }
             $category->delete();
+
+            // delete associated blacklist, if one exists.
+            CharacterLineageBlacklist::searchAndSet(0, 'category', $category->id);
 
             return $this->commitReturn(true);
         } catch (\Exception $e) {

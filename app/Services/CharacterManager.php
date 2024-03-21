@@ -12,14 +12,20 @@ use App\Models\Character\CharacterDesignUpdate;
 use App\Models\Character\CharacterFeature;
 use App\Models\Character\CharacterImage;
 use App\Models\Character\CharacterTransfer;
+use App\Models\Character\CharacterLineage;
 use App\Models\Sales\SalesCharacter;
 use App\Models\Species\Subtype;
 use App\Models\User\User;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Intervention\Image\Facades\Image;
+
+use League\ColorExtractor\Palette;
+use League\ColorExtractor\ColorExtractor;
+use League\ColorExtractor\Color;
 
 class CharacterManager extends Service {
     /*
@@ -128,6 +134,14 @@ class CharacterManager extends Service {
             $character = $this->handleCharacter($data, $isMyo);
             if (!$character) {
                 throw new \Exception('Error happened while trying to create character.');
+            }
+
+            // Create character lineage
+            if (isset($data['parent_1_id']) || isset($data['parent_1_name']) || isset($data['parent_2_id']) || isset($data['parent_2_name'])) {
+                $lineage = $this->handleCharacterLineage($data, $character);
+                if (!$lineage) {
+                    throw new \Exception('Error happened while trying to create lineage.');
+                }
             }
 
             // Create character image
@@ -635,6 +649,7 @@ class CharacterManager extends Service {
             $old['species'] = $image->species_id ? $image->species->displayName : null;
             $old['subtype'] = $image->subtype_id ? $image->subtype->displayName : null;
             $old['rarity'] = $image->rarity_id ? $image->rarity->displayName : null;
+            $old['sex'] = $image->sex ? $image->sex : null;
 
             // Clear old features
             $image->features()->delete();
@@ -650,6 +665,7 @@ class CharacterManager extends Service {
             $image->species_id = $data['species_id'];
             $image->subtype_id = $data['subtype_id'] ?: null;
             $image->rarity_id = $data['rarity_id'];
+            $image->sex = $data['sex'];
             $image->save();
 
             $new = [];
@@ -657,6 +673,7 @@ class CharacterManager extends Service {
             $new['species'] = $image->species_id ? $image->species->displayName : null;
             $new['subtype'] = $image->subtype_id ? $image->subtype->displayName : null;
             $new['rarity'] = $image->rarity_id ? $image->rarity->displayName : null;
+            $new['sex'] = $image->sex ? $image->sex : null;
 
             // Character also keeps track of these features
             $image->character->rarity_id = $image->rarity_id;
@@ -1034,6 +1051,39 @@ class CharacterManager extends Service {
             // Add a log for the character
             // This logs all the updates made to the character
             $this->createLog($user->id, null, null, null, $image->character_id, 'Image Order Updated', '', 'character');
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Generates a colour palette based on the image.
+     */
+    public function imageColours($character_image, $user, $colours = null) {
+        DB::beginTransaction();
+
+        try {
+            $created = $colours ? false : true;
+            if (!$colours) {
+                $palette = Palette::fromFilename($character_image->imagePath.'/'.$character_image->imageFileName);
+
+                $extractor = new ColorExtractor($palette);
+
+                $colours = $extractor->extract(config('lorekeeper.character_pairing.colour_count'));
+
+                foreach ($colours as $key => $colour) {
+                    $colours[$key] = Color::fromIntToHex($colour);
+                }
+            }
+
+            $character_image->colours = json_encode($colours);
+            $character_image->save();
+
+            $this->createLog($user->id, null, null, null, $character_image->character_id, 'Image Colours ' . ($created ? 'Generated' : 'Updated'), '', 'character');
 
             return $this->commitReturn(true);
         } catch (\Exception $e) {
@@ -2000,6 +2050,11 @@ class CharacterManager extends Service {
             // Process and save the image itself
             if (!$isMyo) {
                 $this->processImage($image);
+
+                // Auto-generate colours
+                if (config('lorekeeper.character_pairing.auto_generate_colours')) {
+                    $this->imageColours($image, Auth::user());
+                }
             }
 
             // Attach features
@@ -2050,5 +2105,88 @@ class CharacterManager extends Service {
         }
 
         return $result;
+    }
+
+    /**
+     * Updates a character's lineage.
+     *
+     * @param  array                            $data
+     * @param  \App\Models\Character\Character  $character
+     * @param  \App\Models\User\User            $user
+     * @param  bool                             $isAdmin
+     * @return  bool
+     */
+    public function updateCharacterLineage($data, $character, $user, $isAdmin = false)
+    {
+        DB::beginTransaction();
+
+        try {
+            if(!$user->hasPower('manage_characters')) throw new \Exception('You do not have the required permissions to do this.');
+
+            if (!$character->lineage) {
+                return $this->handleCharacterLineage($data, $character);
+            } else {
+                $character->lineage->update([
+                    'parent_1_id'   => $data['parent_1_id'] ?? null,
+                    'parent_1_name' => $data['parent_1_id'] ? null : ($data['parent_1_name'] ?? null),
+                    'parent_1_id'   => $data['parent_2_id'] ?? null,
+                    'parent_2_name' => $data['parent_2_id'] ? null : ($data['parent_2_name'] ?? null),
+                    'depth'       => $data['depth'] ?? 0,
+                ]);
+            }
+            // CUSTOM ANCESTRY - TODO
+
+            return $this->commitReturn(true);
+        } catch(\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Handles character lineage data.
+     *
+     * @param  array                            $data
+     * @return \App\Models\Character\Character  $character
+     * @param  bool                             $isMyo
+     * @return \App\Models\Character\CharacterLineage|bool
+     */
+    private function handleCharacterLineage($data, $character)
+    {
+        try {
+
+            if (!isset($data['parent_1_id']) && !isset($data['parent_1_name']) && !isset($data['parent_2_id']) && !isset($data['parent_2_name'])) {
+                throw new \Exception('No lineage data provided.');
+            }
+
+            // check parent ids if set to see if character exists
+            if (isset($data['parent_1_id']) && $data['parent_1_id']) {
+                $parent_1 = Character::find($data['parent_1_id']);
+                if (!$parent_1) {
+                    throw new \Exception('Parent 1 is invalid.');
+                }
+            }
+            if (isset($data['parent_2_id']) && $data['parent_2_id']) {
+                $parent_2 = Character::find($data['parent_2_id']);
+                if (!$parent_2) {
+                    throw new \Exception('Parent 2 is invalid.');
+                }
+            }
+
+            $lineage = CharacterLineage::create([
+                'character_id'   => $character->id,
+                'parent_1_id'    => $data['parent_1_id'] ?? null,
+                'parent_1_name'  => $data['parent_1_id'] ? null : ($data['parent_1_name'] ?? null),
+                'parent_2_id'    => $data['parent_2_id'] ?? null,
+                'parent_2_name'  => $data['parent_2_id'] ? null : ($data['parent_2_name'] ?? null),
+                'depth'          => $data['depth'] ?? 0,
+            ]);
+
+            return $this->commitReturn($lineage);
+        } catch(\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+        return false;
+
     }
 }

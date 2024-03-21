@@ -56,6 +56,50 @@
                     </div>
                     <div class="col-lg-8 col-md-6 col-8">{!! $image->rarity_id ? $image->rarity->displayName : 'None' !!}</div>
                 </div>
+                @if ($image->sex)
+                    <div class="row">
+                        <div class="col-lg-4 col-md-6 col-4">
+                            <h5>Sex</h5>
+                        </div>
+                        <div class="col-lg-8 col-md-6 col-8">{!! $image->sex !!}</div>
+                    </div>
+                @endif
+                @if (config('lorekeeper.character_pairing.colours'))
+                    <div class="row">
+                        <div class="col-lg-4 col-md-6 col-4">
+                            <h5>
+                                Colours
+                                @if ($image->character->is_myo_slot)
+                                    {!! add_help('These colours are created from the parents of the MYO slot. They are not editable until the MYO is created.') !!}
+                                @endif
+                            </h5>
+                        </div>
+                        <div class="col-lg-8 col-md-6 col-8">
+                            @if ($image->colours)
+                                <div class="{{ $image->character->is_myo_slot ? '' : 'row' }}">
+                                    {!! $image->displayColours() !!}
+                                    @if (Auth::check() && Auth::user()->hasPower('manage_characters') && !$image->character->is_myo_slot)
+                                        <div class="btn btn-outline-info btn-sm edit-image-colours ml-3 py-0" data-id="{{ $image->id }}">Edit</div>
+                                    @endif
+                                </div>
+                                @if (Auth::check() && Auth::user()->hasPower('manage_characters') && !$image->character->is_myo_slot)
+                                    <div class="collapse" id="colour-collapse-{{ $image->id }}">
+                                        @include('character.admin._edit_image_colours', ['image' => $image])
+                                    </div>
+                                @endif
+                            @else
+                                <div class="row">
+                                    <div>No colours listed.</div>
+                                    @if (Auth::check() && Auth::user()->hasPower('manage_characters') && !$image->character->is_myo_slot)
+                                        {!! Form::open(['url' => 'admin/character/image/' . $image->id . '/colours']) !!}
+                                        {!! Form::submit('Generate', ['class' => 'btn btn-outline-info btn-sm ml-3 py-0']) !!}
+                                        {!! Form::close() !!}
+                                    @endif
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                @endif
 
                 <div class="mb-3">
                     <div>

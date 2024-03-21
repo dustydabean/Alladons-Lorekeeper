@@ -20,6 +20,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Intervention\Image\Facades\Image;
 
+use League\ColorExtractor\Palette;
+use League\ColorExtractor\ColorExtractor;
+use League\ColorExtractor\Color;
+
 class DesignUpdateManager extends Service {
     /*
     |--------------------------------------------------------------------------
@@ -602,6 +606,22 @@ class DesignUpdateManager extends Service {
 
             // The thumbnail is already generated, so it can just be moved without processing
             File::move($request->thumbnailPath.'/'.$request->thumbnailFileName, $image->thumbnailPath.'/'.$image->thumbnailFileName);
+
+            if (config('lorekeeper.character_pairing.auto_generate_colours')) {
+                // generate colours for image
+                $palette = Palette::fromFilename($image->imagePath.'/'.$image->imageFileName);
+
+                $extractor = new ColorExtractor($palette);
+
+                $colours = $extractor->extract(config('lorekeeper.character_pairing.colour_count'));
+
+                foreach ($colours as $key => $colour) {
+                    $colours[$key] = Color::fromIntToHex($colour);
+                }
+
+                $image->colours = json_encode($colours);
+                $image->save();
+            }
 
             // Set character data and other info such as cooldown time, resell cost and terms etc.
             // since those might be updated with the new design update
