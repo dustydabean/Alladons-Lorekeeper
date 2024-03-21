@@ -159,7 +159,7 @@ return [
     'masterlist_image_dimension'                        => 0,
     'masterlist_image_dimension_target'                 => 'shorter',
 
-    'masterlist_image_format'                           => webp,
+    'masterlist_image_format'                           => null,
     'masterlist_image_background'                       => '#313338',
 
     /*
