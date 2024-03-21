@@ -68,13 +68,6 @@ class SalesCharacter extends Model {
         return $this->belongsTo(CharacterImage::class, 'image_id');
     }
 
-    /**
-     * Get the image being attached to the sale.
-     */
-    public function image() {
-        return $this->belongsTo('App\Models\Character\CharacterImage', 'image_id');
-    }
-
     /**********************************************************************************************
 
         ACCESSORS
