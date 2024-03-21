@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\Auth;
 use Laravel\Fortify\Contracts\TwoFactorAuthenticationProvider;
 use Laravel\Fortify\RecoveryCode;
 use App\Http\Controllers\Controller;
+use App\Models\Notification;
 
 class AccountController extends Controller {
     /*
