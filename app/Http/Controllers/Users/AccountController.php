@@ -189,57 +189,6 @@ class AccountController extends Controller {
     }
 
     /**
-     * Changes the user's password.
-     *
-     * @param App\Services\UserService $service
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function postPassword(Request $request, UserService $service) {
-        $user = Auth::user();
-        if (!isset($user->password) && (!isset($user->email) || !isset($user->email_verified_at))) {
-            flash('Please set and verify an email before setting a password for email login.')->error();
-
-            return redirect()->back();
-        }
-
-        $request->validate([
-            'new_password' => 'required|string|min:8|confirmed',
-        ] + (isset($user->password) ? ['old_password' => 'required|string'] : []));
-        if ($service->updatePassword($request->only(['old_password', 'new_password', 'new_password_confirmation']), Auth::user())) {
-            flash('Password updated successfully.')->success();
-        } else {
-            foreach ($service->errors()->getMessages()['error'] as $error) {
-                flash($error)->error();
-            }
-        }
-
-        return redirect()->back();
-    }
-
-    /**
-     * Changes the user's email address and sends a verification email.
-     *
-     * @param App\Services\UserService $service
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function postEmail(Request $request, UserService $service) {
-        $request->validate([
-            'email' => 'required|string|email|max:255|unique:users',
-        ]);
-        if ($service->updateEmail($request->only(['email']), Auth::user())) {
-            flash('Email updated successfully. A verification email has been sent to your new email address.')->success();
-        } else {
-            foreach ($service->errors()->getMessages()['error'] as $error) {
-                flash($error)->error();
-            }
-        }
-
-        return redirect()->back();
-    }
-
-    /**
      * Changes user birthday setting.
      *
      * @param App\Services\UserService $service
