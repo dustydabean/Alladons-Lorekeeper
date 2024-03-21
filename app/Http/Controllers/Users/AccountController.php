@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Users;
 
-use Auth;
 use File;
 use Image;
 
