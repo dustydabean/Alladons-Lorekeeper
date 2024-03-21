@@ -126,7 +126,7 @@ return [
     'character_number_digits'                           => 3,
     'character_pull_number'                             => 'all',
 
-    'reset_character_status_on_transfer'                => 0,
+    'reset_character_status_on_transfer'                => 1,
     'reset_character_profile_on_transfer'               => 0,
     'clear_myo_slot_name_on_approval'                   => 0,
 
@@ -159,7 +159,7 @@ return [
     'masterlist_image_dimension'                        => 0,
     'masterlist_image_dimension_target'                 => 'shorter',
 
-    'masterlist_image_format'                           => null,
+    'masterlist_image_format'                           => webp,
     'masterlist_image_background'                       => '#313338',
 
     /*
