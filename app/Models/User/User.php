@@ -10,9 +10,15 @@ use App\Models\Currency\Currency;
 use App\Models\Currency\CurrencyLog;
 use App\Models\Gallery\GalleryCollaborator;
 use App\Models\Gallery\GalleryFavorite;
+use App\Models\Gallery\GallerySubmission;
 use App\Models\Theme;
+use App\Models\Item\Item;
+use App\Models\Item\ItemLog;
+use App\Models\Notification;
 use App\Models\Rank\Rank;
 use App\Models\Rank\RankPower;
+use App\Models\Shop\ShopLog;
+use App\Models\Submission\Submission;
 use App\Traits\Commenter;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -20,7 +26,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Fortify\TwoFactorAuthenticatable;
-use App\Models\Notification;
 
 class User extends Authenticatable implements MustVerifyEmail {
     use Commenter, Notifiable, TwoFactorAuthenticatable;
