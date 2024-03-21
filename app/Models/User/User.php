@@ -12,6 +12,7 @@ use App\Models\Gallery\GalleryCollaborator;
 use App\Models\Gallery\GalleryFavorite;
 use App\Models\Theme;
 use App\Models\Rank\Rank;
+use App\Models\Rank\RankPower;
 use App\Traits\Commenter;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
