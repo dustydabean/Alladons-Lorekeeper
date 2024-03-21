@@ -11,6 +11,7 @@ use App\Models\User\UserAlias;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Notification;
 use App\Models\ThemeEditor;
 
 use App\Services\UserService;
@@ -26,7 +27,6 @@ use Illuminate\Support\Facades\Auth;
 use Laravel\Fortify\Contracts\TwoFactorAuthenticationProvider;
 use Laravel\Fortify\RecoveryCode;
 use App\Http\Controllers\Controller;
-use App\Models\Notification;
 
 class AccountController extends Controller {
     /*
