@@ -11,7 +11,7 @@ use App\Models\Currency\CurrencyLog;
 use App\Models\Gallery\GalleryCollaborator;
 use App\Models\Gallery\GalleryFavorite;
 use App\Models\Theme;
-use App\Models\Rank;
+use App\Models\Rank\Rank;
 use App\Traits\Commenter;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
