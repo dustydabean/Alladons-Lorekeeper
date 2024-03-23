@@ -17,7 +17,6 @@
             @endif    
         </div>
     @endif
-@endif
 <div class="character-masterlist-categories">
     @if (!$character->is_myo_slot)
         {!! $character->category->displayName !!} ・ {!! $character->image->species->displayName !!} ・ {!! $character->image->rarity->displayName !!}
