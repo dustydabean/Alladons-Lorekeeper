@@ -109,5 +109,7 @@
             });
 
         });
-    </script>
+    });
+
+</script>
 @endsection

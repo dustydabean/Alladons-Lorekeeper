@@ -20,7 +20,7 @@ return [
     */
 
     // Navbar News Notif - Juni
-    'navbar_news_notif'                    => 0,
+    'navbar_news_notif' => 1,
 
     // Species Trait Index - Mercury
     'species_trait_index'                  => [
@@ -29,7 +29,7 @@ return [
     ],
 
     // Character Status Badges - Juni
-    'character_status_badges'              => 0,
+    'character_status_badges' => 1,
 
     // Character TH Profile Link - Juni
     'character_TH_profile_link' => 1,

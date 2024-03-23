@@ -112,6 +112,12 @@ Route::group(['prefix' => 'character', 'namespace' => 'Characters'], function ()
     Route::get('{slug}/profile/edit', 'CharacterController@getEditCharacterProfile');
     Route::post('{slug}/profile/edit', 'CharacterController@postEditCharacterProfile');
 
+    Route::get('{slug}/links/edit', 'CharacterController@getEditCharacterLinks');
+    Route::post('{slug}/links/edit', 'CharacterController@postEditCharacterLinks');
+
+    Route::post('{slug}/links/info/{id}', 'CharacterController@postEditCharacterLinkInfo');
+    Route::post('{slug}/links/delete/{id}', 'CharacterController@postDeleteCharacterLink');
+    
     Route::post('{slug}/inventory/edit', 'CharacterController@postInventoryEdit');
 
     Route::post('{slug}/bank/transfer', 'CharacterController@postCurrencyTransfer');
@@ -129,7 +135,12 @@ Route::group(['prefix' => 'character', 'namespace' => 'Characters'], function ()
         return \App\Models\Character\Character::where('slug', $slug)->first()?->image->displayColours();
     });
 });
-Route::group(['prefix' => 'myo', 'namespace' => 'Characters'], function () {
+
+Route::get('links/accept/{id}', 'LinkController@getAcceptLink');
+Route::get('links/reject/{id}', 'LinkController@getRejectLink');
+// LINKS
+
+Route::group(['prefix' => 'myo', 'namespace' => 'Characters'], function() {
     Route::get('{id}/profile/edit', 'MyoController@getEditCharacterProfile');
     Route::post('{id}/profile/edit', 'MyoController@postEditCharacterProfile');
 

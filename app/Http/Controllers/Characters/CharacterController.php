@@ -5,16 +5,22 @@ namespace App\Http\Controllers\Characters;
 use App\Facades\Settings;
 use App\Http\Controllers\Controller;
 use App\Models\Character\Character;
+use App\Models\Character\CharacterRelation;
+use App\Models\Species\Species;
+use App\Models\Rarity;
+use App\Models\Feature\Feature;
+use App\Models\Character\CharacterProfile;
+
+use App\Models\Currency\Currency;
+use App\Models\Currency\CurrencyLog;
+use App\Models\User\UserCurrency;
+use App\Models\Gallery\GallerySubmission;
 use App\Models\Character\CharacterCurrency;
 use App\Models\Character\CharacterItem;
-use App\Models\Character\CharacterProfile;
 use App\Models\Character\CharacterTransfer;
-use App\Models\Currency\Currency;
-use App\Models\Gallery\GallerySubmission;
 use App\Models\Item\Item;
 use App\Models\Item\ItemCategory;
 use App\Models\User\User;
-use App\Models\User\UserCurrency;
 use App\Models\User\UserItem;
 use App\Services\CharacterManager;
 use App\Services\CurrencyManager;
@@ -180,7 +186,7 @@ class CharacterController extends Controller {
 
         $request->validate(CharacterProfile::$rules);
 
-        if ($service->updateCharacterProfile($request->only(['name', 'link', 'text', 'is_gift_art_allowed', 'is_gift_writing_allowed', 'is_trading', 'alert_user']), $this->character, Auth::user(), !$isOwner)) {
+        if($service->updateCharacterProfile($request->only(['name', 'link', 'text', 'is_gift_art_allowed', 'is_gift_writing_allowed', 'is_trading', 'alert_user', 'is_links_open']), $this->character, Auth::user(), !$isOwner)) {
             flash('Profile edited successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
@@ -192,18 +198,139 @@ class CharacterController extends Controller {
     }
 
     /**
-     * Shows a character's gallery.
+     * Shows a character's links page.
      *
      * @param string $slug
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getCharacterGallery(Request $request, $slug) {
+    public function getCharacterLinks($slug)
+    {
+        $types = [
+            '???',
+            'Acquaintence',
+            'Best Friends',
+            'Boss and Employee',
+            'Co-workers',
+            'Crushing',
+            'Enemy',
+            'Family',
+            'Friends',
+            'Frenemies',
+            'It\'s Complicated',
+            'Life Partners',
+            'On-and-Off',
+            'Partners in Crime',
+            'Past Relationship',
+            'Polyamorous Relationship',
+            'Rival',
+            'Roomate',
+            'Significant Others',
+        ];
+
+        return view('character.links', [
+            'character' => $this->character,
+            'types' => $types,
+        ]);
+    }
+
+    /**
+    * Shows a character's gallery.
+    *
+    * @param  string  $slug
+    * @return \Illuminate\Contracts\Support\Renderable
+    */
+    public function getCharacterGallery($slug)
+    {
         return view('character.gallery', [
             'character'             => $this->character,
             'extPrevAndNextBtnsUrl' => '/gallery',
             'submissions'           => GallerySubmission::whereIn('id', $this->character->gallerySubmissions->pluck('gallery_submission_id')->toArray())->visible()->accepted()->orderBy('created_at', 'DESC')->paginate(20)->appends($request->query()),
         ]);
+    }
+
+    /**
+     * Shows a character's edit links page
+     *
+     * @param  string  $slug
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getEditCharacterLinks($slug)
+    {
+        if(!Auth::check()) abort(404);
+        
+        $isMod = Auth::user()->hasPower('manage_characters');
+        $isOwner = ($this->character->user_id == Auth::user()->id);
+        if(!$isMod && !$isOwner) abort(404);
+
+        return view('character.edit_link', [
+            'character' => $this->character,
+        ]);
+    }
+    
+    /**
+     * Edits a character's links
+     *
+     * @param  \Illuminate\Http\Request       $request
+     * @param  App\Services\CharacterManager  $service
+     * @param  string                         $slug
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postEditCharacterLinks(Request $request, CharacterManager $service, $slug)
+    {
+        if(!Auth::check()) abort(404);
+
+        $isMod = Auth::user()->hasPower('manage_characters');
+        $isOwner = ($this->character->user_id == Auth::user()->id);
+        if(!$isMod && !$isOwner) abort(404);
+        
+        if($service->updateCharacterLinks($request->only(['slug']), $this->character, Auth::user(), $isMod)) {
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back();
+    }
+
+    /**
+     * Edits a character's link info
+     *
+     * @param  \Illuminate\Http\Request       $request
+     * @param  App\Services\CharacterManager  $service
+     * @param  string                         $slug
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postEditCharacterLinkInfo(Request $request, CharacterLinkService $service) 
+    {
+        // this is simple and messy
+
+        $data = $request->only(['chara_1', 'chara_2', 'info', 'type']);
+        if($service->updateInfo($data)) {
+            flash('Info updated successfully!')->success();
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back();
+
+    }
+
+    /**
+     * deletes a link
+     *
+     * @param  string  $slug
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function postDeleteCharacterLink(Request $request, CharacterLinkService $service) 
+    {
+        $data = $request->only(['chara_1', 'chara_2']);
+        if($service->deleteLink($data)) {
+            flash('Link deleted successfully!')->success();
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back();
     }
 
     /**

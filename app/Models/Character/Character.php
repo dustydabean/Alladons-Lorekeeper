@@ -2,7 +2,22 @@
 
 namespace App\Models\Character;
 
-use App\Facades\Notifications;
+use Config;
+use DB;
+use Carbon\Carbon;
+use Notifications;
+use App\Models\Model;
+
+use App\Models\User\User;
+use App\Models\User\UserCharacterLog;
+
+use App\Models\Character\Character;
+use App\Models\Character\CharacterCategory;
+use App\Models\Character\CharacterTransfer;
+use App\Models\Character\CharacterBookmark;
+use App\Models\Character\CharacterRelation;
+
+use App\Models\Character\CharacterCurrency;
 use App\Models\Currency\Currency;
 use App\Models\Currency\CurrencyLog;
 use App\Models\Character\CharacterLineage;
@@ -10,14 +25,10 @@ use App\Models\Character\CharacterLineageBlacklist;
 use App\Models\Gallery\GalleryCharacter;
 use App\Models\Item\Item;
 use App\Models\Item\ItemLog;
-use App\Models\Model;
 use App\Models\Rarity;
 use App\Models\Submission\Submission;
 use App\Models\Submission\SubmissionCharacter;
 use App\Models\Trade;
-use App\Models\User\User;
-use App\Models\User\UserCharacterLog;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Character extends Model {
@@ -34,7 +45,7 @@ class Character extends Model {
         'is_sellable', 'is_tradeable', 'is_giftable',
         'sale_value', 'transferrable_at', 'is_visible',
         'is_gift_art_allowed', 'is_gift_writing_allowed', 'is_trading', 'sort',
-        'is_myo_slot', 'name', 'trade_id', 'owner_url',
+        'is_myo_slot', 'name', 'trade_id', 'is_links_open', 'owner_url'
     ];
 
     /**
@@ -207,6 +218,14 @@ class Character extends Model {
     public function children()
     {
         return $this->hasMany(CharacterLineage::class, 'parent_1_id')->orWhere('parent_2_id', $this->id);
+    }
+
+    /*
+    * Get the links for this character
+    */
+    public function links()
+    {
+       return $this->hasMany('App\Models\Character\CharacterRelation', 'chara_1')->where('status', 'Approved');
     }
 
     /**********************************************************************************************

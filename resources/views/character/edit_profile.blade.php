@@ -38,7 +38,15 @@
                 {!! Form::label('link', 'Profile Link') !!}
                 {!! Form::text('link', $character->profile->link, ['class' => 'form-control']) !!}
             </div>
-        @endif
+            <div class="col-md form-group">
+                {!! Form::label('is_gift_writing_allowed', 'Allow Gift Writing', ['class' => 'form-check-label mb-3']) !!} {!! add_help('This will place the character on the list of characters that can be written about for gift writing. This does not have any other functionality, but allow users looking for characters to write about to find your character easily.') !!}
+                {!! Form::select('is_gift_writing_allowed', [0 => 'No', 1 => 'Yes', 2 => 'Ask First'], $character->is_gift_writing_allowed, ['class' => 'form-control user-select']) !!}
+            </div>
+        </div>
+        <div class="col-md form-group">
+            {!! Form::label('is_links_open', 'Allow Link Requests?', ['class' => 'form-check-label mb-3']) !!} {!! add_help('This will allow users to request links with your character.') !!}
+            {!! Form::checkbox('is_links_open', 1, $character->is_links_open, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
+        </div>
     @endif
     <div class="form-group">
         {!! Form::label('text', 'Profile Content') !!}
