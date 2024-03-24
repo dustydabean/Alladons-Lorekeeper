@@ -174,17 +174,6 @@ class UserService extends Service {
     }
 
     /**
-     * Updates user's birthday
-     */
-    public function updateBirthday($data, $user)
-    {
-        $user->birthday = $data;
-        $user->save();
-
-        return true;
-    }
-
-    /**
      * Updates user's birthday setting
      */
     public function updateDOB($data, $user)
