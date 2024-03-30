@@ -1,22 +1,23 @@
-<div class="character-masterlist-categories">
-    @if(!$character->is_myo_slot)
-        {!! $character->category->displayName !!} ・ {!! $character->image->species->displayName !!} ・ {!! $character->image->rarity->displayName !!}
-    @else
-        MYO Slot @if($character->image->species_id) ・ {!! $character->image->species->displayName !!}@endif @if($character->image->rarity_id) ・ {!! $character->image->rarity->displayName !!}@endif
-    @endif
-</div>
-<h1 class="mb-0">
-    @if(Config::get('lorekeeper.extensions.character_status_badges'))
-        <!-- character trade/gift status badges -->
-        <div class="float-right">
-            <span class="btn {{ $character->is_trading ? 'badge-success' : 'badge-danger' }} float-right ml-2" data-toggle="tooltip" title="{{ $character->is_trading ? 'OPEN for sale and trade offers.' : 'CLOSED for sale and trade offers.' }}"><i class="fas fa-comments-dollar"></i></span>
-            @if(!$character->is_myo_slot)
-                <span class="btn {{ $character->is_gift_writing_allowed == 1 ? 'badge-success' : ($character->is_gift_writing_allowed == 2 ? 'badge-warning text-light' : 'badge-danger') }} float-right ml-2" data-toggle="tooltip" title="{{ $character->is_gift_writing_allowed == 1 ? 'OPEN for gift writing.' : ($character->is_gift_writing_allowed == 2 ? 'PLEASE ASK before gift writing.' : 'CLOSED for gift writing.') }}"><i class="fas fa-file-alt"></i></span>
-                <span class="btn {{ $character->is_gift_art_allowed == 1 ? 'badge-success' : ($character->is_gift_art_allowed == 2 ? 'badge-warning text-light' : 'badge-danger') }} float-right ml-2" data-toggle="tooltip" title="{{ $character->is_gift_art_allowed == 1 ? 'OPEN for gift art.' : ($character->is_gift_art_allowed == 2 ? 'PLEASE ASK before gift art.' : 'CLOSED for gift art.') }}"><i class="fas fa-pencil-ruler"></i></span>
-                <span class="btn {{ $character->is_links_open == 1 ? 'badge-success' : 'badge-danger' }} float-right ml-2" data-toggle="tooltip" title="{{ $character->is_links_open == 1 ? 'OPEN for link requests.' : 'CLOSED for link requests.' }}"><i class="fas fa-link"></i></span>
-            @endif    
+@if (!$character->is_myo_slot && config('lorekeeper.extensions.previous_and_next_characters.display') && isset($extPrevAndNextBtnsUrl))
+    @if ($extPrevAndNextBtns['prevCharName'] || $extPrevAndNextBtns['nextCharName'])
+        <div class="row mb-4">
+            @if ($extPrevAndNextBtns['prevCharName'])
+                <div class="col text-left float-left">
+                    <a class="btn btn-outline-success text-success" href="{{ $extPrevAndNextBtns['prevCharUrl'] }}{!! $extPrevAndNextBtnsUrl !!}">
+                        <i class="fas fa-angle-double-left"></i> Previous Character ・ <span class="text-primary">{!! $extPrevAndNextBtns['prevCharName'] !!}</span>
+                    </a>
+                </div>
+            @endif
+            @if ($extPrevAndNextBtns['nextCharName'])
+                <div class="col text-right float-right">
+                    <a class="btn btn-outline-success text-success" href="{{ $extPrevAndNextBtns['nextCharUrl'] }}{!! $extPrevAndNextBtnsUrl !!}">
+                        <span class="text-primary">{!! $extPrevAndNextBtns['nextCharName'] !!}</span> ・ Next Character <i class="fas fa-angle-double-right"></i><br />
+                    </a>
+                </div>
+            @endif
         </div>
     @endif
+@endif
 <div class="character-masterlist-categories">
     @if (!$character->is_myo_slot)
         {!! $character->category->displayName !!} ・ {!! $character->image->species->displayName !!} ・ {!! $character->image->rarity->displayName !!}
@@ -39,7 +40,8 @@
                     title="{{ $character->is_gift_writing_allowed == 1 ? 'OPEN for gift writing.' : ($character->is_gift_writing_allowed == 2 ? 'PLEASE ASK before gift writing.' : 'CLOSED for gift writing.') }}"><i class="fas fa-file-alt"></i></span>
                 <span class="btn {{ $character->is_gift_art_allowed == 1 ? 'badge-success' : ($character->is_gift_art_allowed == 2 ? 'badge-warning text-light' : 'badge-danger') }} float-right ml-2" data-toggle="tooltip"
                     title="{{ $character->is_gift_art_allowed == 1 ? 'OPEN for gift art.' : ($character->is_gift_art_allowed == 2 ? 'PLEASE ASK before gift art.' : 'CLOSED for gift art.') }}"><i class="fas fa-pencil-ruler"></i></span>
-            @endif
+                    <span class="btn {{ $character->is_links_open == 1 ? 'badge-success' : 'badge-danger' }} float-right ml-2" data-toggle="tooltip" title="{{ $character->is_links_open == 1 ? 'OPEN for link requests.' : 'CLOSED for link requests.' }}"><i class="fas fa-link"></i></span>
+            @endif 
         </div>
     @endif
     @if ($character->is_visible && Auth::check() && $character->user_id != Auth::user()->id)
