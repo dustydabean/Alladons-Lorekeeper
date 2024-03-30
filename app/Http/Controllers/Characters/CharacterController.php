@@ -10,6 +10,7 @@ use App\Models\Species\Species;
 use App\Models\Rarity;
 use App\Models\Feature\Feature;
 use App\Models\Character\CharacterProfile;
+use App\Services\CharacterLinkService;
 
 use App\Models\Currency\Currency;
 use App\Models\Currency\CurrencyLog;
