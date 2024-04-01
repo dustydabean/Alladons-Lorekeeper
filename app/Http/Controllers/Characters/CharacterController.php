@@ -241,7 +241,7 @@ class CharacterController extends Controller {
     * @param  string  $slug
     * @return \Illuminate\Contracts\Support\Renderable
     */
-    public function getCharacterGallery($slug)
+    public function getCharacterGallery(Request $request, $slug)
     {
         return view('character.gallery', [
             'character'             => $this->character,
