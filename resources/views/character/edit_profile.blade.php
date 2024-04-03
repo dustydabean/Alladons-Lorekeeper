@@ -88,5 +88,4 @@
         {!! Form::submit('Edit Profile', ['class' => 'btn btn-primary']) !!}
     </div>
     {!! Form::close() !!}
-    @endif
 @endsection
