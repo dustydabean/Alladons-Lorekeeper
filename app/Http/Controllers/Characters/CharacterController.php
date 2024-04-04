@@ -5,23 +5,16 @@ namespace App\Http\Controllers\Characters;
 use App\Facades\Settings;
 use App\Http\Controllers\Controller;
 use App\Models\Character\Character;
-use App\Models\Character\CharacterRelation;
-use App\Models\Species\Species;
-use App\Models\Rarity;
-use App\Models\Feature\Feature;
-use App\Models\Character\CharacterProfile;
-use App\Services\CharacterLinkService;
-
-use App\Models\Currency\Currency;
-use App\Models\Currency\CurrencyLog;
-use App\Models\User\UserCurrency;
-use App\Models\Gallery\GallerySubmission;
 use App\Models\Character\CharacterCurrency;
 use App\Models\Character\CharacterItem;
+use App\Models\Character\CharacterProfile;
 use App\Models\Character\CharacterTransfer;
+use App\Models\Currency\Currency;
+use App\Models\Gallery\GallerySubmission;
 use App\Models\Item\Item;
 use App\Models\Item\ItemCategory;
 use App\Models\User\User;
+use App\Models\User\UserCurrency;
 use App\Models\User\UserItem;
 use App\Services\CharacterManager;
 use App\Services\CurrencyManager;
@@ -31,6 +24,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Route;
+
+use App\Models\Character\CharacterRelation;
+use App\Models\Species\Species;
+use App\Models\Rarity;
+use App\Models\Feature\Feature;
+use App\Services\CharacterLinkService;
+use App\Models\Currency\CurrencyLog;
 
 class CharacterController extends Controller {
     /*
