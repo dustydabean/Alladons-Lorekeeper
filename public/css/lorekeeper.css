@@ -78,7 +78,7 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    background-color: rgb(78, 78, 78)
+    background-color: #ddd;
 }
 
 main {
@@ -93,7 +93,7 @@ main > .row {
 }
 
 .main-content {
-    background-color: rgb(53, 53, 53);
+    background-color: white;
     box-shadow: 0px 0px 6px 3px rgba(0,0,0,0.1);
     display: flex;
     flex-direction: column;
@@ -128,7 +128,7 @@ main > .row {
 }
 
 .sidebar ul li {
-    background-color: rgb(70, 70, 70);
+    background-color: white;
     border-top-left-radius: .25rem;
     border-bottom-left-radius: .25rem;
     margin-bottom: 1em;
@@ -148,11 +148,11 @@ main > .row {
     background-color: #343a40;
 }
 .sidebar .sidebar-header a {
-    color: rgb(78, 78, 78);
+    color: white;
 }
 .sidebar .sidebar-header a:hover {
     background-color: transparent;
-    color: rgba(99, 99, 99, 0.8);
+    color: rgba(255,255,255,0.8);
 }
 
 .sidebar a,
@@ -168,7 +168,7 @@ main > .row {
 }
 .sidebar a:hover {
     color: #16181b;
-    background-color: #979797;
+    background-color: #f8f9fa;
 }
 .sidebar a:hover, .sidebar a:active, .sidebar a:focus, .sidebar a:link {
     text-decoration: none;
@@ -177,7 +177,7 @@ main > .row {
     text-decoration: none;
 }
 .sidebar a.active, .sidebar a.active:hover {
-    color: rgb(133, 133, 133);
+    color: white;
     background-color: #343a40;
 }
 
@@ -226,7 +226,7 @@ main > .row {
         position: absolute;
         padding-left: 0px;
         text-align: left;
-        background-color: #757575;
+        background-color: #ddd;
         z-index: 3;
         right: 0px;
         bottom: 0px;
@@ -252,7 +252,7 @@ main > .row {
     }
 
     .sidebar ul li {
-        background-color: rgb(145, 145, 145);
+        background-color: white;
         border-radius: 0;
         margin-bottom: 1em;
         padding: 0.4em 0;
@@ -427,7 +427,7 @@ main > .row {
 /* NOTIFICATIONS *********************************************************************************/
 
 .notifications-table .unread, .notifications-table .unread td {
-    background-color: #808080;
+    background-color: #fffdf0;
 }
 
 /* BROWSE ****************************************************************************************/
@@ -478,16 +478,16 @@ main > .row {
 
 /* LOGS ******************************************************************************************/
 tr.inflow {
-    background-color: #797979;
+    background-color: #fafaff;
 }
 tr.outflow {
-    background-color: #8a8a8a;
+    background-color: #fffafa;
 }
 
 /* These are not truly tables, but divs styled to look like tables */
 .logs-table .logs-table-header {
-    border-top: 1px solid #757575;
-    border-bottom: 2px solid #8f8f8f;
+    border-top: 1px solid #dee2e6;
+    border-bottom: 2px solid #dee2e6;
     font-weight: bold;
     padding: 0px;
     flex-wrap: wrap;
@@ -501,7 +501,7 @@ tr.outflow {
 }
 .logs-table .logs-table-body > .logs-table-row,
 .logs-table-row .logs-table-row {
-    border-top: 1px solid #a3a5a7;
+    border-top: 1px solid #dee2e6;
 }
 .logs-table .logs-table-body .logs-table-cell .inflow,
 .logs-table .logs-table-body .logs-table-cell .outflow {
@@ -512,7 +512,7 @@ tr.outflow {
     top: -.3rem;
     margin-bottom: -.6rem;
     vertical-align: middle;
-    color: #9c9c9c;
+    color: #fff;
 }
 
 
@@ -531,7 +531,7 @@ tr.outflow {
 }
 
 .character-bio .nav-tabs.card-header-tabs .active {
-    background-color: rgb(156, 156, 156);
+    background-color: white;
 }
 
 /* INVENTORY *************************************************************************************/
@@ -559,7 +559,7 @@ tr.accountbound {
     display: block;
 }
 .image-nav .nav-item a.active {
-    border: 5px solid #8f8f8f;
+    border: 5px solid #ddd;
 }
 
 @keyframes copy-to-check {
@@ -722,11 +722,11 @@ tr.accountbound {
 
 /* BOOTSTRAP TABLES *************************************************************************************/
 .ubt-bottom {
-  border-bottom:1px solid #8f8f8f;
+  border-bottom:1px solid #dee2e6;
 }
 
 .ubt-top {
-  border-top:1px solid #8a8a8a;
+  border-top:1px solid #dee2e6;
 }
 
 .ubt-texthide {
@@ -752,12 +752,4 @@ tr.accountbound {
 
 @media only screen and (max-width: 600px) {
     .comment_replies { padding-left:1rem;}
-}
-
-.clock-styling {
-    padding: 5px 15px;
-    border-radius: 15px 15px;
-    margin-bottom: .5em;
-    color: #8a8a8a;
-    letter-spacing: .05em;
 }
