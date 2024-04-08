@@ -21,7 +21,7 @@
 
 h1, h2, h3, h4, h5,
 .h1, .h2, .h3, .h4, .h5 {
-    text-transform: uppercase;
+    text-transform: none;
     font-family: Roboto Condensed, serif;
     font-weight: bold;
 }
