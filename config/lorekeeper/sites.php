@@ -47,7 +47,7 @@ return [
         'link'          => 'toyhou.se',
         'icon'          => 'fas fa-home',
         'auth'          => 1,
-        'login'         => 1,
+        'login'         => 0,
         'primary_alias' => 1,
     ],
 
