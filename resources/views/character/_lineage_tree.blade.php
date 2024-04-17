@@ -13,6 +13,7 @@
         @else
             <a href="{{ $character ? $character->url : '#' }}" data-toggle="tooltip" data-placement="top"
                 title="{{ $character ? '<img src="' . $character->image->thumbnailUrl . '" class=\'img-thumbnail\' alt=\'Thumbnail for ' . $character->fullName . '\' />' : '' }}">
+                <img src="{{ $parent->parent->thumbnail }}"/>
                 {!! $character ? $character->fullName : 'Unkown' !!}
             </a>
         @endif
