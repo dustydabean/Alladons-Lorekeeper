@@ -12,11 +12,14 @@
 
     @if ($max_depth > 0)
         <div class="row">
+        @if (!empty($character?->lineage?->parent_1))
             @include('character._tab_lineage_col', [
                 'character' => $character?->lineage?->parent_1,
-                'max_depth' => $max_depth - 1,
-                'parent' => $parent . "'s " . ($character?->lineage?->parent_1?->parentType ?? 'Parent'),
+                'max_depth' => config('lorekeeper.lineage.tab_lineage_depth') - 1,
+                'parent' => $character?->lineage?->parent_1?->parentType ?? 'Parent',
             ])
+        @endif
+            
             @include('character._tab_lineage_col', [
                 'character' => $character?->lineage?->parent_2,
                 'max_depth' => $max_depth - 1,
