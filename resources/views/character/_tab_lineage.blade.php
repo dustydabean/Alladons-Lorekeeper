@@ -8,6 +8,9 @@
         ])
     @endif
     <h5>{{ $character->fullName }}'s Lineage</h5>
+    {!! $character ? '<img src="' . $character->image->thumbnailUrl . '" class=\'img-thumbnail\' alt=\'Thumbnail for ' . $character->fullName . '\' />' : '' !!}
+<br>
+{!! $character ? $character->fullName : 'Unkown' !!}
     <div class="row">
         @include('character._tab_lineage_col', [
             'character' => $character?->lineage?->parent_1,
