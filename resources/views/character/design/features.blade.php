@@ -44,6 +44,11 @@
         </div>
 
         <div class="form-group">
+            {!! Form::label(ucfirst(__('character_theme.theme')).' ' . (config('lorekeeper.extensions.character_theme.is_required') ? '(Required)' : '(Optional)')) !!}
+            {!! Form::text('theme', $request->theme, ['class' => 'form-control']) !!}
+        </div>
+
+        <div class="form-group">
             {!! Form::label('Traits') !!}
             <div id="featureList">
                 {{-- Add in the compulsory traits for MYO slots --}}
@@ -101,6 +106,12 @@
             <div class="col-md-2 col-4"><h5>Rarity</h5></div>
             <div class="col-md-10 col-8">{!! $request->rarity ? $request->rarity->displayName : 'None Selected' !!}</div>
         </div>
+        @if($request->theme)
+            <div class="row">
+                <div class="col-md-2 col-4"><h5>{{ucfirst(__('character_theme.theme'))}}</h5></div>
+                <div class="col-md-10 col-8">{!! $request->theme !!}</div>
+            </div>
+        @endif
     </div>
     <h5>Traits</h5>
     <div>

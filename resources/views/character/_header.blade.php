@@ -1,6 +1,10 @@
 <div class="character-masterlist-categories">
     @if(!$character->is_myo_slot)
         {!! $character->category->displayName !!} ・ {!! $character->image->species->displayName !!} ・ {!! $character->image->rarity->displayName !!}
+
+        @if(config('lorekeeper.extensions.character_theme.show_on_masterlist'))
+            {!! $character->image->theme ? ' ・ ' . $character->image->theme : '' !!}
+        @endif
     @else
         MYO Slot @if($character->image->species_id) ・ {!! $character->image->species->displayName !!}@endif @if($character->image->rarity_id) ・ {!! $character->image->rarity->displayName !!}@endif
     @endif

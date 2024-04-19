@@ -23,7 +23,7 @@ class CharacterImage extends Model
         'extension', 'use_cropper', 'hash', 'fullsize_hash', 'sort',
         'x0', 'x1', 'y0', 'y1',
         'description', 'parsed_description',
-        'is_valid',
+        'is_valid','theme'
     ];
 
     /**

@@ -15,6 +15,11 @@
     </div>
 
     <div class="form-group">
+        {!! Form::label(ucfirst(__('character_theme.theme')).' ' . (config('lorekeeper.extensions.character_theme.is_required') ? '(Required)' : '(Optional)')) !!}
+        {!! Form::text('theme', $image->theme, ['class' => 'form-control']) !!}
+    </div>
+
+    <div class="form-group">
         {!! Form::label('Traits') !!}
         <div id="featureList">
             @foreach($image->features as $feature)

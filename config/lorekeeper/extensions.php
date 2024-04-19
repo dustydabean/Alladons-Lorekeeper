@@ -54,4 +54,13 @@ return [
         'default_recipient' => 0, // 0 to default to the character's owner (if a user), 1 to default to the submission user.
     ],
 
+    
+    // Character Themes extension
+
+    'character_theme' => [
+        'is_required' => 0, //Is having a theme for a character mandatory? 0 for No, 1 for Yes.
+        'is_unique' => 0, // Are these themes unique across characters? (Only one character can have "black cat" for example). Players can always skirt around this by changing wording slightly, so remember to check definitively in design updates. 0 for No, 1 for Yes.
+        'show_on_masterlist' => 0, // Does the theme show on the masterlist alongside rarity/species? 0 for No, 1 for Yes.
+    ],
+
 ];
