@@ -5,7 +5,7 @@
         </span>
         <br>
         <a href="{{ $character ? $character->url : '#' }}" data-toggle="tooltip" data-placement="top"
-            title="{{ $character ? '<img src="' . $character->image->thumbnailUrl . '" class=\'img-thumbnail\' alt=\'Thumbnail for ' . $character->fullName . '\' / width="42" height="42">' : '<i class=\'fas fa-question-circle\'></i>' }}">
+            title="{{ $character ? '<img src="' . $character->image->thumbnailUrl . '" class=\'img-thumbnail\' alt=\'Thumbnail for ' . $character->fullName . '\' / width="20" height="20">' : '<i class=\'fas fa-question-circle\'></i>' }}">
             {!! $character ? $character->fullName : 'Unkown' !!}
         </a>
     </div>
