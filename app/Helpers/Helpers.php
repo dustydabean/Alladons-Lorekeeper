@@ -460,3 +460,14 @@ function prettyProfileName($url) {
 function colourDistance($rgb1, $rgb2) {
     return sqrt(pow($rgb1[0] - $rgb2[0], 2) + pow($rgb1[1] - $rgb2[1], 2) + pow($rgb1[2] - $rgb2[2], 2));
 }
+/**
+ * Puts down the HTML needed for a LiveClock.
+ *
+ * @return string
+ */
+function LiveClock() {
+    $LCcode = '<span class="LiveClock" onload="LiveClockJS()"></span>';
+    $LCtz = '<abbr data-toggle="tooltip" title="UTC'.Carbon\Carbon::now()->timezone->toOffsetName().'">'.strtoupper(Carbon\Carbon::now()->timezone->getAbbreviatedName(Carbon\Carbon::now()->isDST())).'</abbr>';
+
+    return $LCcode.' '.$LCtz;
+}
