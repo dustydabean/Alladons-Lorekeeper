@@ -116,7 +116,7 @@ class CharacterManager extends Service
                     if($imageQuery->where('theme', $data['theme'])->exists()) throw new \Exception(ucfirst(__('character_theme.theme')).' must be unique.');
                 }
             }
-            elseif(Config::get('lorekeeper.extensions.character_theme.is_required')){
+            elseif(Config::get('lorekeeper.extensions.character_theme.is_required') && !$isMyo){
                 throw new \Exception(ucfirst(__('character_theme.theme')).' is required.');
             }
             else $data['theme'] = null;
