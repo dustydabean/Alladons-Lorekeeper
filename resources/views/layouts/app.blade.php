@@ -124,7 +124,9 @@
 <body>
     <div id="app">
 
-        <div class="site-header-image" id="header" style="background-image: url('{{ $decoratorTheme?->headerImageUrl ?? $conditionalTheme?->headerImageUrl ?? $theme?->headerImageUrl ?? asset('images/header.png') }}');"></div>
+        <div class="site-header-image" id="header" style="background-image: url('{{ $decoratorTheme?->headerImageUrl ?? $conditionalTheme?->headerImageUrl ?? $theme?->headerImageUrl ?? asset('images/header.png') }}');">
+            @include('js._liveclock')
+        </div>
 
         @include('layouts._nav')
         @if (View::hasSection('sidebar'))
@@ -261,7 +263,6 @@
                 });
             });
         </script>
-        @include('js._liveclock')
     </div>
 </body>
 
