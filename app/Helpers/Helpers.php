@@ -141,6 +141,8 @@ function parse($text, &$pings = null) {
         $pings = ['users' => $users, 'characters' => $characters];
     }
 
+    $text = parseLiveClock($text);
+
     return $text;
 }
 
@@ -451,12 +453,54 @@ function prettyProfileName($url) {
 
 /**
  * Puts down the HTML needed for a LiveClock.
+ * Now with Timezones feature!
+ *
+ * @param string $LCtimezone
  *
  * @return string
  */
-function LiveClock() {
-    $LCcode = '<span class="LiveClock" onload="LiveClockJS()"></span>';
-    $LCtz = '<abbr data-toggle="tooltip" title="UTC'.Carbon\Carbon::now()->timezone->toOffsetName().'">'.strtoupper(Carbon\Carbon::now()->timezone->getAbbreviatedName(Carbon\Carbon::now()->isDST())).'</abbr>';
+function LiveClock($LCtimezone = NULL)
+{
+    $date = NULL;
+    try {
+        $date = new DateTimeZone($LCtimezone);
+    }
+    catch(Exception $e) { /* Do Nothing If Wrong, Will End Up As Default */}
 
-    return $LCcode.' '.$LCtz;
+    $LCtimezone = Carbon\Carbon::now($date);
+
+    $LCcode = '<span class="LiveClock" LiveClockOffset="'.$LCtimezone->utcOffset().'"></span>';
+    $LCtz = '<abbr data-toggle="tooltip" title="UTC'.$LCtimezone->timezone->toOffsetName().'">' . strtoupper($LCtimezone->timezone->getAbbreviatedName($LCtimezone->isDST())) . '</abbr>';
+    return $LCcode . " " . $LCtz;
+}
+
+/**
+ * Parses a piece of user-entered text to match LiveClock mentions
+ * and replace with a fully functional LiveClock.
+ *
+ * @param string $text
+ *
+ * @return string
+ */
+function parseLiveClock($text) {
+    $matches = null;
+    $matches2 = null;
+    
+    $count = preg_match_all('/\[liveclock\]/', $text, $matches);
+    if ($count) {
+        $matches = array_unique($matches);
+        foreach ($matches as $match) {
+            $text = preg_replace('/\[liveclock\]/', LiveClock(), $text);
+        }
+    }
+
+    $count2 = preg_match_all('/\[liveclock=([^\[\]&<>?"\']+)\]/', $text, $matches2);
+    if ($count2) {
+        $matches2 = array_unique($matches2[1]);
+        foreach ($matches2 as $match2) {
+            $text = str_replace('[liveclock='.$match2.']', LiveClock($match2), $text);
+        }
+    }
+
+    return $text;
 }
