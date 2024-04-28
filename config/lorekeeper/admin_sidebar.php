@@ -47,10 +47,20 @@ return [
                 'name' => 'News',
                 'url'  => 'admin/news',
             ],
+        ],
+    ],
+    'Sales' => [
+        'power' => 'manage_sales',
+        'links' => [
             [
                 'name' => 'Sales',
                 'url'  => 'admin/sales',
             ],
+        ],
+    ],
+    'Pages'       => [
+        'power' => 'edit_pages',
+        'links' => [
             [
                 'name' => 'Pages',
                 'url'  => 'admin/pages',

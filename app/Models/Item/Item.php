@@ -145,10 +145,15 @@ class Item extends Model {
      * Scope a query to show only released or "released" (at least one user-owned stack has ever existed) items.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param mixed|null                            $user
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeReleased($query) {
+    public function scopeReleased($query, $user = null) {
+        if ($user && $user->hasPower('edit_data')) {
+            return $query;
+        }
+
         return $query->where('is_released', 1);
     }
 
