@@ -34,9 +34,6 @@
                             <a class="dropdown-item" href="{{ url('characters') }}">
                                 My Characters
                             </a>
-                            <a class="dropdown-item" href="{{ url('characters/myos') }}">
-                                My MYO Slots
-                            </a>
                             <a class="dropdown-item" href="{{ url('inventory') }}">
                                 Inventory
                             </a>
@@ -62,9 +59,6 @@
                             </a>
                             <a class="dropdown-item" href="{{ url('reports') }}">
                                 Reports
-                            </a>
-                            <a class="dropdown-item" href="{{ url('designs') }}">
-                                Design Approvals
                             </a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{{ url('characters/transfers/incoming') }}">
