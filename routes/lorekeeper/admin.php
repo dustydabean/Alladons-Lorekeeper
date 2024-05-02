@@ -27,6 +27,8 @@ Route::group(['prefix' => 'users', 'namespace' => 'Users'], function () {
         Route::post('{name}/alias/{id}', 'UserController@postUserAlias');
         Route::post('{name}/account', 'UserController@postUserAccount');
         Route::post('{name}/birthday', 'UserController@postUserBirthday');
+        Route::post('{name}/staff-profile', 'UserController@postStaffProfile');
+        Route::post('{name}/staff-links', 'UserController@postStaffLinks');
         Route::get('{name}/updates', 'UserController@getUserUpdates');
 
         Route::get('{name}/ban', 'UserController@getBan');

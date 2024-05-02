@@ -8,6 +8,7 @@ use Image;
 use App\Models\Theme;
 use App\Models\User\User;
 use App\Models\User\UserAlias;
+use App\Models\User\StaffProfile;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -71,6 +72,11 @@ class AccountController extends Controller {
      */
     public function getSettings() {
         $user = Auth::user();
+        
+            $links = StaffProfile::where('user_id', Auth::user()->id)->first();
+            return view('account.settings', [
+                'links' => $links ? $links : null
+            ]);
 
         if ($user->isStaff || $user->isAdmin) {
             // staff can see all active themes
@@ -100,6 +106,42 @@ class AccountController extends Controller {
         ]);
         flash('Profile updated successfully.')->success();
 
+        return redirect()->back();
+    }
+    
+    /**
+     * Edits the user's staff profile.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postStaffProfile(Request $request, UserService $service)
+    {
+        $request->validate(staffProfile::$createRules);
+        if($service->updateStaffProfile($request->only(['text']), Auth::user())) {
+            flash('Staff profile updated successfully.')->success();
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back();
+    }
+    
+    /**
+     * Edits the user's staff contacts/links.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postStaffLinks(Request $request, UserService $service)
+    {
+        $request->validate(staffProfile::$createRules);
+        if($service->updateStaffLinks($request->only(['site', 'url']), Auth::user())) {
+            flash('Staff links updated successfully.')->success();
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
         return redirect()->back();
     }
 

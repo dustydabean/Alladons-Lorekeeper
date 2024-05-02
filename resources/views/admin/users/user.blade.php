@@ -96,6 +96,12 @@
             <p class="text-danger">This user has not set their DOB.</p>
         @endif
         {!! Form::open(['url' => 'admin/users/' . $user->name . '/birthday']) !!}
+@include('widgets._staff_profile_form', ['user' => $user, 'adminView' => 1])
+
+<div class="card p-3 mb-2">
+    <h3>Birthdate</h3>
+    @if(!$user->checkBirthday)<p class="text-danger">This user is currently set to an underage DOB</p>@endif
+    {!! Form::open(['url' => 'admin/users/'.$user->name.'/birthday']) !!}
         <div class="form-group row">
             <label class="col-md-2 col-form-label">Date of Birth</label>
             <div class="col-md-10 row">
@@ -132,4 +138,11 @@
             <p>No aliases found.</p>
         @endif
     </div>
+@endsection
+
+@section('scripts')
+@parent
+    @if(Auth::user()->isStaff)
+        @include('js._website_links_js')
+    @endif
 @endsection
