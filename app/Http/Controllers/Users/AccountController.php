@@ -74,10 +74,7 @@ class AccountController extends Controller {
         $user = Auth::user();
         
             $links = StaffProfile::where('user_id', Auth::user()->id)->first();
-            return view('account.settings', [
-                'links' => $links ? $links : null
-            ]);
-
+            
         if ($user->isStaff || $user->isAdmin) {
             // staff can see all active themes
             $themeOptions = ['0' => 'Select Theme'] + Theme::where('is_active', 1)->where('theme_type', 'base')->get()->pluck('displayName', 'id')->toArray();
@@ -89,6 +86,7 @@ class AccountController extends Controller {
         $decoratorOptions = ['0' => 'Select Decorator Theme'] + Theme::where('is_active', 1)->where('theme_type', 'decorator')->where('is_user_selectable', 1)->get()->pluck('displayName', 'id')->toArray();
 
         return view('account.settings', [
+            'links' => $links ? $links : null,
             'themeOptions' => $themeOptions + Auth::user()->themes()->where('theme_type', 'base')->get()->pluck('displayName', 'id')->toArray(),
             'decoratorThemes' => $decoratorOptions + Auth::user()->themes()->where('theme_type', 'decorator')->get()->pluck('displayName', 'id')->toArray(),
         ]);
