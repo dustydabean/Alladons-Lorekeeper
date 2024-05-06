@@ -3,7 +3,7 @@
         @if (!$faq->is_visible)
             <i class="fas fa-eye-slash mr-1"></i>
         @endif
-        {{ $faq->question }}
+        <a href="#" data-id="{{$faq->id}}" class="faq-link">{{ $faq->question }}</a>
         @if ($faq->tags)
             @php
                 $question_tags = json_decode($faq->tags);

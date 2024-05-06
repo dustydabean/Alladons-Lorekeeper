@@ -26,6 +26,18 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
+            @if ($id)
+                // open modal
+                loadModal('{{ url('faq') }}/modal/{{ $id }}', 'FAQ Question');
+            @endif
+
+            // check if there are any tags in the url
+            let url = new URL(window.location.href);
+            let tags = url.searchParams.get('tags');
+            if (tags) {
+                search(tags.toLowerCase().split(','));
+            }
+
             $('#tags').selectize({
                 maxItems: 5
             });
@@ -33,8 +45,8 @@
             // search on keyword change
             $('#search').change(function(e) {
                 e.preventDefault();
-                var search = $(this).val();
-                var tags = $('#tags').val();
+                let search = $(this).val();
+                let tags = $('#tags').val();
                 // ajax
                 $.ajax({
                     url: '{{ url('faq/search') }}',
@@ -54,9 +66,24 @@
             // search on tag change
             $('#tags').change(function(e) {
                 e.preventDefault();
-                var search = $('#search').val();
-                var tags = $(this).val();
+                let tags = $(this).val();
+                search(tags);
+            });
+
+            $('.faq-link').click(function(e) {
+                e.preventDefault();
+                let id = $(this).data('id');
+                loadModal('{{ url('faq') }}/modal/' + id, 'FAQ Question');
+            });
+
+            function search(tags = null) {
                 // ajax
+                let search = $('#search').val();
+                if (tags) {
+                    // set tags in selectize
+                    $('#tags').val(tags);
+                }
+
                 $.ajax({
                     url: '{{ url('faq/search') }}',
                     type: 'GET',
@@ -70,7 +97,7 @@
                         $('#results').fadeIn(200);
                     }
                 });
-            });
+            }
         });
     </script>
 @endsection

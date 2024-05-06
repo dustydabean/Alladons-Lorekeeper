@@ -641,8 +641,8 @@ class BrowseController extends Controller {
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getFaq(Request $request) {
-        $tags = Config::get('lorekeeper.faq');
+    public function getFaq(Request $request, $id = null) {
+        $tags = config('lorekeeper.faq');
         // tags is an array of names, make it so their key is their name also
         $tags = array_combine($tags, $tags);
         $tags = array_map(function ($tag) {
@@ -650,8 +650,22 @@ class BrowseController extends Controller {
         }, $tags);
         ksort($tags);
         return view('browse.faq', [
+            'id'   => $id ?? null,
             'faqs' => Faq::visible(Auth::check() ? Auth::user() : null)->orderBy('created_at', 'DESC')->get(),
             'tags' => $tags,
+        ]);
+    }
+
+    /**
+     * Returns a single FAQ question in modal.
+     * 
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getFaqQuestion($id) {
+        $faq = Faq::visible(Auth::check() ? Auth::user() : null)->find($id);
+
+        return view('browse._faq_modal', [
+            'faq' => $faq,
         ]);
     }
 

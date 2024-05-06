@@ -177,6 +177,7 @@ Route::group(['prefix' => 'reports', 'namespace' => 'Users'], function () {
     FAQ
 **************************************************************************************************/
 Route::group(['prefix' => 'faq',], function () {
-    Route::get('/', 'BrowseController@getFaq');
+    Route::get('/{id?}', 'BrowseController@getFaq')->where(['id' => '[0-9]+']);
+    Route::get('/modal/{id}', 'BrowseController@getFaqQuestion')->where(['id' => '[0-9]+']);
     Route::get('/search', 'BrowseController@getFaqSearch');
 });
