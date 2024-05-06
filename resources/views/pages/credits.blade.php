@@ -18,10 +18,13 @@
     <p class="mb-2">These extensions were coded by the Lorekeeper community and are now a part of core Lorekeeper.</p>
     <div class="extensions row no-gutters">
         <p class="mb-0 col-md-4">
-            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Bootstrap_Tables"><strong>Bootstrap Tables</strong></a> by <a href="https://github.com/preimpression">Preimpression</a>
+            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Admin_Edit_Button"><strong>Admin Edit Buttons</strong></a> by <a href="https://github.com/preimpression/">Preimpression</a>
         </p>
         <p class="mb-0 col-md-4">
-            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Captcha"><strong>Captcha</strong> (v3)</a> by <a href="https://github.com/itinerare">itinerare</a>
+            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Alias_Logins"><strong>Alias Logins</strong></a> by <a href="https://github.com/AW0005">Moif</a>
+        </p>
+        <p class="mb-0 col-md-4">
+            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Bootstrap_Tables"><strong>Bootstrap Tables</strong></a> by <a href="https://github.com/preimpression">Preimpression</a>
         </p>
         <p class="mb-0 col-md-4">
             <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Character_Items"><strong>Character Items</strong></a> by <a href="https://github.com/itinerare">itinerare</a>
@@ -63,6 +66,9 @@
             <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Submission_Addons"><strong>Submission Addons</strong></a> by <a href="https://github.com/itinerare">itinerare</a>
         </p>
         <p class="mb-0 col-md-4">
+            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Submission_Drafts"><strong>Submission Drafts</strong></a> by <a href="https://github.com/preimpression/">Preimpression</a>
+        </p>
+        <p class="mb-0 col-md-4">
             <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:User_Transfer_Reasons"><strong>User Transfer Reasons</strong></a> by <a href="https://github.com/snupsplus">Snupsplus</a>
         </p>
         <p class="mb-0 col-md-4">
@@ -83,7 +89,15 @@
             ({{ config('lorekeeper.extensions.autopopulate_image_features') ? 'Enabled' : 'Disabled' }})
         </p>
         <p class="mb-0 col-md-4">
-            <strong>Character Rewards</strong> by <a href="https://github.com/preimpression">Preimpression</a>
+            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Captcha"><strong>Captcha</strong> (v3)</a> by <a href="https://github.com/itinerare">itinerare</a>
+            ({{ config('lorekeeper.extensions.use_recaptcha') ? 'Enabled' : 'Disabled' }})
+        </p>
+        <p class="mb-0 col-md-4">
+            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Character_Prev_and_Next"><strong>Character Prev and Next</strong></a> by <a href="https://github.com/SpeedyD">Speedy</a>
+            ({{ config('lorekeeper.extensions.previous_and_next_characters.display') ? 'Enabled' : 'Disabled' }})
+        </p>
+        <p class="mb-0 col-md-4">
+            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Character_Rewards"><strong>Character Rewards</strong></a> by <a href="https://github.com/preimpression">Preimpression</a>
             ({{ config('lorekeeper.extensions.character_reward_expansion.expanded') ? 'Enabled' : 'Disabled' }}/{{ config('lorekeeper.extensions.character_reward_expansion.default_recipient') ? 'Submitter' : 'Character Owner' }})
         </p>
         <p class="mb-0 col-md-4">
@@ -103,7 +117,8 @@
             ({{ config('lorekeeper.extensions.design_update_voting') ? 'Enabled' : 'Disabled' }})
         </p>
         <p class="mb-0 col-md-4">
-            <strong>Gravatar</strong> by <a href="https://github.com/ne-wt/">Newt</a> ({{ config('lorekeeper.extensions.use_gravatar') ? 'Enabled' : 'Disabled' }})
+            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Gravatar"><strong>Gravatar</strong></a> by <a href="https://github.com/ne-wt/">Newt</a>
+            ({{ config('lorekeeper.extensions.use_gravatar') ? 'Enabled' : 'Disabled' }})
         </p>
         <p class="mb-0 col-md-4">
             <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Group_Traits_by_Category"><strong>Group Traits by Category</strong></a> by <a href="https://github.com/preimpression">Preimpression</a>
@@ -126,6 +141,10 @@
             ({{ config('lorekeeper.extensions.organised_traits_dropdown') ? 'Enabled' : 'Disabled' }})
         </p>
         <p class="mb-0 col-md-4">
+            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Scroll_To_Top"><strong>Scroll to Top</strong></a> by <a href="https://github.com/preimpression">Preimpression</a>
+            ({{ config('lorekeeper.extensions.scroll_to_top') ? 'Enabled' : 'Disabled' }})
+        </p>
+        <p class="mb-0 col-md-4">
             <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Gallery_Recent_Submissions"><strong>Show All Recent Submissions</strong></a> by <a href="https://github.com/SpeedyD">Speedy</a>
             ({{ config('lorekeeper.extensions.show_all_recent_submissions.enable') ? 'Enabled' . ((config('lorekeeper.extensions.show_all_recent_submissions.links.sidebar') && config('lorekeeper.extensions.show_all_recent_submissions.links.indexbutton') ? '/Both' : (config('lorekeeper.extensions.show_all_recent_submissions.links.sidebar') ? '/Sidebar' : '') . (config('lorekeeper.extensions.show_all_recent_submissions.links.indexbutton') ? '/Button' : '')) . (config('lorekeeper.extensions.show_all_recent_submissions.section_on_front') ? '/Front' : '')) : 'Disabled' }})
         </p>
@@ -138,7 +157,16 @@
             ({{ config('lorekeeper.extensions.staff_rewards.enabled') ? 'Enabled' : 'Disabled' }})
         </p>
         <p class="mb-0 col-md-4">
-            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Submission_Drafts"><strong>Submission Drafts</strong></a> by <a href="https://github.com/preimpression/">Preimpression</a>
+            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Watermarking"><strong>Watermarking</strong></a> by <a href="https://github.com/itinerare">itinerare</a>
+            ({{ config('lorekeeper.settings.watermark_masterlist_images') ? 'Enabled' : 'Disabled' }})
+        </p>
+        <p class="mb-0 col-md-4">
+            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:Watermarking_Image_Automation"><strong>Watermarking - Image Automation</strong></a> by <a href="https://github.com/SpeedyD">Speedy</a>
+            ({{ config('lorekeeper.settings.masterlist_image_automation') ? 'Enabled' : 'Disabled' }})
+        </p>
+        <p class="mb-0 col-md-4">
+            <a href="http://wiki.lorekeeper.me/index.php?title=Extensions:90_Percent_Watermark"><strong>Watermark Resizing</strong></a> by <a href="https://github.com/SpeedyD">Speedy</a>
+            ({{ config('lorekeeper.settings.watermark_resizing') ? 'Enabled' : 'Disabled' }})/({{ config('lorekeeper.settings.watermark_resizing_thumb') ? 'Enabled' : 'Disabled' }})
         </p>
     </div>
 
