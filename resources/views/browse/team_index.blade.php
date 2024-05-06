@@ -9,10 +9,10 @@
 
 <hr>
 @foreach($staff as $rankId=>$staffRanks)
-	<h3 class="my-3 text-center" style="color: #{{ $ranks[$rankId-1]->color }}">
-	    <i class="{{ $ranks[$rankId-1]->icon }}"></i> {{ $ranks[$rankId-1]->name }}
+	<h3 class="my-3 text-center" style="color: #{{ $ranks[$rankId]->color }}">
+	    <i class="{{ $ranks[$rankId]->icon }}"></i> {{ $ranks[$rankId]->name }}
 	</h3>
-	<p class="text-center">{!! $ranks[$rankId-1]->parsed_description !!}</p>
+	<p class="text-center">{!! $ranks[$rankId]->parsed_description !!}</p>
 
 	@foreach($staffRanks->chunk(4) as $chunk)
 	<div class="row justify-content-center">
