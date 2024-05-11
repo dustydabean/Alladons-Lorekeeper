@@ -43,7 +43,7 @@ class SpliceService extends Service {
      */
     public function getTagData($tag) {
         $displayVariants = [];
-        if ($tag->data['variant_ids']) {
+        if (isset($tag->data['variant_ids']) && $tag->data['variant_ids']) {
             foreach ($tag->data['variant_ids'] as $variantId) {
                 if ($variantId == 'default') {
                     $displayVariants[] = 'Default';
@@ -56,7 +56,7 @@ class SpliceService extends Service {
 
         return [
             'variant_ids' => $tag->data['variant_ids'] ?? null,
-            'variants'    => $tag->data['variant_ids'] ? PetVariant::whereIn('id', $tag->data['variant_ids'])->get() : null,
+            'variants'    => isset($tag->data['variant_ids']) ? PetVariant::whereIn('id', $tag->data['variant_ids'])->get() : null,
             'display'     => $displayVariants ? implode(', ', $displayVariants) : null,
         ];
     }

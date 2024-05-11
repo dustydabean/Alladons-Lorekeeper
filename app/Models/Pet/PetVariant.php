@@ -11,7 +11,7 @@ class PetVariant extends Model {
      * @var array
      */
     protected $fillable = [
-        'pet_id', 'variant_name', 'has_image',
+        'pet_id', 'variant_name', 'has_image', 'description',
     ];
 
     /**
@@ -60,7 +60,7 @@ class PetVariant extends Model {
      * @return string
      */
     public function getDisplayNameAttribute() {
-        return '<a href="'.$this->pet->idUrl.'" class="display-item">'.$this->name.' '.$this->pet->name.'</a>';
+        return '<a href="'.$this->pet->idUrl.'" class="display-item">'.$this->variant_name.' ('.$this->pet->name.')</a>';
     }
 
     /**
@@ -101,5 +101,14 @@ class PetVariant extends Model {
         }
 
         return asset($this->imageDirectory.'/'.$this->imageFileName);
+    }
+
+    /**
+     * Gets the currency's asset type for asset management.
+     *
+     * @return string
+     */
+    public function getAssetTypeAttribute() {
+        return 'pet_variants';
     }
 }

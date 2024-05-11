@@ -18,7 +18,7 @@
                     @foreach ($pet->variants->chunk(4) as $chunk)
                         <div class="row">
                             @foreach ($chunk as $variant)
-                                <div class="col">
+                                <div class="col-md text-center">
                                     @if ($variant->has_image)
                                         <a href="{{ $variant->imageUrl }}" data-lightbox="entry" data-title="{{ $variant->variant_name }}">
                                             <img src="{{ $variant->imageUrl }}" class="img-fluid" style="max-height: 10em;" alt="{{ $variant->variant_name }}" data-toggle="tooltip" data-title="{{ $variant->variant_name }}" style="max-height:200px" />
@@ -26,6 +26,7 @@
                                     @else
                                         {{ $variant->name }}
                                     @endif
+                                    <p>{{ $variant->description }}</p>
                                 </div>
                             @endforeach
                         </div>

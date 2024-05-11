@@ -16,6 +16,11 @@
     @endif
 </div>
 
+<div class="form-group">
+    {!! Form::label('Description (Optional)') !!}
+    {!! Form::textarea('description', $variant->id ? $variant->description : null, ['class' => 'form-control wysiwyg']) !!}
+</div>
+
 @if ($variant->id)
     <div class="form-check">
         {!! Form::checkbox('delete', 1, false, ['class' => 'form-check-input']) !!}

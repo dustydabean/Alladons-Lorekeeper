@@ -382,6 +382,7 @@ class PetService extends Service {
             $variant->update([
                 'variant_name' => $data['variant_name'],
                 'has_image'    => $data['has_image'] ?? $variant->has_image,
+                'description'  => $data['description'] ? parse($data['description']) : null,
             ]);
 
             if ($image) {

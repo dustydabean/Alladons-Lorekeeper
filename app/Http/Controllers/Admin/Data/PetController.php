@@ -306,7 +306,7 @@ class PetController extends Controller {
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postCreateEditVariant(Request $request, PetService $service, $pet_id, $id = null) {
-        $data = $request->only(['variant_name', 'variant_image', 'remove_image', 'delete']);
+        $data = $request->only(['variant_name', 'variant_image', 'remove_image', 'delete', 'description']);
         if ($id && $service->editVariant(PetVariant::findOrFail($id), $data)) {
             // we dont flash in case we are deleting the variant
         } elseif (!$id && $service->createVariant(Pet::find($pet_id), $data)) {
