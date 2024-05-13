@@ -89,6 +89,9 @@
                         <a class="dropdown-item" href="{{ url('raffles') }}">
                             Raffles
                         </a>
+                        <a class="dropdown-item" href="{{ url('team') }}">
+                                Team
+                            </a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="{{ url('reports/bug-reports') }}">
                             Bug Reports
@@ -155,9 +158,6 @@
                             </a>
                             <a class="dropdown-item" href="{{ url('reports/new') }}">
                                 Submit Report
-                            </a>
-                            <a class="dropdown-item" href="{{ url('team') }}">
-                                Team
                             </a>
                         </div>
                     </li>
