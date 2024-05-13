@@ -156,6 +156,9 @@
                             <a class="dropdown-item" href="{{ url('reports/new') }}">
                                 Submit Report
                             </a>
+                            <a class="dropdown-item" href="{{ url('team') }}">
+                                Team
+                            </a>
                         </div>
                     </li>
 
