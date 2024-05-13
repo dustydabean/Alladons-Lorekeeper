@@ -85,13 +85,13 @@
                         <a class="dropdown-item" href="{{ url('masterlist') }}">
                             Character Masterlist
                         </a>
+                        <a class="dropdown-item" href="{{ url('team') }}">
+                            Staff
+                        </a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="{{ url('raffles') }}">
                             Raffles
                         </a>
-                        <a class="dropdown-item" href="{{ url('team') }}">
-                                Team
-                            </a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="{{ url('reports/bug-reports') }}">
                             Bug Reports
