@@ -20,7 +20,7 @@ return [
     */
 
     // Navbar News Notif - Juni
-    'navbar_news_notif'                    => 0,
+    'navbar_news_notif'                    => 1,
 
     // Species Trait Index - Mercury
     'species_trait_index'                  => [

@@ -47,6 +47,10 @@ return [
                 'name' => 'News',
                 'url'  => 'admin/news',
             ],
+            [
+                'name' => 'Dev Logs',
+                'url' => 'admin/devlogs'
+            ],
         ],
     ],
     'Sales' => [
