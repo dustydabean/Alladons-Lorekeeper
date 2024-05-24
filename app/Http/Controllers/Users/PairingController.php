@@ -46,8 +46,8 @@ class PairingController extends Controller {
         }
 
         $user_items = $user->items()->whereNull('deleted_at')->where('count', '>', 0)->get()->pluck('id')->toArray();
-        $user_pairing_items = UserItem::whereIn('item_id', $user_items)->whereIn('item_id', Item::whereRelation('tags', 'tag', 'pairing')->pluck('id')->toArray())->get();
-        $user_boost_items = UserItem::whereIn('item_id', $user_items)->whereIn('item_id', Item::whereRelation('tags', 'tag', 'boost')->pluck('id')->toArray())->get();
+        $user_pairing_items = UserItem::where('user_id', $user->id)->whereIn('item_id', $user_items)->whereIn('item_id', Item::whereRelation('tags', 'tag', 'pairing')->pluck('id')->toArray())->get();
+        $user_boost_items = UserItem::where('user_id', $user->id)->whereIn('item_id', $user_items)->whereIn('item_id', Item::whereRelation('tags', 'tag', 'boost')->pluck('id')->toArray())->get();
 
         return view('home.pairings', [
             'characters'            => Character::visible()->myo(0)->orderBy('number', 'DESC')->get()->pluck('fullName', 'slug')->toArray(),
@@ -72,11 +72,11 @@ class PairingController extends Controller {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
             }
+            return redirect()->back();
         } else {
             flash('Pairing created successfully!')->success();
+            return redirect()->to('characters/pairings?type=waiting');
         }
-
-        return redirect()->back();
     }
 
     /**

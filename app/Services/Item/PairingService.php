@@ -3,6 +3,7 @@
 namespace App\Services\Item;
 
 use App\Models\Feature\Feature;
+use App\Models\Feature\FeatureCategory;
 use App\Models\Item\Item;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
@@ -27,6 +28,7 @@ class PairingService extends Service {
     public function getEditData() {
         return [
             'features'  => Feature::orderBy('name')->pluck('name', 'id'),
+            'categories' => FeatureCategory::orderBy('name')->pluck('name', 'id'),
             'specieses' => Species::orderBy('name')->pluck('name', 'id'),
             'subtypes'  => Subtype::orderBy('name')->pluck('name', 'id'),
         ];
@@ -68,6 +70,7 @@ class PairingService extends Service {
         $specieses = isset($data['illegal_species_ids']) ? array_filter($data['illegal_species_ids']) : [];
         $features = isset($data['illegal_feature_ids']) ? array_filter($data['illegal_feature_ids']) : [];
         $subtypes = isset($data['illegal_subtype_ids']) ? array_filter($data['illegal_subtype_ids']) : [];
+        $featureCategories = isset($data['feature_category_ids']) ? array_filter($data['feature_category_ids']) : [];
 
         if (isset($data['feature_id'])) {
             $pairingData['feature_id'] = $data['feature_id'];
@@ -98,6 +101,13 @@ class PairingService extends Service {
         }
         if (count($subtypes) > 0) {
             $pairingData['illegal_subtype_ids'] = $subtypes;
+        }
+
+        foreach ($featureCategories as $key=>$category) {
+            $pairingData['guaranteed_feature_categories'][] = [
+                'id' => $category,
+                'number' => $data['feature_category_number'][$key] ?? 1,
+            ];
         }
 
         DB::beginTransaction();
