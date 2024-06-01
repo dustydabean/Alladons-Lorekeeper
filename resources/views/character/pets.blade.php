@@ -63,9 +63,9 @@
                                 </div>
                             </div>
                             @if (Auth::check() && Auth::user()->id == $character->user_id && $pet->canBond())
-                                <div class="form-group mb-0">
+                                <div class="form-group mb-0" id="bondForm">
                                     {!! Form::open(['url' => 'pets/bond/' . $pet->id]) !!}
-                                    {!! Form::submit('Bond', ['class' => 'btn btn-primary']) !!}
+                                    {!! Form::submit('Bond', ['class' => 'btn btn-primary', 'id' => 'bond']) !!}
                                     {!! Form::close() !!}
                                 </div>
                             @else
@@ -81,6 +81,16 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
+            // when form is submitted disable button and hide form
+            $('#bondForm').submit(function(e) {
+                e.preventDefault();
+                $('#bond').prop('disabled', true);
+                $('#bondForm').hide();
+
+                // submit form
+                e.target.submit();
+            });
+
             $("#sortable").sortable({
                 characters: '.sort-item',
                 placeholder: "sortable-placeholder col-md-3 col-6",

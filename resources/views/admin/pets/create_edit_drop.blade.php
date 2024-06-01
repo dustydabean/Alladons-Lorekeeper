@@ -184,7 +184,7 @@
 
             $('.delete-drop-button').on('click', function(e) {
                 e.preventDefault();
-                loadModal("{{ url('admin/data/pet/drops/delete') }}/{{ $drop->id }}", 'Delete Drop');
+                loadModal("{{ url('admin/data/pets/drops/delete') }}/{{ $drop->id }}", 'Delete Drop');
             });
 
             // on modal dismiss, ajax call to admin/data/pet/drops/widget and put into #dropped

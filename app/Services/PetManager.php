@@ -372,6 +372,10 @@ class PetManager extends Service {
             if ($user->id != $pet->user_id) {
                 throw new \Exception('You do not own this pet.');
             }
+            
+            if (!$pet->canBond()) {
+                throw new \Exception('You cannot bond with this pet again yet.');
+            }
 
             $pet->bonded_at = Carbon::now();
             $pet->save();
@@ -389,8 +393,8 @@ class PetManager extends Service {
             if ($pet->level->nextLevel && $bonding >= $pet->level->nextLevel?->bonding_required) {
                 // check if this level has rewards, or if it has pet rewards for this pet
                 $nextLevel = $pet->level->nextLevel;
-                $nextLevelRewards = $pet->level->nextLevel->rewards;
-                $petRewards = $nextLevel->pets()->where('pet_id', $pet->pet->id)->first()->rewards;
+                $nextLevelRewards = $pet->level->nextLevel?->rewards;
+                $petRewards = $nextLevel->pets()->where('pet_id', $pet->pet->id)->first()?->rewards;
                 if ($nextLevelRewards || $petRewards) {
                     $assets = createAssetsArray();
 
@@ -470,7 +474,7 @@ class PetManager extends Service {
                     throw new \Exception('Could not debit item.');
                 }
             }
-            // else logAdminAction($pet->user, 'Pet Variant Changed', ['pet' => $pet->id, 'variant' => $id]); // for when develop is merged
+            else $this->logAdminAction($pet->user, 'Pet Variant Changed', json_encode(['pet' => $pet->id, 'variant' => $id])); // for when develop is merged
 
             $pet['variant_id'] = $id == 'default' ? null : $id;
             $pet->save();
@@ -507,7 +511,7 @@ class PetManager extends Service {
                     throw new \Exception('Could not debit item.');
                 }
             }
-            // else logAdminAction($pet->user, 'Pet Evolution Changed', ['pet' => $pet->id, 'evolution' => $id]); // for when develop is merged
+            else $this->logAdminAction($pet->user, 'Pet Evolution Changed', json_encode(['pet' => $pet->id, 'evolution' => $id])); // for when develop is merged
 
             $pet['evolution_id'] = $id;
             $pet->save();
