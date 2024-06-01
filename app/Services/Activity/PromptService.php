@@ -42,8 +42,8 @@ class PromptService extends Service {
    * @return mixed
    */
   public function getData($data) {
-    $dataObj = json_decode($data);
-    $dataObj->prompt = Prompt::find($dataObj->prompt_id);
+    $dataObj = json_decode($data) ?? (object)[];
+    $dataObj->prompt = isset($dataObj->prompt_id) ? Prompt::find($dataObj->prompt_id) : null;
     return $dataObj;
   }
 
