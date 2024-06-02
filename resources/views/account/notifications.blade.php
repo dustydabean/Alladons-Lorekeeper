@@ -109,7 +109,5 @@
             });
 
         });
-    });
-
-</script>
+    </script>
 @endsection
