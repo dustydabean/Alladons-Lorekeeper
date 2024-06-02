@@ -286,8 +286,7 @@ return [
     ],
 
     // BOOKMARK_GIFT_WRITING
-    39 => [
-        'name' => 'Bookmark Gift Writing',
+    39  => [
         'message' => 'A character you have bookmarked (<a href="{character_url}">{character_name}</a>) has had its Gift Writing Allowed status changed. (<a href="{url}">View Bookmarks</a>)',
         'url'     => 'account/bookmarks',
     ],
