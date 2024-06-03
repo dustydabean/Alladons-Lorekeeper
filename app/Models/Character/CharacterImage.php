@@ -320,4 +320,25 @@ class CharacterImage extends Model {
 
         return implode(' ', $display_colours);
     }
+
+
+    /**
+     * Gets the longest side of the image if it hasn't already been calculated
+     *
+     * @return string
+     */
+    public function getLongestSideAttribute($value) {
+        $longestSide = $value;
+        if (!isset($longestSide) && File::exists($this->imagePath . '/' . $this->imageFileName)) {
+            $image = Image::make($this->imagePath . '/' . $this->imageFileName);
+            $width = $image->width();
+            $height = $image->height();
+            if ($width > $height) $longestSide = 'width';
+            else if ($height > $width) $longestSide = 'height';
+            else if (Settings::get('default_side') === 0) $longestSide = 'square';
+            else if (Settings::get('default_side') === 1) $longestSide = 'width';
+            else $longestSide = 'height';
+        }
+        return $longestSide;
+    }
 }
