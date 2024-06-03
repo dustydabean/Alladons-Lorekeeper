@@ -1,9 +1,5 @@
 {{-- Image Data --}}
-<div @class([
-        "d-flex" => true,
-        "col-md-5" => $character->image->longestSide === 'height' || $character->image->longestSide === 'square',
-        "col-md-12" => $character->image->longestSide === 'width'
-    ])>
+<div class="col-md-5 d-flex">
     <div class="card character-bio w-100">
         <div class="card-header">
             <ul class="nav nav-tabs card-header-tabs">
