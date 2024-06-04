@@ -53,6 +53,10 @@
     <script src="{{ asset('js/jquery-ui-timepicker-addon.js') }}"></script>
     <script src="{{ asset('js/croppie.min.js') }}"></script>
 
+    <!-- Scripts for wheel of fortune dailies -->
+    <script src="{{ asset('js/winwheel.min.js') }}"></script>
+    <script src="{{ asset('js/tweenmax.min.js') }}"></script>
+
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
