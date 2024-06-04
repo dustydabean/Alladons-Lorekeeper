@@ -51,21 +51,22 @@
                             Activity
                         </a>
                         <div class="dropdown-menu" aria-labelledby="queueDropdown">
+                            <a class="dropdown-item" href="{{ url('prompts/prompts') }}">
+                                Prompts
+                            </a>
+                            <a class="dropdown-item" href="{{ url('shops') }}">
+                                Shops
+                            </a>
+                            <a class="dropdown-item" href="{{ url(__('dailies.dailies')) }}">
+                            {{__('dailies.dailies')}}
+                            </a>
+                            <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{{ url('submissions') }}">
                                 Prompt Submissions
-                            </a>
-                            <a class="dropdown-item" href="{{ url('claims') }}">
-                                Claims
-                            </a>
-                            <a class="dropdown-item" href="{{ url('reports') }}">
-                                Reports
                             </a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{{ url('characters/transfers/incoming') }}">
                                 Character Transfers
-                            </a>
-                            <a class="dropdown-item" href="{{ url('characters/pairings') }}">
-                                Character Pairings
                             </a>
                             <a class="dropdown-item" href="{{ url('trades/open') }}">
                                 Trades
@@ -92,10 +93,6 @@
                         <a class="dropdown-item" href="{{ url('raffles') }}">
                             Raffles
                         </a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="{{ url('reports/bug-reports') }}">
-                            Bug Reports
-                        </a>
                     </div>
                 </li>
                 <li class="nav-item dropdown">
@@ -107,20 +104,28 @@
                         <a class="dropdown-item" href="{{ url('world') }}">
                             Encyclopedia
                         </a>
-                        <a class="dropdown-item" href="{{ url('prompts/prompts') }}">
-                            Prompts
-                        </a>
-                        <a class="dropdown-item" href="{{ url('shops') }}">
-                            Shops
-                        </a>
-                        <a class="dropdown-item" href="{{ url(__('dailies.dailies')) }}">
-                        {{__('dailies.dailies')}}
-                        </a>
                     </div>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url('gallery') }}">Gallery</a>
                 </li>
+
+                <li class="nav-item dropdown">
+                    <a id="loreDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                        Help
+                    </a>
+
+                    <div class="dropdown-menu" aria-labelledby="loreDropdown">
+                        <a class="dropdown-item" href="{{ url('claims') }}">
+                            Claims
+                        </a>
+                        <a class="dropdown-item" href="{{ url('reports') }}">
+                            Reports
+                        </a>
+                        <a class="dropdown-item" href="{{ url('reports/bug-reports') }}">
+                            Bug Reports
+                        </a>
+                    </div>
             </ul>
 
             <!-- Right Side Of Navbar -->
