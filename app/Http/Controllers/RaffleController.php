@@ -24,6 +24,9 @@ class RaffleController extends Controller
      */
     public function getRaffleIndex()
     {
+        //check notif
+        if(Auth::check() && Auth::user()->is_raffles_unread) Auth::user()->update(['is_raffles_unread' => 0]);
+
         $raffles = Raffle::query();
         if (Request::get('view') == 'completed') $raffles->where('is_active', 2);
         else $raffles->where('is_active', '=', 1);
