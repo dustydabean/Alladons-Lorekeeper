@@ -23,7 +23,7 @@ class CharacterImage extends Model {
         'x0', 'x1', 'y0', 'y1',
         'description', 'parsed_description',
         'is_valid',
-        'sex', 'colours', 'theme'
+        'sex', 'colours',
     ];
 
     /**

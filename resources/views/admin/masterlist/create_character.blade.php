@@ -244,12 +244,6 @@
             @endif
             {!! Form::select('sex', [null => 'Select Sex', 'Male' => 'Male', 'Female' => 'Female'], old('sex'), ['class' => 'form-control']) !!}
         </div>
-        
-        <div class="form-group">
-            {!! Form::label(ucfirst(__('character_theme.theme')).' ' . (config('lorekeeper.extensions.character_theme.is_required') ? '(Required)' : 
-        '(Optional)')) !!}
-            {!! Form::text('theme', old('theme'), ['class' => 'form-control']) !!}
-        </div>
 
         <div class="form-group">
             {!! Form::label('Traits') !!} @if ($isMyo)

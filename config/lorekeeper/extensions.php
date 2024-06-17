@@ -106,13 +106,4 @@ return [
     // Use ReCaptcha to check new user registrations - Mercury
     // Requires site key and secret be set in your .env file!
     'use_recaptcha' => 0,
-    
-    // Character Themes extension
-
-    'character_theme' => [
-        'is_required' => 0, //Is having a theme for a character mandatory? 0 for No, 1 for Yes.
-        'is_unique' => 0, // Are these themes unique across characters? (Only one character can have "black cat" for example). Players can always skirt around this by changing wording slightly, so remember to check definitively in design updates. 0 for No, 1 for Yes.
-        'show_on_masterlist' => 1, // Does the theme show on the masterlist alongside rarity/species? 0 for No, 1 for Yes.
-    ],
-
 ];

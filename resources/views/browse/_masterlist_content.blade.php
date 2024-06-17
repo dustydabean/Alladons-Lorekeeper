@@ -24,12 +24,8 @@
                     {!! Form::label('subtype_id', 'Species Subtype: ') !!}
                     {!! Form::select('subtype_id', $subtypes, Request::get('subtype_id'), ['class' => 'form-control mr-2', 'style' => 'width: 250px']) !!}
                 </div>
-                <div class="masterlist-search-field">
-                        {!! Form::label('theme', ucfirst(__('character_theme.theme')).': ') !!} 
-                        {!! Form::text('theme', Request::get('theme'), ['class'=> 'form-control mr-2', 'style' => 'width: 250px', 'placeholder' => 'Type a '. ucfirst(__('character_theme.theme'))]) !!}
-                </div>
+                <hr />
             @endif
-            <hr />
             <div class="masterlist-search-field">
                 {!! Form::label('owner', 'Owner Username: ') !!}
                 {!! Form::select('owner', $userOptions, Request::get('owner'), ['class' => 'form-control mr-2 userselectize', 'style' => 'width: 250px', 'placeholder' => 'Select a User']) !!}
@@ -168,10 +164,7 @@
                         </a>
                     </div>
                     <div class="small">
-                        {!! $character->image->species_id ? $character->image->species->displayName : 'No Species' !!} ・ {!! $character->image->rarity_id ? $character->image->rarity->displayName : 'No Rarity' !!} ・ {!! $character->displayOwner !!} 
-                        @if(config('lorekeeper.extensions.character_theme.show_on_masterlist'))
-                            {!! $character->image->theme ? ' ・ ' . $character->image->theme : '' !!}
-                        @endif
+                        {!! $character->image->species_id ? $character->image->species->displayName : 'No Species' !!} ・ {!! $character->image->rarity_id ? $character->image->rarity->displayName : 'No Rarity' !!} ・ {!! $character->displayOwner !!}
                     </div>
                 </div>
             @endforeach
@@ -186,9 +179,6 @@
                 <th>Name</th>
                 <th>Rarity</th>
                 <th>Species</th>
-                @if(config('lorekeeper.extensions.character_theme.show_on_masterlist'))
-                    <th>{{ucfirst(__('character_theme.theme'))}}</th>
-                @endif
                 <th>Created</th>
             </tr>
         </thead>
@@ -203,9 +193,6 @@
                     </td>
                     <td>{!! $character->image->rarity_id ? $character->image->rarity->displayName : 'None' !!}</td>
                     <td>{!! $character->image->species_id ? $character->image->species->displayName : 'None' !!}</td>
-                    @if(config('lorekeeper.extensions.character_theme.show_on_masterlist'))
-                        <td>{!! $character->image->theme ? $character->image->theme : '---' !!}</td>
-                    @endif
                     <td>{!! format_date($character->created_at) !!}</td>
                 </tr>
             @endforeach
