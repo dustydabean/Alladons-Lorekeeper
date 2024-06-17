@@ -68,6 +68,7 @@ class DesignUpdateManager extends Service {
                 'rarity_id'     => $character->image->rarity_id,
                 'species_id'    => $character->image->species_id,
                 'subtype_id'    => $character->image->subtype_id,
+                'theme' => $character->image->theme
             ];
 
             $request = CharacterDesignUpdate::create($data);
