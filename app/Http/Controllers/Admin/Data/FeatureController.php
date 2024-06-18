@@ -85,7 +85,7 @@ class FeatureController extends Controller
     {
         $id ? $request->validate(FeatureCategory::$updateRules) : $request->validate(FeatureCategory::$createRules);
         $data = $request->only([
-            'name', 'description', 'image', 'remove_image','example_image', 'remove_example_image'
+            'name', 'description', 'image', 'remove_image'
         ]);
         if($id && $service->updateFeatureCategory(FeatureCategory::find($id), $data, Auth::user())) {
             flash('Category updated successfully.')->success();
