@@ -211,9 +211,19 @@ class FeatureService extends Service
             }
             else $data['has_image'] = 0;
 
+            $example_image = null;
+            if(isset($data['example_image']) && $data['example_image']) {
+                $data['has_example_image'] = 1;
+                $data['example_hash'] = randomString(10);
+                $example_image = $data['example_image'];
+                unset($data['example_image']);
+            }
+            else $data['has_example_image'] = 0;
+
             $feature = Feature::create($data);
 
             if ($image) $this->handleImage($image, $feature->imagePath, $feature->imageFileName);
+            if ($example_image) $this->handleImage($example_image, $feature->imagePath, $feature->exampleImageFileName);
 
             return $this->commitReturn($feature);
         } catch(\Exception $e) { 
@@ -259,9 +269,20 @@ class FeatureService extends Service
                 unset($data['image']);
             }
 
+            $example_image = null;            
+            if(isset($data['example_image']) && $data['example_image']) {
+                $data['has_example_image'] = 1;
+                $data['example_hash'] = randomString(10);
+                $example_image = $data['example_image'];
+                unset($data['example_image']);
+            }
+
             $feature->update($data);
 
-            if ($feature) $this->handleImage($image, $feature->imagePath, $feature->imageFileName);
+            if ($feature) {
+                $this->handleImage($image, $feature->imagePath, $feature->imageFileName);
+                $this->handleImage($example_image, $feature->imagePath, $feature->exampleImageFileName);
+            }
 
             return $this->commitReturn($feature);
         } catch(\Exception $e) { 
@@ -292,6 +313,16 @@ class FeatureService extends Service
             unset($data['remove_image']);
         }
 
+        if(isset($data['remove_example_image']))
+        {
+            if($feature && $feature->has_example_image && $data['remove_example_image']) 
+            { 
+                $data['has_example_image'] = 0; 
+                $this->deleteImage($feature->imagePath, $feature->exampleImageFileName); 
+            }
+            unset($data['remove_example_image']);
+        }
+
         return $data;
     }
     
@@ -310,6 +341,7 @@ class FeatureService extends Service
             if(DB::table('character_features')->where('feature_id', $feature->id)->exists()) throw new \Exception("A character with this trait exists. Please remove the trait first.");
             
             if($feature->has_image) $this->deleteImage($feature->imagePath, $feature->imageFileName); 
+            if($feature->has_example_image) $this->deleteImage($feature->imagePath, $feature->exampleImageFileName); 
             $feature->delete();
 
             return $this->commitReturn(true);

@@ -17,7 +17,7 @@ class Feature extends Model
      * @var array
      */
     protected $fillable = [
-        'feature_category_id', 'species_id', 'subtype_id', 'rarity_id', 'name', 'has_image', 'description', 'parsed_description'
+        'feature_category_id', 'species_id', 'subtype_id', 'rarity_id', 'name', 'has_image', 'description', 'parsed_description','has_example_image','example_hash','example_summary'
     ];
 
     /**
@@ -40,6 +40,7 @@ class Feature extends Model
         'name' => 'required|unique:features|between:3,100',
         'description' => 'nullable',
         'image' => 'mimes:png',
+        'example_image' => 'mimes:png',
     ];
 
     /**
@@ -55,6 +56,7 @@ class Feature extends Model
         'name' => 'required|between:3,100',
         'description' => 'nullable',
         'image' => 'mimes:png',
+        'example_image' => 'mimes:png',
     ];
 
     /**********************************************************************************************
@@ -229,6 +231,27 @@ class Feature extends Model
     {
         if (!$this->has_image) return null;
         return asset($this->imageDirectory . '/' . $this->imageFileName);
+    }
+
+    /**
+     * Gets the file name of the model's example image.
+     *
+     * @return string
+     */
+    public function getExampleImageFileNameAttribute()
+    {
+        return $this->example_hash.$this->id.'-example-image.png';
+    }
+
+    /**
+     * Gets the URL of the model's example image.
+     *
+     * @return string
+     */
+    public function getExampleImageUrlAttribute()
+    {
+        if (!$this->has_example_image) return null;
+        return asset($this->imageDirectory . '/' . $this->exampleImageFileName);
     }
 
     /**
