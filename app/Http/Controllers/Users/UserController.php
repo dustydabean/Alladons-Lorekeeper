@@ -61,7 +61,7 @@ class UserController extends Controller {
     public function getUser($name) {
         $characters = $this->user->characters();
         if (!Auth::check() || !(Auth::check() && Auth::user()->hasPower('manage_characters'))) {
-            $characters = $characters->visible();
+            $characters->visible();
         }
 
         $aliases = $this->user->aliases();
