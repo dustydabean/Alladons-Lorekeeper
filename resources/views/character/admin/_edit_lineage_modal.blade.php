@@ -14,8 +14,8 @@
     </div>
     <div class="col-md-6">
         <div class="form-group">
-            {!! Form::label('father_name', 'Father Name') !!} {!! add_help('If the parent is known, leave this blank.') !!}
-            {!! Form::text('father_name', $character->lineage ? $character->lineage->parent_1_name : null, ['class' => 'form-control', 'placeholder' => 'Unknown']) !!}
+            {!! Form::label('parent_1_name', 'Parent Name') !!} {!! add_help('If the parent is known, leave this blank.') !!}
+            {!! Form::text('parent_1_name', $character->lineage ? $character->lineage->parent_1_name : null, ['class' => 'form-control', 'placeholder' => 'Unknown']) !!}
         </div>
     </div>
 </div>
@@ -26,7 +26,7 @@
         {!! Form::select('parent_2_id', $characterOptions, $character->lineage ? $character->lineage->parent_2_id : null, ['class' => 'form-control character-select', 'placeholder' => 'Unknown']) !!}
     </div>
     <div class="col-md-6">
-        {!! Form::label('parent_2_name', 'Partner Name') !!} {!! add_help('If the parent is known, leave this blank.') !!}
+        {!! Form::label('parent_2_name', 'Parent Name') !!} {!! add_help('If the parent is known, leave this blank.') !!}
         {!! Form::text('parent_2_name', $character->lineage ? $character->lineage->parent_2_name : null, ['class' => 'form-control', 'placeholder' => 'Unknown']) !!}
     </div>
 </div>
