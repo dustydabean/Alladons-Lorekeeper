@@ -14,6 +14,7 @@ use App\Models\Gallery\GallerySubmission;
 use App\Models\Theme;
 use App\Models\Item\Item;
 use App\Models\Item\ItemLog;
+use App\Models\Pet\PetLog;
 use App\Models\Notification;
 use App\Models\Rank\Rank;
 use App\Models\Rank\RankPower;
@@ -197,6 +198,13 @@ class User extends Authenticatable implements MustVerifyEmail {
      */
     public function items() {
         return $this->belongsToMany(Item::class, 'user_items')->withPivot('count', 'data', 'updated_at', 'id')->whereNull('user_items.deleted_at');
+    }
+
+    /**
+     * Get the user's pets.
+     */
+    public function pets() {
+        return $this->belongsToMany('App\Models\Pet\Pet', 'user_pets')->withPivot('data', 'updated_at', 'id', 'variant_id', 'character_id', 'pet_name', 'has_image', 'evolution_id')->whereNull('user_pets.deleted_at');
     }
 
     /**
@@ -599,6 +607,27 @@ class User extends Authenticatable implements MustVerifyEmail {
             $query->with('sender')->where('sender_type', 'User')->where('sender_id', $user->id)->whereNotIn('log_type', ['Staff Grant', 'Prompt Rewards', 'Claim Rewards']);
         })->orWhere(function ($query) use ($user) {
             $query->with('recipient')->where('recipient_type', 'User')->where('recipient_id', $user->id)->where('log_type', '!=', 'Staff Removal');
+        })->orderBy('id', 'DESC');
+        if ($limit) {
+            return $query->take($limit)->get();
+        } else {
+            return $query->paginate(30);
+        }
+    }
+
+    /**
+     * Get the user's pet logs.
+     *
+     * @param int $limit
+     *
+     * @return \Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Support\Collection
+     */
+    public function getPetLogs($limit = 10) {
+        $user = $this;
+        $query = PetLog::with('sender')->with('recipient')->with('pet')->where(function ($query) use ($user) {
+            $query->where('sender_id', $user->id)->whereNotIn('log_type', ['Staff Grant', 'Staff Removal']);
+        })->orWhere(function ($query) use ($user) {
+            $query->where('recipient_id', $user->id);
         })->orderBy('id', 'DESC');
         if ($limit) {
             return $query->take($limit)->get();

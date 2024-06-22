@@ -5,6 +5,7 @@ namespace App\Models\Loot;
 use App\Models\Currency\Currency;
 use App\Models\Item\Item;
 use App\Models\Item\ItemCategory;
+use App\Models\Pet\Pet;
 use App\Models\Model;
 
 class Loot extends Model {
@@ -67,6 +68,8 @@ class Loot extends Model {
                 return $this->belongsTo(Currency::class, 'rewardable_id');
             case 'LootTable':
                 return $this->belongsTo(LootTable::class, 'rewardable_id');
+            case 'Pet':
+                return $this->belongsTo(Pet::class, 'rewardable_id');
             case 'ItemCategory':
                 return $this->belongsTo(ItemCategory::class, 'rewardable_id');
             case 'ItemCategoryRarity':

@@ -5,6 +5,8 @@ namespace App\Models\Prompt;
 use App\Models\Currency\Currency;
 use App\Models\Item\Item;
 use App\Models\Loot\LootTable;
+use App\Models\Pet\Pet;
+use App\Models\Pet\PetVariant;
 use App\Models\Model;
 use App\Models\Raffle\Raffle;
 
@@ -65,6 +67,12 @@ class PromptReward extends Model {
                 break;
             case 'LootTable':
                 return $this->belongsTo(LootTable::class, 'rewardable_id');
+                break;
+            case 'Pet':
+                return $this->belongsTo(Pet::class, 'rewardable_id');
+                break;
+            case 'Pet Variant':
+                return $this->belongsTo(PetVariant::class, 'rewardable_id');
                 break;
             case 'Raffle':
                 return $this->belongsTo(Raffle::class, 'rewardable_id');

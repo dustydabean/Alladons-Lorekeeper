@@ -4,7 +4,7 @@
 @else
     <div class="text-center">
         @if ($item->has_image)
-            <div class="mb-1"><a href="{{ $item->url }}"><img src="{{ $item->imageUrl }}" alt="{{ $item->name }}" /></a></div>
+            <div class="mb-1"><a href="{{ $item->url }}"><img src="{{ $item->imageUrl }}" class="img-fluid" alt="{{ $item->name }}" /></a></div>
         @endif
         <div @if (count($item->tags)) class="mb-1" @endif><a href="{{ $item->idUrl }}">{{ $item->name }}</a></div>
         @if (count($item->tags))
@@ -12,6 +12,9 @@
                 @foreach ($item->tags as $tag)
                     @if ($tag->is_active)
                         {!! $tag->displayTag !!}
+                        @if ($tag->is_active && View::exists('world.tags._' . $tag->tag))
+                            @include('world.tags._' . $tag->tag, ['tag' => $tag])
+                        @endif
                     @endif
                 @endforeach
             </div>

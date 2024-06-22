@@ -72,7 +72,7 @@ function calculateGroupCurrency($data) {
  */
 function getAssetKeys($isCharacter = false) {
     if (!$isCharacter) {
-        return ['items', 'currencies', 'raffle_tickets', 'loot_tables', 'user_items', 'characters'];
+        return ['items', 'currencies', 'pets', 'pet_variants', 'raffle_tickets', 'loot_tables', 'user_items', 'characters'];
     } else {
         return ['currencies', 'items', 'character_items', 'loot_tables'];
     }
@@ -89,7 +89,7 @@ function getAssetKeys($isCharacter = false) {
  */
 function getAssetModelString($type, $namespaced = true) {
     switch ($type) {
-        case 'items':
+        case 'items': case 'item':
             if ($namespaced) {
                 return '\App\Models\Item\Item';
             } else {
@@ -105,6 +105,20 @@ function getAssetModelString($type, $namespaced = true) {
             }
             break;
 
+        case 'pets': case 'pet':
+            if ($namespaced) {
+                return '\App\Models\Pet\Pet';
+            } else {
+                return 'Pet';
+            }
+            break;
+        case 'pet_variants': case 'pet_variant':
+            if ($namespaced) {
+                return '\App\Models\Pet\PetVariant';
+            } else {
+                return 'PetVariant';
+            }
+            break;
         case 'raffle_tickets':
             if ($namespaced) {
                 return '\App\Models\Raffle\Raffle';
@@ -253,6 +267,92 @@ function getDataReadyAssets($array, $isCharacter = false) {
     return $result;
 }
 
+// --------------------------------------------
+
+/**
+ * Adds an asset to the given array.
+ * If the asset already exists, it adds to the quantity.
+ *
+ * @param array $array
+ * @param mixed $asset
+ * @param mixed $min_quantity
+ * @param mixed $max_quantity
+ */
+function addDropAsset(&$array, $asset, $min_quantity = 1, $max_quantity = 1) {
+    if (!$asset) {
+        return;
+    }
+    if (isset($array[$asset->assetType][$asset->id])) {
+        return;
+    } else {
+        $array[$asset->assetType][$asset->id] = ['asset' => $asset, 'min_quantity' => $min_quantity, 'max_quantity' => $max_quantity];
+    }
+}
+
+/**
+ * Get a clean version of the asset array to store in the database,
+ * where each asset is listed in [id => quantity] format.
+ * json_encode this and store in the data attribute.
+ *
+ * @param array $array
+ *
+ * @return array
+ */
+function getDataReadyDropAssets($array) {
+    $result = [];
+    foreach ($array as $group => $types) {
+        $result[$group] = [];
+        foreach ($types as $type => $key) {
+            if ($type && !isset($result[$group][$type])) {
+                $result[$group][$type] = [];
+            }
+            foreach ($key as $assetId => $assetData) {
+                $result[$group][$type][$assetId] = [
+                    'min_quantity' => $assetData['min_quantity'],
+                    'max_quantity' => $assetData['max_quantity'],
+                ];
+            }
+            if (empty($result[$group][$type])) {
+                unset($result[$group][$type]);
+            }
+        }
+    }
+
+    return $result;
+}
+
+/**
+ * Retrieves the data associated with an asset array,
+ * basically reversing the above function.
+ * Use the data attribute after json_decode()ing it.
+ *
+ * @param array $array
+ *
+ * @return array
+ */
+function parseDropAssetData($array) {
+    $result = [];
+    foreach ($array as $group => $types) {
+        $result[$group] = [];
+        foreach ($types as $type => $contents) {
+            $model = getAssetModelString($type);
+            if ($model) {
+                foreach ($contents as $id => $data) {
+                    $result[$group][$type][$id] = [
+                        'asset'        => $model::find($id),
+                        'min_quantity' => $data['min_quantity'],
+                        'max_quantity' => $data['max_quantity'],
+                    ];
+                }
+            }
+        }
+    }
+
+    return $result;
+}
+
+// --------------------------------------------
+
 /**
  * Retrieves the data associated with an asset array,
  * basically reversing the above function.
@@ -312,6 +412,20 @@ function fillUserAssets($assets, $sender, $recipient, $logType, $data) {
             $service = new \App\Services\CurrencyManager;
             foreach ($contents as $asset) {
                 if (!$service->creditCurrency($sender, $recipient, $logType, $data['data'], $asset['asset'], $asset['quantity'])) {
+                    return false;
+                }
+            }
+        } elseif ($key == 'pets' && count($contents)) {
+            $service = new \App\Services\PetManager;
+            foreach ($contents as $asset) {
+                if (!$service->creditPet($sender, $recipient, $logType, $data, $asset['asset'], $asset['quantity'])) {
+                    return false;
+                }
+            }
+        } elseif ($key == 'pet_variants' && count($contents)) {
+            $service = new \App\Services\PetManager;
+            foreach ($contents as $asset) {
+                if (!$service->creditPet($sender, $recipient, $logType, $data, $asset['asset']->pet, $asset['quantity'], $asset['asset']->id)) {
                     return false;
                 }
             }
@@ -415,4 +529,32 @@ function createRewardsString($array) {
     }
 
     return implode(', ', array_slice($string, 0, count($string) - 1)).(count($string) > 2 ? ', and ' : ' and ').end($string);
+}
+
+/**
+ * Returns an asset from provided data.
+ */
+function findReward($type, $id, $isCharacter = false) {
+    $reward = null;
+    switch ($type) {
+        case 'Item':
+            $reward = \App\Models\Item\Item::find($id);
+            break;
+        case 'Currency':
+            $reward = \App\Models\Currency\Currency::find($id);
+            if (!$isCharacter && !$reward->is_user_owned) {
+                throw new \Exception('Invalid currency selected.');
+            }
+            break;
+        case 'Pet':
+            $reward = \App\Models\Pet\Pet::find($id);
+            break;
+        case 'LootTable':
+            $reward = \App\Models\Loot\LootTable::find($id);
+            break;
+        case 'Raffle':
+            $reward = \App\Models\Raffle\Raffle::find($id);
+            break;
+    }
+    return $reward;
 }

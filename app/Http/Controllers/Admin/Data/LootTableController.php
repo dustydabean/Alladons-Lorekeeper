@@ -7,6 +7,7 @@ use App\Models\Currency\Currency;
 use App\Models\Item\Item;
 use App\Models\Item\ItemCategory;
 use App\Models\Loot\LootTable;
+use App\Models\Pet\Pet;
 use App\Services\LootService;
 use Illuminate\Http\Request;
 
@@ -43,6 +44,7 @@ class LootTableController extends Controller {
         return view('admin.loot_tables.create_edit_loot_table', [
             'table'      => new LootTable,
             'items'      => Item::orderBy('name')->pluck('name', 'id'),
+            'pets'       => Pet::orderBy('name')->pluck('name', 'id'),
             'categories' => ItemCategory::orderBy('sort', 'DESC')->pluck('name', 'id'),
             'currencies' => Currency::orderBy('name')->pluck('name', 'id'),
             'tables'     => LootTable::orderBy('name')->pluck('name', 'id'),
@@ -69,6 +71,7 @@ class LootTableController extends Controller {
         return view('admin.loot_tables.create_edit_loot_table', [
             'table'      => $table,
             'items'      => Item::orderBy('name')->pluck('name', 'id'),
+            'pets'       => Pet::orderBy('name')->pluck('name', 'id'),
             'categories' => ItemCategory::orderBy('sort', 'DESC')->pluck('name', 'id'),
             'currencies' => Currency::orderBy('name')->pluck('name', 'id'),
             'tables'     => LootTable::orderBy('name')->pluck('name', 'id'),

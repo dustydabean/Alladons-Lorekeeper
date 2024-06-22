@@ -13,7 +13,8 @@ class ShopStock extends Model {
      * @var array
      */
     protected $fillable = [
-        'shop_id', 'item_id', 'currency_id', 'cost', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'sort', 'purchase_limit',
+        'shop_id', 'item_id', 'currency_id', 'cost', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'sort', 'purchase_limit', 'purchase_limit_timeframe', 'is_fto', 'stock_type', 'is_visible',
+        'restock', 'restock_quantity', 'restock_interval', 'range', 'disallow_transfer', 'is_timed_stock', 'start_at', 'end_at',
     ];
 
     /**
@@ -22,6 +23,15 @@ class ShopStock extends Model {
      * @var string
      */
     protected $table = 'shop_stock';
+
+    /**
+     * Validation rules for creation.
+     *
+     * @var array
+     */
+    public static $createRules = [
+        'purchase_limit_timeframe' => 'in:lifetime,yearly,monthly,weekly,daily',
+    ];
 
     /**********************************************************************************************
 
@@ -33,7 +43,9 @@ class ShopStock extends Model {
      * Get the item being stocked.
      */
     public function item() {
-        return $this->belongsTo(Item::class);
+        $model = getAssetModelString(strtolower($this->stock_type));
+
+        return $this->belongsTo($model);
     }
 
     /**
@@ -48,5 +60,51 @@ class ShopStock extends Model {
      */
     public function currency() {
         return $this->belongsTo(Currency::class);
+    }
+
+    /*
+     * Gets the current date associated to the current stocks purchase limit timeframe
+     */
+    public function getPurchaseLimitDateAttribute() {
+        switch ($this->purchase_limit_timeframe) {
+            case 'yearly':
+                $date = strtotime('January 1st');
+                break;
+            case 'monthly':
+                $date = strtotime('midnight first day of this month');
+                break;
+            case 'weekly':
+                $date = strtotime('last sunday');
+                break;
+            case 'daily':
+                $date = strtotime('midnight');
+                break;
+            default:
+                $date = null;
+        }
+
+        return $date;
+    }
+
+    /**********************************************************************************************
+
+        OTHER FUNCTIONS
+
+    **********************************************************************************************/
+
+    /**
+     * Scopes active stock.
+     *
+     * @param mixed $query
+     */
+    public function scopeActive($query) {
+        return $query->where('is_visible', 1);
+    }
+
+    /**
+     * Makes the cost an integer for display.
+     */
+    public function getDisplayCostAttribute() {
+        return (int) $this->cost;
     }
 }

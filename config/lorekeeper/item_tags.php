@@ -26,8 +26,28 @@ return [
     ],
 
     'theme' => [
-        'name' => 'Theme',
-        'text_color' => "#ffffff",
-        'background_color' => '#573f7e'
-    ]
+        'name'             => 'Theme',
+        'text_color'       => "#ffffff",
+        'background_color' => '#573f7e',
+    ],
+    
+    'splice' => [
+        'name'             => 'Splice',
+        'text_color'       => '#ffffff',
+        'background_color' => '#a69bc6',
+    ],
+
+    // pokemon ftw
+    // if you want to change this, just edit the 'name' part.
+    'rare_candy' => [
+        'name'             => 'Rare Candy',
+        'text_color'       => '#ffffff',
+        'background_color' => '#96afdb',
+    ],
+
+    'coupon' => [
+        'name'             => 'Coupon',
+        'text_color'       => '#ffffff',
+        'background_color' => '#ff5ca8',
+    ],
 ];

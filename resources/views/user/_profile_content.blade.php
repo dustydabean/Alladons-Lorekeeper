@@ -115,6 +115,29 @@
     </div>
 </div>
 
+<div class="card mb-3">
+    <div class="card-body text-center">
+        <h5 class="card-title">Pets</h5>
+        <div class="card-body">
+            @if (count($pets))
+                <div class="row justify-content-center">
+                    @foreach ($pets as $pet)
+                        <div class="col-md-2 profile-inventory-item">
+                            <a href="{{ url($user->url . '/pets') }}" class="inventory-stack">
+                                <img class="img-fluid" src="{{ $pet->VariantImage($pet->pivot->id) }}" data-toggle="tooltip" title="{{ $pet->pivot->pet_name ? $pet->pivot->pet_name . ' (' . $pet->name . ')' : $pet->name }}"
+                                    alt="{{ $pet->pivot->pet_name ? $pet->pivot->pet_name . ' (' . $pet->name . ')' : $pet->name }}" />
+                            </a>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div>No pets owned.</div>
+            @endif
+        </div>
+        <div class="text-right"><a href="{{ $user->url . '/pets' }}">View all...</a></div>
+    </div>
+</div>
+
 <h2>
     <a href="{{ $user->url . '/characters' }}">Characters</a>
     @if (isset($sublists) && $sublists->count() > 0)

@@ -37,6 +37,9 @@
                             <a class="dropdown-item" href="{{ url('inventory') }}">
                                 Inventory
                             </a>
+                            <a class="dropdown-item" href="{{ url('pets') }}">
+                                My Companions
+                            </a>
                             <a class="dropdown-item" href="{{ url('bank') }}">
                                 Bank
                             </a>

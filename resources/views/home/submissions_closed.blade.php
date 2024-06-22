@@ -71,7 +71,6 @@
     ])
     @include('widgets._loot_select_row', ['showLootTables' => false])
 
-
     <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">

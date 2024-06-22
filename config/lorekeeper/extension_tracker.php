@@ -1,4 +1,5 @@
 <?php
+
 return [
 
     // FORMAT EXAMPLE.
@@ -39,5 +40,25 @@ return [
             'AnimatedCritter' => 'https://github.com/animatedcritter/',
         ]),
         'version' => '1.0.0',
+    ],
+
+    'shop_features' => [
+        'key'      => 'shop_features',
+        'wiki_key' => 'Shop_Features',
+        'creators' => json_encode([
+            'Newt' => 'https://github.com/ne-wt/',
+        ]),
+        'version' => '1.0.4',
+    ],
+
+    'pets' => [
+        'wiki_key' => 'Pets',
+        'creators' => json_encode([
+            'Newt'      => 'https://github.com/ne-wt/',
+            'Mercury'   => 'https://github.com/itinerare/',
+            'Uri'       => 'https://github.com/preimpression/',
+            'SUPERCOOL' => 'https://github.com/CH3RVB/',
+        ]),
+        'version' => '2.0.0',
     ],
 ];

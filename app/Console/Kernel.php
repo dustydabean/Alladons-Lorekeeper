@@ -23,6 +23,12 @@ class Kernel extends ConsoleKernel {
             ->everyMinute();
         $schedule->command('check-sales')
             ->everyMinute();
+        $schedule->command('restock-shops')
+            ->daily();
+        $schedule->command('update-timed-stock')
+            ->everyMinute();
+        $schedule->command('check-pet-drops')
+            ->everyMinute();
         $schedule->exec('rm public/images/avatars/*.tmp')
             ->daily();
         $schedule->command('update-extension-tracker')

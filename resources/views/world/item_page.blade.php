@@ -79,6 +79,9 @@
                                             @if ($tag->is_active)
                                                 <div class="col">
                                                     {!! $tag->displayTag !!}
+                                                    @if ($tag->is_active && View::exists('world.tags._' . $tag->tag))
+                                                        @include('world.tags._' . $tag->tag, ['tag' => $tag])
+                                                    @endif
                                                 </div>
                                             @endif
                                         @endforeach

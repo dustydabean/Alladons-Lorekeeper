@@ -33,6 +33,7 @@ use App\Models\Species\Subtype;
 use League\ColorExtractor\Palette;
 use League\ColorExtractor\ColorExtractor;
 use League\ColorExtractor\Color;
+use App\Models\User\UserPet;
 
 class CharacterManager extends Service {
     /*
@@ -1134,6 +1135,39 @@ class CharacterManager extends Service {
         return $this->rollbackReturn(false);
     }
 
+    /**
+     * Sorts a character's pets.
+     * 
+     * @param array                 $data
+     * @param \App\Models\User\User $user
+     *
+     * @return bool
+     */
+    public function sortCharacterPets($data, $user) {
+        DB::beginTransaction();
+
+        try {
+            $ids = array_reverse(explode(',', $data['sort']));
+            $pets = UserPet::whereIn('id', $ids)->where('user_id', $user->id)->orderBy(DB::raw('FIELD(id, '.implode(',', $ids).')'))->get();
+
+            if (count($pets) != count($ids)) {
+                throw new \Exception('Invalid pet included in sorting order.');
+            }
+
+            $count = 0;
+            foreach ($pets as $pet) {
+                $pet->sort = $count;
+                $pet->save();
+                $count++;
+            }
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
     /**
      * Updates a character's stats.
      *
