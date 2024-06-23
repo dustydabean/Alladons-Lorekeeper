@@ -2,11 +2,10 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Models\Character\CharacterRelation;
+use Illuminate\Console\Command;
 
-class DeleteStaleCharacterLinkRequests extends Command
-{
+class DeleteStaleCharacterLinkRequests extends Command {
     /**
      * The name and signature of the console command.
      *
@@ -24,13 +23,12 @@ class DeleteStaleCharacterLinkRequests extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
-    {
+    public function handle() {
         //
         $staleLinks = CharacterRelation::where('status', 'Pending')
             ->where('created_at', '<', now()->subDays(1))
             ->get();
-        
+
         foreach ($staleLinks as $link) {
             $link->delete();
         }

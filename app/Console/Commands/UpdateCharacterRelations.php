@@ -4,10 +4,8 @@ namespace App\Console\Commands;
 
 use App\Models\Character\CharacterRelation;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
-class UpdateCharacterRelations extends Command
-{
+class UpdateCharacterRelations extends Command {
     /**
      * The name and signature of the console command.
      *
@@ -25,14 +23,14 @@ class UpdateCharacterRelations extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
-    {
+    public function handle() {
         //
         if (Schema::hasColumn('character_relations', 'character_1_id')) {
             $this->info('Character relations have already been updated.');
+
             return;
         }
-        
+
         $this->info('Updating character relations...');
 
         $initialRelations = CharacterRelation::all();
@@ -46,7 +44,7 @@ class UpdateCharacterRelations extends Command
             $alternateRelation = CharacterRelation::where('chara_1', $relation->chara_2)
                 ->where('chara_2', $relation->chara_1)
                 ->first();
-            
+
             if (in_array($relation->id, $seen) || in_array($alternateRelation?->id, $seen)) {
                 $bar->advance();
                 continue;
@@ -57,11 +55,11 @@ class UpdateCharacterRelations extends Command
                 $relation->update([
                     'chara_1' => $alternateRelation->chara_1 < $relation->chara_1 ? $alternateRelation->chara_1 : $relation->chara_1,
                     'chara_2' => $alternateRelation->chara_1 < $relation->chara_1 ? $alternateRelation->chara_2 : $relation->chara_2,
-                    'info' => json_encode([
+                    'info'    => json_encode([
                         0 => $alternateRelation->chara_1 < $relation->chara_1 ? $alternateRelation->info : $relation->info,
                         1 => $alternateRelation->chara_1 < $relation->chara_1 ? $relation->info : $alternateRelation->info,
                     ]),
-                    'type' => $relation->type == $alternateRelation->type ? $relation->type : '???',
+                    'type'   => $relation->type == $alternateRelation->type ? $relation->type : '???',
                     'status' => // if both are approved, keep approved, otherwise keep pending
                         $relation->status == 'Approved' && $alternateRelation->status == 'Approved' ? 'Approved' : 'Pending',
                 ]);
