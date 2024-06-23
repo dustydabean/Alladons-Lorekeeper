@@ -1,6 +1,12 @@
 @php
     $characters = \App\Models\Character\Character::visible(Auth::check() ? Auth::user() : null)
-        ->whereNotIn('id', $character->links->pluck('character_1_id')->merge($character->links->pluck('character_2_id'))->toArray())
+        ->whereNotIn(
+            'id',
+            $character->links
+                ->pluck('character_1_id')
+                ->merge($character->links->pluck('character_2_id'))
+                ->toArray(),
+        )
         ->where('id', '!=', $character->id)
         ->myo(0)
         ->orderBy('slug', 'DESC')

@@ -22,7 +22,8 @@
                             location.reload();
                         }
                     });
-                }, error: function(data) {
+                },
+                error: function(data) {
                     location.reload();
                 }
             });
@@ -48,7 +49,8 @@
                             location.reload();
                         }
                     });
-                }, error: function(data) {
+                },
+                error: function(data) {
                     location.reload();
                 }
             });
