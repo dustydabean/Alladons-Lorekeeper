@@ -322,8 +322,11 @@ return [
     // LINK_REQUESTED
     200 => [
         'name' => 'Link Requested',
-        'message' => '<a href="{link}">{user}</a> has requested to link your character {requested} to {character}. <a href="/links/accept/{id}" class="btn btn-sm btn-success m-1">Accept</a> <a href="/links/reject/{id}" class="btn btn-sm btn-danger m-1">Reject</a>',
+        'message' => '<a href="{link}">{user}</a> has requested to link your character {requested} to {character}.'
+            .'<div class="btn btn-sm btn-success m-1 accept-link" data-link-id="{id}">Accept</div>'
+            .'<div class="btn btn-sm btn-danger m-1 reject-link" data-link-id="{id}">Reject</div>',
         'url' => '',
+        'view' => 'links',
     ],
     
     // LINK_ACCEPTED

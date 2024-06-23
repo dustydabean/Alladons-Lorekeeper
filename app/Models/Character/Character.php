@@ -196,7 +196,8 @@ class Character extends Model {
     */
     public function links()
     {
-       return $this->hasMany(CharacterRelation::class, 'chara_1')->where('status', 'Approved');
+        // character id can be in either column
+        return $this->hasMany(CharacterRelation::class, 'character_1_id')->orWhere('character_2_id', $this->id);
     }
 
     /**********************************************************************************************
