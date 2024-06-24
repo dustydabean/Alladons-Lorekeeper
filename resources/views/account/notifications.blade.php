@@ -78,6 +78,11 @@
     </div>
 @endsection
 @section('scripts')
+    @foreach ($notifications->pluck('notification_type_id')->unique() as $type)
+        @if (config('lorekeeper.notifications.' . $type . '.view'))
+            @include('account.notifications._' . config('lorekeeper.notifications.' . $type . '.view'))
+        @endif
+    @endforeach
     @parent
     <script>
         $(document).ready(function() {
@@ -107,7 +112,6 @@
                     });
                 });
             });
-
         });
     </script>
 @endsection

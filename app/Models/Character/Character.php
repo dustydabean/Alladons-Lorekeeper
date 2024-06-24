@@ -45,7 +45,7 @@ class Character extends Model {
         'is_sellable', 'is_tradeable', 'is_giftable',
         'sale_value', 'transferrable_at', 'is_visible',
         'is_gift_art_allowed', 'is_gift_writing_allowed', 'is_trading', 'sort',
-        'is_myo_slot', 'name', 'trade_id', 'is_links_open', 'owner_url'
+        'is_myo_slot', 'name', 'trade_id', 'is_links_open', 'owner_url',
     ];
 
     /**
@@ -227,9 +227,9 @@ class Character extends Model {
     /*
     * Get the links for this character
     */
-    public function links()
-    {
-       return $this->hasMany('App\Models\Character\CharacterRelation', 'chara_1')->where('status', 'Approved');
+    public function links() {
+        // character id can be in either column
+        return $this->hasMany(CharacterRelation::class, 'character_1_id')->orWhere('character_2_id', $this->id);
     }
 
     /**********************************************************************************************
