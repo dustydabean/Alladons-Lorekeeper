@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Character\CharacterRelation;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Schema;
 
 class UpdateCharacterRelations extends Command {
     /**
