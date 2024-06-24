@@ -98,10 +98,10 @@ return [
     ],
 
     // collapsible admin sidebar - Newt
-    'collapsible_admin_sidebar' => 0,
+    'collapsible_admin_sidebar' => 1,
 
     // use gravatar for user avatars - Newt
-    'use_gravatar' => 0,
+    'use_gravatar' => 1,
 
     // Use ReCaptcha to check new user registrations - Mercury
     // Requires site key and secret be set in your .env file!
