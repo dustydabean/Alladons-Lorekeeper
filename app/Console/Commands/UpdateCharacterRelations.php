@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Character\CharacterRelation;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Console\Command;
 
 class UpdateCharacterRelations extends Command {
