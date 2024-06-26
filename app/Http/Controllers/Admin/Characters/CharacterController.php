@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Characters;
 use App\Facades\Settings;
 use App\Http\Controllers\Controller;
 use App\Models\Character\Character;
+use App\Models\Character\CharacterLink;
 use App\Models\Character\CharacterCategory;
 use App\Models\Character\CharacterLineageBlacklist;
 use App\Models\Character\CharacterTransfer;
@@ -56,6 +57,7 @@ class CharacterController extends Controller {
             'features'         => Feature::getDropdownItems(1),
             'isMyo'            => false,
             'characterOptions' => CharacterLineageBlacklist::getAncestorOptions(),
+            'characterLinked'  => [null => 'Unbound'] + Character::visible()->myo(0)->orderBy('slug','ASC')->get()->pluck('fullName','id')->toArray() 
         ]);
     }
 
@@ -73,6 +75,7 @@ class CharacterController extends Controller {
             'features'         => Feature::getDropdownItems(1),
             'isMyo'            => true,
             'characterOptions' => CharacterLineageBlacklist::getAncestorOptions(),
+            'characterLinked'  => [null => 'Unbound'] + Character::visible()->myo(0)->orderBy('slug','ASC')->get()->pluck('fullName','id')->toArray()
         ]);
     }
 
@@ -108,7 +111,7 @@ class CharacterController extends Controller {
             'artist_id', 'artist_url',
             'species_id', 'subtype_id', 'rarity_id', 'feature_id', 'feature_data',
             'image', 'thumbnail', 'image_description',
-            'sex', 'parent_1_id', 'parent_2_id',
+            'sex', 'parent_1_id', 'parent_2_id', 'parent_id',
         ]);
         if ($character = $service->createCharacter($data, Auth::user())) {
             flash('Character created successfully.')->success();
@@ -141,7 +144,7 @@ class CharacterController extends Controller {
             'artist_id', 'artist_url',
             'species_id', 'subtype_id', 'rarity_id', 'feature_id', 'feature_data',
             'image', 'thumbnail',
-            'parent_1_id', 'parent_2_id',
+            'parent_1_id', 'parent_2_id', 'parent_id'
         ]);
         if ($character = $service->createCharacter($data, Auth::user(), true)) {
             flash('MYO slot created successfully.')->success();
@@ -520,11 +523,21 @@ class CharacterController extends Controller {
         $this->character = Character::where('slug', $slug)->first();
         if (!$this->character) {
             abort(404);
+
+        $parent = CharacterLink::where('child_id', $this->character->id)->first();
+        $child = CharacterLink::where('parent_id', $this->character->id)->first();
+        if($parent && $child) $mutual = CharacterLink::where('child_id', $parent->parent->id)->where('parent_id', $this->character->id)->first();
+        if($parent && !isset($mutual)) {
+            flash('This character is bound and cannot be transfered. You must transfer the character it is bound to.')->error();
+            return redirect()->back();
         }
+    }
 
         if ($service->adminTransfer($request->only(['recipient_id', 'recipient_url', 'cooldown', 'reason']), $this->character, Auth::user())) {
             flash('Character transferred successfully.')->success();
-        } else {
+            if($child) flash("This character's attachments have been transferred with it.")->warning();
+        } 
+            else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
             }
@@ -545,7 +558,15 @@ class CharacterController extends Controller {
         $this->character = Character::where('is_myo_slot', 1)->where('id', $id)->first();
         if (!$this->character) {
             abort(404);
+
+        $parent = CharacterLink::where('child_id', $this->character->id)->first();
+        $child = CharacterLink::where('parent_id', $this->character->id)->first();
+        if($parent && $child) $mutual = CharacterLink::where('child_id', $parent->parent->id)->where('parent_id', $this->character->id)->first();
+        if($parent && !isset($mutual)) {
+            flash('This character is bound and cannot be transfered. You must transfer the character it is bound to.')->error();
+            return redirect()->back();
         }
+    }
 
         if ($service->adminTransfer($request->only(['recipient_id', 'recipient_url', 'cooldown', 'reason']), $this->character, Auth::user())) {
             flash('Character transferred successfully.')->success();
@@ -555,6 +576,50 @@ class CharacterController extends Controller {
             }
         }
 
+        return redirect()->back();
+    }
+
+    /**
+     * Binds a character.
+     *
+     * @param  \Illuminate\Http\Request       $request
+     * @param  App\Services\CharacterManager  $service
+     * @param  string                         $slug
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postBind(Request $request, CharacterManager $service, $slug)
+    {
+        $this->character = Character::where('slug', $slug)->first();
+        if(!$this->character) abort(404);
+        
+        if($service->boundTransfer($request->only(['parent_id']), $this->character, Auth::user())) {
+            flash('Character binding updated.')->success();
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back();
+    }
+    
+    /**
+     * Binds an MYO slot.
+     *
+     * @param  \Illuminate\Http\Request       $request
+     * @param  App\Services\CharacterManager  $service
+     * @param  int                            $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postMyoBind(Request $request, CharacterManager $service, $id)
+    {
+        $this->character = Character::where('is_myo_slot', 1)->where('id', $id)->first();
+        if(!$this->character) abort(404);
+        
+        if($service->boundTransfer($request->only(['parent_id']), $this->character, Auth::user())) {
+            flash('Character binding updated.')->success();
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
         return redirect()->back();
     }
 

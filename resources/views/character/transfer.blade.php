@@ -100,7 +100,49 @@
             {!! Form::submit('Send Transfer', ['class' => 'btn btn-primary']) !!}
         </div>
         {!! Form::close() !!}
-    @endif
+    @endif 
+@endif
+
+@if(Auth::user()->hasPower('manage_characters'))
+    <h3>Admin Transfer</h3>
+    <div class="alert alert-warning">
+        You are editing this character as a staff member.
+    </div>
+    <p>This will transfer the character automatically, without requiring the recipient to confirm the transfer. You may also transfer a character that is marked non-transferrable, or still under cooldown. Both the old and new owners will be notified of the transfer.</p>
+    <p>Fill in either of the recipient fields - if transferring to an off-site user, leave the recipient field blank and vice versa.</p>
+    {!! Form::open(['url' => $character->is_myo_slot ? 'admin/myo/'.$character->id.'/transfer' : 'admin/character/' . $character->slug . '/transfer']) !!}
+    <div class="form-group">
+        {!! Form::label('recipient_id', 'Recipient') !!}
+        {!! Form::select('recipient_id', $userOptions, old('recipient_id'), ['class' => 'form-control selectize', 'placeholder' => 'Select User']) !!}
+    </div>
+    <div class="form-group">
+        {!! Form::label('recipient_alias', 'Recipient Alias') !!}
+        {!! Form::text('recipient_alias', old('recipient_alias'), ['class' => 'form-control']) !!}
+    </div>
+    <div class="form-group">
+        {!! Form::label('cooldown', 'Transfer Cooldown (days)') !!}
+        {!! Form::text('cooldown', $cooldown, ['class' => 'form-control']) !!}
+    </div>
+    <div class="form-group">
+        {!! Form::label('reason', 'Reason for Transfer (optional)') !!}
+        {!! Form::text('reason', '', ['class' => 'form-control']) !!}
+    </div>
+    <div class="text-right">
+        {!! Form::submit('Send Transfer', ['class' => 'btn btn-primary']) !!}
+    </div>
+    {!! Form::close() !!}
+    
+    <h3>Admin Binding</h3>
+    {!! Form::open(['url' => $character->is_myo_slot ? 'admin/myo/'.$character->id.'/bind' : 'admin/character/' . $character->slug . '/bind']) !!}
+    <div class="form-group">
+        {!! Form::label('Bound to (Optional)') !!} {!! add_help('This binds a character to another existing character as a child, which overrides ALL other transfer options.') !!}
+        {!! Form::select('parent_id', $characterOptions, $parent, ['class' => 'form-control selectize mr-2 default character-select']) !!}
+    </div>
+    <div class="text-right">
+        {!! Form::submit('Update Binding', ['class' => 'btn btn-primary']) !!}
+    </div>
+    {!! Form::close() !!}
+@endif
 
 @endsection
 @section('scripts')

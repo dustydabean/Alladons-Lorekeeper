@@ -2,7 +2,28 @@
 
 namespace App\Http\Controllers\Characters;
 
+<<<<<<< HEAD
 use App\Facades\Settings;
+=======
+use Illuminate\Http\Request;
+
+use DB;
+use Auth;
+use Route;
+use Settings;
+use App\Models\User\User;
+use App\Models\Character\Character;
+use App\Models\Currency\Currency;
+use App\Models\Currency\CurrencyLog;
+use App\Models\User\UserCurrency;
+use App\Models\Character\CharacterCurrency;
+use App\Models\Character\CharacterTransfer;
+use App\Models\Character\CharacterLink;
+
+use App\Services\CurrencyManager;
+use App\Services\CharacterManager;
+
+>>>>>>> b65c678219c1e561d5e4708bde475ce5cefc3ff6
 use App\Http\Controllers\Controller;
 use App\Models\Character\Character;
 use App\Models\Character\CharacterTransfer;
@@ -62,6 +83,8 @@ class MyoController extends Controller {
     public function getCharacter($id) {
         return view('character.myo.character', [
             'character' => $this->character,
+            'parent' => CharacterLink::where('child_id', $this->character->id)->orderBy('parent_id', 'DESC')->first(),
+            'children' => CharacterLink::where('parent_id', $this->character->id)->orderBy('child_id', 'DESC')->get()
         ]);
     }
 
@@ -187,16 +210,29 @@ class MyoController extends Controller {
 
         $isMod = Auth::user()->hasPower('manage_characters');
         $isOwner = ($this->character->user_id == Auth::user()->id);
+<<<<<<< HEAD
         if (!$isMod && !$isOwner) {
             abort(404);
         }
+=======
+        if(!$isMod && !$isOwner) abort(404);
+        
+        $parent = CharacterLink::where('child_id', $this->character->id)->orderBy('parent_id', 'DESC')->first();
+        if($parent) $parent = $parent->parent->id;
+>>>>>>> b65c678219c1e561d5e4708bde475ce5cefc3ff6
 
         return view('character.transfer', [
             'character'      => $this->character,
             'transfer'       => CharacterTransfer::active()->where('character_id', $this->character->id)->first(),
             'cooldown'       => Settings::get('transfer_cooldown'),
             'transfersQueue' => Settings::get('open_transfers_queue'),
+<<<<<<< HEAD
             'userOptions'    => User::visible()->orderBy('name')->pluck('name', 'id')->toArray(),
+=======
+            'userOptions' => User::visible()->orderBy('name')->pluck('name', 'id')->toArray(),
+            'parent' => $parent,
+            'characterOptions' => [null => 'Unbound'] + Character::visible()->myo(0)->orderBy('slug','ASC')->get()->pluck('fullName','id')->toArray()
+>>>>>>> b65c678219c1e561d5e4708bde475ce5cefc3ff6
         ]);
     }
 
@@ -208,12 +244,27 @@ class MyoController extends Controller {
      *
      * @return \Illuminate\Http\RedirectResponse
      */
+<<<<<<< HEAD
     public function postTransfer(Request $request, CharacterManager $service, $id) {
         if (!Auth::check()) {
             abort(404);
         }
 
         if ($service->createTransfer($request->only(['recipient_id', 'user_reason']), $this->character, Auth::user())) {
+=======
+    public function postTransfer(Request $request, CharacterManager $service, $id)
+    {
+        if(!Auth::check()) abort(404);
+        
+        $parent = CharacterLink::where('child_id', $this->character->id)->first();
+        $child = CharacterLink::where('parent_id', $this->character->id)->first();
+        if($parent && $child) $mutual = CharacterLink::where('child_id', $parent->parent->id)->where('parent_id', $this->character->id)->first();
+        if($parent && !isset($mutual)) {
+            flash('This character is bound and cannot be transfered. You must transfer the character it is bound to.')->error();
+            return redirect()->back();
+        }
+        if($service->createTransfer($request->only(['recipient_id']), $this->character, Auth::user())) {
+>>>>>>> b65c678219c1e561d5e4708bde475ce5cefc3ff6
             flash('Transfer created successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
