@@ -260,7 +260,18 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     // misc
     Route::get('shops/stock-type', 'ShopController@getShopStockType');
 
-    // FEATURES (TRAITS)
+    # Activities
+    Route::get('activities', 'ActivityController@getIndex');
+    Route::get('activities/create', 'ActivityController@getCreateActivity');
+    Route::get('activities/edit/{id}', 'ActivityController@getEditActivity');
+    Route::get('activities/delete/{id}', 'ActivityController@getDeleteActivity');
+    Route::post('activities/create', 'ActivityController@postCreateEditActivity');
+    Route::post('activities/edit/{id?}', 'ActivityController@postCreateEditActivity');
+    Route::post('activities/module/{id}', 'ActivityController@postEditModule');
+    Route::post('activities/delete/{id}', 'ActivityController@postDeleteActivity');
+    Route::post('activities/sort', 'ActivityController@postSortActivity');
+
+    # FEATURES (TRAITS)
     Route::get('trait-categories', 'FeatureController@getIndex');
     Route::get('trait-categories/create', 'FeatureController@getCreateFeatureCategory');
     Route::get('trait-categories/edit/{id}', 'FeatureController@getEditFeatureCategory');

@@ -753,3 +753,48 @@ tr.accountbound {
 @media only screen and (max-width: 600px) {
     .comment_replies { padding-left:1rem;}
 }
+
+.collectionnotunlocked {               
+    opacity: 0.4;
+    filter: alpha(opacity=40);
+    zoom: 1;  /* needed to trigger "hasLayout" in IE if no width or height is set */ 
+ }
+ 
+ .greyscale {
+    filter: grayscale(40%);
+    opacity: 0.5;
+ }
+ 
+
+
+.square-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5%;
+    justify-content: center;
+}
+
+.square-grid > div {
+    flex: 0 0 12%;
+}
+
+
+.square-grid.lg > div {
+    flex: 0 0 30%;
+}
+
+.square-grid.xl > div {
+    flex: 0 0 47%;
+}
+
+.square-grid .square-column img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.square-grid .square-column .img-thumbnail {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1;
+}

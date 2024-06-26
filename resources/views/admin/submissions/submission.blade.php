@@ -1,10 +1,10 @@
 @extends('admin.layout')
 
-@section('admin-title')
+@section('home-title')
     {{ $submission->prompt_id ? 'Submission' : 'Claim' }} (#{{ $submission->id }})
 @endsection
 
-@section('admin-content')
+@section('home-content')
     @if ($submission->prompt_id)
         {!! breadcrumbs(['Admin Panel' => 'admin', 'Prompt Queue' => 'admin/submissions/pending', 'Submission (#' . $submission->id . ')' => $submission->viewUrl]) !!}
     @else
@@ -225,7 +225,7 @@
                 </tr>
             </table>
         </div>
-        @include('widgets._loot_select_row', ['showLootTables' => true, 'showRaffles' => true])
+        @include('widgets._loot_select_row', ['items' => $items, 'currencies' => $currencies, 'showLootTables' => true, 'showRaffles' => true])
 
         <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
@@ -238,18 +238,6 @@
                         <p>This will approve the {{ $submission->prompt_id ? 'submission' : 'claim' }} and distribute the above rewards to the user.</p>
                         <div class="text-right">
                             <a href="#" id="approvalSubmit" class="btn btn-success">Approve</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-content hide" id="cancelContent">
-                    <div class="modal-header">
-                        <span class="modal-title h5 mb-0">Confirm Cancellation</span>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <p>This will cancel the {{ $submission->prompt_id ? 'submission' : 'claim' }} and send it back to drafts. Make sure to include a staff comment if you do this!</p>
-                        <div class="text-right">
-                            <a href="#" id="cancelSubmit" class="btn btn-secondary">Cancel</a>
                         </div>
                     </div>
                 </div>

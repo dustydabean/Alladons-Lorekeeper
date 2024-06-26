@@ -40,25 +40,53 @@ class SubmissionManager extends Service {
      *
      * @return mixed
      */
-    public function createSubmission($data, $user, $isClaim = false, $isDraft = false) {
+    public function createSubmission(
+        $data,
+        $user,
+        $isClaim = false,
+        $isActivity = false
+    )
+    {
         DB::beginTransaction();
 
         try {
             // 1. check that the prompt can be submitted at this time
             // 2. check that the characters selected exist (are visible too)
             // 3. check that the currencies selected can be attached to characters
-            if (!$isClaim && !Settings::get('is_prompts_open')) {
-                throw new \Exception('The prompt queue is closed for submissions.');
-            } elseif ($isClaim && !Settings::get('is_claims_open')) {
-                throw new \Exception('The claim queue is closed for submissions.');
+            if(!$isClaim && !Settings::get('is_prompts_open')) throw new \Exception("The prompt queue is closed for submissions.");
+            else if($isClaim && !Settings::get('is_claims_open')) throw new \Exception("The claim queue is closed for submissions.");
+            if(!$isClaim && !isset($data['prompt_id'])) throw new \Exception("Please select a prompt.");
+            if(!$isClaim) {
+                $prompt = Prompt::query();
+                if (!$isActivity) $prompt = $prompt->active();
+                $prompt = $prompt->where('id', $data['prompt_id'])->with('rewards')->first();
+                if(!$prompt) throw new \Exception("Invalid prompt selected.");
             }
-            if (!$isClaim && !isset($data['prompt_id'])) {
-                throw new \Exception('Please select a prompt.');
+            else $prompt = null;
+
+            // The character identification comes in both the slug field and as character IDs
+            // that key the reward ID/quantity arrays.
+            // We'll need to match characters to the rewards for them.
+            // First, check if the characters are accessible to begin with.
+            if(isset($data['slug'])) {
+                $characters = Character::myo(0)->visible()->whereIn('slug', $data['slug'])->get();
+                if(count($characters) != count($data['slug'])) throw new \Exception("One or more of the selected characters do not exist.");
             }
-            if (!$isClaim) {
-                $prompt = Prompt::active()->where('id', $data['prompt_id'])->with('rewards')->first();
-                if (!$prompt) {
-                    throw new \Exception('Invalid prompt selected.');
+            else $characters = [];
+
+            $userAssets = createAssetsArray();
+
+            // Attach items. Technically, the user doesn't lose ownership of the item - we're just adding an additional holding field.
+            // We're also not going to add logs as this might add unnecessary fluff to the logs and the items still belong to the user.
+            if(isset($data['stack_id'])) {
+                foreach($data['stack_id'] as $stackId) {
+                    $stack = UserItem::with('item')->find($stackId);
+                    if(!$stack || $stack->user_id != $user->id) throw new \Exception("Invalid item selected.");
+                    if(!isset($data['stack_quantity'][$stackId])) throw new \Exception("Invalid quantity selected.");
+                    $stack->submission_count += $data['stack_quantity'][$stackId];
+                    $stack->save();
+
+                    addAsset($userAssets, $stack, $data['stack_quantity'][$stackId]);
                 }
 
                 if ($prompt->staff_only && !$user->isStaff) {

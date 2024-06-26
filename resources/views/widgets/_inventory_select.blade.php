@@ -36,6 +36,7 @@
                 </div>
             </div>
             <div id="userItems" class="user-items">
+                <div class="d-flex"><div id="selected">0</div>&nbsp;currently selected</div> 
                 <table class="table table-sm">
                     <thead class="thead-light">
                         <tr class="d-flex">
