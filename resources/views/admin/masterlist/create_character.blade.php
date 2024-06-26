@@ -28,14 +28,12 @@
             Fill in either of the owner fields - you can select a user from the list if they have registered for the site, or enter the URL of their off-site profile, such as their deviantArt profile, if they don't have an account. If the owner registers
             an account later and links their account, {{ $isMyo ? 'MYO slot' : 'character' }}s linked to that account's profile will automatically be credited to their site account. If both fields are filled, the URL field will be ignored.
         </div>
-        </div>
         <div class="col-md-6">
             <div class="form-group">
                 {!! Form::label('Owner Alias (Optional)') !!}
                 {!! Form::text('owner_alias', old('owner_alias'), ['class' => 'form-control']) !!}
             </div>
         </div>
-    </div>
     <div class="form-group">
         {!! Form::label('Bound to (Optional)') !!} {!! add_help('This binds a character to another existing character as a child, which overrides transfer options.') !!}
         {!! Form::select('parent_id', $characterLinked, old('parent_id'), ['class' => 'form-control selectize mr-2 default character-select']) !!}
