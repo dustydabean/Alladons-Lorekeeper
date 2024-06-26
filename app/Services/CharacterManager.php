@@ -28,9 +28,6 @@ use App\Models\Character\CharacterImage;
 use App\Models\Character\CharacterTransfer;
 use App\Models\Character\CharacterLineage;
 use App\Models\Sales\SalesCharacter;
-use App\Models\Character\CharacterLink;
-use App\Models\User\UserCharacterLog;
-use App\Models\Species\Species;
 use App\Models\Species\Subtype;
 
 use League\ColorExtractor\Palette;
@@ -102,7 +99,7 @@ class CharacterManager extends Service {
                 throw new \Exception('Please enter a unique character code.');
             }
 
-            if (!(isset($data['user_id']) && $data['user_id']) && !(isset($data['owner_url']) && $data['owner_url']) && !(isset($data['parent_id']) && $data['parent_id'])) {
+            if (!(isset($data['user_id']) && $data['user_id']) && !(isset($data['owner_url']) && $data['owner_url'])) {
                 throw new \Exception('Please select an owner.');
             }
             if (!$isMyo) {
@@ -133,21 +130,6 @@ class CharacterManager extends Service {
             } elseif (isset($data['owner_url']) && $data['owner_url']) {
                 $recipient = checkAlias($data['owner_url']);
             }
-            $alias = null;
-            if(isset($data['parent_id']) && $data['parent_id'])
-            {
-                // Find the new parent of the character
-                $parent = Character::where('id', $data['parent_id'])->first();
-                //find new owner based on parent
-                $recipient = User::find($parent->user_id);
-                if(!$recipient) $recipient = Character::where('id', $data['parent_id'])->first()->owner_alias;
-                //we dont want the child to be tradeable/transferrable...
-                $data['is_sellable'] = null;
-                $data['is_tradeable'] = null;
-                $data['is_giftable'] = null;
-            }
-            elseif(isset($data['user_id']) && $data['user_id']) $recipient = User::find($data['user_id']);
-            elseif(isset($data['owner_alias']) && $data['owner_alias']) $recipient = User::where('alias', $data['owner_alias'])->first();
 
             if (is_object($recipient)) {
                 $recipientId = $recipient->id;
@@ -1638,9 +1620,8 @@ class CharacterManager extends Service {
             }
 
             $sender = $character->user;
-            
-            // Move the character
-            $this->moveCharacter($character, $recipient, 'Transferred by ' . $user->displayName . (isset($data['reason']) ? ': ' . $data['reason'] : ''), isset($data['cooldown']) ? $data['cooldown'] : -1);
+
+            $this->moveCharacter($character, $recipient, 'Transferred by '.$user->displayName.(isset($data['reason']) ? ': '.$data['reason'] : ''), $data['cooldown'] ?? -1);
 
             // Find all of the children of this character
             if($childrenArray =  CharacterLink::where('parent_id', $character->id)->get()->pluck('child_id')->toArray())
