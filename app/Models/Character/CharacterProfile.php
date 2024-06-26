@@ -49,4 +49,12 @@ class CharacterProfile extends Model {
     public function character() {
         return $this->belongsTo(Character::class, 'character_id');
     }
+
+    /**
+     * Get the custom values for this character.
+     */
+    public function custom_values() 
+    {
+        return $this->hasMany('App\Models\Character\CharacterProfileCustomValue', 'character_id', 'character_id');
+    }
 }
