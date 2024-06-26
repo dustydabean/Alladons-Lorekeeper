@@ -2539,23 +2539,30 @@
         },
         {
             "name": "league/color-extractor",
-            "version": "0.1.0",
+            "version": "0.1.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/color-extractor.git",
-                "reference": "1e78a38846037090981fa68cd1d8a8ac585672d5"
+                "reference": "f2b93dc078de50734e15f2394a9f9909abae70c5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/color-extractor/zipball/1e78a38846037090981fa68cd1d8a8ac585672d5",
-                "reference": "1e78a38846037090981fa68cd1d8a8ac585672d5",
+                "url": "https://api.github.com/repos/thephpleague/color-extractor/zipball/f2b93dc078de50734e15f2394a9f9909abae70c5",
+                "reference": "f2b93dc078de50734e15f2394a9f9909abae70c5",
                 "shasum": ""
             },
             "require": {
+                "ext-gd": "*",
                 "php": ">=5.3.0"
             },
             "replace": {
                 "matthecat/colorextractor": "*"
+            },
+            "require-dev": {
+                "laravel/framework": "~4.1",
+                "orchestra/testbench": "~2.0",
+                "silex/silex": "~1.1",
+                "squizlabs/php_codesniffer": "~1.5"
             },
             "type": "library",
             "autoload": {
@@ -2568,7 +2575,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "WTFPL"
+                "MIT"
             ],
             "authors": [
                 {
@@ -2579,7 +2586,7 @@
                 }
             ],
             "description": "Extract colors from an image as a human would do.",
-            "homepage": "https://github.com/php-loep/color-extractor",
+            "homepage": "https://github.com/thephpleague/color-extractor",
             "keywords": [
                 "color",
                 "extract",
@@ -2589,9 +2596,9 @@
             ],
             "support": {
                 "issues": "https://github.com/thephpleague/color-extractor/issues",
-                "source": "https://github.com/thephpleague/color-extractor/tree/0.1.0"
+                "source": "https://github.com/thephpleague/color-extractor/tree/master"
             },
-            "time": "2013-08-08T13:54:18+00:00"
+            "time": "2016-01-07T16:14:09+00:00"
         },
         {
             "name": "league/commonmark",
