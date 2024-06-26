@@ -34,6 +34,9 @@ class PageService extends Service {
             if (!isset($data['is_visible'])) {
                 $data['is_visible'] = 0;
             }
+            if(!isset($data['admin_only'])) {
+                $data['admin_only']     = 0;
+            }
             if (!isset($data['can_comment'])) {
                 $data['can_comment'] = 0;
                 $data['allow_dislikes'] = 0;
@@ -42,7 +45,7 @@ class PageService extends Service {
             $page = SitePage::create($data);
 
             return $this->commitReturn($page);
-        } catch (\Exception $e) {
+        } catch(\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
 
@@ -73,6 +76,9 @@ class PageService extends Service {
             $data['user_id'] = $user->id;
             if (!isset($data['is_visible'])) {
                 $data['is_visible'] = 0;
+            }
+            if(!isset($data['admin_only'])) {
+                $data['admin_only']     = 0;
             }
             if (!isset($data['can_comment'])) {
                 $data['can_comment'] = 0;

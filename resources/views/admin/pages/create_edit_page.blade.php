@@ -66,6 +66,18 @@
     <div class="text-right">
         {!! Form::submit($page->id ? 'Edit' : 'Create', ['class' => 'btn btn-primary']) !!}
     </div>
+</div>
+
+<div class="form-group">
+    {!! Form::checkbox('admin_only', 1, $page->id ? $page->admin_only : 0, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
+    {!! Form::label('admin_only', 'Staff Only', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If this is turned on, only ranked users can view it.') !!}
+</div>
+
+<div class="text-right">
+    {!! Form::submit($page->id ? 'Edit' : 'Create', ['class' => 'btn btn-primary']) !!}
+</div>
+
+{!! Form::close() !!}
 
     {!! Form::close() !!}
 @endsection
