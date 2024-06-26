@@ -18,7 +18,7 @@
     </div>
     <div class="col-lg-9 col-8">{!! format_date($character->created_at) !!}</div>
 </div>
-@if(!$parent)
+
     <hr />
 
 <hr />
