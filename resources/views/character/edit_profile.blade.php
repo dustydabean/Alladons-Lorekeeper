@@ -39,7 +39,7 @@
                 {!! Form::text('link', $character->profile->link, ['class' => 'form-control']) !!}
             </div>
         @endif
-    @endif
+
 
     {!! Form::label('custom_values', "Custom Values") !!}
     <div id="customValues">
@@ -64,7 +64,7 @@
         @endforeach
     </div>
     <a href="#" class="add-custom-value-row btn btn-primary mb-3">Add Custom Value</a>
-@endsection
+@endif
 
 <div class="form-group">
     {!! Form::label('text', 'Profile Content') !!}
