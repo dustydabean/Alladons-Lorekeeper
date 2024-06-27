@@ -70,10 +70,6 @@
     {!! Form::label('text', 'Profile Content') !!}
     {!! Form::textarea('text', $character->profile->text, ['class' => 'wysiwyg form-control']) !!}
 </div>
-    <div class="form-group">
-        {!! Form::label('text', 'Profile Content') !!}
-        {!! Form::textarea('text', $character->profile->text, ['class' => 'wysiwyg form-control']) !!}
-    </div>
 
     @if ($character->user_id == Auth::user()->id)
         @if (!$character->is_myo_slot)
