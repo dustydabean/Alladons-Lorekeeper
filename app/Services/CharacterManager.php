@@ -29,7 +29,6 @@ use App\Models\Character\CharacterTransfer;
 use App\Models\Character\CharacterLineage;
 use App\Models\Sales\SalesCharacter;
 
-use App\Models\Character\CharacterBookmark;
 use App\Models\Character\CharacterProfileCustomValue;
 use App\Models\User\UserCharacterLog;
 use App\Models\Species\Species;
