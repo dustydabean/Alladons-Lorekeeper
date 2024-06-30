@@ -61,6 +61,10 @@ class ShopManager extends Service {
                 throw new \Exception('The quantity specified exceeds the amount of this item you can buy.');
             }
 
+            if ($shopStock->purchase_limit && $quantity > $shopStock->purchase_limit) {
+                throw new \Exception('The quantity specified exceeds the amount of this item you can buy.');
+            }
+
             $total_cost = $shopStock->cost * $quantity;
 
             $character = null;

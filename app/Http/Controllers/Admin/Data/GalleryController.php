@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class GalleryController extends Controller {
-
     /*
     |--------------------------------------------------------------------------
     | Admin / Gallery Controller
@@ -76,7 +75,7 @@ class GalleryController extends Controller {
         $id ? $request->validate(Gallery::$updateRules) : $request->validate(Gallery::$createRules);
         $data = $request->only([
             'name', 'sort', 'parent_id', 'description', 'submissions_open', 'currency_enabled', 'votes_required', 'start_at', 'end_at', 'hide_before_start', 'prompt_selection',
-            'criterion_id', 'criterion'
+            'criterion_id', 'criterion', 'criterion_currency_id', 'default_criteria',
         ]);
         if ($id && $service->updateGallery(Gallery::find($id), $data, Auth::user())) {
             flash('Gallery updated successfully.')->success();

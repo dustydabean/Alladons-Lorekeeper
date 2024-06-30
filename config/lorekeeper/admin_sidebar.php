@@ -186,8 +186,8 @@ return [
             ],
             [
                 'name' => 'Criteria Rewards',
-                'url' => 'admin/data/criteria'
-            ]
+                'url'  => 'admin/data/criteria',
+            ],
         ],
     ],
     'Raffles'    => [

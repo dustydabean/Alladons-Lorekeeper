@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Facades\Settings;
 use App\Http\Controllers\Controller;
 use App\Models\Currency\Currency;
 use App\Models\Gallery\Gallery;
@@ -86,7 +85,7 @@ class GalleryController extends Controller {
 
         return view('admin.galleries.submissions_currency_index', [
             'submissions' => $submissions->paginate(10)->appends($request->query()),
-            'galleries' => ['' => 'Any Gallery'] + Gallery::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'galleries'   => ['' => 'Any Gallery'] + Gallery::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
         ]);
     }
 

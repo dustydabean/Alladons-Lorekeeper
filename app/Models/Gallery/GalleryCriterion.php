@@ -2,18 +2,16 @@
 
 namespace App\Models\Gallery;
 
-use Config;
 use App\Models\Model;
 
-class GalleryCriterion extends Model
-{
+class GalleryCriterion extends Model {
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'gallery_id', 'criterion_id', 'min_requirements'
+        'gallery_id', 'criterion_id', 'min_requirements', 'criterion_currency_id',
     ];
 
     /**
@@ -22,7 +20,7 @@ class GalleryCriterion extends Model
      * @var string
      */
     protected $table = 'gallery_criteria';
-    
+
     /**
      * Validation rules for creation.
      *
@@ -31,7 +29,7 @@ class GalleryCriterion extends Model
     public static $createRules = [
         'criterion_id' => 'required',
     ];
-    
+
     /**
      * Validation rules for updating.
      *
@@ -42,41 +40,37 @@ class GalleryCriterion extends Model
     ];
 
     /**********************************************************************************************
-    
+
         RELATIONS
 
     **********************************************************************************************/
-    
-    /**
-     * Get the gallery attached to this criterion
-     */
-    public function gallery() 
-    {
-       return $this->belongsTo('App\Models\Gallery\Gallery', 'gallery_id');
-    }
-    
-    /**
-     * Get the criterion attached to this prompt
-     */
-    public function criterion() 
-    {
-       return $this->belongsTo('App\Models\Criteria\Criterion', 'criterion_id');
-    }
-    
-    
-   /**********************************************************************************************
-    
-        ACCESSORS
 
-    **********************************************************************************************/
+    /**
+     * Get the gallery attached to this criterion.
+     */
+    public function gallery() {
+        return $this->belongsTo('App\Models\Gallery\Gallery', 'gallery_id');
+    }
+
+    /**
+     * Get the criterion attached to this prompt.
+     */
+    public function criterion() {
+        return $this->belongsTo('App\Models\Criteria\Criterion', 'criterion_id');
+    }
+
+    /**********************************************************************************************
+
+         ACCESSORS
+
+     **********************************************************************************************/
 
     /**
      * Get the data attribute as an associative array.
      *
      * @return array
      */
-    public function getMinRequirementsAttribute()
-    {
+    public function getMinRequirementsAttribute() {
         return json_decode($this->attributes['min_requirements'], true);
     }
 }

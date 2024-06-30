@@ -238,9 +238,8 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('prompts/create', 'PromptController@postCreateEditPrompt');
     Route::post('prompts/edit/{id?}', 'PromptController@postCreateEditPrompt');
     Route::post('prompts/delete/{id}', 'PromptController@postDeletePrompt');
-    
-    
-    # Criteria
+
+    // Criteria
     Route::get('criteria', 'CriterionController@getIndex');
     Route::get('criteria/create', 'CriterionController@getCreateEditCriterion');
     Route::post('criteria/create', 'CriterionController@postCreateEditCriterion');
@@ -260,6 +259,14 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('criteria/step/{step_id}/option/{id}', 'CriterionController@postCreateEditCriterionOption');
     Route::get('criteria/option/delete/{id}', 'CriterionController@getDeleteCriterionOption');
     Route::post('criteria/option/delete/{id}', 'CriterionController@postDeleteCriterionOption');
+
+    Route::get('criteria-defaults', 'CriterionController@getDefaultIndex');
+    Route::get('criteria-defaults/create', 'CriterionController@getCreateEditCriterionDefault');
+    Route::post('criteria-defaults/create', 'CriterionController@postCreateEditCriterionDefault');
+    Route::get('criteria-defaults/edit/{id}', 'CriterionController@getCreateEditCriterionDefault');
+    Route::post('criteria-defaults/edit/{id}', 'CriterionController@postCreateEditCriterionDefault');
+    Route::get('criteria-defaults/delete/{id}', 'CriterionController@getDeleteCriterionDefault');
+    Route::post('criteria-defaults/delete/{id}', 'CriterionController@postDeleteCriterionDefault');
 });
 
 // PAGES

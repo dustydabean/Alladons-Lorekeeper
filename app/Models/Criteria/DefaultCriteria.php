@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Models\Prompt;
+namespace App\Models\Criteria;
 
 use App\Models\Model;
 
-class PromptCriterion extends Model {
+class DefaultCriteria extends Model {
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'prompt_id', 'criterion_id', 'min_requirements', 'criterion_currency_id',
+        'criteriondefault_id', 'criterion_id', 'min_requirements', 'criterion_currency_id',
     ];
 
     /**
@@ -19,7 +19,7 @@ class PromptCriterion extends Model {
      *
      * @var string
      */
-    protected $table = 'prompt_criteria';
+    protected $table = 'default_criteria';
 
     /**
      * Validation rules for creation.
@@ -42,7 +42,6 @@ class PromptCriterion extends Model {
     /**********************************************************************************************
 
          ACCESSORS
-
      **********************************************************************************************/
 
     /**
@@ -57,14 +56,13 @@ class PromptCriterion extends Model {
     /**********************************************************************************************
 
         RELATIONS
-
     **********************************************************************************************/
 
     /**
      * Get the prompt attached to this criterion.
      */
-    public function prompt() {
-        return $this->belongsTo('App\Models\Prompt\Prompt', 'prompt_id');
+    public function default() {
+        return $this->belongsTo('App\Models\Criteria\CriterionDefault', 'criteriondefault_id');
     }
 
     /**

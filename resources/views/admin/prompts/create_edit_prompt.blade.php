@@ -106,6 +106,8 @@
         {!! Form::select('hide_submissions', [0 => 'Submissions Visible After Approval', 1 => 'Hide Submissions Until Prompt Ends', 2 => 'Hide Submissions Always'], $prompt->hide_submissions, ['class' => 'form-control']) !!}
     </div>
 
+    @include('criteria._default_selector', ['type' => 'prompt'])
+
     <h3 class="my-5">
         Criteria Rewards
         <button class="btn btn-primary float-right add-calc" type="button">+ Criterion</a>
@@ -129,7 +131,7 @@
                     </div>
                 </div>
                 <div id="collapsable-{{$criterion->id}}" class="form collapse">
-                    @include('criteria._minimum_requirements', ['criterion' => $criterion->criterion, 'minRequirements' => $criterion->minRequirements, 'id' => $criterion->criterion_id])
+                    @include('criteria._minimum_requirements', ['criterion' => $criterion->criterion, 'minRequirements' => $criterion->minRequirements, 'id' => $criterion->criterion_id, 'isAdmin' => true, 'criterion_currency' => isset($criterion->criterion_currency_id) ? $criterion->criterion_currency_id : $criterion->criterion->currency_id])
                 </div>
             </div>
         @endforeach

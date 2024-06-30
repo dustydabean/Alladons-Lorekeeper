@@ -1,11 +1,12 @@
 <?php
 
 namespace App\Services;
+
 use App\Facades\Notifications;
 use App\Facades\Settings;
 use App\Models\Character\Character;
-use App\Models\Currency\Currency;
 use App\Models\Criteria\Criterion;
+use App\Models\Currency\Currency;
 use App\Models\Item\Item;
 use App\Models\Loot\LootTable;
 use App\Models\Prompt\Prompt;
@@ -66,11 +67,14 @@ class SubmissionManager extends Service {
                 $prompt = null;
             }
 
-            $withCriteriaSelected = isset($data['criterion']) ? array_filter($data['criterion'], function($obj){
+            $withCriteriaSelected = isset($data['criterion']) ? array_filter($data['criterion'], function ($obj) {
                 return isset($obj['id']);
             }) : [];
-            if(count($withCriteriaSelected) > 0) $data['criterion'] = $withCriteriaSelected;
-            else $data['criterion'] = null;
+            if (count($withCriteriaSelected) > 0) {
+                $data['criterion'] = $withCriteriaSelected;
+            } else {
+                $data['criterion'] = null;
+            }
 
             // Create the submission itself.
             $submission = Submission::create([
@@ -92,7 +96,7 @@ class SubmissionManager extends Service {
                 'data' => json_encode([
                     'user'      => Arr::only(getDataReadyAssets($userAssets), ['user_items', 'currencies']),
                     'rewards'   => getDataReadyAssets($promptRewards),
-                    'criterion' => isset($data['criterion']) ? $data['criterion'] : null,
+                    'criterion' => $data['criterion'] ?? null,
                 ]), // list of rewards and addons
             ]);
 
@@ -142,6 +146,15 @@ class SubmissionManager extends Service {
                 $prompt = null;
             }
 
+            $withCriteriaSelected = isset($data['criterion']) ? array_filter($data['criterion'], function ($obj) {
+                return isset($obj['id']);
+            }) : [];
+            if (count($withCriteriaSelected) > 0) {
+                $data['criterion'] = $withCriteriaSelected;
+            } else {
+                $data['criterion'] = null;
+            }
+
             // First, return all items and currency applied.
             // Also, as this is an edit, delete all attached characters to be re-applied later.
             $this->removeAttachments($submission);
@@ -165,7 +178,7 @@ class SubmissionManager extends Service {
                 'data'          => json_encode([
                     'user'          => Arr::only(getDataReadyAssets($userAssets), ['user_items', 'currencies']),
                     'rewards'       => getDataReadyAssets($promptRewards),
-                    'criterion'     => isset($data['criterion']) ? $data['criterion'] : null,
+                    'criterion'     => $data['criterion'] ?? null,
                 ]), // list of rewards and addons
             ] + ($isClaim ? [] : ['prompt_id' => $prompt->id]));
 
@@ -226,6 +239,7 @@ class SubmissionManager extends Service {
                     'data'                  => json_encode([
                         'user'      => $userAssets,
                         'rewards'   => getDataReadyAssets($promptRewards),
+                        'criterion' => $assets['criterion'] ?? null,
                     ]), // list of rewards and addons
                 ]);
 
@@ -242,6 +256,7 @@ class SubmissionManager extends Service {
                     'data'       => json_encode([
                         'user'      => $userAssets,
                         'rewards'   => getDataReadyAssets($promptRewards),
+                        'criterion' => $assets['criterion'] ?? null,
                     ]), // list of rewards and addons
                 ]);
             }
@@ -410,21 +425,19 @@ class SubmissionManager extends Service {
                 'data' => 'Received rewards for '.($submission->prompt_id ? 'submission' : 'claim').' (<a href="'.$submission->viewUrl.'">#'.$submission->id.'</a>)',
             ];
 
+            // Distribute currency from criteria
+            if (isset($data['criterion'])) {
+                foreach ($data['criterion'] as $key => $criterionData) {
+                    $criterion = Criterion::where('id', $criterionData['id'])->first();
+                    addAsset($rewards, $criterion->currency, $criterion->calculateReward($criterionData));
+                }
+            }
+
             // Distribute user rewards
             if (!$rewards = fillUserAssets($rewards, $user, $submission->user, $promptLogType, $promptData)) {
                 throw new \Exception('Failed to distribute rewards to user.');
             }
 
-            // Distribute currency from criteria
-            $service = new CurrencyManager;
-            
-            if(isset($data['criterion'])) {
-                foreach($data['criterion'] as $key => $criterionData) {
-                    $criterion = Criterion::where('id', $criterionData['id'])->first();
-                    if(!$service->creditCurrency($user, $submission->user, $promptLogType, $promptData['data'], $criterion->currency, $criterion->calculateReward($criterionData))) throw new \Exception("Failed to distribute criterion rewards to user.");
-                }
-            }
-            
             // Retrieve all reward IDs for characters
             $currencyIds = [];
             $itemIds = [];
@@ -501,7 +514,7 @@ class SubmissionManager extends Service {
                 'data'                  => json_encode([
                     'user'      => $addonData,
                     'rewards'   => getDataReadyAssets($rewards),
-                    'criterion' => isset($data['criterion']) ? $data['criterion'] : null
+                    'criterion' => $data['criterion'] ?? null,
                 ]), // list of rewards
             ]);
 
