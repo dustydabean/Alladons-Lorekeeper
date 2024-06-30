@@ -28,7 +28,7 @@
             The {{ $isClaim ? 'claim' : 'submission' }} queue is currently closed. You cannot edit {{ $isClaim ? 'claim' : 'submission' }} drafts at this time.
         </div>
     @else
-        @include('home._submission_form', ['submission' => $submission, 'criteria' => $criteria, 'isClaim' => $isClaim])
+        @include('home._submission_form', ['submission' => $submission, 'criteria' => $isClaim ? null : $criteria, 'isClaim' => $isClaim])
 
         <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">

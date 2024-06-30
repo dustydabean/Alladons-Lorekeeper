@@ -462,7 +462,7 @@ class SubmissionController extends Controller {
         if ($submit && $service->editSubmission($submission, $request->only(['url', 'comments', 'stack_id', 'stack_quantity', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity', 'rewardable_type', 'rewardable_id', 'quantity', 'currency_id', 'currency_quantity']), Auth::user(), true, $submit)) {
             flash('Draft submitted successfully.')->success();
 
-            return redirect()->to('claims/draft/'.$submission->id);
+            return redirect()->to('claims/view/'.$submission->id);
         } elseif ($service->editSubmission($submission, $request->only(['url', 'comments', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity', 'rewardable_type', 'rewardable_id', 'quantity', 'stack_id', 'stack_quantity', 'currency_id', 'currency_quantity']), Auth::user(), true)) {
             flash('Draft saved successfully.')->success();
         } else {

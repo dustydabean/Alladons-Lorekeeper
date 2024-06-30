@@ -31,6 +31,9 @@ class CriterionService extends Service {
         DB::beginTransaction();
 
         try {
+            if (!isset($data['round_precision'])) {
+                $data['round_precision'] = 1;
+            }
             $criterion = Criterion::create($data);
             $this->handleActive(isset($data['is_active']), $criterion);
             $criterion->save();
@@ -57,6 +60,9 @@ class CriterionService extends Service {
         try {
             if (isset($data['sort'])) {
                 $this->handleSort($data['sort'], CriterionStep::class);
+            }
+            if (!isset($data['round_precision'])) {
+                $data['round_precision'] = 1;
             }
             $this->handleActive(isset($data['is_active']), $criterion);
             if (isset($data['is_guide_active'])) {
