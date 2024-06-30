@@ -429,7 +429,7 @@ class SubmissionManager extends Service {
             if (isset($data['criterion'])) {
                 foreach ($data['criterion'] as $key => $criterionData) {
                     $criterion = Criterion::where('id', $criterionData['id'])->first();
-                    if (isset($criterionData['criterion_currency_id'])){
+                    if (isset($criterionData['criterion_currency_id'])) {
                         $criterion_currency = Currency::find($criterionData['criterion_currency_id']);
                     } else {
                         $criterion_currency = $criterion->currency;
