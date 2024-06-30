@@ -98,10 +98,10 @@
 
                     $prompt.selectize();
                     $prompt.on('change', function(e) {
-                        $rewards.load('{{ url('submissions/new/prompt') }}/'+$(this).val());
+                        $rewards.load('{{ url('submissions/new/prompt') }}/' + $(this).val());
                         console.log('{{ url('criteria/prompt') }}/' + $(this).val());
                         $('#copy-calc').load('{{ url('criteria/prompt') }}/' + $(this).val());
-                        if($(this).val()) $('#criterion-section').removeClass('hide');
+                        if ($(this).val()) $('#criterion-section').removeClass('hide');
                     });
                 @endif
 
@@ -143,34 +143,36 @@
                     clone.removeAttr('id');
                     $('#criteria').append(clone);
                 });
-                
+
                 $('.delete-calc').on('click', deleteCriterion);
-                
-                function deleteCriterion (e) {
+
+                function deleteCriterion(e) {
                     e.preventDefault();
                     var toDelete = $(this).closest('.card');
                     toDelete.remove();
                 }
-                
-                function loadForm (e) {
+
+                function loadForm(e) {
                     var id = $(this).val();
                     var promptId = $prompt.val();
                     var formId = $(this).attr('name').split('[')[1].replace(']', '');
-                    
-                    if(id) {
+
+                    if (id) {
                         var form = $(this).closest('.card').find('.form');
-                        form.load("{{ url('criteria/prompt') }}/" + id + "/" + promptId + "/" + formId,( response, status, xhr ) => {
-                            if ( status == "error" ) {
+                        form.load("{{ url('criteria/prompt') }}/" + id + "/" + promptId + "/" + formId, (response, status, xhr) => {
+                            if (status == "error") {
                                 var msg = "Error: ";
-                                console.error( msg + xhr.status + " " + xhr.statusText );
+                                console.error(msg + xhr.status + " " + xhr.statusText);
                             } else {
-                                form.find('[data-toggle=tooltip]').tooltip({html: true});
+                                form.find('[data-toggle=tooltip]').tooltip({
+                                    html: true
+                                });
                                 form.find('[data-toggle=toggle]').bootstrapToggle();
                             }
                         });
                     }
                 }
-                
+
                 $('.criterion-select').on('change', loadForm);
             });
         </script>

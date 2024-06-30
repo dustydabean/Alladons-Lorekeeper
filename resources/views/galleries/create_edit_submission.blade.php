@@ -109,7 +109,7 @@
                 <h3>Characters</h3>
                 <p>
                     Add the characters included in this piece.
-                    @if($gallery->criteria)
+                    @if ($gallery->criteria)
                         This helps the staff processing your submission award currency for it, so be sure to add every character.
                     @endif
                 </p>
@@ -268,14 +268,14 @@
                 </div>
             @endif
         </div>
-        
-       @if($gallery->criteria->count() > 0 && !$submission->id)
+
+        @if ($gallery->criteria->count() > 0 && !$submission->id)
             <h2 id="criterion-section" class="mt-5">Criteria Rewards <button class="btn  btn-outline-info float-right add-calc" type="button">Add Criterion</a></h2>
             <p>Criteria can be used in addition to or in replacement of rewards. They take input on what you are turning in for the prompt in order to calculate your final reward.</p>
             <p>Criteria may populate in with pre-selected minimum requirements for this prompt. </p>
             <div id="criteria"></div>
             <div class="mb-4"></div>
-        @endif 
+        @endif
 
         @if ($submission->id && Auth::user()->id != $submission->user->id && Auth::user()->hasPower('manage_submissions'))
             <div class="form-group">
@@ -290,7 +290,7 @@
         {!! Form::close() !!}
 
         <div id="copy-calc" class="card p-3 mb-2 pl-0 hide">
-            @if(isset($criteria))
+            @if (isset($criteria))
                 @include('criteria._criterion_selector', ['criteria' => $criteria])
             @endif
         </div>
@@ -450,33 +450,35 @@
                     clone.removeAttr('id');
                     $('#criteria').append(clone);
                 });
-                
+
                 $('.delete-calc').on('click', deleteCriterion);
-                
-                function deleteCriterion (e) {
+
+                function deleteCriterion(e) {
                     e.preventDefault();
                     var toDelete = $(this).closest('.card');
                     toDelete.remove();
                 }
-                
-                function loadForm (e) {
+
+                function loadForm(e) {
                     var id = $(this).val();
                     var formId = $(this).attr('name').split('[')[1].replace(']', '');
-                    
-                    if(id) {
+
+                    if (id) {
                         var form = $(this).closest('.card').find('.form');
-                        form.load("{{ url('criteria/gallery') }}/" + id + "/{{ $gallery->id }}/" + formId, ( response, status, xhr ) => {
-                            if ( status == "error" ) {
+                        form.load("{{ url('criteria/gallery') }}/" + id + "/{{ $gallery->id }}/" + formId, (response, status, xhr) => {
+                            if (status == "error") {
                                 var msg = "Error: ";
-                                console.error( msg + xhr.status + " " + xhr.statusText );
+                                console.error(msg + xhr.status + " " + xhr.statusText);
                             } else {
-                                form.find('[data-toggle=tooltip]').tooltip({html: true});
+                                form.find('[data-toggle=tooltip]').tooltip({
+                                    html: true
+                                });
                                 form.find('[data-toggle=toggle]').bootstrapToggle();
                             }
                         });
                     }
                 }
-                
+
                 $('.criterion-select').on('change', loadForm);
             });
         </script>

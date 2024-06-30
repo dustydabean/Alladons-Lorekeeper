@@ -45,37 +45,37 @@
     </div>
 @endif
 
-@if(!$isClaim)
+@if (!$isClaim)
     <div class="card mb-3">
         <div id="criterion-section" class="{{ Request::get('prompt_id') || $submission->prompt_id ? '' : 'hide' }}">
             <div class="card-header h2">Criteria Rewards <button class="btn  btn-outline-info float-right add-calc" type="button">Add Criterion</a></div>
             <div class="card-body">
-            <p>Criteria can be used in addition to or in replacment of rewards. They take input on what you are turning in for the prompt in order to calculate your final reward.</p>
-            <p>Criteria may populate in with pre-selected minimum requirements for this prompt. </p>
-            <div id="criteria">
-            @if($submission->id && $submission->data['criterion'])
-                @foreach($submission->data['criterion'] as $i => $criterionData)
-                    @php $criterion = \App\Models\Criteria\Criterion::where('id', $criterionData['id'])->first() @endphp
-                    <div class="card p-3 mb-2 pl-0">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <a class="col-1 p-0" data-toggle="collapse" href="#collapsable-{{$criterion->id}}" aria-expanded="true">
-                                <i class="fas fa-angle-down" style="font-size: 24px"></i>
-                            </a>
-                            <div class="flex-grow-1 mr-2">
-                                {!! Form::select('criterion['. $i .'][id]', $criteria, $criterion->id, ['class' => 'form-control criterion-select', 'placeholder' => 'Select a Criterion to set Minimum Requirements']) !!}
+                <p>Criteria can be used in addition to or in replacment of rewards. They take input on what you are turning in for the prompt in order to calculate your final reward.</p>
+                <p>Criteria may populate in with pre-selected minimum requirements for this prompt. </p>
+                <div id="criteria">
+                    @if ($submission->id && $submission->data['criterion'])
+                        @foreach ($submission->data['criterion'] as $i => $criterionData)
+                            @php $criterion = \App\Models\Criteria\Criterion::where('id', $criterionData['id'])->first() @endphp
+                            <div class="card p-3 mb-2 pl-0">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <a class="col-1 p-0" data-toggle="collapse" href="#collapsable-{{ $criterion->id }}" aria-expanded="true">
+                                        <i class="fas fa-angle-down" style="font-size: 24px"></i>
+                                    </a>
+                                    <div class="flex-grow-1 mr-2">
+                                        {!! Form::select('criterion[' . $i . '][id]', $criteria, $criterion->id, ['class' => 'form-control criterion-select', 'placeholder' => 'Select a Criterion to set Minimum Requirements']) !!}
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-danger delete-calc" type="button"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                </div>
+                                <div id="collapsable-{{ $criterion->id }}" class="form collapse show">
+                                    @include('criteria._minimum_requirements', ['criterion' => $criterion, 'values' => $criterionData, 'id' => $i])
+                                </div>
                             </div>
-                            <div>
-                                <button class="btn btn-danger delete-calc" type="button"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </div>
-                        <div id="collapsable-{{$criterion->id}}" class="form collapse show">
-                            @include('criteria._minimum_requirements', ['criterion' => $criterion, 'values' => $criterionData, 'id' => $i])
-                        </div>
-                    </div>
-                @endforeach
-            @endif
-            </div>
-            <div class="mb-4"></div>
+                        @endforeach
+                    @endif
+                </div>
+                <div class="mb-4"></div>
             </div>
         </div>
     </div>
@@ -193,7 +193,7 @@
 {!! Form::close() !!}
 
 <div id="copy-calc" class="card p-3 mb-2 pl-0 hide">
-    @if(isset($criteria))
+    @if (isset($criteria))
         @include('criteria._criterion_selector', ['criteria' => $criteria])
     @endif
 </div>
