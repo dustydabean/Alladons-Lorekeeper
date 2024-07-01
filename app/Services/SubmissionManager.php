@@ -435,7 +435,7 @@ class SubmissionManager extends Service {
                         $criterion_currency = $criterion->currency;
                     }
 
-                    addAsser($rewards, $criterion_currency, $criterion->calculateReward($criterionData));
+                    addAsset($rewards, $criterion_currency, $criterion->calculateReward($criterionData));
                 }
             }
 
