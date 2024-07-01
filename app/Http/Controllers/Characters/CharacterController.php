@@ -456,9 +456,6 @@ class CharacterController extends Controller {
             abort(404);
         }
 
-        $parent = CharacterLink::where('child_id', $this->character->id)->orderBy('parent_id', 'DESC')->first();
-        if($parent) $parent = $parent->parent->id;
-
         return view('character.transfer', [
             'character'      => $this->character,
             'transfer'       => CharacterTransfer::active()->where('character_id', $this->character->id)->first(),
