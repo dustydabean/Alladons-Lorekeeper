@@ -45,21 +45,15 @@ class DailyManager extends Service
      */
     public function rollDaily($daily, $user, $wheelSegment = null)
     {
+        // Check if the user has not done the daily that day in a initial transaction
+
         DB::beginTransaction();
 
         try {
-
-            // Check if the user has not done the daily that day
             if (!$this->canRoll($daily, $user)) throw new \Exception("You have already received your reward.");
-
-            // Check and debit the fee in case the daily has a fee
-            if ($daily->currency && $daily->fee > 0) {
-                if (!(new CurrencyManager)->debitCurrency($user, null, 'Daily Fee', 'Paid fee for ' . __('dailies.daily') . ' (<a href="' . $daily->viewUrl . '">#' . $daily->id . '</a>)', $daily->currency, $daily->fee)) throw new \Exception("You do not own enough currency to roll this daily.");
-            }
 
             //get daily timer now that we know we can roll. if none exists, create one.
             $dailyTimer = DailyTimer::where('daily_id', $daily->id)->where('user_id', $user->id)->first();
-
             if (!$dailyTimer) {
                 $dailyTimer = DailyTimer::create([
                     'daily_id' => $daily->id,
@@ -70,6 +64,25 @@ class DailyManager extends Service
             } else {
                 $dailyTimer->step = $this->getNextStep($daily, $dailyTimer);
                 $dailyTimer->rolled_at = Carbon::now();
+            }
+            //save the updated or new timer once the rewards were successfully distributed
+            $dailyTimer->save();
+            $this->commitReturn($dailyTimer);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+            $this->rollbackReturn(false);
+            return null;
+        }
+
+        // if so go on to distribute rewards
+
+        DB::beginTransaction();
+
+        try {
+
+            // Check and debit the fee in case the daily has a fee
+            if ($daily->currency && $daily->fee > 0) {
+                if (!(new CurrencyManager)->debitCurrency($user, null, 'Daily Fee', 'Paid fee for ' . __('dailies.daily') . ' (<a href="' . $daily->viewUrl . '">#' . $daily->id . '</a>)', $daily->currency, $daily->fee)) throw new \Exception("You do not own enough currency to roll this daily.");
             }
 
             //build reward data to the correct format used for grants, make sure to only grant the current step
@@ -103,16 +116,13 @@ class DailyManager extends Service
 
             $assets = fillUserAssets($rewards, null, $user, $logType, $dailyData);
             if (!$assets) throw new \Exception("Failed to distribute rewards to user.");
-
-            //save the updated or new timer once the rewards were successfully distributed
-            $dailyTimer->save();
-            $this->commitReturn($dailyTimer);
+            $this->commitReturn();
             return $assets;
         } catch (\Exception $e) {
             $this->setError('error', $e->getMessage());
+            $this->rollbackReturn(false);
+            return null;
         }
-        $this->rollbackReturn(false);
-        return null;
     }
 
 
