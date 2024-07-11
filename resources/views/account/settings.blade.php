@@ -121,6 +121,24 @@
         {!! Form::close() !!}
     </div>
 
+    @if(Config::get('lorekeeper.extensions.navbar_news_notif'))
+    <div class="card p-3 mb-2">
+        <h3>Development Log Notifications</h3>
+        {!! Form::open(['url' => 'account/devlog-notif']) !!}
+            <div class="form-group row">
+                <label class="col-md-2 col-form-label">Setting</label>
+                <div class="col-md-10">
+                    {!! Form::select('dev_log_notif', ['0' => '0: Do not receive an alert for unread dev log(s).', '1' => '1: Receive alerts for unread dev log(s).'],Auth::user()->settings->dev_log_notif, ['class' => 'form-control']) !!}
+                </div>
+            </div>
+            <div class="text-right">
+                {!! Form::submit('Edit', ['class' => 'btn btn-primary']) !!}
+            </div>
+        {!! Form::close() !!}
+    </div>
+    @endif
+    
+
     <div class="card p-3 mb-2">
         <h3>Email Address</h3>
         <p>Changing your email address will require you to re-verify your email address.</p>

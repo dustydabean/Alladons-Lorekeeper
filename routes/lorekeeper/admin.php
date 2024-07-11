@@ -371,6 +371,18 @@ Route::group(['prefix' => 'news', 'middleware' => 'power:manage_news'], function
     Route::post('delete/{id}', 'NewsController@postDeleteNews');
 });
 
+// DEV LOGS
+Route::group(['prefix' => 'devlogs', 'middleware' => 'power:edit_pages'], function() {
+
+    Route::get('/', 'DevLogsController@getIndex');
+    Route::get('create', 'DevLogsController@getCreatedevLogs');
+    Route::get('edit/{id}', 'DevLogsController@getEditdevLogs');
+    Route::get('delete/{id}', 'DevLogsController@getDeletedevLogs');
+    Route::post('create', 'DevLogsController@postCreateEditdevLogs');
+    Route::post('edit/{id?}', 'DevLogsController@postCreateEditdevLogs');
+    Route::post('delete/{id}', 'DevLogsController@postDeletedevLogs');
+});
+
 // SALES
 Route::group(['prefix' => 'sales', 'middleware' => 'power:manage_sales'], function () {
     Route::get('/', 'SalesController@getIndex');

@@ -70,4 +70,13 @@ return [
         ]),
         'version' => '1.0.0',
     ],
+
+    'dev_logs' => [
+        'key' => 'dev_logs',
+        'wiki_key' => 'Dev_Logs',
+         'creators' => json_encode([
+             'Marsky' => 'https://github.com/MarskyMessier/',
+            ]),
+         'version' => '3.0.0',
+     ],
 ];

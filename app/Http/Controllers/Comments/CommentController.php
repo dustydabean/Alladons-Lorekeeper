@@ -7,6 +7,7 @@ use App\Facades\Settings;
 use App\Models\Comment\Comment;
 use App\Models\Gallery\GallerySubmission;
 use App\Models\News;
+use App\Models\DevLogs;
 use App\Models\Report\Report;
 use App\Models\Sales\Sales;
 use App\Models\SitePage;
@@ -18,7 +19,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
-use Spatie\Honeypot\ProtectAgainstSpam;
+use Spatie\Honeypot\ProtectAgainstSpam; 
 
 class CommentController extends Controller {
     public function __construct() {
@@ -119,6 +120,12 @@ class CommentController extends Controller {
                 $recipient = $news->user; // User that has been commented on (or owner of sale post)
                 $post = 'your news post'; // Simple message to show if it's profile/sales/news
                 $link = $news->url.'/#comment-'.$comment->getKey();
+                break; 
+            case 'App\Models\DevLogs':
+                $devLogs = DevLogs::find($comment->commentable_id);
+                $recipient = $devLogs->user; // User that has been commented on (or owner of sale post)
+                $post = 'your dev log post'; // Simple message to show if it's profile/sales/news
+                $link = $devLogs->url . '/#comment-' . $comment->getKey();
                 break;
             case 'App\Models\Report\Report':
                 $report = Report::find($comment->commentable_id);

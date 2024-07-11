@@ -230,7 +230,7 @@ class UserService extends Service {
      * @param mixed $user
      */
     public function updateBirthdayVisibilitySetting($data, $user) {
-        DB::beginTransaction();
+        DB::beginTransaction(); 
 
         try {
             $user->settings->birthday_setting = $data;
@@ -242,6 +242,17 @@ class UserService extends Service {
         }
 
         return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Updates user's dev log notification setting
+     */
+    public function updatedevLogNotif($data, $user)
+    {
+        $user->settings->dev_log_notif = $data;
+        $user->settings->save();
+
+        return true;
     }
 
     /**
