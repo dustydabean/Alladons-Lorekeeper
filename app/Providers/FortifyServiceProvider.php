@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Fortify\Fortify;
 use Route;
+use App\Models\Theme
 
 class FortifyServiceProvider extends ServiceProvider {
     /**
