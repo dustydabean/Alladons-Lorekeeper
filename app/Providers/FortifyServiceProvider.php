@@ -55,6 +55,7 @@ class FortifyServiceProvider extends ServiceProvider {
         Fortify::loginView(fn () => view('auth.login', [
             'userCount' => User::count(),
             'altLogins' => $altLogins,
+            'defaultTheme' => Theme::where('is_default',true)->first(),
         ]));
 
         Fortify::requestPasswordResetLinkView(fn () => view('auth.passwords.forgot'));
