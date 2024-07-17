@@ -7,8 +7,6 @@
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <i class="far fa-clock"></i> {!! LiveClock() !!}
-
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <!-- Left Side Of Navbar -->
             <ul class="navbar-nav mr-auto">
@@ -143,6 +141,9 @@
 
             <!-- Right Side Of Navbar -->
             <ul class="navbar-nav ml-auto">
+
+            <i class="far fa-clock"></i> {!! LiveClock() !!}
+
                 <!-- Authentication Links -->
                 @guest
                     <li class="nav-item">
