@@ -13,7 +13,7 @@
         </div>
     </div>
     <div class="text-right mb-3"><a href="#advancedSearch" class="btn btn-sm btn-outline-info" data-toggle="collapse">Show Advanced Search Options <i class="fas fa-caret-down"></i></a></div>
-    <div class="card bg-light mb-3 collapse" id="advancedSearch">
+    <div class="card mb-3 collapse" id="advancedSearch">
         <div class="card-body masterlist-advanced-search">
             @if (!$isMyo)
                 <div class="masterlist-search-field">
