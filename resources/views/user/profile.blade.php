@@ -19,15 +19,21 @@
         <div class="alert alert-danger">This user has been banned.</div>
     @endif 
 
-@if(isset($user->profile->parsed_text))
-    <div class="card mb-3" style="clear:both;">
-        <div class="card-body">
-            {!! $user->profile->parsed_text !!}
+    @if ($user->is_deactivated)
+        <div class="alert alert-info text-center">
+            <h1>{!! $user->displayName !!}</h1>
+            <p>This account is currently deactivated, be it by staff or the user's own action. All information herein is hidden until the account is reactivated.</p>
+            @if (Auth::check() && Auth::user()->isStaff)
+                <p class="mb-0">As you are staff, you can see the profile contents below and the sidebar contents.</p>
+            @endif
         </div>
-    </div>
-@endif
+    @endif
 
-<div class="card-deck mb-4 profile-assets" style="clear:both;">
+    @if (!$user->is_deactivated || (Auth::check() && Auth::user()->isStaff))
+        @include('user._profile_content', ['user' => $user, 'deactivated' => $user->is_deactivated])
+    @endif
+
+    <div class="card-deck mb-4 profile-assets" style="clear:both;">
     <div class="card profile-inventory profile-assets-card">
     <div class="card-body text-center">
             <h5 class="card-title">Completed Collections</h5>
@@ -59,20 +65,6 @@
         @foreach($sublists as $sublist)
         / <a href="{{ $user->url.'/sublist/'.$sublist->key }}">{{ $sublist->name }}</a>
         @endforeach
-    @endif
-
-    @if ($user->is_deactivated)
-        <div class="alert alert-info text-center">
-            <h1>{!! $user->displayName !!}</h1>
-            <p>This account is currently deactivated, be it by staff or the user's own action. All information herein is hidden until the account is reactivated.</p>
-            @if (Auth::check() && Auth::user()->isStaff)
-                <p class="mb-0">As you are staff, you can see the profile contents below and the sidebar contents.</p>
-            @endif
-        </div>
-    @endif
-
-    @if (!$user->is_deactivated || (Auth::check() && Auth::user()->isStaff))
-        @include('user._profile_content', ['user' => $user, 'deactivated' => $user->is_deactivated])
     @endif
 
 @endsection
