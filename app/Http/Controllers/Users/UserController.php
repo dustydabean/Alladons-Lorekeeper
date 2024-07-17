@@ -25,8 +25,6 @@ use Route;
 use App\Models\Character\CharacterCategory;
 use App\Models\Collection\CollectionCategory;
 
-use App\Http\Controllers\Controller;
-
 class UserController extends Controller
 {
     /*
