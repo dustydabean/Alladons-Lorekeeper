@@ -129,7 +129,7 @@
     <div id="app">
 
         <div class="site-header-image" id="header" style="background-image: url('{{ $decoratorTheme?->headerImageUrl ?? $conditionalTheme?->headerImageUrl ?? $theme?->headerImageUrl ?? asset('images/header.png') }}'); position: relative;">
-            <i class="far fa-clock"></i> {!! LiveClock() !!}
+            <i class="far fa-clock"></i> {!! LiveClock("Europe/London") !!}
         </div>
 
         @include('layouts._nav')
