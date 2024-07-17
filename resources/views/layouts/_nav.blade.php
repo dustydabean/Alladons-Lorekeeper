@@ -37,7 +37,7 @@
 
                         <div class="dropdown-menu" aria-labelledby="inventoryDropdown">
                             <a class="dropdown-item" href="{{ url('characters') }}">
-                                My Characters
+                                My Alladons
                             </a>
                             <a class="dropdown-item" href="{{ url('inventory') }}">
                                 Inventory
@@ -65,6 +65,9 @@
                             <a class="dropdown-item" href="{{ url('prompts/prompts') }}">
                                 Prompts
                             </a>
+                            <a class="dropdown-item" href="{{ url('raffles') }}">
+                            Raffles
+                             </a>
                             <a class="dropdown-item" href="{{ url('shops') }}">
                                 Shops
                             </a>
@@ -77,7 +80,7 @@
                             </a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{{ url('characters/transfers/incoming') }}">
-                                Character Transfers
+                                Alladon Transfers
                             </a>
                             <a class="dropdown-item" href="{{ url('trades/open') }}">
                                 Trades
@@ -95,14 +98,10 @@
                             Users
                         </a>
                         <a class="dropdown-item" href="{{ url('masterlist') }}">
-                            Character Masterlist
+                            Alladon Masterlist
                         </a>
                         <a class="dropdown-item" href="{{ url('team') }}">
                             Staff
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="{{ url('raffles') }}">
-                            Raffles
                         </a>
                     </div>
                 </li>
