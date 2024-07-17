@@ -8,7 +8,7 @@
     {!! breadcrumbs(['My Characters' => 'characters']) !!}
 
     <h1>
-        My Characters
+        My Alladons
     </h1>
 
     <p>This is a list of characters you own. Drag and drop to rearrange them.</p>

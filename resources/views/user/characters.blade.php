@@ -8,7 +8,7 @@
     {!! breadcrumbs(['Users' => 'users', $user->name => $user->url, 'Characters' => $user->url . '/characters']) !!}
 
     <h1>
-        {!! $user->displayName !!}'s Characters
+        {!! $user->displayName !!}'s Alladons
     </h1>
 
     @include('user._characters', ['characters' => $characters, 'myo' => false])

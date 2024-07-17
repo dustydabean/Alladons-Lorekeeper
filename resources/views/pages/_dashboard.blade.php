@@ -20,7 +20,7 @@
                 <h5 class="card-title">Characters</h5>
             </div>
             <ul class="list-group list-group-flush">
-                <li class="list-group-item"><a href="{{ url('characters') }}">My Characters</a></li>
+                <li class="list-group-item"><a href="{{ url('characters') }}">My Alladons</a></li>
                 <li class="list-group-item"><a href="{{ url('characters/myos') }}">My MYO Slots</a></li>
                 <li class="list-group-item"><a href="{{ url('characters/transfers/incoming') }}">Character Transfers</a></li>
             </ul>
