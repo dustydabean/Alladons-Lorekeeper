@@ -29,32 +29,6 @@
         </div>
     @endif
 
-    <div class="card-deck mb-4 profile-assets" style="clear:both;">
-    <div class="card profile-inventory profile-assets-card">
-    <div class="card-body text-center">
-            <h5 class="card-title">Completed Collections</h5>
-            <div class="profile-assets-content">
-                @if(count($collections))
-                    <div class="row">
-                        @foreach($collections as $collection)
-                            <div class="col-md-3 col-6 profile-inventory-item">
-                                @if($collection->imageUrl)
-                                    <img src="{{ $collection->imageUrl }}" data-toggle="tooltip" title="{{ $collection->name }}" alt="{{ $collection->name }}"/>
-                                @else
-                                    <p>{{ $collection->name }}</p>
-                                @endif
-                            </div>
-                        @endforeach
-                    </div>
-                @else
-                    <div>No collections completed.</div>
-                @endif
-            </div>
-            <div class="text-right"><a href="{{ $user->url.'/collection-logs' }}">View all...</a></div>
-        </div>
-        </div>
-        </div>
-
     @if (!$user->is_deactivated || (Auth::check() && Auth::user()->isStaff))
         @include('user._profile_content', ['user' => $user, 'deactivated' => $user->is_deactivated])
     @endif
