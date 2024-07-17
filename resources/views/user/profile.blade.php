@@ -11,6 +11,14 @@
 @section('profile-content')
     {!! breadcrumbs(['Users' => 'users', $user->name => $user->url]) !!}
 
+    @if (mb_strtolower($user->name) != mb_strtolower($name))
+        <div class="alert alert-info">This user has changed their name to <strong>{{ $user->name }}</strong>.</div>
+    @endif
+
+    @if ($user->is_banned)
+        <div class="alert alert-danger">This user has been banned.</div>
+    @endif 
+
     <div class="card-deck mb-4 profile-assets" style="clear:both;">
     <div class="card profile-inventory profile-assets-card">
     <div class="card-body text-center">
@@ -36,14 +44,6 @@
         </div>
         </div>
         </div>
-
-    @if (mb_strtolower($user->name) != mb_strtolower($name))
-        <div class="alert alert-info">This user has changed their name to <strong>{{ $user->name }}</strong>.</div>
-    @endif
-
-    @if ($user->is_banned)
-        <div class="alert alert-danger">This user has been banned.</div>
-    @endif 
 
     @if ($user->is_deactivated)
         <div class="alert alert-info text-center">
