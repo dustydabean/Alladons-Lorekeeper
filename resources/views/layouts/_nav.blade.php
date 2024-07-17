@@ -141,9 +141,6 @@
 
             <!-- Right Side Of Navbar -->
             <ul class="navbar-nav ml-auto">
-
-            <i class="far fa-clock"></i> {!! LiveClock() !!}
-
                 <!-- Authentication Links -->
                 @guest
                     <li class="nav-item">
