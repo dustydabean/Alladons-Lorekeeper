@@ -3,10 +3,10 @@
     <li class="sidebar-section">
         <div class="sidebar-section-header">Inventory</div>
         <div class="sidebar-item"><a href="{{ url('characters') }}" class="{{ set_active('characters') }}">My Characters</a></div>
-        <div class="sidebar-item"><a href="{{ url('characters/myos') }}" class="{{ set_active('characters/myos') }}">My MYO Slots</a></div>
         <div class="sidebar-item"><a href="{{ url('pets') }}" class="{{ set_active('pets*') }}">My Pets</a></div>
         <div class="sidebar-item"><a href="{{ url('inventory') }}" class="{{ set_active('inventory*') }}">Inventory</a></div>
         <div class="sidebar-item"><a href="{{ url('bank') }}" class="{{ set_active('bank*') }}">Bank</a></div>
+        <div class="sidebar-item"><a href="{{ url('collection') }}" class="{{ set_active('collection*') }}">Collections</a></div>
     </li>
     <li class="sidebar-section">
         <div class="sidebar-section-header">Activity</div>

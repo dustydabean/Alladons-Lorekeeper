@@ -18,7 +18,11 @@ use App\Models\User\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class WorldController extends Controller {
+use App\Models\Collection\Collection;
+use App\Models\Collection\CollectionCategory;
+
+class WorldController extends Controller
+{
     /*
     |--------------------------------------------------------------------------
     | World Controller
@@ -483,6 +487,83 @@ class WorldController extends Controller {
 
         return view('world.pet_page', [
             'pet' => $pet,
+        ]);
+    }
+
+    /**
+     * Shows the items page.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCollections(Request $request)
+    {
+        $query = Collection::visible();
+        $data = $request->only(['name', 'sort', 'collection_category_id']);
+        if(isset($data['name']))
+            $query->where('name', 'LIKE', '%'.$data['name'].'%');
+        if(isset($data['collection_category_id']) && $data['collection_category_id'] != 'none') 
+            $query->where('collection_category_id', $data['collection_category_id']);
+
+        if(isset($data['sort']))
+        {
+            switch($data['sort']) {
+                case 'alpha':
+                    $query->sortAlphabetical();
+                    break;
+                case 'alpha-reverse':
+                    $query->sortAlphabetical(true);
+                    break;
+                case 'newest':
+                    $query->sortNewest();
+                    break;
+                case 'oldest':
+                    $query->sortOldest();
+                    break;
+            }
+        }
+        else $query->sortNewest();
+
+        return view('world.collections.collections', [
+            'collections' => $query->paginate(20)->appends($request->query()),
+            'categories' => ['none' => 'Any Category'] + CollectionCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+        ]);
+    }
+
+    /**
+     * Shows an individual collection;ss page.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCollection($id)
+    {
+        $collection = Collection::visible()->where('id', $id)->first();
+        $categories = CollectionCategory::orderBy('sort', 'DESC')->get();
+        if(!$collection) abort(404);
+
+        return view('world.collections._collection_page', [
+            'collection' => $collection,
+            'imageUrl' => $collection->imageUrl,
+            'name' => $collection->displayName,
+            'description' => $collection->parsed_description,
+        ]);
+    }
+
+     /**
+     * Shows the collection categories page.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCollectionCategories(Request $request)
+    {
+        $query = CollectionCategory::query();
+        $data = $request->only(['name']);
+        if(isset($data['name'])) 
+            $query->where('name', 'LIKE', '%'.$data['name'].'%');
+        return view('world.collection_categories', [  
+            'categories' => $query->orderBy('sort', 'DESC')->paginate(20)->appends($request->query())
         ]);
     }
 }
