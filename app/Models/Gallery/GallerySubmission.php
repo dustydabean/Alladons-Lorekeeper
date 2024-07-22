@@ -188,7 +188,7 @@ class GallerySubmission extends Model {
             return $query->whereNull('id');
         }
 
-        return $query->where('status', 'Accepted')->whereIn('gallery_id', Gallery::where('currency_enabled', 1)->pluck('id')->toArray());
+        return $query->where('status', 'Accepted')->whereIn('gallery_id', Gallery::has('criteria')->pluck('id')->toArray());
     }
 
     /**
@@ -369,8 +369,6 @@ class GallerySubmission extends Model {
      * @return string
      */
     public function getPrefixAttribute() {
-        $currencyName = Currency::find(Settings::get('group_currency'))->abbreviation ? Currency::find(Settings::get('group_currency'))->abbreviation : Currency::find(Settings::get('group_currency'))->name;
-
         $prefixList = [];
         if ($this->promptSubmissions->count()) {
             foreach ($this->prompts as $prompt) {
@@ -392,9 +390,6 @@ class GallerySubmission extends Model {
                     break;
                 case 'Comm':
                     $prefixList[] = 'Comm';
-                    break;
-                case 'Comm (Currency)':
-                    $prefixList[] = 'Comm ('.$currencyName.')';
                     break;
             }
         }

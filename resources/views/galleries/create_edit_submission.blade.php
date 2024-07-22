@@ -109,8 +109,8 @@
                 <h3>Characters</h3>
                 <p>
                     Add the characters included in this piece.
-                    @if (Settings::get('gallery_submissions_reward_currency'))
-                        This helps the staff processing your submission award {!! $currency->displayName !!} for it, so be sure to add every character.
+                    @if ($gallery->criteria)
+                        This helps the staff processing your submission award currency for it, so be sure to add every character.
                     @endif
                 </p>
                 <div id="characters" class="mb-3">
@@ -194,7 +194,7 @@
                                             <div class="mb-2">
                                                 <div class="d-flex">{!! Form::select('participant_id[]', $users, $participant->user_id, ['class' => 'form-control mr-2 participant-select original', 'placeholder' => 'Select User']) !!}</div>
                                                 <div class="d-flex">
-                                                    {!! Form::select('participant_type[]', ['Gift' => 'Gift For', 'Trade' => 'Traded For', 'Comm' => 'Commissioned', 'Comm (Currency)' => 'Commissioned (' . $currency->name . ')'], $participant->type, [
+                                                    {!! Form::select('participant_type[]', ['Gift' => 'Gift For', 'Trade' => 'Traded For', 'Comm' => 'Commissioned'], $participant->type, [
                                                         'class' => 'form-control mr-2',
                                                         'placeholder' => 'Select Role',
                                                     ]) !!}
@@ -208,7 +208,7 @@
                                             <div class="mb-2">
                                                 <div class="d-flex">{!! Form::select('participant_id[]', $users, $participant, ['class' => 'form-control mr-2 participant-select original', 'placeholder' => 'Select User']) !!}</div>
                                                 <div class="d-flex">
-                                                    {!! Form::select('participant_type[]', ['Gift' => 'Gift For', 'Trade' => 'Traded For', 'Comm' => 'Commissioned', 'Comm (Currency)' => 'Commissioned (' . $currency->name . ')'], old('participant_type')[$key], [
+                                                    {!! Form::select('participant_type[]', ['Gift' => 'Gift For', 'Trade' => 'Traded For', 'Comm' => 'Commissioned'], old('participant_type')[$key], [
                                                         'class' => 'form-control mr-2',
                                                         'placeholder' => 'Select Role',
                                                     ]) !!}
@@ -229,7 +229,7 @@
                             @endif
                         </div>
                     </div>
-                    @if (Settings::get('gallery_submissions_reward_currency') && $gallery->currency_enabled && !$submission->id)
+                    {{-- @if (Settings::get('gallery_submissions_reward_currency') && $gallery->currency_enabled && !$submission->id)
                         <div class="card mb-4">
                             <div class="card-header">
                                 <h5>{!! $currency->name !!} Awards</h5>
@@ -264,10 +264,18 @@
                                 @endforeach
                             </div>
                         </div>
-                    @endif
+                    @endif --}}
                 </div>
             @endif
         </div>
+
+        @if ($gallery->criteria->count() > 0 && !$submission->id)
+            <h2 id="criterion-section" class="mt-5">Criteria Rewards <button class="btn  btn-outline-info float-right add-calc" type="button">Add Criterion</a></h2>
+            <p>Criteria can be used in addition to or in replacement of rewards. They take input on what you are turning in for the prompt in order to calculate your final reward.</p>
+            <p>Criteria may populate in with pre-selected minimum requirements for this prompt. </p>
+            <div id="criteria"></div>
+            <div class="mb-4"></div>
+        @endif
 
         @if ($submission->id && Auth::user()->id != $submission->user->id && Auth::user()->hasPower('manage_submissions'))
             <div class="form-group">
@@ -281,6 +289,12 @@
         </div>
         {!! Form::close() !!}
 
+        <div id="copy-calc" class="card p-3 mb-2 pl-0 hide">
+            @if (isset($criteria))
+                @include('criteria._criterion_selector', ['criteria' => $criteria])
+            @endif
+        </div>
+
         @include('galleries._character_select')
         <div class="collaborator-row hide mb-2">
             {!! Form::select('collaborator_id[]', $users, null, ['class' => 'form-control mr-2 collaborator-select', 'placeholder' => 'Select User']) !!}
@@ -292,7 +306,7 @@
         <div class="participant-row hide mb-2">
             {!! Form::select('participant_id[]', $users, null, ['class' => 'form-control mr-2 participant-select', 'placeholder' => 'Select User']) !!}
             <div class="d-flex">
-                {!! Form::select('participant_type[]', ['Gift' => 'Gift For', 'Trade' => 'Traded For', 'Comm' => 'Commissioned', 'Comm (Currency)' => 'Commissioned (' . $currency->name . ')'], null, [
+                {!! Form::select('participant_type[]', ['Gift' => 'Gift For', 'Trade' => 'Traded For', 'Comm' => 'Commissioned'], null, [
                     'class' => 'form-control mr-2',
                     'placeholder' => 'Select Role',
                 ]) !!}
@@ -423,6 +437,49 @@
                 });
 
                 $('.original.gallery-select').selectize();
+
+                $('.add-calc').on('click', function(e) {
+                    e.preventDefault();
+                    var clone = $('#copy-calc').clone();
+                    clone.removeClass('hide');
+                    var input = clone.find('[name*=criterion]');
+                    var count = $('.criterion-select').length;
+                    input.attr('name', input.attr('name').replace('#', count))
+                    clone.find('.criterion-select').on('change', loadForm);
+                    clone.find('.delete-calc').on('click', deleteCriterion);
+                    clone.removeAttr('id');
+                    $('#criteria').append(clone);
+                });
+
+                $('.delete-calc').on('click', deleteCriterion);
+
+                function deleteCriterion(e) {
+                    e.preventDefault();
+                    var toDelete = $(this).closest('.card');
+                    toDelete.remove();
+                }
+
+                function loadForm(e) {
+                    var id = $(this).val();
+                    var formId = $(this).attr('name').split('[')[1].replace(']', '');
+
+                    if (id) {
+                        var form = $(this).closest('.card').find('.form');
+                        form.load("{{ url('criteria/gallery') }}/" + id + "/{{ $gallery->id }}/" + formId, (response, status, xhr) => {
+                            if (status == "error") {
+                                var msg = "Error: ";
+                                console.error(msg + xhr.status + " " + xhr.statusText);
+                            } else {
+                                form.find('[data-toggle=tooltip]').tooltip({
+                                    html: true
+                                });
+                                form.find('[data-toggle=toggle]').bootstrapToggle();
+                            }
+                        });
+                    }
+                }
+
+                $('.criterion-select').on('change', loadForm);
             });
         </script>
     @endif
