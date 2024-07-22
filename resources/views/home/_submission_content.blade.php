@@ -133,6 +133,29 @@
                                             @endforeach
 
                                             {{--
+<h2>Characters</h2>
+@foreach($submission->characters as $character)
+    <div class="submission-character-row mb-2">
+        <div class="submission-character-thumbnail"><a href="{{ $character->character->url }}"><img src="{{ $character->character->image->thumbnailUrl }}" class="img-thumbnail" alt="Thumbnail for {{ $character->character->fullName }}" /></a></div>
+        <div class="submission-character-info card ml-2">
+            <div class="card-body">
+                <div class="submission-character-info-content">
+                    <h3 class="mb-2 submission-character-info-header">
+                        <a href="{{ $character->character->url }}">{{ $character->character->fullName }}</a>
+                        @if($character->notify_owner)
+                            <i class="fas fa-envelope-open-text float-right" data-toggle="tooltip" data-placement="top" title="This character's owner  {{ $submission->status != 'Pending' ? 'was' : 'will be' }} notified of a gift sumbission!"></i>
+                        @endif
+                    </h3>
+                    <div class="submission-character-info-body">
+                    <table class="table table-sm mb-0">
+                        <thead>
+                            <tr>
+                                <th width="70%">Reward</th>
+                                <th width="30%">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach(parseAssetData($character->data) as $key => $type)
 
                                             If you want to "Categorize" the rewards by type, uncomment this and comment or remove the above @foreach.
 
