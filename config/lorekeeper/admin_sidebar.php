@@ -218,11 +218,7 @@ return [
                 'name' => 'Collections',
                 'url' => 'admin/data/collections'
             ],
-            [
-                'name' => 'Criteria Rewards',
-                'url'  => 'admin/data/criteria',
-            ],
-        ],
+        ]
     ],
     'Raffles'    => [
         'power' => 'manage_raffles',

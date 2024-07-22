@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\Prompt\Prompt;
 use App\Models\Prompt\PromptCategory;
-use App\Models\Prompt\PromptCriterion;
 use App\Models\Prompt\PromptReward;
 use App\Models\Submission\Submission;
 use Illuminate\Support\Arr;
@@ -210,7 +209,6 @@ class PromptService extends Service {
             }
 
             $this->populateRewards(Arr::only($data, ['rewardable_type', 'rewardable_id', 'quantity']), $prompt);
-            (new CriterionService)->populateCriteria(Arr::only($data, ['criterion_id', 'criterion', 'criterion_currency_id', 'default_criteria']), $prompt, PromptCriterion::class);
 
             return $this->commitReturn($prompt);
         } catch (\Exception $e) {
@@ -269,7 +267,6 @@ class PromptService extends Service {
             }
 
             $this->populateRewards(Arr::only($data, ['rewardable_type', 'rewardable_id', 'quantity']), $prompt);
-            (new CriterionService)->populateCriteria(Arr::only($data, ['criterion_id', 'criterion', 'criterion_currency_id', 'default_criteria']), $prompt, PromptCriterion::class);
 
             return $this->commitReturn($prompt);
         } catch (\Exception $e) {

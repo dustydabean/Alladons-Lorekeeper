@@ -5,12 +5,10 @@ namespace App\Http\Controllers\Users;
 use App\Facades\Settings;
 use App\Http\Controllers\Controller;
 use App\Models\Character\Character;
-use App\Models\Criteria\Criterion;
 use App\Models\Currency\Currency;
 use App\Models\Item\Item;
 use App\Models\Item\ItemCategory;
 use App\Models\Prompt\Prompt;
-use App\Models\Prompt\PromptCriterion;
 use App\Models\Raffle\Raffle;
 use App\Models\Submission\Submission;
 use App\Models\User\User;
@@ -88,9 +86,6 @@ class SubmissionController extends Controller {
         $closed = !Settings::get('is_prompts_open');
         $inventory = UserItem::with('item')->whereNull('deleted_at')->where('count', '>', '0')->where('user_id', Auth::user()->id)->get();
 
-        $prompt = $request->all()['prompt_id'] ?? null;
-        $promptCriteria = $prompt ? PromptCriterion::where('prompt_id', $prompt)->pluck('criterion_id')->toArray() : null;
-
         return view('home.create_submission', [
             'closed'  => $closed,
             'isClaim' => false,
@@ -106,7 +101,6 @@ class SubmissionController extends Controller {
             'inventory'           => $inventory,
             'page'                => 'submission',
             'expanded_rewards'    => config('lorekeeper.extensions.character_reward_expansion.expanded'),
-            'criteria'            => $prompt ? Criterion::active()->whereIn('id', $promptCriteria)->orderBy('name')->pluck('name', 'id') : null,
         ]));
     }
 
@@ -125,8 +119,6 @@ class SubmissionController extends Controller {
             abort(404);
         }
 
-        $promptCriteria = PromptCriterion::where('prompt_id', $submission->prompt_id)->pluck('criterion_id')->toArray();
-
         return view('home.edit_submission', [
             'closed'              => $closed,
             'isClaim'             => false,
@@ -144,7 +136,6 @@ class SubmissionController extends Controller {
             'expanded_rewards'    => config('lorekeeper.extensions.character_reward_expansion.expanded'),
             'selectedInventory'   => isset($submission->data['user']) ? parseAssetData($submission->data['user']) : null,
             'count'               => Submission::where('prompt_id', $submission->prompt_id)->where('status', 'Approved')->where('user_id', $submission->user_id)->count(),
-            'criteria'            => Criterion::active()->whereIn('id', $promptCriteria)->orderBy('name')->pluck('name', 'id'),
         ]));
     }
 
@@ -192,9 +183,7 @@ class SubmissionController extends Controller {
      */
     public function postNewSubmission(Request $request, SubmissionManager $service, $draft = false) {
         $request->validate(Submission::$createRules);
-        if ($submission = $service->createSubmission($request->only(['url', 'prompt_id', 'comments', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity', 'rewardable_type', 'rewardable_id', 'quantity', 'stack_id', 'stack_quantity', 'currency_id', 'currency_quantity',
-            'criterion_id', 'criterion',
-        ]), Auth::user(), false, $draft)) {
+        if ($submission = $service->createSubmission($request->only(['url', 'prompt_id', 'comments', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity', 'rewardable_type', 'rewardable_id', 'quantity', 'stack_id', 'stack_quantity', 'currency_id', 'currency_quantity']), Auth::user(), false, $draft)) {
             if ($submission->status == 'Draft') {
                 flash('Draft created successfully.')->success();
 
@@ -231,9 +220,9 @@ class SubmissionController extends Controller {
         }
 
         $request->validate(Submission::$updateRules);
-        if ($submit && $service->editSubmission($submission, $request->only(['url', 'prompt_id', 'comments', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity', 'rewardable_type', 'rewardable_id', 'quantity', 'stack_id', 'stack_quantity', 'currency_id', 'currency_quantity', 'criterion_id', 'criterion']), Auth::user(), false, $submit)) {
+        if ($submit && $service->editSubmission($submission, $request->only(['url', 'prompt_id', 'comments', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity', 'rewardable_type', 'rewardable_id', 'quantity', 'stack_id', 'stack_quantity', 'currency_id', 'currency_quantity']), Auth::user(), false, $submit)) {
             flash('Draft submitted successfully.')->success();
-        } elseif ($service->editSubmission($submission, $request->only(['url', 'prompt_id', 'comments', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity', 'rewardable_type', 'rewardable_id', 'quantity', 'stack_id', 'stack_quantity', 'currency_id', 'currency_quantity', 'criterion_id', 'criterion']), Auth::user())) {
+        } elseif ($service->editSubmission($submission, $request->only(['url', 'prompt_id', 'comments', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity', 'rewardable_type', 'rewardable_id', 'quantity', 'stack_id', 'stack_quantity', 'currency_id', 'currency_quantity']), Auth::user())) {
             flash('Draft saved successfully.')->success();
 
             return redirect()->back();
@@ -462,7 +451,7 @@ class SubmissionController extends Controller {
         if ($submit && $service->editSubmission($submission, $request->only(['url', 'comments', 'stack_id', 'stack_quantity', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity', 'rewardable_type', 'rewardable_id', 'quantity', 'currency_id', 'currency_quantity']), Auth::user(), true, $submit)) {
             flash('Draft submitted successfully.')->success();
 
-            return redirect()->to('claims/view/'.$submission->id);
+            return redirect()->to('claims/draft/'.$submission->id);
         } elseif ($service->editSubmission($submission, $request->only(['url', 'comments', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity', 'rewardable_type', 'rewardable_id', 'quantity', 'stack_id', 'stack_quantity', 'currency_id', 'currency_quantity']), Auth::user(), true)) {
             flash('Draft saved successfully.')->success();
         } else {
