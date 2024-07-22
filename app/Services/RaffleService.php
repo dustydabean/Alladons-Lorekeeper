@@ -6,6 +6,7 @@ use App\Models\Raffle\Raffle;
 use App\Models\Raffle\RaffleGroup;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use App\Models\User\User;
 
 class RaffleService extends Service {
     /*
@@ -30,6 +31,10 @@ class RaffleService extends Service {
             $data['is_active'] = 0;
         }
         $raffle = Raffle::create(Arr::only($data, ['name', 'is_active', 'winner_count', 'group_id', 'order']));
+
+        if ($raffle->is_active) {
+            $this->alertUsers();
+        }
         DB::commit();
 
         return $raffle;
@@ -45,10 +50,13 @@ class RaffleService extends Service {
      */
     public function updateRaffle($data, $raffle) {
         DB::beginTransaction();
-        if (!isset($data['is_active'])) {
-            $data['is_active'] = 0;
+        if(!isset($data['is_active'])) $data['is_active'] = 0;
+        $raffle->update(Arr::only($data, ['name', 'is_active', 'winner_count', 'group_id', 'order','ticket_cap']));
+
+        if (isset($data['bump']) && $data['is_active'] == 1 && $data['bump'] == 1) {
+            $this->alertUsers();
         }
-        $raffle->update(Arr::only($data, ['name', 'is_active', 'winner_count', 'group_id', 'order', 'ticket_cap']));
+
         DB::commit();
 
         return $raffle;
@@ -127,6 +135,19 @@ class RaffleService extends Service {
         $group->delete();
         DB::commit();
 
+        return true;
+    }   
+
+
+    /**
+     * Updates the unread raffles flag for all users so that
+     * the new raffle notification is displayed.
+     *
+     * @return bool
+     */
+    private function alertUsers()
+    {
+        User::query()->update(['is_raffles_unread' => 1]);
         return true;
     }
 }

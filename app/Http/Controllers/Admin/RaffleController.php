@@ -64,8 +64,9 @@ class RaffleController extends Controller {
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postCreateEditRaffle(Request $request, RaffleService $service, $id = null) {
-        $data = $request->only(['name', 'is_active', 'winner_count', 'group_id', 'order', 'ticket_cap']);
+    public function postCreateEditRaffle(Request $request, RaffleService $service, $id = null)
+    {
+        $data = $request->only(['name', 'is_active', 'winner_count', 'group_id', 'order','ticket_cap','bump']);
         $raffle = null;
         if (!$id) {
             $raffle = $service->createRaffle($data);
