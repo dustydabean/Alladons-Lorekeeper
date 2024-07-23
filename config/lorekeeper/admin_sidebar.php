@@ -218,7 +218,11 @@ return [
                 'name' => 'Collections',
                 'url' => 'admin/data/collections'
             ],
-        ]
+            [
+                'name' => 'FAQ',
+                'url'  => 'admin/data/faq',
+            ]
+        ],
     ],
     'Raffles'    => [
         'power' => 'manage_raffles',

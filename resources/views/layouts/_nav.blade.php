@@ -135,6 +135,10 @@
                         <a class="dropdown-item" href="{{ url('world') }}">
                             Encyclopedia
                         </a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="{{ url('faq') }}">
+                            FAQ
+                        </a>
                     </div>
                 </li>
                 <li class="nav-item">
