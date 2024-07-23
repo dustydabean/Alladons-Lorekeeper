@@ -22,42 +22,99 @@
 
     <hr>
     <h3>Offspring Traits (Optional)</h3>
-    <p>
-        If a trait is set, this trait will be granted to all offspring that are created using this item.
-        <br><b>Other pairing items can still inherit this trait if present in one or both parents.</b>
-        <br><br>If a species is set, the offspring will always be that species, but the MYO may have traits of either parent ignoring species restrictions.
-        <br>If a subtype is set, it will always be passed on if the species matches.
-        <br>If neither is set, traits and species are chosen solely from the parent characters.
-        <br><br><b>These will override the default species etc. below</b>
-    </p>
-    <div class="form-group">
-        {!! Form::label('Guarenteed Offspring Trait (Optional)') !!}
-        <p>Choose a trait that this pairing item will always grant the offspring.</p>
-        {!! Form::select('feature_id', $features, $tag->getData()['feature_id'] ?? null, [
-            'class' => 'form-control mr-2
-                                                                                                feature-select',
-            'placeholder' => 'Select Offspring Trait',
-        ]) !!}
+
+    <div class="card mb-3">
+        <div class="card-header" data-toggle="collapse" data-target="#guaranteed" aria-expanded="false" aria-controls="guaranteed">
+            <h2 class="h3">
+                <i class="fas fa-chevron-down"></i> Guaranteed Offspring Attributes
+            </h2>
+        </div>
+        <div class="card-body collapse" id="guaranteed">
+            <p>
+                If a trait is set, this trait will be granted to all offspring that are created using this item.
+                <br><b>Other pairing items can still inherit this trait if present in one or both parents.</b>
+                <br><br>If a species is set, the offspring will always be that species, but the MYO may have traits of either parent ignoring species restrictions.
+                <br>If a subtype is set, it will always be passed on if the species matches.
+                <br>If neither is set, traits and species are chosen solely from the parent characters.
+                <br><br><b>These will override the default species etc. below</b>
+            </p>
+            <div class="form-group">
+                {!! Form::label('Guarenteed Offspring Trait (Optional)') !!}
+                <p>Choose a trait that this pairing item will always grant the offspring.</p>
+                {!! Form::select('feature_id', $features, $tag->getData()['feature_id'] ?? null, [
+                    'class' => 'form-control mr-2
+                                    feature-select',
+                    'placeholder' => 'Select Offspring Trait',
+                ]) !!}
+            </div>
+
+            <div class="form-group">
+                {!! Form::label('Guarenteed Offspring Species (Optional)') !!}
+                <p>Choose a species that this pairing item will grant the offspring.</p>
+                {!! Form::select('species_id', $specieses, $tag->getData()['species_id'] ?? null, [
+                    'class' => 'form-control mr-2
+                                    feature-select',
+                    'placeholder' => 'Select Offspring Species',
+                ]) !!}
+            </div>
+
+            <div class="form-group">
+                {!! Form::label('Guarenteed Offspring Subtype (Optional)') !!}
+                <p>Choose a subtype that this pairing item will always grant the offspring. Will not work if the species does not match the subtype.</p>
+                {!! Form::select('subtype_id', $subtypes, $tag->getData()['subtype_id'] ?? null, [
+                    'class' => 'form-control mr-2
+                                    feature-select',
+                    'placeholder' => 'Select Offspring Subtype',
+                ]) !!}
+            </div>
+        </div>
     </div>
 
-    <div class="form-group">
-        {!! Form::label('Guarenteed Offspring Species (Optional)') !!}
-        <p>Choose a species that this pairing item will grant the offspring.</p>
-        {!! Form::select('species_id', $specieses, $tag->getData()['species_id'] ?? null, [
-            'class' => 'form-control mr-2
-                                                                                                feature-select',
-            'placeholder' => 'Select Offspring Species',
-        ]) !!}
-    </div>
+    <div class="card">
+        <div class="card-header" data-toggle="collapse" data-target="#required" aria-expanded="false" aria-controls="required">
+            <h2 class="h3">
+                <i class="fas fa-chevron-down"></i> Required Offspring Attributes
+            </h2>
+        </div>
+        <div class="card-body collapse" id="required">
+            <p>
+                This section allows you to add required trait categories to the offspring.
+                <br />
+                This means that at least one trait from each category will be inherited by the offspring (but can be more).
+                <br />
+                To have a set range of traits, input the range as "min-max". Example: 1-5. If you want a fixed number of traits, input the same number for both min and max.
+            </p>
+            <table class="table table-sm" id="categoryTable">
+                <tbody id="categoryTableBody">
+                    <tr class="loot-row hide">
+                        <td class="border-0">
+                            {!! Form::select('feature_category_ids[]', $categories, null, ['class' => 'form-control item-select', 'placeholder' => 'Select Category']) !!}
+                        </td>
+                        <td class="d-flex border-0">
+                            {!! Form::text('feature_category_number[]', null, ['class' => 'form-control item-select col-10', 'placeholder' => 'Input Number of Traits to Inherit']) !!}
+                        </td>
+                        <td class="text-right border-0"><a href="#" class="btn btn-danger remove-category-button">Remove</a></td>
+                    </tr>
+                    @if (isset($tag->getData()['guaranteed_feature_categories']) && count($tag->getData()['guaranteed_feature_categories']) > 0)
+                        @foreach ($tag->getData()['guaranteed_feature_categories'] as $required_category)
+                            <tr class="loot-row">
+                                <td class="border-0">
+                                    {!! Form::select('feature_category_ids[]', $categories, $required_category['id'], ['class' => 'form-control item-select', 'placeholder' => 'Select Category']) !!}
+                                </td>
+                                <td class="d-flex border-0">
+                                    {!! Form::text('feature_category_number[]', $required_category['number'], ['class' => 'form-control item-select col-10', 'placeholder' => 'Input Number of Traits to Inherit']) !!}
+                                </td>
+                                <td class="text-right border-0"><a href="#" class="btn btn-danger remove-category-button">Remove</a></td>
+                            </tr>
+                        @endforeach
+                    @endif
+                </tbody>
+            </table>
 
-    <div class="form-group">
-        {!! Form::label('Guarenteed Offspring Subtype (Optional)') !!}
-        <p>Choose a subtype that this pairing item will always grant the offspring. Will not work if the species does not match the subtype.</p>
-        {!! Form::select('subtype_id', $subtypes, $tag->getData()['subtype_id'] ?? null, [
-            'class' => 'form-control mr-2
-                                                                                                feature-select',
-            'placeholder' => 'Select Offspring Subtype',
-        ]) !!}
+            <div class="text-right mb-3">
+                <a href="#" class="btn btn-outline-info" id="addCategory">Add Required Category</a>
+            </div>
+        </div>
     </div>
 
     <hr>
@@ -67,12 +124,11 @@
         Species set here cannot be inherited through a pairing using this item. If both parents are of an excluded species, the pairing cannot be created unless a default species is set.
         <br><b>If one parent's species is not excluded, it always rolls that parent's species.</b>
     </p>
-
     <div class="form-group">
         {!! Form::label('Default Species (Optional)') !!} {!! add_help('Choose a species that should be set if both parent species are excluded.') !!}
         {!! Form::select('default_species_id', $specieses, $tag->getData()['default_species_id'] ?? null, [
             'class' => 'form-control mr-2
-                                                                                                feature-select',
+                    feature-select',
             'placeholder' => 'Select Default Species',
         ]) !!}
     </div>
@@ -80,7 +136,7 @@
     <table class="table table-sm" id="speciesTable">
         <tbody id="speciesTableBody">
             <tr class="loot-row hide">
-                <td class="loot-row-select border-0">
+                <td class="border-0">
                     {!! Form::select('illegal_species_ids[]', $specieses, null, ['class' => 'form-control item-select', 'placeholder' => 'Select Species']) !!}
                 </td>
                 <td class="text-right border-0"><a href="#" class="btn btn-danger remove-species-button">Remove</a></td>
@@ -88,7 +144,7 @@
             @if (isset($tag->getData()['illegal_species_ids']) && count($tag->getData()['illegal_species_ids']) > 0)
                 @foreach ($tag->getData()['illegal_species_ids'] as $illegal_species_id)
                     <tr class="loot-row">
-                        <td class="loot-row-select border-0">
+                        <td class="border-0">
                             {!! Form::select('illegal_species_ids[]', $specieses, $illegal_species_id, ['class' => 'form-control item-select', 'placeholder' => 'Select Species']) !!}
                         </td>
                         <td class="text-right border-0"><a href="#" class="btn btn-danger remove-species-button">Remove</a></td>
@@ -107,13 +163,12 @@
         Subtype set here cannot be inherited through a pairing using this item. If both parents have an excluded subtype, the pairing will have no subtype unless a default subtype is set.
         <br>If one parent's subtype is not excluded, it always rolls that parent's subtype.
     </p>
-
     <div class="form-group">
         {!! Form::label('Default Subtype (Optional)') !!}
         <p>Choose a subtype that should be set if both parent subtypes are excluded.</p>
         {!! Form::select('default_subtype_ids', $subtypes, $tag->getData()['default_subtype_ids'] ?? null, [
             'class' => 'form-control mr-2
-                                                                                                feature-select',
+                    feature-select',
             'placeholder' => 'Select Default Subtype',
         ]) !!}
     </div>
@@ -121,7 +176,7 @@
     <table class="table table-sm" id="subtypeTable">
         <tbody id="subtypeTableBody">
             <tr class="loot-row hide">
-                <td class="loot-row-select border-0">
+                <td class="border-0">
                     {!! Form::select('illegal_subtype_ids[]', $subtypes, null, ['class' => 'form-control item-select', 'placeholder' => 'Select Subtype']) !!}
                 </td>
                 <td class="text-right border-0"><a href="#" class="btn btn-danger remove-subtype-button">Remove</a></td>
@@ -129,7 +184,7 @@
             @if (isset($tag->getData()['illegal_subtype_ids']) && count($tag->getData()['illegal_subtype_ids']) > 0)
                 @foreach ($tag->getData()['illegal_subtype_ids'] as $illegal_subtype_id)
                     <tr class="loot-row">
-                        <td class="loot-row-select border-0">
+                        <td class="border-0">
                             {!! Form::select('illegal_subtype_ids[]', $subtypes, $illegal_subtype_id, ['class' => 'form-control item-select', 'placeholder' => 'Select Subtype']) !!}
 
                         </td>
@@ -147,13 +202,13 @@
     <h5>Trait Exclusions</h5>
     <p>
         Traits set here cannot be inherited through a pairing using this item, even if one or both of the parents possess the trait.
-        <br><b>Other pairing items can still inherit this trait. If you want a trait to be uninheritable you should set its category to uninheritable or its rarity.</b>
+        <br><b>Other pairing items can still inherit this trait. If you want a trait to be uninheritable you should set its category or its rarity to uninheritable.</b>
     </p>
 
     <table class="table table-sm" id="traitTable">
         <tbody id="traitTableBody">
             <tr class="loot-row hide">
-                <td class="loot-row-select border-0">
+                <td class="border-0">
                     {!! Form::select('illegal_feature_ids[]', $features, null, ['class' => 'form-control item-select', 'placeholder' => 'Select Trait']) !!}
                 </td>
                 <td class="text-right border-0"><a href="#" class="btn btn-danger remove-trait-button">Remove</a></td>
@@ -161,7 +216,7 @@
             @if (isset($tag->getData()['illegal_feature_ids']) && count($tag->getData()['illegal_feature_ids']) > 0)
                 @foreach ($tag->getData()['illegal_feature_ids'] as $illegal_feature_id)
                     <tr class="loot-row">
-                        <td class="loot-row-select border-0">
+                        <td class="border-0">
                             {!! Form::select('illegal_feature_ids[]', $features, $illegal_feature_id, ['class' => 'form-control item-select', 'placeholder' => 'Select Trait']) !!}
 
                         </td>
@@ -186,6 +241,8 @@
                 var $traitRow = $('#traitTableBody').find('.hide');
                 var $subtypeTable = $('#subtypeTableBody');
                 var $subtypeRow = $('#subtypeTableBody').find('.hide');
+                var $categoryTable = $('#categoryTableBody');
+                var $categoryRow = $('#categoryTableBody').find('.hide');
 
                 $('#speciesTableBody .selectize').selectize();
                 attachRemoveListener($('#speciesTableBody .remove-species-button'));
@@ -195,6 +252,9 @@
 
                 $('#subtypeTableBody .selectize').selectize();
                 attachRemoveListener($('#subtypeTableBody .remove-subtype-button'));
+
+                $('#categoryTableBody .selectize').selectize();
+                attachRemoveListener($('#categoryTableBody .remove-category-button'));
 
                 $('#addSpecies').on('click', function(e) {
                     e.preventDefault();
@@ -223,6 +283,14 @@
                     attachRemoveListener($clone.find('.remove-subtype-button'));
                 });
 
+                $('#addCategory').on('click', function(e) {
+                    e.preventDefault();
+                    var $clone = $categoryRow.clone();
+                    $clone.removeClass('hide');
+
+                    $categoryTable.append($clone);
+                    attachRemoveListener($clone.find('.remove-category-button'));
+                });
 
                 function attachRemoveListener(node) {
                     node.on('click', function(e) {

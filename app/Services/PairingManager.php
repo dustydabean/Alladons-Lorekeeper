@@ -866,7 +866,7 @@ class PairingManager extends Service {
         $boosted_chance_by_rarity = [];
         // sort boosts by rarityid for easier access
         foreach ($boosts as $boost) {
-            if ($boost->tag('boost') != null) {
+            if ($boost->tag('boost')) {
                 $boost_tag = $boost->tag('boost');
                 if (isset($boost_tag->getData()['rarity_id'])) {
                     $boosted_chance_by_rarity[$boost_tag->getData()['rarity_id']] =
@@ -881,11 +881,35 @@ class PairingManager extends Service {
 
         //sort features by category
         $features_by_category = $feature_pool->groupBy('feature_category_id');
+        // check if there are any guaranteed categories and add them to the features_by_category array keys
+        $guaranteed_feature_categories = $tag->getData()['guaranteed_feature_categories'] ?? null;
+        if ($guaranteed_feature_categories) {
+            foreach ($guaranteed_feature_categories as $category) {
+                if (!$features_by_category->has($category['id'])) {
+                    // get the lowest rarity features in the category
+                    $features_by_category[$category['id']] = Feature::where('feature_category_id', $category['id'])->orderBy('rarity_id', 'asc')->get();
+                }
+            }
+        }
         $chosen_features = [];
         foreach ($features_by_category as $categoryId=>$features) {
             //if no category is set, make min inheritable 0 and max inheritable 100 (basically, unlimited)
             $min_inheritable = $features->first()->category->min_inheritable ?? 0;
             $max_inheritable = $features->first()->category->max_inheritable ?? 100;
+
+            // check if the guaranteed category is set and check the min and max inheritable values
+            if (isset($guaranteed_feature_categories) && collect($guaranteed_feature_categories)->where('id', $categoryId)->first()) {
+                // get the guaranteed_feature_categories where the guaranteed_feature_categories['id'] == $categoryId
+                $tagData = collect($guaranteed_feature_categories)->where('id', $categoryId)->first();
+                // check if tagData['number'] contains a '-' and split it into min and max values
+                if (strpos($tagData['number'], '-') !== false) {
+                    $min_max = explode('-', $tagData['number']);
+                    $min_inheritable = $min_max[0];
+                    $max_inheritable = $min_max[1];
+                } else {
+                    $min_inheritable = $tagData['number'];
+                }
+            }
 
             $features_calculated = 0;
             $features_chosen = 0;
