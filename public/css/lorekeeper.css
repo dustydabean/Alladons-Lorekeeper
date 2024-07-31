@@ -754,6 +754,14 @@ tr.accountbound {
     .comment_replies { padding-left:1rem;}
 }
 
+.clock-styling {
+    padding: 5px 15px;
+    border-radius: 15px 15px;
+    margin-bottom: .5em;
+    color: #fff;
+    letter-spacing: .05em;
+}
+
 .collectionnotunlocked {               
     opacity: 0.4;
     filter: alpha(opacity=40);
