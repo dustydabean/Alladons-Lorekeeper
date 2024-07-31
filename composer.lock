@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9f3845b7ad87c265e08562b4b28d0923",
+    "content-hash": "93f6d1132c34e3b641d0e67fce328800",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -2543,12 +2543,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/color-extractor.git",
-                "reference": "f2b93dc078de50734e15f2394a9f9909abae70c5"
+                "reference": "21fcac6249c5ef7d00eb83e128743ee6678fe505"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/color-extractor/zipball/f2b93dc078de50734e15f2394a9f9909abae70c5",
-                "reference": "f2b93dc078de50734e15f2394a9f9909abae70c5",
+                "url": "https://api.github.com/repos/thephpleague/color-extractor/zipball/21fcac6249c5ef7d00eb83e128743ee6678fe505",
+                "reference": "21fcac6249c5ef7d00eb83e128743ee6678fe505",
                 "shasum": ""
             },
             "require": {
@@ -2559,20 +2559,16 @@
                 "matthecat/colorextractor": "*"
             },
             "require-dev": {
-                "laravel/framework": "~4.1",
-                "orchestra/testbench": "~2.0",
-                "silex/silex": "~1.1",
-                "squizlabs/php_codesniffer": "~1.5",
                 "friendsofphp/php-cs-fixer": "~2",
                 "phpunit/phpunit": "^9.5"
             },
+            "suggest": {
+                "ext-curl": "To download images from remote URLs if allow_url_fopen is disabled for security reasons"
+            },
             "type": "library",
             "autoload": {
-                "psr-0": {
-                    "League\\ColorExtractor": [
-                        "src",
-                        "tests"
-                    ]
+                "psr-4": {
+                    "League\\ColorExtractor\\": "src"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -2598,9 +2594,9 @@
             ],
             "support": {
                 "issues": "https://github.com/thephpleague/color-extractor/issues",
-                "source": "https://github.com/thephpleague/color-extractor/tree/master"
+                "source": "https://github.com/thephpleague/color-extractor/tree/0.4.0"
             },
-            "time": "2016-01-07T16:14:09+00:00"
+            "time": "2022-09-24T15:57:16+00:00"
         },
         {
             "name": "league/commonmark",
