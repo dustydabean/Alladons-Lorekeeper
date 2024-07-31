@@ -1,4 +1,3 @@
-<i class="far fa-clock"></i> {!! LiveClock("Europe/London") !!}
 <nav class="navbar navbar-expand-md navbar-dark bg-dark" id="headerNav">
     <div class="container-fluid">
         <a class="navbar-brand" href="{{ url('/') }}">
