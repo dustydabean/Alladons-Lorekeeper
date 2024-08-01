@@ -33,7 +33,7 @@ return [
 
     'theme_manager' => [
         'key' => 'theme_manager',
-        'wiki_key' => 'Theme Manager',
+        'wiki_key' => 'Theme_Manager',
         'creators' => json_encode([
             'Uri' => 'https://github.com/preimpression/',
             'Cylunny' => 'https://toyhou.se/cylunny',
@@ -61,6 +61,7 @@ return [
     ],
 
     'pets' => [
+        'key'      => 'pets',
         'wiki_key' => 'Pets',
         'creators' => json_encode([
             'Newt'      => 'https://github.com/ne-wt/',
