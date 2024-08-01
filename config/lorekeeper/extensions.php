@@ -66,7 +66,7 @@ return [
 
     // Auto-populate New Image Traits - Mercury
     // Automatically adds the traits present on a character's active image to the list when uploading a new image for an extant character.
-    'autopopulate_image_features'          => 0,
+    'autopopulate_image_features'          => 1,
 
     // Staff Rewards - Mercury
     'staff_rewards'                        => [
@@ -89,7 +89,7 @@ return [
 
     // Show All Recent Submissions - Speedy
     'show_all_recent_submissions' => [
-        'enable' => 0,
+        'enable' => 1,
         'links'  => [
             'sidebar'      => 1,      // By default, ON, and will display in the sidebar.
             'indexbutton'  => 1, // By default, ON, and will display a button on the index.
