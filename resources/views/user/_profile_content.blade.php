@@ -141,7 +141,7 @@
         </div>
         </div>
 
-<div class="card mb-3">
+<!--<div class="card mb-3">
     <div class="card-body text-center">
         <h5 class="card-title">Pets</h5>
         <div class="card-body">
@@ -162,7 +162,7 @@
         </div>
         <div class="text-right"><a href="{{ $user->url . '/pets' }}">View all...</a></div>
     </div>
-</div>
+</div>-->
 
 <h2>
     <a href="{{ $user->url . '/characters' }}">Characters</a>
