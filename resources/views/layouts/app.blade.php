@@ -128,7 +128,7 @@
 <body>
     <div id="app">
 
-        <div class="site-header-image" id="header" style="background-image: url('{{ $decoratorTheme?->headerImageUrl ?? $conditionalTheme?->headerImageUrl ?? $theme?->headerImageUrl ?? asset('images/header.png') }}'); position: relative;">
+        <div class="site-header-image" id="header" style="background-image: url('{{ $decoratorTheme?->headerImageUrl ?? $conditionalTheme?->headerImageUrl ?? $theme?->headerImageUrl ?? asset('images/header.png') }}'); position: relative; background-position: center;">
             @include('layouts._clock')
         </div>
 
