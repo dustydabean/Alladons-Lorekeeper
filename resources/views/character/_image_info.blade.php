@@ -168,7 +168,7 @@
                     </div>
                 @endif
 
-                <div class="mb-1">
+                <!--<div class="mb-1">
                     <div>
                         <h5>Pets</h5>
                     </div>
@@ -192,7 +192,7 @@
                             <a href="{{ $character->url . '/pets' }}" class="btn btn-outline-info btn-sm">View All</a>
                         </div>
                     </div>
-                </div>
+                </div>-->
             </div>
 
             {{-- Image notes --}}
