@@ -68,7 +68,7 @@
         <thead>
             <th>Sender</th>
             <th>Recipient</th>
-            <th>Pet</th>
+            <!--<th>Pet</th>-->
             <th>Log</th>
             <th>Date</th>
         </thead>
