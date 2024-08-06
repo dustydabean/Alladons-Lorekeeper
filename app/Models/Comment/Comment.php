@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Comment;
+namespace App\Models\Comment\Comment;
 
 use App\Events\CommentCreated;
 use App\Events\CommentDeleted;
@@ -82,7 +82,7 @@ class Comment extends Model {
      */
     public function children()
     {
-        return $this->hasMany('App\Models\Comment', 'child_id');
+        return $this->hasMany('App\Models\Comment\Comment', 'child_id');
     }
 
     /**
@@ -90,7 +90,7 @@ class Comment extends Model {
      */
     public function parent()
     {
-        return $this->belongsTo('App\Models\Comment', 'child_id');
+        return $this->belongsTo('App\Models\Comment\Comment', 'child_id');
     }
 
     /**

@@ -29,7 +29,7 @@ class CommentLike extends Model {
      * Get the comment.
      */
     public function comment() {
-        return $this->belongsTo('App\Models\Comment');
+        return $this->belongsTo('App\Models\Comment\Comment');
     }
 
     /**
