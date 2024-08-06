@@ -6,6 +6,7 @@ use App\Models\Sales\Sales;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
+use App\Models\Theme;
 
 class SalesController extends Controller {
     /*
