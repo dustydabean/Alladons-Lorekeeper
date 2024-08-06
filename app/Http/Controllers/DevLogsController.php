@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 
 use App\Models\DevLogs;
 use App\Models\News;
+use App\Models\Theme;
 
 class DevLogsController extends Controller
 {
@@ -28,6 +29,8 @@ class DevLogsController extends Controller
     public function __construct() {
         View::share('recentdevLogs', DevLogs::visible()->orderBy('updated_at', 'DESC')->take(10)->get());
         View::share('recentnews', News::visible()->orderBy('updated_at', 'DESC')->take(10)->get());
+        $this->defaultTheme = Theme::where('is_default',true)->first();
+        View::share('defaultTheme', $this->defaultTheme);
     }
 
     /**
