@@ -6,6 +6,7 @@ use Auth;
 
 use Illuminate\Support\Facades\View;
 use App\Http\Controllers\Controller;
+use App\Models\Theme;
 
 use App\Models\News;
 use App\Models\DevLogs;
@@ -26,6 +27,8 @@ class NewsController extends Controller {
     public function __construct() {
         View::share('recentnews', News::visible()->orderBy('updated_at', 'DESC')->take(10)->get());
         View::share('recentdevLogs', DevLogs::visible()->orderBy('updated_at', 'DESC')->take(10)->get());
+        $this->defaultTheme = Theme::where('is_default',true)->first();
+        View::share('defaultTheme', $this->defaultTheme);
     }
 
     /**
