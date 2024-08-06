@@ -109,7 +109,7 @@
                         </a>
                         <a class="dropdown-item" href="{{ url('team') }}">
                             Staff
-
+                        </a>
                         <div class="dropdown-divider"></div>
                         @if (Auth::check() && Auth::user()->is_raffles_unread && config('lorekeeper.extensions.navbar_news_notif'))
                             <a class="dropdown-item text-warning" href="{{ url('raffles') }}">
