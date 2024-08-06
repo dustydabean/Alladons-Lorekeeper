@@ -18,7 +18,7 @@
         </li>
     @endif
 
-    <li class="sidebar-header"><a href="{{ url('devlogs') }}" class="card-link">Developpement Logs</a></li>
+    <li class="sidebar-header"><a href="{{ url('devlogs') }}" class="card-link">Development Logs</a></li>
         <li class="sidebar-section">
             <div class="sidebar-section-header">Recent Dev Logs</div>
             @foreach ($recentdevLogs->take(2) as $devLogs)
