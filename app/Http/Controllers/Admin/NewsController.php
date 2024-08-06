@@ -17,6 +17,7 @@ class NewsController extends Controller {
     public function getIndex() {
         return view('admin.news.news', [
             'newses' => News::orderBy('updated_at', 'DESC')->paginate(20),
+            'defaultTheme' => Theme::where('is_default',true)->first(),
         ]);
     }
 
