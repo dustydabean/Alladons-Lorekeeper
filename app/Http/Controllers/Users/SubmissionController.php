@@ -239,7 +239,7 @@ class SubmissionController extends Controller {
         }
 
         $request->validate(Submission::$updateRules);
-        if ($submit && $service->editSubmission($submission, $request->only(['url', 'prompt_id', 'comments', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity', 'rewardable_type', 'rewardable_id', 'quantity', 'stack_id', 'stack_quantity', 'currency_id', 'currency_quantity']), Auth::user(), false, $submit)) {
+        if ($submit && $service->editSubmission($submission, $request->only(['url', 'prompt_id', 'comments', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity', 'rewardable_type', 'rewardable_id', 'quantity', 'stack_id', 'stack_quantity', 'currency_id', 'currency_quantity', 'character_notify_owner']), Auth::user(), false, $submit)) {
             flash('Draft submitted successfully.')->success();
         } elseif ($service->editSubmission($submission, $request->only(['url', 'prompt_id', 'comments', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity', 'rewardable_type', 'rewardable_id', 'quantity', 'stack_id', 'stack_quantity', 'currency_id', 'currency_quantity']), Auth::user())) {
             flash('Draft saved successfully.')->success();
