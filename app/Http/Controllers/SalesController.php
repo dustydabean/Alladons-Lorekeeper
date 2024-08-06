@@ -23,6 +23,7 @@ class SalesController extends Controller {
     public function __construct() {
         View::share('forsale', Sales::visible()->orderBy('updated_at', 'DESC')->where('is_open', 1)->get());
         View::share('recentsales', Sales::visible()->orderBy('updated_at', 'DESC')->take(10)->get());
+        View::share('defaultTheme', $this->defaultTheme);
     }
 
     /**
