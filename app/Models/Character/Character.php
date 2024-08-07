@@ -45,7 +45,7 @@ class Character extends Model {
         'is_sellable', 'is_tradeable', 'is_giftable',
         'sale_value', 'transferrable_at', 'is_visible',
         'is_gift_art_allowed', 'is_gift_writing_allowed', 'is_trading', 'sort',
-        'is_myo_slot', 'name', 'trade_id', 'is_links_open', 'owner_url',
+        'is_myo_slot', 'name', 'trade_id', 'is_links_open', 'owner_url', 'poucher_code',
     ];
 
     /**
@@ -94,6 +94,7 @@ class Character extends Model {
         'image'                 => 'required|mimes:jpeg,jpg,gif,png|max:20000',
         'thumbnail'             => 'nullable|mimes:jpeg,jpg,gif,png|max:20000',
         'owner_url'             => 'url|nullable',
+        'poucher_code'          => 'nullable|between:1,20',
     ];
 
     /**
@@ -347,11 +348,12 @@ class Character extends Model {
 
     /**
      * Displays the character's name, linked to their character page.
+     * Added Poucher Code. 
      *
      * @return string
      */
     public function getDisplayNameAttribute() {
-        return '<a href="'.$this->url.'" class="display-character">'.$this->fullName.'</a>';
+        return '<a href="'.$this->url.'" class="display-character">'.$this->fullName.'</a>'. (isset($this->poucher_code) ? ' ('.$this->poucher_code.')' : '' );
     }
 
     /**
