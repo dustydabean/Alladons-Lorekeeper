@@ -1397,6 +1397,7 @@ class CharacterManager extends Service {
             // Update the character's profile
             if (!$character->is_myo_slot) {
                 $character->name = $data['name'];
+                $character->name = $data['poucher_code'];
             }
             $character->save();
 
