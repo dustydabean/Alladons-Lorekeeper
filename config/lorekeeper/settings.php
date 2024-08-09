@@ -154,13 +154,13 @@ return [
     | 'masterlist_image_background' => '#ffffff',
     |
     */
-    'watermark_masterlist_images'                       => 0,
+    'watermark_masterlist_images'                       => 1,
 
     'masterlist_image_dimension'                        => 0,
     'masterlist_image_dimension_target'                 => 'shorter',
 
     'masterlist_image_format'                           => null,
-    'masterlist_image_background'                       => '#313338',
+    'masterlist_image_background'                       => '#ffffff',
 
     /*
     |--------------------------------------------------------------------------
@@ -224,8 +224,8 @@ return [
     |
     */
 
-    'watermark_resizing'                                => 0,
-    'watermark_percent'                                 => 0.9,
+    'watermark_resizing'                                => 1,
+    'watermark_percent'                                 => 0.7,
     'watermark_resizing_thumb'                          => 0,
 
     /*
