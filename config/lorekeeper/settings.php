@@ -225,7 +225,7 @@ return [
     */
 
     'watermark_resizing'                                => 1,
-    'watermark_percent'                                 => 0.65,
+    'watermark_percent'                                 => 0.4,
     'watermark_resizing_thumb'                          => 0,
 
     /*
