@@ -261,7 +261,7 @@ return [
     | 1: Hides the thumbnail upload for users.
     |
     */
-    'masterlist_image_automation_hide_manual_thumbnail' => 0,
+    'masterlist_image_automation_hide_manual_thumbnail' => 1,
 
     /*
     |--------------------------------------------------------------------------
