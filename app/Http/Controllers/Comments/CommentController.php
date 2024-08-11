@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Comments;
 
 use App\Facades\Notifications;
 use App\Facades\Settings;
-use App\Models\Comment\Comment;
+use App\Models\Comment\Comment\Comment;
 use App\Models\Gallery\GallerySubmission;
 use App\Models\News;
 use App\Models\DevLogs;
