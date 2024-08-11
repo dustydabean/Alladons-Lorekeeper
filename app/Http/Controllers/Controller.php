@@ -20,7 +20,5 @@ class Controller extends BaseController
      * @return void
      */
     public function __construct() {
-        $this->defaultTheme = Theme::where('is_default',true)->first();
-        View::share('defaultTheme', $this->defaultTheme);
     }
 }

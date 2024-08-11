@@ -44,7 +44,7 @@
         <div class="form-group row">
             <label class="col-md-3 col-form-label">Base Theme</label>
             <div class="col-md-9">
-                {!! Form::select('theme', $themeOptions, Auth::user()->theme_id ? Auth::user()->theme_id : ($defaultTheme ? $defaultTheme->id : 0) , ['class' => 'form-control']) !!}
+                {!! Form::select('theme', $themeOptions, Auth::user()->theme_id ? Auth::user()->theme_id : ($theme ? $theme->id : 0) , ['class' => 'form-control']) !!}
             </div>
         </div>
         <div class="form-group row">
