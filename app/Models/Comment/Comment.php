@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Comment\Comment;
+namespace App\Models\Comment;
 
 use App\Events\CommentCreated;
 use App\Events\CommentDeleted;
