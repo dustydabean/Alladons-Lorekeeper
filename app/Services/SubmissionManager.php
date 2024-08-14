@@ -8,8 +8,6 @@ use App\Models\Character\Character;
 use App\Models\Currency\Currency;
 use App\Models\Item\Item;
 use App\Models\Loot\LootTable;
-use App\Models\Pet\Pet;
-use App\Models\Pet\PetVariant;
 use App\Models\Prompt\Prompt;
 use App\Models\Raffle\Raffle;
 use App\Models\Submission\Submission;
@@ -19,6 +17,9 @@ use App\Models\User\UserItem;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+
+/*use App\Models\Pet\Pet;
+use App\Models\Pet\PetVariant;*/
 
 class SubmissionManager extends Service {
     /*
@@ -31,7 +32,7 @@ class SubmissionManager extends Service {
     */
 
     /**
-     * Helper function to remove all empty/zero/falsey values.
+     * Creates a new submission.
      *
      * @param array                 $data
      * @param \App\Models\User\User $user
@@ -41,52 +42,31 @@ class SubmissionManager extends Service {
      * @return mixed
      */
     public function createSubmission(
-        $data,
-        $user,
-        $isClaim = false,
-        $isActivity = false
-    )
-    {
+        $data, 
+        $user, 
+        $isClaim = false, 
+        $isDraft = false, 
+        $isActivity = false,) {
         DB::beginTransaction();
 
         try {
             // 1. check that the prompt can be submitted at this time
             // 2. check that the characters selected exist (are visible too)
             // 3. check that the currencies selected can be attached to characters
-            if(!$isClaim && !Settings::get('is_prompts_open')) throw new \Exception("The prompt queue is closed for submissions.");
-            else if($isClaim && !Settings::get('is_claims_open')) throw new \Exception("The claim queue is closed for submissions.");
-            if(!$isClaim && !isset($data['prompt_id'])) throw new \Exception("Please select a prompt.");
-            if(!$isClaim) {
+            if (!$isClaim && !Settings::get('is_prompts_open')) {
+                throw new \Exception('The prompt queue is closed for submissions.');
+            } elseif ($isClaim && !Settings::get('is_claims_open')) {
+                throw new \Exception('The claim queue is closed for submissions.');
+            }
+            if (!$isClaim && !isset($data['prompt_id'])) {
+                throw new \Exception('Please select a prompt.');
+            }
+            if (!$isClaim) {
                 $prompt = Prompt::query();
                 if (!$isActivity) $prompt = $prompt->active();
                 $prompt = $prompt->where('id', $data['prompt_id'])->with('rewards')->first();
-                if(!$prompt) throw new \Exception("Invalid prompt selected.");
-            }
-            else $prompt = null;
-
-            // The character identification comes in both the slug field and as character IDs
-            // that key the reward ID/quantity arrays.
-            // We'll need to match characters to the rewards for them.
-            // First, check if the characters are accessible to begin with.
-            if(isset($data['slug'])) {
-                $characters = Character::myo(0)->visible()->whereIn('slug', $data['slug'])->get();
-                if(count($characters) != count($data['slug'])) throw new \Exception("One or more of the selected characters do not exist.");
-            }
-            else $characters = [];
-
-            $userAssets = createAssetsArray();
-
-            // Attach items. Technically, the user doesn't lose ownership of the item - we're just adding an additional holding field.
-            // We're also not going to add logs as this might add unnecessary fluff to the logs and the items still belong to the user.
-            if(isset($data['stack_id'])) {
-                foreach($data['stack_id'] as $stackId) {
-                    $stack = UserItem::with('item')->find($stackId);
-                    if(!$stack || $stack->user_id != $user->id) throw new \Exception("Invalid item selected.");
-                    if(!isset($data['stack_quantity'][$stackId])) throw new \Exception("Invalid quantity selected.");
-                    $stack->submission_count += $data['stack_quantity'][$stackId];
-                    $stack->save();
-
-                    addAsset($userAssets, $stack, $data['stack_quantity'][$stackId]);
+                if (!$prompt) {
+                    throw new \Exception('Invalid prompt selected.');
                 }
 
                 if ($prompt->staff_only && !$user->isStaff) {
@@ -484,7 +464,7 @@ class SubmissionManager extends Service {
                 SubmissionCharacter::create([
                     'character_id'  => $c->id,
                     'submission_id' => $submission->id,
-                    'data' => json_encode(getDataReadyAssets($assets)),
+                    'data'          => json_encode(getDataReadyAssets($assets)),
                     /*'notify_owner' => isset($data['character_notify_owner']) && $data['character_notify_owner'][$c->id] ? $data['character_notify_owner'][$c->id] : 0,*/
                 ]);
             }
@@ -663,12 +643,12 @@ class SubmissionManager extends Service {
                                 throw new \Exception('Invalid currency selected.');
                             }
                             break;
-                        case 'Pet':
-                            $reward = Pet::find($data['rewardable_id'][$key]);
-                            break;
-                        case 'PetVariant':
-                            $reward = PetVariant::find($data['rewardable_id'][$key]);
-                            break;
+                            /*case 'Pet':
+                                $reward = Pet::find($data['rewardable_id'][$key]);
+                                break;
+                            case 'PetVariant':
+                                $reward = PetVariant::find($data['rewardable_id'][$key]);
+                                break;*/
                         case 'LootTable':
                             if (!$isStaff) {
                                 break;
