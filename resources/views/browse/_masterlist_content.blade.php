@@ -31,11 +31,11 @@
                 {!! Form::select('owner', $userOptions, Request::get('owner'), ['class' => 'form-control mr-2 userselectize', 'style' => 'width: 250px', 'placeholder' => 'Select a User']) !!}
             </div>
             <div class="masterlist-search-field">
-                {!! Form::label('artist', 'Artist: ') !!}
+                {!! Form::label('artist', 'Age Up Artist: ') !!}
                 {!! Form::select('artist', $userOptions, Request::get('artist'), ['class' => 'form-control mr-2 userselectize', 'style' => 'width: 250px', 'placeholder' => 'Select a User']) !!}
             </div>
             <div class="masterlist-search-field">
-                {!! Form::label('designer', 'Designer: ') !!}
+                {!! Form::label('designer', 'Poucher/Adopt Artist: ') !!}
                 {!! Form::select('designer', $userOptions, Request::get('designer'), ['class' => 'form-control mr-2 userselectize', 'style' => 'width: 250px', 'placeholder' => 'Select a User']) !!}
             </div>
             <hr />
