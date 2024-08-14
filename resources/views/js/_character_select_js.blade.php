@@ -26,11 +26,11 @@
                 $parent.find('.character-image-loaded').load('{{ url('submissions/new/character') }}/' + $(this).val(), function(response, status, xhr) {
                     $parent.find('.character-image-blank').addClass('hide');
                     $parent.find('.character-image-loaded').removeClass('hide');
-                    $parent.find('.gift-notifs').removeClass('hide');
+                    /*$parent.find('.gift-notifs').removeClass('hide');*/
                     $parent.find('.character-rewards').removeClass('hide');
                     updateRewardNames(node, node.find('.character-info').data('id'));
                 });
-                $parent.find('.character-gift-permissions').load('{{ url('submissions/new/character-permissions') }}/'+$(this).val());
+                /*$parent.find('.character-gift-permissions').load('{{ url('submissions/new/character-permissions') }}/'+$(this).val());*/
             });
             node.find('.remove-character').on('click', function(e) {
                 e.preventDefault();
@@ -76,7 +76,7 @@
         function updateRewardNames(node, id) {
             node.find('.character-rewardable-type').attr('name', 'character_rewardable_type[' + id + '][]');
             node.find('.character-rewardable-quantity').attr('name', 'character_rewardable_quantity[' + id + '][]');
-            node.find('.character-notify-owner').attr('name', 'character_notify_owner[' + id + ']');
+            /*node.find('.character-notify-owner').attr('name', 'character_notify_owner[' + id + ']');*/
             node.find('.character-currency-id').attr('name', 'character_rewardable_id[' + id + '][]');
             node.find('.character-item-id').attr('name', 'character_rewardable_id[' + id + '][]');
             node.find('.character-table-id').attr('name', 'character_rewardable_id[' + id + '][]');

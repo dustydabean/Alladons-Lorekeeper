@@ -142,9 +142,9 @@
                 <div class="submission-character-info-content">
                     <h3 class="mb-2 submission-character-info-header">
                         <a href="{{ $character->character->url }}">{{ $character->character->fullName }}</a>
-                        @if($character->notify_owner)
+                        <!--@if($character->notify_owner)
                             <i class="fas fa-envelope-open-text float-right" data-toggle="tooltip" data-placement="top" title="This character's owner  {{ $submission->status != 'Pending' ? 'was' : 'will be' }} notified of a gift sumbission!"></i>
-                        @endif
+                        @endif-->
                     </h3>
                     <div class="submission-character-info-body">
                     <table class="table table-sm mb-0">
