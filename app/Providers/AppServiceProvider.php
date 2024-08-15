@@ -9,7 +9,9 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
-use App\Providers\Auth;
+
+use Auth;
+use View;
 
 class AppServiceProvider extends ServiceProvider {
     /**
