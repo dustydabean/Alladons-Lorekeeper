@@ -142,6 +142,7 @@ class CharacterController extends Controller {
         return view('character.profile', [
             'character'             => $this->character,
             'extPrevAndNextBtnsUrl' => '/profile',
+            'defaultTheme'          => Theme::where('is_default',true)->first(),
         ]);
     }
 
@@ -212,6 +213,7 @@ class CharacterController extends Controller {
             'character'             => $this->character,
             'extPrevAndNextBtnsUrl' => '/gallery',
             'submissions'           => GallerySubmission::whereIn('id', $this->character->gallerySubmissions->pluck('gallery_submission_id')->toArray())->visible()->accepted()->orderBy('created_at', 'DESC')->paginate(20)->appends($request->query()),
+            'defaultTheme'          => Theme::where('is_default',true)->first(),
         ]);
     }
 
@@ -227,6 +229,7 @@ class CharacterController extends Controller {
             'user'                  => Auth::check() ? Auth::user() : null,
             'character'             => $this->character,
             'extPrevAndNextBtnsUrl' => '/images',
+            'defaultTheme'          => Theme::where('is_default',true)->first(),
         ]);
     }
 
@@ -262,6 +265,7 @@ class CharacterController extends Controller {
             'categories'            => $categories->keyBy('id'),
             'items'                 => $items,
             'logs'                  => $this->character->getItemLogs(),
+            'defaultTheme'          => Theme::where('is_default',true)->first(),
         ] + (Auth::check() && (Auth::user()->hasPower('edit_inventories') || Auth::user()->id == $this->character->user_id) ? [
             'itemOptions'   => $itemOptions->pluck('name', 'id'),
             'userInventory' => UserItem::with('item')->whereIn('item_id', $itemOptions->pluck('id'))->whereNull('deleted_at')->where('count', '>', '0')->where('user_id', Auth::user()->id)->get()->filter(function ($userItem) {
@@ -286,6 +290,7 @@ class CharacterController extends Controller {
             'extPrevAndNextBtnsUrl' => '/bank',
             'currencies'            => $character->getCurrencies(true),
             'logs'                  => $this->character->getCurrencyLogs(),
+            'defaultTheme'          => Theme::where('is_default',true)->first(),
         ] + (Auth::check() && Auth::user()->id == $this->character->user_id ? [
             'takeCurrencyOptions' => Currency::where('allow_character_to_user', 1)->where('is_user_owned', 1)->where('is_character_owned', 1)->whereIn('id', CharacterCurrency::where('character_id', $this->character->id)->pluck('currency_id')->toArray())->orderBy('sort_character', 'DESC')->pluck('name', 'id')->toArray(),
             'giveCurrencyOptions' => Currency::where('allow_user_to_character', 1)->where('is_user_owned', 1)->where('is_character_owned', 1)->whereIn('id', UserCurrency::where('user_id', Auth::user()->id)->pluck('currency_id')->toArray())->orderBy('sort_user', 'DESC')->pluck('name', 'id')->toArray(),
@@ -377,6 +382,7 @@ class CharacterController extends Controller {
             'character'             => $this->character,
             'extPrevAndNextBtnsUrl' => '/currency-logs',
             'logs'                  => $this->character->getCurrencyLogs(0),
+            'defaultTheme'          => Theme::where('is_default',true)->first(),
         ]);
     }
 
@@ -392,6 +398,7 @@ class CharacterController extends Controller {
             'character'             => $this->character,
             'extPrevAndNextBtnsUrl' => '/item-logs',
             'logs'                  => $this->character->getItemLogs(0),
+            'defaultTheme'          => Theme::where('is_default',true)->first(),
         ]);
     }
 
@@ -407,6 +414,7 @@ class CharacterController extends Controller {
             'character'             => $this->character,
             'extPrevAndNextBtnsUrl' => '/ownership',
             'logs'                  => $this->character->getOwnershipLogs(0),
+            'defaultTheme'          => Theme::where('is_default',true)->first(),
         ]);
     }
 
@@ -422,6 +430,7 @@ class CharacterController extends Controller {
             'character'             => $this->character,
             'extPrevAndNextBtnsUrl' => '/change-log',
             'logs'                  => $this->character->getCharacterLogs(),
+            'defaultTheme'          => Theme::where('is_default',true)->first(),
         ]);
     }
 
@@ -437,6 +446,7 @@ class CharacterController extends Controller {
             'character'             => $this->character,
             'extPrevAndNextBtnsUrl' => '/submissions',
             'logs'                  => $this->character->getSubmissions(),
+            'defaultTheme'          => Theme::where('is_default',true)->first(),
         ]);
     }
 
@@ -464,6 +474,7 @@ class CharacterController extends Controller {
             'cooldown'       => Settings::get('transfer_cooldown'),
             'transfersQueue' => Settings::get('open_transfers_queue'),
             'userOptions'    => User::visible()->orderBy('name')->pluck('name', 'id')->toArray(),
+            'defaultTheme'          => Theme::where('is_default',true)->first(),
         ]);
     }
 
@@ -578,6 +589,7 @@ class CharacterController extends Controller {
         return view('character.links', [
             'character' => $this->character,
             'types'     => config('lorekeeper.character_relationships'),
+            'defaultTheme'          => Theme::where('is_default',true)->first(),
         ]);
     }
 
@@ -763,6 +775,7 @@ class CharacterController extends Controller {
     public function getCharacterPets($slug) {
         return view('character.pets', [
             'character'             => $this->character,
+            'defaultTheme'          => Theme::where('is_default',true)->first(),
         ]);
     }
 }
