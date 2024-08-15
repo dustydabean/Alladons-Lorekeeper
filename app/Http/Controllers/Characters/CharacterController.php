@@ -126,6 +126,7 @@ class CharacterController extends Controller {
             'character'             => $this->character,
             'showMention'           => true,
             'extPrevAndNextBtnsUrl' => '',
+            'defaultTheme'          => Theme::where('is_default',true)->first(),
         ]);
     }
 
