@@ -6,7 +6,6 @@ use App\Models\Sales\Sales;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
-use App\Models\Theme;
 
 class SalesController extends Controller {
     /*
@@ -24,8 +23,6 @@ class SalesController extends Controller {
     public function __construct() {
         View::share('forsale', Sales::visible()->orderBy('updated_at', 'DESC')->where('is_open', 1)->get());
         View::share('recentsales', Sales::visible()->orderBy('updated_at', 'DESC')->take(10)->get());
-        $this->defaultTheme = Theme::where('is_default',true)->first();
-        View::share('defaultTheme', $this->defaultTheme);
     }
 
     /**

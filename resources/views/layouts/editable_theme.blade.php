@@ -92,7 +92,7 @@
 .sidebar-section, .sidebar-item, .sidebar a:hover, .sidebar a:active, 
 option:hover, .form-control, .selectize-input, .selectize-dropdown .active, 
 ::placeholder, .breadcrumb-item, 
-.dropdown-item:hover, .dropdown-item, .dropdown-menu {
+.dropdown-item:hover, .dropdown-item, .dropdown-menu, #tinymce {
     @if($mainColor) background-color: {{ $mainColor }} !important; @endif
     @if($mainTextColor) color: {{ $mainTextColor }} !important; @endif
 }

@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Theme;
 use App\Providers\Socialite\ToyhouseProvider;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
@@ -25,6 +26,20 @@ class AppServiceProvider extends ServiceProvider {
         Schema::defaultStringLength(191);
         Paginator::defaultView('layouts._pagination');
         Paginator::defaultSimpleView('layouts._simple-pagination');
+
+        view()->composer('*', function () {
+            $theme = Auth::user()->theme ?? Theme::where('is_default', true)->first() ?? null;
+            $conditionalTheme = null;
+            if (class_exists('\App\Models\Weather\WeatherSeason')) {
+                $conditionalTheme = \App\Models\Theme::where('link_type', 'season')->where('link_id', Settings::get('site_season'))->first() ??
+                \App\Models\Theme::where('link_type', 'weather')->where('link_id', Settings::get('site_weather'))->first() ??
+                $theme;
+            }
+            $decoratorTheme = Auth::user()->decoratorTheme ?? null;
+            View::share('theme', $theme);
+            View::share('conditionalTheme', $conditionalTheme);
+            View::share('decoratorTheme', $decoratorTheme);
+        });
 
         /*
          * Paginate a standard Laravel Collection.
