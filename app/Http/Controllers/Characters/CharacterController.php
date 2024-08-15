@@ -31,6 +31,7 @@ use App\Models\Rarity;
 use App\Models\Feature\Feature;
 use App\Services\CharacterLinkService;
 use App\Models\Currency\CurrencyLog;
+use App\Models\Theme;
 
 class CharacterController extends Controller {
     /*
