@@ -154,7 +154,7 @@ return [
     | 'masterlist_image_background' => '#ffffff',
     |
     */
-    'watermark_masterlist_images'                       => 1,
+    'watermark_masterlist_images'                       => 0,
 
     'masterlist_image_dimension'                        => 0,
     'masterlist_image_dimension_target'                 => 'shorter',
@@ -179,7 +179,7 @@ return [
     | 'masterlist_fullsizes_format' => null,
     |
     */
-    'store_masterlist_fullsizes'                        => 1,
+    'store_masterlist_fullsizes'                        => 0,
     'masterlist_fullsizes_cap'                          => 0,
     'masterlist_fullsizes_format'                       => null,
 
@@ -224,7 +224,7 @@ return [
     |
     */
 
-    'watermark_resizing'                                => 1,
+    'watermark_resizing'                                => 0,
     'watermark_percent'                                 => 0.4,
     'watermark_resizing_thumb'                          => 0,
 
@@ -261,7 +261,7 @@ return [
     | 1: Hides the thumbnail upload for users.
     |
     */
-    'masterlist_image_automation_hide_manual_thumbnail' => 1,
+    'masterlist_image_automation_hide_manual_thumbnail' => 0,
 
     /*
     |--------------------------------------------------------------------------
