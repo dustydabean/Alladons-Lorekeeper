@@ -250,14 +250,6 @@ class User extends Authenticatable implements MustVerifyEmail {
         return $this->hasMany(CommentLike::class);
     }
 
-    /**
-     * gets all the user's character folders
-     */
-    public function folders()
-    {
-        return $this->hasMany('App\Models\Character\CharacterFolder');
-    }
-
     /**********************************************************************************************
 
         SCOPES

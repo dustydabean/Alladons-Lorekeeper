@@ -1119,7 +1119,6 @@ class CharacterManager extends Service {
         try {
             $ids = array_reverse(explode(',', $data['sort']));
             $characters = Character::myo(0)->whereIn('id', $ids)->where('user_id', $user->id)->where('is_visible', 1)->orderBy(DB::raw('FIELD(id, '.implode(',', $ids).')'))->get();
-            $folders = array_reverse($data['folder_ids']);
 
             if (count($characters) != count($ids)) {
                 throw new \Exception('Invalid character included in sorting order.');
@@ -1128,8 +1127,6 @@ class CharacterManager extends Service {
             $count = 0;
             foreach ($characters as $character) {
                 $character->sort = $count;
-                if($folders[$count] == 'None') $character->folder_id = null; 
-                else $character->folder_id = $folders[$count];
                 $character->save();
                 $count++;
             }
@@ -1882,12 +1879,7 @@ class CharacterManager extends Service {
      * @param int                             $cooldown
      * @param string                          $logType
      */
-    public function moveCharacter($character, $recipient, $data, $cooldown = -1, $logType = null)
-    {   
-        if($character->folder_id) {
-            $character->folder_id = null;
-            $character->save();
-        } 
+    public function moveCharacter($character, $recipient, $data, $cooldown = -1, $logType = null) {
         $sender = $character->user;
         if (!$sender) {
             $sender = $character->owner_url;
