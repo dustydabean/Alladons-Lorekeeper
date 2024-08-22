@@ -14,7 +14,7 @@ return new class extends Migration {
 
         Schema::table('character_relations', function (Blueprint $table) {
             #$table->renameColumn('chara_1', 'character_1_id');
-            $table->renameColumn('chara_2', 'character_2_id');
+            #$table->renameColumn('chara_2', 'character_2_id');
             $table->timestamps();
 
             $table->unique(['character_1_id', 'character_2_id']);
