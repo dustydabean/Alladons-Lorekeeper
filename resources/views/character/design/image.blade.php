@@ -135,7 +135,7 @@
             This section is for crediting the image creators. The first box is for the designer or artist's on-site username (if any). The second is for a link to the designer or artist if they don't have an account on the site.
         </p>
         <div class="form-group">
-            {!! Form::label('Designer(s)') !!}
+            {!! Form::label('Adopt/PA') !!}
             <div id="designerList">
                 <?php $designerCount = count($request->designers); ?>
                 @foreach ($request->designers as $count => $designer)
@@ -156,7 +156,7 @@
             </div>
         </div>
         <div class="form-group">
-            {!! Form::label('Artist(s)') !!}
+            {!! Form::label('AUA') !!}
             <div id="artistList">
                 <?php $artistCount = count($request->artists); ?>
                 @foreach ($request->artists as $count => $artist)

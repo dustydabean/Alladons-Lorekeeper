@@ -67,7 +67,7 @@
         This section is for crediting the image creators. The first box is for the designer or artist's on-site username (if any). The second is for a link to the designer or artist if they don't have an account on the site.
     </p>
     <div class="form-group">
-        {!! Form::label('Designer(s)') !!}
+        {!! Form::label('Adopt/PA') !!}
         <div id="designerList">
             <div class="mb-2 d-flex">
                 {!! Form::select('designer_id[]', $users, null, ['class' => 'form-control mr-2 selectize', 'placeholder' => 'Select a Designer']) !!}
@@ -82,7 +82,7 @@
         </div>
     </div>
     <div class="form-group">
-        {!! Form::label('Artist(s)') !!}
+        {!! Form::label('AUA') !!}
         <div id="artistList">
             <div class="mb-2 d-flex">
                 {!! Form::select('artist_id[]', $users, null, ['class' => 'form-control mr-2 selectize', 'placeholder' => 'Select an Artist']) !!}
