@@ -10,11 +10,11 @@ return new class extends Migration {
      */
     public function up(): void {
         //
-        Artisan::call('update-character-relations');
+        /*Artisan::call('update-character-relations');
 
         Schema::table('character_relations', function (Blueprint $table) {
-            #$table->renameColumn('chara_1', 'character_1_id');
-            #$table->renameColumn('chara_2', 'character_2_id');
+            $table->renameColumn('chara_1', 'character_1_id');
+            $table->renameColumn('chara_2', 'character_2_id');
             $table->timestamps();
 
             $table->unique(['character_1_id', 'character_2_id']);
@@ -33,7 +33,7 @@ return new class extends Migration {
                     SET NEW.character_2_id = @temp;
                 END IF;
             END
-        ');
+        ');*/
     }
 
     /**
