@@ -13,7 +13,7 @@ return new class extends Migration {
         Artisan::call('update-character-relations');
 
         Schema::table('character_relations', function (Blueprint $table) {
-            $table->renameColumn('chara_1', 'character_1_id');
+            #$table->renameColumn('chara_1', 'character_1_id');
             $table->renameColumn('chara_2', 'character_2_id');
             $table->timestamps();
 
