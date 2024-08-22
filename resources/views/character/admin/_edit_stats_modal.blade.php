@@ -23,6 +23,11 @@
         {!! Form::label('Character Code') !!} {!! add_help('This code identifies the character itself. This must be unique among all characters (as it\'s used to generate the character\'s page URL).') !!}
         {!! Form::text('slug', $character->slug, ['class' => 'form-control', 'id' => 'code']) !!}
     </div>
+
+    <div class="form-group">
+        {!! Form::label('Poucher Code (Optional)') !!}
+        {!! Form::text('poucher_code', old('poucher_code'), ['class' => 'form-control']) !!}
+    </div>
 @endif
 
 <div class="alert alert-info">

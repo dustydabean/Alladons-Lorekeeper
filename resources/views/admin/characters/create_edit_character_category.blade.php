@@ -32,11 +32,6 @@
     </div>
 
     <div class="form-group">
-        {!! Form::label('Poucher Code (Optional)') !!}
-        {!! Form::text('poucher_code', old('poucher_code'), ['class' => 'form-control']) !!}
-    </div>
-
-    <div class="form-group">
         {!! Form::label('Sub Masterlist (Optional)') !!} {!! add_help('This puts it onto a sub masterlist.') !!}
         {!! Form::select('masterlist_sub_id', $sublists, $category->masterlist_sub_id, ['class' => 'form-control']) !!}
     </div>
