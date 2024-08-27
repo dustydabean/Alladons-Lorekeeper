@@ -2,8 +2,9 @@
 
 namespace App\Models\Character;
 
+use App\Facades\Settings;
 use App\Models\Model;
-use Settings;
+use App\Models\User\User;
 
 class CharacterTransfer extends Model {
     /**
@@ -22,7 +23,6 @@ class CharacterTransfer extends Model {
      * @var string
      */
     protected $table = 'character_transfers';
-
     /**
      * Whether the model contains timestamps to be saved and updated.
      *
@@ -40,21 +40,21 @@ class CharacterTransfer extends Model {
      * Get the user who initiated the transfer.
      */
     public function sender() {
-        return $this->belongsTo('App\Models\User\User', 'sender_id');
+        return $this->belongsTo(User::class, 'sender_id');
     }
 
     /**
      * Get the user who received the transfer.
      */
     public function recipient() {
-        return $this->belongsTo('App\Models\User\User', 'recipient_id');
+        return $this->belongsTo(User::class, 'recipient_id');
     }
 
     /**
      * Get the character to be transferred.
      */
     public function character() {
-        return $this->belongsTo('App\Models\Character\Character');
+        return $this->belongsTo(Character::class);
     }
 
     /**********************************************************************************************
@@ -95,6 +95,28 @@ class CharacterTransfer extends Model {
         });
 
         return $query;
+    }
+
+    /**
+     * Scope a query to sort transfers by oldest first.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSortOldest($query) {
+        return $query->orderBy('id');
+    }
+
+    /**
+     * Scope a query to sort transfers by newest first.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSortNewest($query) {
+        return $query->orderBy('id', 'DESC');
     }
 
     /**********************************************************************************************

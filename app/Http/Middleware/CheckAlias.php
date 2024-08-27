@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Facades\Settings;
 use Closure;
 
 class CheckAlias {
@@ -14,7 +15,10 @@ class CheckAlias {
      * @return mixed
      */
     public function handle($request, Closure $next) {
-        if (!$request->user()->has_alias) {
+        if (Settings::get('is_maintenance_mode') == 1 && !$request->user()->hasPower('maintenance_access')) {
+            return redirect('/');
+        }
+        if (!$request->user()->hasAlias) {
             return redirect('/link');
         }
         if (!$request->user()->birthday) {
@@ -25,6 +29,9 @@ class CheckAlias {
         }
         if ($request->user()->is_banned) {
             return redirect('/banned');
+        }
+        if ($request->user()->is_deactivated) {
+            return redirect('/deactivated');
         }
 
         return $next($request);

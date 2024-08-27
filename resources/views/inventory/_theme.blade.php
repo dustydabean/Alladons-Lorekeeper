@@ -1,5 +1,5 @@
 <li class="list-group-item">
-    <a class="card-title h5 collapse-title"  data-toggle="collapse" href="#redeemTheme">Redeem Theme</a>
+    <a class="card-title h5 collapse-title" data-toggle="collapse" href="#redeemTheme">Redeem Theme</a>
     <div id="redeemTheme" class="collapse">
         {!! Form::hidden('tag', $tag->tag) !!}
 
@@ -11,12 +11,12 @@
 
         <p class="mb-0"><strong>Possible Results:</strong></p>
         <div class="row mb-2">
-            @if(is_array($tag->getData()) && count($tag->getData()))
-                @foreach($tag->getData() as $loot)
+            @if (is_array($tag->getData()) && count($tag->getData()))
+                @foreach ($tag->getData() as $loot)
                     <div class="col-md-3" style="{{ Auth::user()->hasTheme($loot->rewardable_id) ? 'text-decoration: line-through; opacity:0.5;' : '' }}">{!! App\Models\Theme::find($loot->rewardable_id)->displayName !!}</div>
                 @endforeach
             @else
-                @foreach(App\Models\Theme::orderBy('name')->where('is_user_selectable', 0)->get() as $loot)
+                @foreach (App\Models\Theme::orderBy('name')->where('is_user_selectable', 0)->get() as $loot)
                     <div class="col-md-3" style="{{ Auth::user()->hasTheme($loot->id) ? 'text-decoration: line-through; opacity:0.5;' : '' }}">{!! $loot->displayName !!}</div>
                 @endforeach
             @endif

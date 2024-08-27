@@ -3,6 +3,7 @@
 namespace App\Models\User;
 
 use App\Models\Model;
+use App\Models\Theme;
 
 class UserTheme extends Model {
     /**
@@ -23,26 +24,26 @@ class UserTheme extends Model {
 
     /**********************************************************************************************
 
-          RELATIONS
+        RELATIONS
      **********************************************************************************************/
 
     /**
      * Get the user who owns the theme.
      */
     public function user() {
-        return $this->belongsTo('App\Models\User\User');
+        return $this->belongsTo(User::class);
     }
 
     /**
      * Get the theme associated with this user.
      */
     public function theme() {
-        return $this->belongsTo('App\Models\Theme');
+        return $this->belongsTo(Theme::class);
     }
 
     /**********************************************************************************************
 
-          ACCESSORS
+        ACCESSORS
      **********************************************************************************************/
 
     /**

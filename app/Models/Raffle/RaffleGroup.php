@@ -20,7 +20,6 @@ class RaffleGroup extends Model {
      * @var string
      */
     protected $table = 'raffle_groups';
-
     /**
      * Whether the model contains timestamps to be saved and updated.
      *
@@ -38,6 +37,6 @@ class RaffleGroup extends Model {
      * Get the raffles in this group.
      */
     public function raffles() {
-        return $this->hasMany('App\Models\Raffle\Raffle', 'group_id')->orderBy('order');
+        return $this->hasMany(Raffle::class, 'group_id')->orderBy('order');
     }
 }

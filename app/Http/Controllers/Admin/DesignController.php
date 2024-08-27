@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Character\CharacterCategory;
 use App\Models\Character\CharacterDesignUpdate;
-use App\Services\CharacterManager;
-use Auth;
+use App\Services\DesignUpdateManager;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DesignController extends Controller {
     /**
@@ -20,6 +20,19 @@ class DesignController extends Controller {
      */
     public function getDesignIndex(Request $request, $type, $status) {
         $requests = CharacterDesignUpdate::where('status', ucfirst($status));
+        $data = $request->only(['sort']);
+        if (isset($data['sort'])) {
+            switch ($data['sort']) {
+                case 'newest':
+                    $requests->sortNewest();
+                    break;
+                case 'oldest':
+                    $requests->sortOldest();
+                    break;
+            }
+        } else {
+            $requests->sortOldest();
+        }
         if ($type == 'myo-approvals') {
             $requests = $requests->myos();
         } else {
@@ -53,7 +66,7 @@ class DesignController extends Controller {
         ] : []));
     }
 
-    public function postDesign($id, $action, Request $request, CharacterManager $service) {
+    public function postDesign($id, $action, Request $request, DesignUpdateManager $service) {
         $r = CharacterDesignUpdate::where('id', $id)->where('status', 'Pending')->first();
 
         if ($action == 'cancel' && $service->cancelRequest($request->only(['staff_comments', 'preserve_queue']), $r, Auth::user())) {
@@ -61,7 +74,7 @@ class DesignController extends Controller {
         } elseif ($action == 'approve' && $service->approveRequest($request->only([
             'character_category_id', 'number', 'slug', 'description',
             'is_giftable', 'is_tradeable', 'is_sellable', 'sale_value',
-            'transferrable_at', 'set_active', 'invalidate_old',
+            'transferrable_at', 'set_active', 'invalidate_old', 'remove_myo_image',
         ]), $r, Auth::user())) {
             flash('Request approved successfully.')->success();
         } elseif ($action == 'reject' && $service->rejectRequest($request->only(['staff_comments']), $r, Auth::user())) {
@@ -83,7 +96,7 @@ class DesignController extends Controller {
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function postVote($id, $action, Request $request, CharacterManager $service) {
+    public function postVote($id, $action, Request $request, DesignUpdateManager $service) {
         $r = CharacterDesignUpdate::where('id', $id)->where('status', 'Pending')->first();
         if (!$r) {
             throw new \Exception('Invalid design update.');

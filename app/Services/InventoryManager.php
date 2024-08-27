@@ -2,16 +2,14 @@
 
 namespace App\Services;
 
+use App\Facades\Notifications;
 use App\Models\Character\CharacterItem;
 use App\Models\Item\Item;
 use App\Models\User\User;
 use App\Models\User\UserItem;
-use Auth;
 use Carbon\Carbon;
-use Config;
-use DB;
 use Illuminate\Support\Arr;
-use Notifications;
+use Illuminate\Support\Facades\DB;
 
 class InventoryManager extends Service {
     /*
@@ -26,8 +24,8 @@ class InventoryManager extends Service {
     /**
      * Grants an item to multiple users.
      *
-     * @param array $data
-     * @param User  $staff
+     * @param array                 $data
+     * @param \App\Models\User\User $staff
      *
      * @return bool
      */
@@ -62,6 +60,9 @@ class InventoryManager extends Service {
 
             foreach ($users as $user) {
                 foreach ($items as $item) {
+                    if (!$this->logAdminAction($staff, 'Item Grant', 'Granted '.$keyed_quantities[$item->id].' '.$item->displayName.' to '.$user->displayname)) {
+                        throw new \Exception('Failed to log admin action.');
+                    }
                     if ($this->creditItem($staff, $user, 'Staff Grant', Arr::only($data, ['data', 'disallow_transfer', 'notes']), $item, $keyed_quantities[$item->id])) {
                         Notifications::create('ITEM_GRANT', $user, [
                             'item_name'     => $item->name,
@@ -88,7 +89,7 @@ class InventoryManager extends Service {
      *
      * @param array                           $data
      * @param \App\Models\Character\Character $character
-     * @param User                            $staff
+     * @param \App\Models\User\User           $staff
      *
      * @return bool
      */
@@ -125,6 +126,9 @@ class InventoryManager extends Service {
             }
 
             foreach ($items as $item) {
+                if (!$this->logAdminAction($staff, 'Item Grant', 'Granted '.$keyed_quantities[$item->id].' '.$item->displayName.' to '.$character->displayname)) {
+                    throw new \Exception('Failed to log admin action.');
+                }
                 $this->creditItem($staff, $character, 'Staff Grant', Arr::only($data, ['data', 'disallow_transfer', 'notes']), $item, $keyed_quantities[$item->id]);
                 if ($character->is_visible && $character->user_id) {
                     Notifications::create('CHARACTER_ITEM_GRANT', $character->user, [
@@ -149,18 +153,19 @@ class InventoryManager extends Service {
     /**
      * Transfers items between a user and character.
      *
-     * @param \App\Models\Character\Character|User $sender
-     * @param \App\Models\Character\Character|User $recipient
-     * @param CharacterItem|UserItem               $stacks
-     * @param int                                  $quantities
+     * @param \App\Models\Character\Character|\App\Models\User\User         $sender
+     * @param \App\Models\Character\Character|\App\Models\User\User         $recipient
+     * @param \App\Models\Character\CharacterItem|\App\Models\User\UserItem $stacks
+     * @param int                                                           $quantities
+     * @param mixed                                                         $user
      *
      * @return bool
      */
-    public function transferCharacterStack($sender, $recipient, $stacks, $quantities) {
+    public function transferCharacterStack($sender, $recipient, $stacks, $quantities, $user) {
         DB::beginTransaction();
 
         try {
-            foreach ($stacks as $key=>$stack) {
+            foreach ($stacks as $key=> $stack) {
                 $quantity = $quantities[$key];
 
                 if (!$stack) {
@@ -189,14 +194,14 @@ class InventoryManager extends Service {
                     throw new \Exception('Invalid quantity entered.');
                 }
 
-                if (($recipient->logType == 'Character' && !$sender->hasPower('edit_inventories') && !Auth::user() == $recipient->user) || ($recipient->logType == 'User' && !Auth::user()->hasPower('edit_inventories') && !Auth::user() == $sender->user)) {
+                if (($recipient->logType == 'Character' && !$sender->hasPower('edit_inventories') && !$user == $recipient->user) || ($recipient->logType == 'User' && !$user->hasPower('edit_inventories') && !$user == $sender->user)) {
                     throw new \Exception("Cannot transfer items to/from a character you don't own.");
                 }
 
                 if ($recipient->logType == 'Character' && !$stack->item->category->is_character_owned) {
                     throw new \Exception('One of the selected items cannot be owned by characters.');
                 }
-                if ((!$stack->item->allow_transfer || isset($stack->data['disallow_transfer'])) && !Auth::user()->hasPower('edit_inventories')) {
+                if ((!$stack->item->allow_transfer || isset($stack->data['disallow_transfer'])) && !$user->hasPower('edit_inventories')) {
                     throw new \Exception('One of the selected items cannot be transferred.');
                 }
                 if ($stack->count < $quantity) {
@@ -234,10 +239,10 @@ class InventoryManager extends Service {
     /**
      * Transfers items between user stacks.
      *
-     * @param User     $sender
-     * @param User     $recipient
-     * @param UserItem $stacks
-     * @param int      $quantities
+     * @param \App\Models\User\User     $sender
+     * @param \App\Models\User\User     $recipient
+     * @param \App\Models\User\UserItem $stacks
+     * @param int                       $quantities
      *
      * @return bool
      */
@@ -245,7 +250,7 @@ class InventoryManager extends Service {
         DB::beginTransaction();
 
         try {
-            foreach ($stacks as $key=>$stack) {
+            foreach ($stacks as $key=> $stack) {
                 $quantity = $quantities[$key];
                 if (!$sender->hasAlias) {
                     throw new \Exception('You need to have a linked social media account before you can perform this action.');
@@ -305,19 +310,19 @@ class InventoryManager extends Service {
     /**
      * Deletes items from stack.
      *
-     * @param \App\Models\Character\Character|User $owner
-     * @param CharacterItem|UserItem               $stacks
-     * @param int                                  $quantities
+     * @param \App\Models\Character\Character|\App\Models\User\User         $owner
+     * @param \App\Models\Character\CharacterItem|\App\Models\User\UserItem $stacks
+     * @param int                                                           $quantities
+     * @param mixed                                                         $user
      *
      * @return bool
      */
-    public function deleteStack($owner, $stacks, $quantities) {
+    public function deleteStack($owner, $stacks, $quantities, $user) {
         DB::beginTransaction();
 
         try {
             if ($owner->logType == 'User') {
-                foreach ($stacks as $key=>$stack) {
-                    $user = Auth::user();
+                foreach ($stacks as $key=> $stack) {
                     $quantity = $quantities[$key];
                     if (!$owner->hasAlias) {
                         throw new \Exception('You need to have a linked social media account before you can perform this action.');
@@ -346,9 +351,8 @@ class InventoryManager extends Service {
                     }
                 }
             } else {
-                foreach ($stacks as $key=>$stack) {
+                foreach ($stacks as $key=> $stack) {
                     $quantity = $quantities[$key];
-                    $user = Auth::user();
                     if (!$user->hasAlias) {
                         throw new \Exception('You need to have a linked social media account before you can perform this action.');
                     }
@@ -388,9 +392,9 @@ class InventoryManager extends Service {
     /**
      * Sells items from stack.
      *
-     * @param User     $user
-     * @param UserItem $stacks
-     * @param int      $quantities
+     * @param \App\Models\User\User     $user
+     * @param \App\Models\User\UserItem $stacks
+     * @param int                       $quantities
      *
      * @return bool
      */
@@ -398,7 +402,7 @@ class InventoryManager extends Service {
         DB::beginTransaction();
 
         try {
-            foreach ($stacks as $key=>$stack) {
+            foreach ($stacks as $key=> $stack) {
                 $quantity = $quantities[$key];
                 if (!$user->hasAlias) {
                     throw new \Exception('You need to have a linked social media account before you can perform this action.');
@@ -415,7 +419,7 @@ class InventoryManager extends Service {
                 if (!isset($stack->item->data['resell'])) {
                     throw new \Exception('This item cannot be sold.');
                 }
-                if (!Config::get('lorekeeper.extensions.item_entry_expansion.resale_function')) {
+                if (!config('lorekeeper.extensions.item_entry_expansion.resale_function')) {
                     throw new \Exception('This function is not currently enabled.');
                 }
 
@@ -454,12 +458,12 @@ class InventoryManager extends Service {
     /**
      * Credits an item to a user or character.
      *
-     * @param \App\Models\Character\Character|User $sender
-     * @param \App\Models\Character\Character|User $recipient
-     * @param string                               $type
-     * @param array                                $data
-     * @param Item                                 $item
-     * @param int                                  $quantity
+     * @param \App\Models\Character\Character|\App\Models\User\User $sender
+     * @param \App\Models\Character\Character|\App\Models\User\User $recipient
+     * @param string                                                $type
+     * @param array                                                 $data
+     * @param \App\Models\Item\Item                                 $item
+     * @param int                                                   $quantity
      *
      * @return bool
      */
@@ -494,6 +498,13 @@ class InventoryManager extends Service {
                 $recipient_stack->count += $quantity;
                 $recipient_stack->save();
             }
+
+            if (!$item->is_released) {
+                $item->update([
+                    'is_released' => 1,
+                ]);
+            }
+
             if ($type && !$this->createLog($sender ? $sender->id : null, $sender ? $sender->logType : null, $recipient ? $recipient->id : null, $recipient ? $recipient->logType : null, null, $type, $data['data'], $item->id, $quantity)) {
                 throw new \Exception('Failed to create log.');
             }
@@ -509,12 +520,12 @@ class InventoryManager extends Service {
     /**
      * Moves items from one user or character stack to another.
      *
-     * @param \App\Models\Character\Character|User $sender
-     * @param \App\Models\Character\Character|User $recipient
-     * @param string                               $type
-     * @param array                                $data
-     * @param mixed                                $stack
-     * @param mixed                                $quantity
+     * @param \App\Models\Character\Character|\App\Models\User\User $sender
+     * @param \App\Models\Character\Character|\App\Models\User\User $recipient
+     * @param string                                                $type
+     * @param array                                                 $data
+     * @param mixed                                                 $stack
+     * @param mixed                                                 $quantity
      *
      * @return bool
      */
@@ -552,11 +563,11 @@ class InventoryManager extends Service {
     /**
      * Debits an item from a user or character.
      *
-     * @param \App\Models\Character\Character|User $owner
-     * @param string                               $type
-     * @param array                                $data
-     * @param \App\Models\Item\UserItem            $stack
-     * @param mixed                                $quantity
+     * @param \App\Models\Character\Character|\App\Models\User\User $owner
+     * @param string                                                $type
+     * @param array                                                 $data
+     * @param \App\Models\Item\UserItem                             $stack
+     * @param mixed                                                 $quantity
      *
      * @return bool
      */
@@ -582,18 +593,18 @@ class InventoryManager extends Service {
     /**
      * Names an item stack.
      *
-     * @param \App\Models\Character\Character|User $owner
-     * @param CharacterItem|UserItem               $stacks
-     * @param mixed                                $name
+     * @param \App\Models\Character\Character|\App\Models\User\User         $owner
+     * @param \App\Models\Character\CharacterItem|\App\Models\User\UserItem $stacks
+     * @param mixed                                                         $name
+     * @param mixed                                                         $user
      *
      * @return bool
      */
-    public function nameStack($owner, $stacks, $name) {
+    public function nameStack($owner, $stacks, $name, $user) {
         DB::beginTransaction();
 
         try {
-            foreach ($stacks as $key=>$stack) {
-                $user = Auth::user();
+            foreach ($stacks as $key=> $stack) {
                 if (!$user->hasAlias) {
                     throw new \Exception('You need to have a linked social media account before you can perform this action.');
                 }
@@ -648,5 +659,75 @@ class InventoryManager extends Service {
                 'updated_at'     => Carbon::now(),
             ]
         );
+    }
+
+    /**
+     * Consolidates a user's item stacks.
+     *
+     * @param \App\Models\User\User $user
+     *
+     * @return bool
+     */
+    public function consolidateInventory($user) {
+        DB::beginTransaction();
+
+        try {
+            if (!$user->hasAlias) {
+                throw new \Exception('You need to have a linked social media account before you can perform this action.');
+            }
+
+            // Making a very large assumption here that there aren't going to be a huge number
+            // of items to process, due to the nature of ARPGs.
+
+            // Group owned items by ID.
+            // We'll exclude stacks that are partially contained in trades, updates and submissions.
+            $items = UserItem::where('user_id', $user->id)->whereNull('deleted_at')
+                ->where(function ($query) {
+                    $query->where('trade_count', 0)->orWhereNull('trade_count');
+                })->where(function ($query) {
+                    $query->where('update_count', 0)->orWhereNull('update_count');
+                })->where(function ($query) {
+                    $query->where('submission_count', 0)->orWhereNull('submission_count');
+                })->get()->groupBy('item_id');
+
+            foreach ($items as $itemId => $itemVariations) {
+                $variations = [];
+
+                // We'll loop over the user items to obtain the first of each variant of item, to update with the final count.
+                // Variations are distinguished by having the same data field.
+                foreach ($itemVariations as $typeVariation) {
+                    $isNew = true;
+                    foreach ($variations as $foundVariation) {
+                        // Found an existing match.
+                        // The count can be added to the existing variation, and this row can be deleted.
+                        // Just for the sake of reducing confusion when looking in the DB,
+                        // We'll also reduce its count to 0 before deletion.
+                        if ($foundVariation->data == $typeVariation->data) {
+                            $isNew = false;
+                            $foundVariation->count += $typeVariation->count;
+                            $typeVariation->count = 0;
+                            $typeVariation->save();
+                            $typeVariation->delete();
+                            break;
+                        }
+                    }
+                    // No match, add a new variation
+                    if ($isNew) {
+                        $variations[] = $typeVariation;
+                    }
+                }
+
+                // At the end, save the rows in the variations array
+                foreach ($variations as $variation) {
+                    $variation->save();
+                }
+            }
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
     }
 }

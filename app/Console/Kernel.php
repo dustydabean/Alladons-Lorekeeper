@@ -21,10 +21,14 @@ class Kernel extends ConsoleKernel {
     protected function schedule(Schedule $schedule) {
         $schedule->command('check-news')
             ->everyMinute();
-        $schedule->exec('rm public/images/avatars/*.tmp')
-            ->daily();
         $schedule->command('check-sales')
             ->everyMinute();
+        $schedule->exec('rm public/images/avatars/*.tmp')
+            ->daily();
+        $schedule->command('update-extension-tracker')
+            ->daily();
+        $schedule->command('update-staff-reward-actions')
+            ->daily();
     }
 
     /**

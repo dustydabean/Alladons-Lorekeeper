@@ -11,7 +11,7 @@ class PromptCategory extends Model {
      * @var array
      */
     protected $fillable = [
-        'name', 'sort', 'has_image', 'description', 'parsed_description',
+        'name', 'sort', 'has_image', 'description', 'parsed_description', 'hash',
     ];
 
     /**
@@ -20,7 +20,6 @@ class PromptCategory extends Model {
      * @var string
      */
     protected $table = 'prompt_categories';
-
     /**
      * Validation rules for creation.
      *
@@ -73,7 +72,7 @@ class PromptCategory extends Model {
      * @return string
      */
     public function getCategoryImageFileNameAttribute() {
-        return $this->id.'-image.png';
+        return $this->hash.$this->id.'-image.png';
     }
 
     /**
@@ -114,5 +113,23 @@ class PromptCategory extends Model {
      */
     public function getSearchUrlAttribute() {
         return url('prompts/prompts?prompt_category_id='.$this->id);
+    }
+
+    /**
+     * Gets the admin edit URL.
+     *
+     * @return string
+     */
+    public function getAdminUrlAttribute() {
+        return url('admin/data/prompt-categories/edit/'.$this->id);
+    }
+
+    /**
+     * Gets the power required to edit this model.
+     *
+     * @return string
+     */
+    public function getAdminPowerAttribute() {
+        return 'edit_data';
     }
 }

@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
+use App\Facades\Notifications;
 use App\Models\Character\CharacterCurrency;
 use App\Models\Currency\Currency;
 use App\Models\User\User;
 use App\Models\User\UserCurrency;
 use Carbon\Carbon;
-use DB;
-use Notifications;
+use Illuminate\Support\Facades\DB;
 
 class CurrencyManager extends Service {
     /*
@@ -23,8 +23,8 @@ class CurrencyManager extends Service {
     /**
      * Admin function for granting currency to multiple users.
      *
-     * @param array $data
-     * @param User  $staff
+     * @param array                 $data
+     * @param \App\Models\User\User $staff
      *
      * @return bool
      */
@@ -53,6 +53,9 @@ class CurrencyManager extends Service {
 
             if ($data['quantity'] < 0) {
                 foreach ($users as $user) {
+                    if (!$this->logAdminAction($staff, 'Currency Debit', 'Debited '.$data['quantity'].' '.$currency->displayName.' from '.$user->displayname)) {
+                        throw new \Exception('Failed to log admin action.');
+                    }
                     $this->debitCurrency($user, $staff, 'Staff Removal', $data['data'], $currency, -$data['quantity']);
                     Notifications::create('CURRENCY_REMOVAL', $user, [
                         'currency_name'     => $currency->name,
@@ -63,6 +66,9 @@ class CurrencyManager extends Service {
                 }
             } else {
                 foreach ($users as $user) {
+                    if (!$this->logAdminAction($staff, 'Currency Grant', 'Granted '.$data['quantity'].' '.$currency->displayName.' to '.$user->displayname)) {
+                        throw new \Exception('Failed to log admin action.');
+                    }
                     $this->creditCurrency($staff, $user, 'Staff Grant', $data['data'], $currency, $data['quantity']);
                     Notifications::create('CURRENCY_GRANT', $user, [
                         'currency_name'     => $currency->name,
@@ -87,7 +93,7 @@ class CurrencyManager extends Service {
      *
      * @param array                           $data
      * @param \App\Models\Character\Character $staff
-     * @param User                            $staff
+     * @param \App\Models\User\User           $staff
      * @param mixed                           $character
      *
      * @return bool
@@ -149,10 +155,10 @@ class CurrencyManager extends Service {
     /**
      * Transfers currency between users.
      *
-     * @param User     $sender
-     * @param User     $recipient
-     * @param Currency $currency
-     * @param int      $quantity
+     * @param \App\Models\User\User         $sender
+     * @param \App\Models\User\User         $recipient
+     * @param \App\Models\Currency\Currency $currency
+     * @param int                           $quantity
      *
      * @return bool
      */
@@ -199,10 +205,10 @@ class CurrencyManager extends Service {
     /**
      * Transfers currency between a user and character.
      *
-     * @param \App\Models\Character\Character|User $sender
-     * @param \App\Models\Character\Character|User $recipient
-     * @param Currency                             $currency
-     * @param int                                  $quantity
+     * @param \App\Models\Character\Character|\App\Models\User\User $sender
+     * @param \App\Models\Character\Character|\App\Models\User\User $recipient
+     * @param \App\Models\Currency\Currency                         $currency
+     * @param int                                                   $quantity
      *
      * @return bool
      */
@@ -245,12 +251,12 @@ class CurrencyManager extends Service {
     /**
      * Credits currency to a user or character.
      *
-     * @param \App\Models\Character\Character|User $sender
-     * @param \App\Models\Character\Character|User $recipient
-     * @param string                               $type
-     * @param string                               $data
-     * @param Currency                             $currency
-     * @param int                                  $quantity
+     * @param \App\Models\Character\Character|\App\Models\User\User $sender
+     * @param \App\Models\Character\Character|\App\Models\User\User $recipient
+     * @param string                                                $type
+     * @param string                                                $data
+     * @param \App\Models\Currency\Currency                         $currency
+     * @param int                                                   $quantity
      *
      * @return bool
      */
@@ -302,12 +308,12 @@ class CurrencyManager extends Service {
     /**
      * Debits currency from a user or character.
      *
-     * @param \App\Models\Character\Character|User $sender
-     * @param \App\Models\Character\Character|User $recipient
-     * @param string                               $type
-     * @param string                               $data
-     * @param Currency                             $currency
-     * @param int                                  $quantity
+     * @param \App\Models\Character\Character|\App\Models\User\User $sender
+     * @param \App\Models\Character\Character|\App\Models\User\User $recipient
+     * @param string                                                $type
+     * @param string                                                $data
+     * @param \App\Models\Currency\Currency                         $currency
+     * @param int                                                   $quantity
      *
      * @return bool
      */

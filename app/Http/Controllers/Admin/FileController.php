@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\FileManager;
-use Config;
 use Illuminate\Http\Request;
 
 class FileController extends Controller {
@@ -150,15 +149,16 @@ class FileController extends Controller {
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postUploadFile(Request $request, FileManager $service) {
-        $request->validate(['file' => 'required|file']);
+        $request->validate(['files.*' => 'file|required']);
         $dir = $request->get('folder');
-        $file = $request->file('file');
-
-        if ($service->uploadFile($file, $dir, $file->getClientOriginalName())) {
-            flash('File uploaded successfully.')->success();
-        } else {
-            foreach ($service->errors()->getMessages()['error'] as $error) {
-                flash($error)->error();
+        $files = $request->file('files');
+        foreach ($files as $file) {
+            if ($service->uploadFile($file, $dir, $file->getClientOriginalName())) {
+                flash('File uploaded successfully.')->success();
+            } else {
+                foreach ($service->errors()->getMessages()['error'] as $error) {
+                    flash($error)->error();
+                }
             }
         }
 
@@ -222,7 +222,7 @@ class FileController extends Controller {
      */
     public function getSiteImages() {
         return view('admin.files.images', [
-            'images' => Config::get('lorekeeper.image_files'),
+            'images' => config('lorekeeper.image_files'),
         ]);
     }
 
@@ -237,7 +237,7 @@ class FileController extends Controller {
         $request->validate(['file' => 'required|file']);
         $file = $request->file('file');
         $key = $request->get('key');
-        $filename = Config::get('lorekeeper.image_files.'.$key)['filename'];
+        $filename = config('lorekeeper.image_files.'.$key)['filename'];
 
         if ($service->uploadFile($file, null, $filename, false)) {
             flash('Image uploaded successfully.')->success();

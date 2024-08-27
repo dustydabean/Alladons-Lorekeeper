@@ -5,17 +5,17 @@ namespace App\Services\Item;
 use App\Models\Theme;
 use App\Services\InventoryManager;
 use App\Services\Service;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class ThemeService extends Service {
     /*
-      |--------------------------------------------------------------------------
-      | Theme Service
-      |--------------------------------------------------------------------------
-      |
-      | Handles the editing and usage of theme type items.
-      |
-      */
+    |--------------------------------------------------------------------------
+    | Theme Service
+    |--------------------------------------------------------------------------
+    |
+    | Handles the editing and usage of theme type items.
+    |
+    */
 
     /**
      * Retrieves any data that should be used in the item tag editing form.

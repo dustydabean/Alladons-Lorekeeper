@@ -13,10 +13,19 @@
 
 Route::get('/', 'HomeController@getIndex')->name('home');
 Route::get('login', 'Auth\LoginController@getNewReply');
-Auth::routes(['verify' => true]);
+
+// Logging in with Aliases
+Route::get('/login/redirect/{driver}', 'Auth\LoginController@getAuthRedirect');
+Route::get('/login/callback/{driver}', 'Auth\LoginController@getAuthCallback');
+
+// Registering with Aliases
+Route::get('register/{driver}', 'Auth\RegisterController@getRegisterWithDriver');
+Route::post('register/{driver}', 'Auth\RegisterController@postRegisterWithDriver');
 
 // BROWSE
 require_once __DIR__.'/lorekeeper/browse.php';
+
+Route::feeds('feeds');
 
 /**************************************************************************************************
     Routes that require login
@@ -37,8 +46,13 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     // BANNED
     Route::get('banned', 'Users\AccountController@getBanned');
 
+    // DEACTIVATED
+    Route::get('deactivated', 'Users\AccountController@getDeactivated');
+    Route::get('reactivate', 'Users\AccountController@getReactivateConfirmation');
+    Route::post('reactivate', 'Users\AccountController@postReactivate');
+
     /**********************************************************************************************
-        Routes that require having a linked dA account (also includes blocked routes when banned)
+        Routes that require having a linked account (also includes blocked routes when banned)
     **********************************************************************************************/
     Route::group(['middleware' => ['alias']], function () {
         require_once __DIR__.'/lorekeeper/members.php';

@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Models\Character\Character;
 use App\Models\Character\CharacterCategory;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class CharacterCategoryService extends Service {
     /*
@@ -20,10 +20,11 @@ class CharacterCategoryService extends Service {
      * Create a category.
      *
      * @param array $data
+     * @param mixed $user
      *
-     * @return bool|CharacterCategory
+     * @return \App\Models\Character\CharacterCategory|bool
      */
-    public function createCharacterCategory($data) {
+    public function createCharacterCategory($data, $user) {
         DB::beginTransaction();
 
         try {
@@ -32,6 +33,7 @@ class CharacterCategoryService extends Service {
             $image = null;
             if (isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
+                $data['hash'] = randomString(10);
                 $image = $data['image'];
                 unset($data['image']);
             } else {
@@ -39,6 +41,10 @@ class CharacterCategoryService extends Service {
             }
 
             $category = CharacterCategory::create($data);
+
+            if (!$this->logAdminAction($user, 'Created Character Category', 'Created '.$category->displayName)) {
+                throw new \Exception('Failed to log admin action.');
+            }
 
             if ($image) {
                 $this->handleImage($image, $category->categoryImagePath, $category->categoryImageFileName);
@@ -55,12 +61,13 @@ class CharacterCategoryService extends Service {
     /**
      * Update a category.
      *
-     * @param CharacterCategory $category
-     * @param array             $data
+     * @param \App\Models\Character\CharacterCategory $category
+     * @param array                                   $data
+     * @param mixed                                   $user
      *
-     * @return bool|CharacterCategory
+     * @return \App\Models\Character\CharacterCategory|bool
      */
-    public function updateCharacterCategory($category, $data) {
+    public function updateCharacterCategory($category, $data, $user) {
         DB::beginTransaction();
 
         try {
@@ -76,11 +83,16 @@ class CharacterCategoryService extends Service {
             $image = null;
             if (isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
+                $data['hash'] = randomString(10);
                 $image = $data['image'];
                 unset($data['image']);
             }
 
             $category->update($data);
+
+            if (!$this->logAdminAction($user, 'Edited Character Category', 'Edited '.$category->displayName)) {
+                throw new \Exception('Failed to log admin action.');
+            }
 
             if ($category) {
                 $this->handleImage($image, $category->categoryImagePath, $category->categoryImageFileName);
@@ -97,17 +109,22 @@ class CharacterCategoryService extends Service {
     /**
      * Delete a category.
      *
-     * @param CharacterCategory $category
+     * @param \App\Models\Character\CharacterCategory $category
+     * @param mixed                                   $user
      *
      * @return bool
      */
-    public function deleteCharacterCategory($category) {
+    public function deleteCharacterCategory($category, $user) {
         DB::beginTransaction();
 
         try {
             // Check first if the category is currently in use
             if (Character::where('character_category_id', $category->id)->exists()) {
                 throw new \Exception('An character with this category exists. Please change its category first.');
+            }
+
+            if (!$this->logAdminAction($user, 'Deleted Character Category', 'Deleted '.$category->name)) {
+                throw new \Exception('Failed to log admin action.');
             }
 
             if ($category->has_image) {
@@ -152,14 +169,18 @@ class CharacterCategoryService extends Service {
     /**
      * Handle category data.
      *
-     * @param array                  $data
-     * @param CharacterCategory|null $category
+     * @param array                                        $data
+     * @param \App\Models\Character\CharacterCategory|null $category
      *
      * @return array
      */
     private function populateCategoryData($data, $category = null) {
         if (isset($data['description']) && $data['description']) {
             $data['parsed_description'] = parse($data['description']);
+        }
+
+        if (!isset($data['is_visible'])) {
+            $data['is_visible'] = 0;
         }
 
         if (isset($data['remove_image'])) {

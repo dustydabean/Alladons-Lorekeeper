@@ -6,8 +6,6 @@ use App\Models\Model;
 use App\Models\Prompt\Prompt;
 use App\Models\Shop\Shop;
 use App\Models\User\User;
-use App\Models\User\UserItem;
-use DB;
 
 class Item extends Model {
     /**
@@ -17,7 +15,7 @@ class Item extends Model {
      */
     protected $fillable = [
         'item_category_id', 'name', 'has_image', 'description', 'parsed_description', 'allow_transfer',
-        'data', 'reference_url', 'artist_alias', 'artist_url', 'artist_id', 'is_released',
+        'data', 'reference_url', 'artist_alias', 'artist_url', 'artist_id', 'is_released', 'hash',
     ];
 
     protected $appends = ['image_url'];
@@ -28,7 +26,6 @@ class Item extends Model {
      * @var string
      */
     protected $table = 'items';
-
     /**
      * Validation rules for creation.
      *
@@ -72,21 +69,21 @@ class Item extends Model {
      * Get the category the item belongs to.
      */
     public function category() {
-        return $this->belongsTo('App\Models\Item\ItemCategory', 'item_category_id');
+        return $this->belongsTo(ItemCategory::class, 'item_category_id');
     }
 
     /**
      * Get the item's tags.
      */
     public function tags() {
-        return $this->hasMany('App\Models\Item\ItemTag', 'item_id');
+        return $this->hasMany(ItemTag::class, 'item_id');
     }
 
     /**
      * Get the user that drew the item art.
      */
     public function artist() {
-        return $this->belongsTo('App\Models\User\User', 'artist_id');
+        return $this->belongsTo(User::class, 'artist_id');
     }
 
     /**********************************************************************************************
@@ -115,9 +112,11 @@ class Item extends Model {
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeSortCategory($query) {
-        $ids = ItemCategory::orderBy('sort', 'DESC')->pluck('id')->toArray();
+        if (ItemCategory::all()->count()) {
+            return $query->orderBy(ItemCategory::select('sort')->whereColumn('items.item_category_id', 'item_categories.id'), 'DESC');
+        }
 
-        return count($ids) ? $query->orderByRaw(DB::raw('FIELD(item_category_id, '.implode(',', $ids).')')) : $query;
+        return $query;
     }
 
     /**
@@ -146,11 +145,16 @@ class Item extends Model {
      * Scope a query to show only released or "released" (at least one user-owned stack has ever existed) items.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param mixed|null                            $user
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeReleased($query) {
-        return $query->whereIn('id', UserItem::pluck('item_id')->toArray())->orWhere('is_released', 1);
+    public function scopeReleased($query, $user = null) {
+        if ($user && $user->hasPower('edit_data')) {
+            return $query;
+        }
+
+        return $query->where('is_released', 1);
     }
 
     /**********************************************************************************************
@@ -183,7 +187,7 @@ class Item extends Model {
      * @return string
      */
     public function getImageFileNameAttribute() {
-        return $this->id.'-image.png';
+        return $this->hash.$this->id.'-image.png';
     }
 
     /**
@@ -366,6 +370,24 @@ class Item extends Model {
         return Prompt::whereIn('id', $itemPrompts)->get();
     }
 
+    /**
+     * Gets the admin edit URL.
+     *
+     * @return string
+     */
+    public function getAdminUrlAttribute() {
+        return url('admin/data/items/edit/'.$this->id);
+    }
+
+    /**
+     * Gets the power required to edit this model.
+     *
+     * @return string
+     */
+    public function getAdminPowerAttribute() {
+        return 'edit_data';
+    }
+
     /**********************************************************************************************
 
         OTHER FUNCTIONS
@@ -388,7 +410,7 @@ class Item extends Model {
      *
      * @param mixed $tag
      *
-     * @return ItemTag
+     * @return \App\Models\Item\ItemTag
      */
     public function tag($tag) {
         return $this->tags()->where('tag', $tag)->where('is_active', 1)->first();

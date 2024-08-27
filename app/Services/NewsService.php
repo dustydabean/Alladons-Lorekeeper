@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Models\News;
 use App\Models\User\User;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class NewsService extends Service {
     /*
@@ -19,10 +19,10 @@ class NewsService extends Service {
     /**
      * Creates a news post.
      *
-     * @param array $data
-     * @param User  $user
+     * @param array                 $data
+     * @param \App\Models\User\User $user
      *
-     * @return bool|News
+     * @return \App\Models\News|bool
      */
     public function createNews($data, $user) {
         DB::beginTransaction();
@@ -51,11 +51,11 @@ class NewsService extends Service {
     /**
      * Updates a news post.
      *
-     * @param News  $news
-     * @param array $data
-     * @param User  $user
+     * @param \App\Models\News      $news
+     * @param array                 $data
+     * @param \App\Models\User\User $user
      *
-     * @return bool|News
+     * @return \App\Models\News|bool
      */
     public function updateNews($news, $data, $user) {
         DB::beginTransaction();
@@ -83,7 +83,7 @@ class NewsService extends Service {
     /**
      * Deletes a news post.
      *
-     * @param News $news
+     * @param \App\Models\News $news
      *
      * @return bool
      */

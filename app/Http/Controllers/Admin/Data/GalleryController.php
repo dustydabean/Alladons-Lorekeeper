@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Admin\Data;
 use App\Http\Controllers\Controller;
 use App\Models\Gallery\Gallery;
 use App\Services\GalleryService;
-use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class GalleryController extends Controller {
     /*
@@ -112,7 +112,7 @@ class GalleryController extends Controller {
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postDeleteGallery(Request $request, GalleryService $service, $id) {
-        if ($id && $service->deleteGallery(Gallery::find($id))) {
+        if ($id && $service->deleteGallery(Gallery::find($id), Auth::user())) {
             flash('Gallery deleted successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {

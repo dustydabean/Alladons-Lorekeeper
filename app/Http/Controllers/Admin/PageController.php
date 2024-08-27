@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\SitePage;
 use App\Services\PageService;
-use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PageController extends Controller {
     /**
@@ -60,7 +60,7 @@ class PageController extends Controller {
     public function postCreateEditPage(Request $request, PageService $service, $id = null) {
         $id ? $request->validate(SitePage::$updateRules) : $request->validate(SitePage::$createRules);
         $data = $request->only([
-            'key', 'title', 'text', 'is_visible', 'can_comment',
+            'key', 'title', 'text', 'is_visible', 'can_comment', 'allow_dislikes',
         ]);
         if ($id && $service->updatePage(SitePage::find($id), $data, Auth::user())) {
             flash('Page updated successfully.')->success();

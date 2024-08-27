@@ -2,17 +2,15 @@
 
 namespace App\Services;
 
+use App\Facades\Notifications;
+use App\Facades\Settings;
 use App\Models\Character\Character;
 use App\Models\Character\CharacterTransfer;
 use App\Models\Currency\Currency;
-use App\Models\Item\Item;
 use App\Models\Trade;
 use App\Models\User\User;
 use App\Models\User\UserItem;
-use Config;
-use DB;
-use Notifications;
-use Settings;
+use Illuminate\Support\Facades\DB;
 
 class TradeManager extends Service {
     /*
@@ -27,10 +25,10 @@ class TradeManager extends Service {
     /**
      * Creates a new trade.
      *
-     * @param array $data
-     * @param User  $user
+     * @param array                 $data
+     * @param \App\Models\User\User $user
      *
-     * @return bool|Trade
+     * @return \App\Models\Trade|bool
      */
     public function createTrade($data, $user) {
         DB::beginTransaction();
@@ -80,10 +78,10 @@ class TradeManager extends Service {
     /**
      * Edits a user's side of a trade.
      *
-     * @param array $data
-     * @param User  $user
+     * @param array                 $data
+     * @param \App\Models\User\User $user
      *
-     * @return bool|Trade
+     * @return \App\Models\Trade|bool
      */
     public function editTrade($data, $user) {
         DB::beginTransaction();
@@ -122,10 +120,10 @@ class TradeManager extends Service {
     /**
      * Cancels a trade.
      *
-     * @param array $data
-     * @param User  $user
+     * @param array                 $data
+     * @param \App\Models\User\User $user
      *
-     * @return bool|Trade
+     * @return \App\Models\Trade|bool
      */
     public function cancelTrade($data, $user) {
         DB::beginTransaction();
@@ -167,10 +165,10 @@ class TradeManager extends Service {
     /**
      * Confirms the user's offer.
      *
-     * @param array $data
-     * @param User  $user
+     * @param array                 $data
+     * @param \App\Models\User\User $user
      *
-     * @return bool|Trade
+     * @return \App\Models\Trade|bool
      */
     public function confirmOffer($data, $user) {
         DB::beginTransaction();
@@ -233,10 +231,10 @@ class TradeManager extends Service {
     /**
      * Confirms the trade for a user.
      *
-     * @param array $data
-     * @param User  $user
+     * @param array                 $data
+     * @param \App\Models\User\User $user
      *
-     * @return bool|Trade
+     * @return \App\Models\Trade|bool
      */
     public function confirmTrade($data, $user) {
         DB::beginTransaction();
@@ -311,10 +309,10 @@ class TradeManager extends Service {
     /**
      * Approves a trade in the admin panel.
      *
-     * @param array $data
-     * @param User  $user
+     * @param array                 $data
+     * @param \App\Models\User\User $user
      *
-     * @return bool|Trade
+     * @return \App\Models\Trade|bool
      */
     public function approveTrade($data, $user) {
         DB::beginTransaction();
@@ -339,6 +337,10 @@ class TradeManager extends Service {
                     'trade_id' => $trade->id,
                 ]);
 
+                if (!$this->logAdminAction($user, 'Approved Trade', 'Approved trade <a href="'.$trade->url.'">#'.$trade->id.'</a>')) {
+                    throw new \Exception('Failed to log admin action.');
+                }
+
                 $trade->status = 'Completed';
                 $trade->staff_id = $user->id;
                 $trade->save();
@@ -357,10 +359,10 @@ class TradeManager extends Service {
     /**
      * Rejects a trade in the admin panel.
      *
-     * @param array $data
-     * @param User  $user
+     * @param array                 $data
+     * @param \App\Models\User\User $user
      *
-     * @return bool|Trade
+     * @return \App\Models\Trade|bool
      */
     public function rejectTrade($data, $user) {
         DB::beginTransaction();
@@ -383,6 +385,10 @@ class TradeManager extends Service {
                     'trade_id' => $trade->id,
                 ]);
 
+                if (!$this->logAdminAction($user, 'Rejected Trade', 'Rejected trade <a href="'.$trade->url.'">#'.$trade->id.'</a>')) {
+                    throw new \Exception('Failed to log admin action.');
+                }
+
                 $trade->reason = $data['reason'] ?? '';
                 $trade->status = 'Rejected';
                 $trade->staff_id = $user->id;
@@ -402,9 +408,9 @@ class TradeManager extends Service {
     /**
      * Handles modification of assets on the user's side of a trade.
      *
-     * @param Trade $trade
-     * @param array $data
-     * @param User  $user
+     * @param \App\Models\Trade     $trade
+     * @param array                 $data
+     * @param \App\Models\User\User $user
      *
      * @return array|bool
      */
@@ -420,7 +426,8 @@ class TradeManager extends Service {
             // First return any item stacks attached to the trade
 
             if (isset($tradeData[$type]['user_items'])) {
-                foreach ($tradeData[$type]['user_items'] as $userItemId=>$quantity) {
+                foreach ($tradeData[$type]['user_items'] as $userItemId=> $quantity) {
+                    $quantity = (int) $quantity;
                     $userItemRow = UserItem::find($userItemId);
                     if (!$userItemRow) {
                         throw new \Exception('Cannot return an invalid item. ('.$userItemId.')');
@@ -437,7 +444,8 @@ class TradeManager extends Service {
             // This is stored in the data attribute
             $currencyManager = new CurrencyManager;
             if (isset($tradeData[$type]['currencies'])) {
-                foreach ($tradeData[$type]['currencies'] as $currencyId=>$quantity) {
+                foreach ($tradeData[$type]['currencies'] as $currencyId=> $quantity) {
+                    $quantity = (int) $quantity;
                     $currencyManager->creditCurrency(null, $user, null, null, $currencyId, $quantity);
                 }
             }
@@ -447,7 +455,7 @@ class TradeManager extends Service {
 
             $userAssets = createAssetsArray();
             $assetCount = 0;
-            $assetLimit = Config::get('lorekeeper.settings.trade_asset_limit');
+            $assetLimit = config('lorekeeper.settings.trade_asset_limit');
 
             // Attach items. Technically, the user doesn't lose ownership of the item - we're just adding an additional holding field.
             // Unlike for design updates, we're keeping track of attached items here.
@@ -463,10 +471,10 @@ class TradeManager extends Service {
                     if (!$stack->item->allow_transfer || isset($stack->data['disallow_transfer'])) {
                         throw new \Exception('One or more of the selected items cannot be transferred.');
                     }
-                    $stack->trade_count += $data['stack_quantity'][$stackId];
+                    $stack->trade_count += intval($data['stack_quantity'][$stackId]);
                     $stack->save();
 
-                    addAsset($userAssets, $stack, $data['stack_quantity'][$stackId]);
+                    addAsset($userAssets, $stack, intval($data['stack_quantity'][$stackId]));
                     $assetCount++;
                 }
             }
@@ -482,16 +490,16 @@ class TradeManager extends Service {
                 //dd([$data['currency_id'], $data['currency_quantity']]);
                 $data['currency_id'] = $data['currency_id']['user-'.$user->id];
                 $data['currency_quantity'] = $data['currency_quantity']['user-'.$user->id];
-                foreach ($data['currency_id'] as $key=>$currencyId) {
+                foreach ($data['currency_id'] as $key=> $currencyId) {
                     $currency = Currency::where('allow_user_to_user', 1)->where('id', $currencyId)->first();
                     if (!$currency) {
                         throw new \Exception('Invalid currency selected.');
                     }
-                    if (!$currencyManager->debitCurrency($user, null, null, null, $currency, $data['currency_quantity'][$key])) {
+                    if (!$currencyManager->debitCurrency($user, null, null, null, $currency, intval($data['currency_quantity'][$key]))) {
                         throw new \Exception('Invalid currency/quantity selected.');
                     }
 
-                    addAsset($userAssets, $currency, $data['currency_quantity'][$key]);
+                    addAsset($userAssets, $currency, intval($data['currency_quantity'][$key]));
                     $assetCount++;
                 }
             }
@@ -544,7 +552,7 @@ class TradeManager extends Service {
     /**
      * Returns trade attachments to their owners.
      *
-     * @param Trade $trade
+     * @param \App\Models\Trade $trade
      *
      * @return bool
      */
@@ -557,6 +565,7 @@ class TradeManager extends Service {
             foreach (['sender', 'recipient'] as $type) {
                 if (isset($tradeData[$type]['user_items'])) {
                     foreach ($tradeData[$type]['user_items'] as $userItemId => $quantity) {
+                        $quantity = (int) $quantity;
                         $userItemRow = UserItem::find($userItemId);
                         if (!$userItemRow) {
                             throw new \Exception('Cannot return an invalid item. ('.$userItemId.')');
@@ -575,6 +584,7 @@ class TradeManager extends Service {
             foreach (['sender', 'recipient'] as $type) {
                 if (isset($tradeData[$type]['currencies'])) {
                     foreach ($tradeData[$type]['currencies'] as $currencyId => $quantity) {
+                        $quantity = (int) $quantity;
                         $currency = Currency::find($currencyId);
                         if (!$currency) {
                             throw new \Exception('Cannot return an invalid currency. ('.$currencyId.')');
@@ -597,8 +607,8 @@ class TradeManager extends Service {
     /**
      * Credits trade attachments to their new owners.
      *
-     * @param Trade $trade
-     * @param array $data
+     * @param \App\Models\Trade $trade
+     * @param array             $data
      *
      * @return bool
      */
@@ -621,13 +631,14 @@ class TradeManager extends Service {
             if ($senderStacks) {
                 foreach ($senderStacks as $stack) {
                     $quantity = $trade->data['sender']['user_items'][$stack->id];
+                    $quantity = (int) $quantity;
                     $inventoryManager->moveStack($trade->sender, $trade->recipient, 'Trade', ['data' => 'Received in trade [<a href="'.$trade->url.'">#'.$trade->id.'</a>]'], $stack, $quantity);
                     $userItemRow = UserItem::find($stack->id);
                     if (!$userItemRow) {
-                        throw new \Exception('Cannot return an invalid item. ('.$userItemId.')');
+                        throw new \Exception('Cannot return an invalid item. ('.$userItemRow->id.')');
                     }
                     if ($userItemRow->trade_count < $quantity) {
-                        throw new \Exception('Cannot return more items than was held. ('.$userItemId.')');
+                        throw new \Exception('Cannot return more items than was held. ('.$userItemRow->id.')');
                     }
                     $userItemRow->trade_count -= $quantity;
                     $userItemRow->save();
@@ -636,13 +647,14 @@ class TradeManager extends Service {
             if ($recipientStacks) {
                 foreach ($recipientStacks as $stack) {
                     $quantity = $trade->data['recipient']['user_items'][$stack->id];
+                    $quantity = (int) $quantity;
                     $inventoryManager->moveStack($trade->recipient, $trade->sender, 'Trade', ['data' => 'Received in trade [<a href="'.$trade->url.'">#'.$trade->id.'</a>]'], $stack, $quantity);
                     $userItemRow = UserItem::find($stack->id);
                     if (!$userItemRow) {
-                        throw new \Exception('Cannot return an invalid item. ('.$userItemId.')');
+                        throw new \Exception('Cannot return an invalid item. ('.$userItemRow->id.')');
                     }
                     if ($userItemRow->trade_count < $quantity) {
-                        throw new \Exception('Cannot return more items than was held. ('.$userItemId.')');
+                        throw new \Exception('Cannot return more items than was held. ('.$userItemRow->id.')');
                     }
                     $userItemRow->trade_count -= $quantity;
                     $userItemRow->save();
@@ -674,6 +686,7 @@ class TradeManager extends Service {
                 $recipientType = ($type == 'sender') ? 'recipient' : 'sender';
                 if (isset($tradeData[$type]['currencies'])) {
                     foreach ($tradeData[$type]['currencies'] as $currencyId => $quantity) {
+                        $quantity = (int) $quantity;
                         $currency = Currency::find($currencyId);
                         if (!$currency) {
                             throw new \Exception('Cannot credit an invalid currency. ('.$currencyId.')');

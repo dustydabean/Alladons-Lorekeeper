@@ -6,8 +6,7 @@ use App\Models\Character\Character;
 use App\Models\Shop\Shop;
 use App\Models\Shop\ShopLog;
 use App\Models\Shop\ShopStock;
-use Config;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class ShopManager extends Service {
     /*
@@ -80,6 +79,9 @@ class ShopManager extends Service {
                 if (!$character) {
                     throw new \Exception('Please enter a valid character code.');
                 }
+                if ($character->user_id != $user->id) {
+                    throw new \Exception('That character does not belong to you.');
+                }
                 if (!(new CurrencyManager)->debitCurrency($character, null, 'Shop Purchase', 'Purchased '.$shopStock->item->name.' from '.$shop->name, $shopStock->currency, $total_cost)) {
                     throw new \Exception('Not enough currency to make this purchase.');
                 }
@@ -132,8 +134,8 @@ class ShopManager extends Service {
     /**
      * Checks if the purchase limit for an item from a shop has been reached.
      *
-     * @param ShopStock             $shopStock
-     * @param \App\Models\User\User $user
+     * @param \App\Models\Shop\ShopStock $shopStock
+     * @param \App\Models\User\User      $user
      *
      * @return bool
      */
@@ -148,8 +150,8 @@ class ShopManager extends Service {
     /**
      * Checks how many times a user has purchased a shop item.
      *
-     * @param ShopStock             $shopStock
-     * @param \App\Models\User\User $user
+     * @param \App\Models\Shop\ShopStock $shopStock
+     * @param \App\Models\User\User      $user
      *
      * @return int
      */
@@ -158,7 +160,7 @@ class ShopManager extends Service {
     }
 
     public function getStockPurchaseLimit($shopStock, $user) {
-        $limit = Config::get('lorekeeper.settings.default_purchase_limit');
+        $limit = config('lorekeeper.settings.default_purchase_limit');
         if ($shopStock->purchase_limit > 0) {
             $user_purchase_limit = $shopStock->purchase_limit - $this->checkUserPurchases($shopStock, $user);
             if ($user_purchase_limit < $limit) {

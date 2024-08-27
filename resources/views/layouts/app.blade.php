@@ -11,6 +11,10 @@
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    @if (config('lorekeeper.extensions.use_recaptcha'))
+        <!-- ReCaptcha v3 -->
+        {!! RecaptchaV3::initJs() !!}
+    @endif
 
     <title>{{ config('lorekeeper.settings.site_name', 'Lorekeeper') }} -@yield('title')</title>
 
@@ -55,7 +59,7 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/lorekeeper.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/lorekeeper.css?v=' . filemtime(public_path('css/lorekeeper.css'))) }}" rel="stylesheet">
 
     {{-- Font Awesome --}}
     <link href="{{ asset('css/all.min.css') }}" rel="stylesheet">
@@ -74,7 +78,7 @@
     <link href="{{ asset('css/selectize.bootstrap4.css') }}" rel="stylesheet">
 
     @if (file_exists(public_path() . '/css/custom.css'))
-        <link href="{{ asset('css/custom.css') }}" rel="stylesheet">
+        <link href="{{ asset('css/custom.css') . '?v=' . filemtime(public_path('css/lorekeeper.css')) }}" rel="stylesheet">
     @endif
 
     @if ($theme?->prioritize_css)
@@ -120,13 +124,12 @@
         @include('layouts.editable_theme', ['theme' => $decoratorTheme])
     @endif
 
+    @include('feed::links')
 </head>
 
 <body>
     <div id="app">
-
         <div class="site-header-image" id="header" style="background-image: url('{{ $decoratorTheme?->headerImageUrl ?? ($conditionalTheme?->headerImageUrl ?? ($theme?->headerImageUrl ?? asset('images/header.png'))) }}');"></div>
-
         @include('layouts._nav')
         @if (View::hasSection('sidebar'))
             <div class="site-mobile-header bg-secondary"><a href="#" class="btn btn-sm btn-outline-light" id="mobileMenuButton">Menu <i class="fas fa-caret-right ml-1"></i></a></div>
@@ -140,7 +143,15 @@
                 </div>
                 <div class="main-content col-lg-8 p-4">
                     <div>
-                        @if (Auth::check() && !Config::get('lorekeeper.extensions.navbar_news_notif'))
+                        @if (Settings::get('is_maintenance_mode'))
+                            <div class="alert alert-secondary">
+                                The site is currently in maintenance mode!
+                                @if (!Auth::check() || !Auth::user()->hasPower('maintenance_access'))
+                                    You can browse public content, but cannot make any submissions.
+                                @endif
+                            </div>
+                        @endif
+                        @if (Auth::check() && !config('lorekeeper.extensions.navbar_news_notif'))
                             @if (Auth::user()->is_news_unread)
                                 <div class="alert alert-info"><a href="{{ url('news') }}">There is a new news post!</a></div>
                             @endif
@@ -175,6 +186,7 @@
         </div>
 
         @yield('scripts')
+        @include('layouts._pagination_js')
         <script>
             $(function() {
                 $('[data-toggle="tooltip"]').tooltip({
@@ -204,8 +216,6 @@
 
                 $.colorpicker.extensions.blurvalid = BlurValid;
                 console.log($['colorpicker'].extensions);
-
-
 
                 $('.cp').colorpicker({
                     'autoInputFallback': false,

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Comment;
+use App\Models\Comment\Comment;
 use App\Models\Gallery\GallerySubmission;
 use App\Models\Report\Report;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 
 class PermalinkController extends Controller {
     /**
@@ -16,7 +16,7 @@ class PermalinkController extends Controller {
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getComment($id) {
-        $comments = Comment::all();
+        $comments = Comment::withTrashed();
         //$comments = $comments->sortByDesc('created_at');
         $comment = $comments->find($id);
 
@@ -24,6 +24,10 @@ class PermalinkController extends Controller {
             abort(404);
         }
         if (!$comment->commentable) {
+            abort(404);
+        }
+
+        if (isset($comment->commentable->is_visible) && !$comment->commentable->is_visible) {
             abort(404);
         }
 
@@ -57,6 +61,7 @@ class PermalinkController extends Controller {
                         }
                         break;
                 }
+                break;
             case 'Staff-Staff':
                 if (!Auth::check()) {
                     abort(404);

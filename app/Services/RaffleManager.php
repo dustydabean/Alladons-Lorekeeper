@@ -3,11 +3,10 @@
 namespace App\Services;
 
 use App\Models\Raffle\Raffle;
-use App\Models\Raffle\RaffleGroup;
 use App\Models\Raffle\RaffleTicket;
 use App\Models\User\User;
 use Carbon\Carbon;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class RaffleManager extends Service {
     /*
@@ -21,26 +20,23 @@ class RaffleManager extends Service {
 
     /**
      * Adds tickets to a raffle.
-     * One ticket is added per name in $names, which is a
-     * string containing comma-separated names.
      *
-     * @param Raffle $raffle
-     * @param string $names
+     * @param \App\Models\Raffle\Raffle $raffle
+     * @param array                     $data
      *
      * @return int
      */
-    public function addTickets($raffle, $names) {
-        $names = explode(',', $names);
+    public function addTickets($raffle, $data) {
         $count = 0;
-        foreach ($names as $name) {
-            $name = trim($name);
-            if (strlen($name) == 0) {
-                continue;
-            }
-            if ($user = User::where('name', $name)->first()) {
-                $count += $this->addTicket($user, $raffle);
+        foreach ($data['user_id'] as $key=> $id) {
+            if ($user = User::where('id', $id)->first()) {
+                if ($this->addTicket($user, $raffle, $data['ticket_count'][$key])) {
+                    $count += $data['ticket_count'][$key];
+                }
             } else {
-                $count += $this->addTicket($name, $raffle);
+                if ($this->addTicket($data['alias'][$key], $raffle, $data['ticket_count'][$key])) {
+                    $count += $data['ticket_count'][$key];
+                }
             }
         }
 
@@ -50,9 +46,9 @@ class RaffleManager extends Service {
     /**
      * Adds one or more tickets to a single user for a raffle.
      *
-     * @param User   $user
-     * @param Raffle $raffle
-     * @param int    $count
+     * @param \App\Models\User\User     $user
+     * @param \App\Models\Raffle\Raffle $raffle
+     * @param int                       $count
      *
      * @return int
      */
@@ -64,6 +60,8 @@ class RaffleManager extends Service {
         } elseif ($count == 0) {
             return 0;
         } elseif ($raffle->rolled_at != null) {
+            return 0;
+        } elseif ($raffle->ticket_cap > 0 && ((is_string($user) ? $raffle->tickets()->where('alias', $user)->count() : $raffle->tickets()->where('user_id', $user->id)->count()) > $raffle->ticket_cap || (is_string($user) ? $raffle->tickets()->where('alias', $user)->count() : $raffle->tickets()->where('user_id', $user->id)->count()) + $count > $raffle->ticket_cap)) {
             return 0;
         } else {
             DB::beginTransaction();
@@ -82,7 +80,7 @@ class RaffleManager extends Service {
     /**
      * Removes a single ticket.
      *
-     * @param RaffleTicket $ticket
+     * @param \App\Models\Raffle\RaffleTicket $ticket
      *
      * @return bool
      */
@@ -103,8 +101,8 @@ class RaffleManager extends Service {
      * If the $updateGroup flag is true, winners will be removed
      * from other raffles in the group.
      *
-     * @param RaffleGroup $raffleGroup
-     * @param bool        $updateGroup
+     * @param \App\Models\Raffle\RaffleGroup $raffleGroup
+     * @param bool                           $updateGroup
      *
      * @return bool
      */
@@ -132,8 +130,8 @@ class RaffleManager extends Service {
      * If the $updateGroup flag is true, winners will be removed
      * from other raffles in the group.
      *
-     * @param Raffle $raffle
-     * @param bool   $updateGroup
+     * @param \App\Models\Raffle\Raffle $raffle
+     * @param bool                      $updateGroup
      *
      * @return bool
      */
@@ -167,7 +165,7 @@ class RaffleManager extends Service {
     /**
      * Rolls the winners of a raffle.
      *
-     * @param Raffle $raffle
+     * @param \App\Models\Raffle\Raffle $raffle
      *
      * @return array
      */
@@ -200,7 +198,7 @@ class RaffleManager extends Service {
             $ticketCount--;
 
             // remove tickets for the same user...I'm unsure how this is going to hold up with 3000 tickets,
-            foreach ($ticketPool as $key=>$ticket) {
+            foreach ($ticketPool as $key=> $ticket) {
                 if (($ticket->user_id != null && $ticket->user_id == $winner->user_id) || ($ticket->user_id == null && $ticket->alias == $winner->alias)) {
                     $ticketPool->forget($key);
                 }
@@ -215,9 +213,9 @@ class RaffleManager extends Service {
     /**
      * Rolls the winners of a raffle.
      *
-     * @param array       $winners
-     * @param RaffleGroup $raffleGroup
-     * @param Raffle      $raffle
+     * @param array                          $winners
+     * @param \App\Models\Raffle\RaffleGroup $raffleGroup
+     * @param \App\Models\Raffle\Raffle      $raffle
      *
      * @return bool
      */

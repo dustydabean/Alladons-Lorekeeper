@@ -22,7 +22,6 @@ class LootTable extends Model {
      * @var string
      */
     protected $table = 'loot_tables';
-
     /**
      * Validation rules for creation.
      *
@@ -53,7 +52,7 @@ class LootTable extends Model {
      * Get the loot data for this loot table.
      */
     public function loot() {
-        return $this->hasMany('App\Models\Loot\Loot', 'loot_table_id');
+        return $this->hasMany(Loot::class, 'loot_table_id');
     }
 
     /**********************************************************************************************
@@ -78,6 +77,24 @@ class LootTable extends Model {
      */
     public function getAssetTypeAttribute() {
         return 'loot_tables';
+    }
+
+    /**
+     * Gets the admin edit URL.
+     *
+     * @return string
+     */
+    public function getAdminUrlAttribute() {
+        return url('admin/data/loot-tables/edit/'.$this->id);
+    }
+
+    /**
+     * Gets the power required to edit this model.
+     *
+     * @return string
+     */
+    public function getAdminPowerAttribute() {
+        return 'edit_data';
     }
 
     /**********************************************************************************************
@@ -151,7 +168,7 @@ class LootTable extends Model {
         $rewards = createAssetsArray();
 
         if (isset($criteria) && $criteria && isset($rarity) && $rarity) {
-            if (Config::get('lorekeeper.extensions.item_entry_expansion.loot_tables.alternate_filtering')) {
+            if (config('lorekeeper.extensions.item_entry_expansion.loot_tables.alternate_filtering')) {
                 $loot = Item::where('item_category_id', $id)->released()->whereNotNull('data')->where('data->rarity', $criteria, $rarity)->get();
             } else {
                 $loot = Item::where('item_category_id', $id)->released()->whereNotNull('data')->whereRaw('JSON_EXTRACT(`data`, \'$.rarity\')'.$criteria.$rarity)->get();
@@ -190,7 +207,7 @@ class LootTable extends Model {
     public function rollRarityItem($quantity, $criteria, $rarity) {
         $rewards = createAssetsArray();
 
-        if (Config::get('lorekeeper.extensions.item_entry_expansion.loot_tables.alternate_filtering')) {
+        if (config('lorekeeper.extensions.item_entry_expansion.loot_tables.alternate_filtering')) {
             $loot = Item::released()->whereNotNull('data')->where('data->rarity', $criteria, $rarity)->get();
         } else {
             $loot = Item::released()->whereNotNull('data')->whereRaw('JSON_EXTRACT(`data`, \'$.rarity\')'.$criteria.$rarity)->get();

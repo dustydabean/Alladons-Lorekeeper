@@ -2,14 +2,11 @@
 
 namespace App\Services\Item;
 
-use App\Models\Currency\Currency;
 use App\Models\Item\Item;
-use App\Models\Loot\LootTable;
-use App\Models\Raffle\Raffle;
 use App\Models\Theme;
 use App\Services\InventoryManager;
 use App\Services\Service;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class BoxService extends Service {
     /*
@@ -27,20 +24,13 @@ class BoxService extends Service {
      * @return array
      */
     public function getEditData() {
-        return [
-            'characterCurrencies' => Currency::where('is_character_owned', 1)->orderBy('sort_character', 'DESC')->pluck('name', 'id'),
-            'items'               => Item::orderBy('name')->pluck('name', 'id'),
-            'currencies'          => Currency::where('is_user_owned', 1)->orderBy('name')->pluck('name', 'id'),
-            'tables'              => LootTable::orderBy('name')->pluck('name', 'id'),
-            'raffles'             => Raffle::where('rolled_at', null)->where('is_active', 1)->orderBy('name')->pluck('name', 'id'),
-            'themes'              => Theme::orderBy('name')->where('is_user_selectable', 0)->pluck('name', 'id'),
-        ];
+        return [];
     }
 
     /**
      * Processes the data attribute of the tag and returns it in the preferred format.
      *
-     * @param string $tag
+     * @param object $tag
      *
      * @return mixed
      */
@@ -66,7 +56,7 @@ class BoxService extends Service {
     /**
      * Processes the data attribute of the tag and returns it in the preferred format.
      *
-     * @param string $tag
+     * @param object $tag
      * @param array  $data
      *
      * @return bool
@@ -129,7 +119,7 @@ class BoxService extends Service {
         DB::beginTransaction();
 
         try {
-            foreach ($stacks as $key=>$stack) {
+            foreach ($stacks as $key=> $stack) {
                 // We don't want to let anyone who isn't the owner of the box open it,
                 // so do some validation...
                 if ($stack->user_id != $user->id) {
@@ -166,16 +156,6 @@ class BoxService extends Service {
      * @return string
      */
     private function getBoxRewardsString($rewards) {
-        $results = 'You have received: ';
-        $result_elements = [];
-        foreach ($rewards as $assetType) {
-            if (isset($assetType)) {
-                foreach ($assetType as $asset) {
-                    array_push($result_elements, $asset['asset']->name.(class_basename($asset['asset']) == 'Raffle' ? ' (Raffle Ticket)' : '').' x'.$asset['quantity']);
-                }
-            }
-        }
-
-        return $results.implode(', ', $result_elements);
+        return 'You have received: '.createRewardsString($rewards);
     }
 }

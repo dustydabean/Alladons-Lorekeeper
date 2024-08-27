@@ -7,11 +7,10 @@ use App\Models\Rarity;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
 use App\Models\User\User;
-use App\Models\User\UserItem;
 use App\Services\CharacterManager;
 use App\Services\InventoryManager;
 use App\Services\Service;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class SlotService extends Service {
     /*
@@ -40,7 +39,7 @@ class SlotService extends Service {
     /**
      * Processes the data attribute of the tag and returns it in the preferred format for edits.
      *
-     * @param string $tag
+     * @param object $tag
      *
      * @return mixed
      */
@@ -81,7 +80,7 @@ class SlotService extends Service {
     /**
      * Processes the data attribute of the tag and returns it in the preferred format for DB storage.
      *
-     * @param string $tag
+     * @param object $tag
      * @param array  $data
      *
      * @return bool
@@ -118,9 +117,9 @@ class SlotService extends Service {
     /**
      * Acts upon the item when used from the inventory.
      *
-     * @param UserItem $stacks
-     * @param User     $user
-     * @param array    $data
+     * @param \App\Models\User\UserItem $stacks
+     * @param \App\Models\User\User     $user
+     * @param array                     $data
      *
      * @return bool
      */
@@ -128,7 +127,7 @@ class SlotService extends Service {
         DB::beginTransaction();
 
         try {
-            foreach ($stacks as $key=>$stack) {
+            foreach ($stacks as $key=> $stack) {
                 // We don't want to let anyone who isn't the owner of the slot to use it,
                 // so do some validation...
                 if ($stack->user_id != $user->id) {

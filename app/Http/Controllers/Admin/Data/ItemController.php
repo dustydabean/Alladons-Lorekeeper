@@ -11,8 +11,8 @@ use App\Models\Shop\Shop;
 use App\Models\Shop\ShopStock;
 use App\Models\User\User;
 use App\Services\ItemService;
-use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ItemController extends Controller {
     /*
@@ -81,7 +81,7 @@ class ItemController extends Controller {
     public function postCreateEditItemCategory(Request $request, ItemService $service, $id = null) {
         $id ? $request->validate(ItemCategory::$updateRules) : $request->validate(ItemCategory::$createRules);
         $data = $request->only([
-            'name', 'description', 'image', 'remove_image', 'is_character_owned', 'character_limit', 'can_name',
+            'name', 'description', 'image', 'remove_image', 'is_character_owned', 'character_limit', 'can_name', 'is_visible',
         ]);
         if ($id && $service->updateItemCategory(ItemCategory::find($id), $data, Auth::user())) {
             flash('Category updated successfully.')->success();
@@ -122,7 +122,7 @@ class ItemController extends Controller {
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postDeleteItemCategory(Request $request, ItemService $service, $id) {
-        if ($id && $service->deleteItemCategory(ItemCategory::find($id))) {
+        if ($id && $service->deleteItemCategory(ItemCategory::find($id), Auth::user())) {
             flash('Category deleted successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
@@ -271,7 +271,7 @@ class ItemController extends Controller {
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postDeleteItem(Request $request, ItemService $service, $id) {
-        if ($id && $service->deleteItem(Item::find($id))) {
+        if ($id && $service->deleteItem(Item::find($id), Auth::user())) {
             flash('Item deleted successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
@@ -316,7 +316,7 @@ class ItemController extends Controller {
     public function postAddItemTag(Request $request, ItemService $service, $id) {
         $item = Item::find($id);
         $tag = $request->get('tag');
-        if ($tag = $service->addItemTag($item, $tag)) {
+        if ($tag = $service->addItemTag($item, $tag, Auth::user())) {
             flash('Tag added successfully.')->success();
 
             return redirect()->to($tag->adminUrl);
@@ -361,7 +361,7 @@ class ItemController extends Controller {
      */
     public function postEditItemTag(Request $request, ItemService $service, $id, $tag) {
         $item = Item::find($id);
-        if ($service->editItemTag($item, $tag, $request->all())) {
+        if ($service->editItemTag($item, $tag, $request->all(), Auth::user())) {
             flash('Tag edited successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
@@ -401,7 +401,7 @@ class ItemController extends Controller {
      */
     public function postDeleteItemTag(Request $request, ItemService $service, $id, $tag) {
         $item = Item::find($id);
-        if ($service->deleteItemTag($item, $tag)) {
+        if ($service->deleteItemTag($item, $tag, Auth::user())) {
             flash('Tag deleted successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {

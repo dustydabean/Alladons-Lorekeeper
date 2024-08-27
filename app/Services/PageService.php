@@ -3,8 +3,7 @@
 namespace App\Services;
 
 use App\Models\SitePage;
-use Config;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class PageService extends Service {
     /*
@@ -22,7 +21,7 @@ class PageService extends Service {
      * @param array                 $data
      * @param \App\Models\User\User $user
      *
-     * @return bool|SitePage
+     * @return \App\Models\SitePage|bool
      */
     public function createPage($data, $user) {
         DB::beginTransaction();
@@ -37,6 +36,7 @@ class PageService extends Service {
             }
             if (!isset($data['can_comment'])) {
                 $data['can_comment'] = 0;
+                $data['allow_dislikes'] = 0;
             }
 
             $page = SitePage::create($data);
@@ -56,7 +56,7 @@ class PageService extends Service {
      * @param \App\Models\User\User $user
      * @param mixed                 $page
      *
-     * @return bool|SitePage
+     * @return \App\Models\SitePage|bool
      */
     public function updatePage($page, $data, $user) {
         DB::beginTransaction();
@@ -76,6 +76,7 @@ class PageService extends Service {
             }
             if (!isset($data['can_comment'])) {
                 $data['can_comment'] = 0;
+                $data['allow_dislikes'] = 0;
             }
 
             $page->update($data);
@@ -100,7 +101,7 @@ class PageService extends Service {
 
         try {
             // Specific pages such as the TOS/privacy policy cannot be deleted from the admin panel.
-            if (Config::get('lorekeeper.text_pages.'.$page->key)) {
+            if (config('lorekeeper.text_pages.'.$page->key)) {
                 throw new \Exception('You cannot delete this page.');
             }
 

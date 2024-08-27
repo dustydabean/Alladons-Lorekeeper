@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Admin\Data;
 use App\Http\Controllers\Controller;
 use App\Models\Currency\Currency;
 use App\Services\CurrencyService;
-use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CurrencyController extends Controller {
     /*
@@ -113,7 +113,7 @@ class CurrencyController extends Controller {
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postDeleteCurrency(Request $request, CurrencyService $service, $id) {
-        if ($id && $service->deleteCurrency(Currency::find($id))) {
+        if ($id && $service->deleteCurrency(Currency::find($id), Auth::user())) {
             flash('Currency deleted successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {

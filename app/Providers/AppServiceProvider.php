@@ -4,13 +4,13 @@ namespace App\Providers;
 
 use App\Models\Theme;
 use App\Providers\Socialite\ToyhouseProvider;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
-use View;
+use Illuminate\Support\Facades\View;
 
 class AppServiceProvider extends ServiceProvider {
     /**
@@ -26,7 +26,8 @@ class AppServiceProvider extends ServiceProvider {
     public function boot() {
         //
         Schema::defaultStringLength(191);
-        Paginator::useBootstrap();
+        Paginator::defaultView('layouts._pagination');
+        Paginator::defaultSimpleView('layouts._simple-pagination');
 
         view()->composer('*', function () {
             $theme = Auth::user()->theme ?? Theme::where('is_default', true)->first() ?? null;

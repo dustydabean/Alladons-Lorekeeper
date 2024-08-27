@@ -2,12 +2,11 @@
 
 namespace App\Services;
 
+use App\Facades\Notifications;
+use App\Facades\Settings;
 use App\Models\Prompt\Prompt;
 use App\Models\Report\Report;
-use App\Models\User\User;
-use DB;
-use Notifications;
-use Settings;
+use Illuminate\Support\Facades\DB;
 
 class ReportManager extends Service {
     /*
@@ -22,9 +21,9 @@ class ReportManager extends Service {
     /**
      * Creates a new report.
      *
-     * @param array $data
-     * @param User  $user
-     * @param bool  $isClaim
+     * @param array                 $data
+     * @param \App\Models\User\User $user
+     * @param bool                  $isClaim
      *
      * @return mixed
      */
@@ -63,8 +62,8 @@ class ReportManager extends Service {
     /**
      * Approves a report.
      *
-     * @param array $data
-     * @param User  $user
+     * @param array                 $data
+     * @param \App\Models\User\User $user
      *
      * @return mixed
      */
@@ -88,6 +87,10 @@ class ReportManager extends Service {
                 'report_id'  => $report->id,
             ]);
 
+            if (!$this->logAdminAction($user, 'Report Assigned', 'Assigned themselves to report <a href="'.$report->viewurl.'">#'.$report->id.'</a>')) {
+                throw new \Exception('Failed to log admin action.');
+            }
+
             return $this->commitReturn($report);
         } catch (\Exception $e) {
             $this->setError('error', $e->getMessage());
@@ -99,8 +102,8 @@ class ReportManager extends Service {
     /**
      * Closes a report.
      *
-     * @param array $data
-     * @param User  $user
+     * @param array                 $data
+     * @param \App\Models\User\User $user
      *
      * @return mixed
      */
@@ -137,6 +140,10 @@ class ReportManager extends Service {
                 'staff_name' => $user->name,
                 'report_id'  => $report->id,
             ]);
+
+            if (!$this->logAdminAction($user, 'Report Closed', 'Closed report <a href="'.$report->viewurl.'">#'.$report->id.'</a>')) {
+                throw new \Exception('Failed to log admin action.');
+            }
 
             return $this->commitReturn($report);
         } catch (\Exception $e) {

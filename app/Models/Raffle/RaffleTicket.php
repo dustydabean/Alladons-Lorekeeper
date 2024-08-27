@@ -3,6 +3,7 @@
 namespace App\Models\Raffle;
 
 use App\Models\Model;
+use App\Models\User\User;
 
 class RaffleTicket extends Model {
     /**
@@ -22,11 +23,24 @@ class RaffleTicket extends Model {
     protected $table = 'raffle_tickets';
 
     /**
-     * Dates on the model to convert to Carbon instances.
+     * The attributes that should be cast to native types.
      *
      * @var array
      */
-    protected $dates = ['created_at'];
+    protected $casts = [
+        'created_at' => 'datetime',
+    ];
+
+    /**
+     * Validation rules for creation.
+     *
+     * @var array
+     */
+    public static $createRules = [
+        'user_id.*'      => 'required_without:alias.*',
+        'alias.*'        => 'required_without:user_id.*',
+        'ticket_count.*' => 'required',
+    ];
 
     /**********************************************************************************************
 
@@ -38,14 +52,14 @@ class RaffleTicket extends Model {
      * Get the raffle this ticket is for.
      */
     public function raffle() {
-        return $this->belongsTo('App\Models\Raffle\Raffle');
+        return $this->belongsTo(Raffle::class);
     }
 
     /**
      * Get the user who owns the raffle ticket.
      */
     public function user() {
-        return $this->belongsTo('App\Models\User\User');
+        return $this->belongsTo(User::class);
     }
 
     /**********************************************************************************************
@@ -82,6 +96,6 @@ class RaffleTicket extends Model {
             return $this->user->displayName;
         }
 
-        return '<a href="http://'.$this->alias.'.deviantart.com">'.$this->alias.'@dA</a>';
+        return $this->alias.' (Off-site user)';
     }
 }

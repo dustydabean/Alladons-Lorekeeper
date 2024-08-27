@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\Invitation;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class InvitationService extends Service {
     /*
@@ -20,7 +20,7 @@ class InvitationService extends Service {
      *
      * @param \App\Models\User\User $user
      *
-     * @return bool|Invitation
+     * @return \App\Models\Invitation|bool
      */
     public function generateInvitation($user) {
         DB::beginTransaction();
@@ -45,7 +45,7 @@ class InvitationService extends Service {
      * @param \App\Models\User\User $user
      * @param mixed                 $invitation
      *
-     * @return bool|Invitation
+     * @return \App\Models\Invitation|bool
      */
     public function useInvitation($invitation, $user) {
         DB::beginTransaction();
@@ -70,7 +70,7 @@ class InvitationService extends Service {
     /**
      * Deletes an unused invitation code.
      *
-     * @param Invitation $invitation
+     * @param \App\Models\Invitation $invitation
      *
      * @return bool
      */

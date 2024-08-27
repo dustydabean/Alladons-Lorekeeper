@@ -6,7 +6,7 @@ use App\Models\Character\Character;
 use App\Models\Sales\Sales;
 use App\Models\Sales\SalesCharacter;
 use App\Models\User\User;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Validator;
 
 class SalesService extends Service {
@@ -22,10 +22,10 @@ class SalesService extends Service {
     /**
      * Creates a Sales post.
      *
-     * @param array $data
-     * @param User  $user
+     * @param array                 $data
+     * @param \App\Models\User\User $user
      *
-     * @return bool|Sales
+     * @return \App\Models\Sales\Sales|bool
      */
     public function createSales($data, $user) {
         DB::beginTransaction();
@@ -45,7 +45,7 @@ class SalesService extends Service {
             // The character identification comes in both the slug field and as character IDs
             // First, check if the characters are accessible to begin with.
             if (isset($data['slug'])) {
-                $characters = Character::myo(0)->visible()->whereIn('slug', $data['slug'])->get();
+                $characters = Character::myo(0)->whereIn('slug', $data['slug'])->get();
                 if (count($characters) != count($data['slug'])) {
                     throw new \Exception('One or more of the selected characters do not exist.');
                 }
@@ -73,11 +73,11 @@ class SalesService extends Service {
     /**
      * Updates a Sales post.
      *
-     * @param array $data
-     * @param User  $user
-     * @param mixed $sales
+     * @param array                 $data
+     * @param \App\Models\User\User $user
+     * @param mixed                 $sales
      *
-     * @return bool|Sales
+     * @return \App\Models\Sales\Sales|bool
      */
     public function updateSales($sales, $data, $user) {
         DB::beginTransaction();
@@ -99,7 +99,7 @@ class SalesService extends Service {
             // The character identification comes in both the slug field and as character IDs
             // First, check if the characters are accessible to begin with.
             if (isset($data['slug'])) {
-                $characters = Character::myo(0)->visible()->whereIn('slug', $data['slug'])->get();
+                $characters = Character::myo(0)->whereIn('slug', $data['slug'])->get();
                 if (count($characters) != count($data['slug'])) {
                     throw new \Exception('One or more of the selected characters do not exist.');
                 }
@@ -177,8 +177,8 @@ class SalesService extends Service {
      * @return bool
      */
     private function processCharacters($sales, $data) {
-        foreach ($data['slug'] as $key=>$slug) {
-            $character = Character::myo(0)->visible()->where('slug', $slug)->first();
+        foreach ($data['slug'] as $key=> $slug) {
+            $character = Character::myo(0)->where('slug', $slug)->first();
 
             // Assemble data
             $charData[$key] = [];
@@ -238,6 +238,7 @@ class SalesService extends Service {
             // Record data/attach the character to the sales post
             SalesCharacter::create([
                 'character_id' => $character->id,
+                'image_id'     => $data['image_id'][$key] ?? $character->image->id,
                 'sales_id'     => $sales->id,
                 'type'         => $charData[$key]['type'],
                 'data'         => json_encode($charData[$key]),

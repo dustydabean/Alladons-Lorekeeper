@@ -20,7 +20,6 @@ class UserUpdateLog extends Model {
      * @var string
      */
     protected $table = 'user_update_log';
-
     /**
      * The primary key of the model.
      *
@@ -45,14 +44,14 @@ class UserUpdateLog extends Model {
      * Get the staff who updated the user.
      */
     public function staff() {
-        return $this->belongsTo('App\Models\User\User', 'staff_id');
+        return $this->belongsTo(User::class, 'staff_id');
     }
 
     /**
      * Get the user that was updated.
      */
     public function user() {
-        return $this->belongsTo('App\Models\User\User', 'user_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**********************************************************************************************

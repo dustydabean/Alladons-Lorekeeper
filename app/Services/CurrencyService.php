@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\Character\CharacterCurrency;
 use App\Models\Currency\Currency;
 use App\Models\User\UserCurrency;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class CurrencyService extends Service {
     /*
@@ -23,7 +23,7 @@ class CurrencyService extends Service {
      * @param array                 $data
      * @param \App\Models\User\User $user
      *
-     * @return bool|Currency
+     * @return \App\Models\Currency\Currency|bool
      */
     public function createCurrency($data, $user) {
         DB::beginTransaction();
@@ -47,6 +47,7 @@ class CurrencyService extends Service {
 
             if (isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
+                $data['hash'] = randomString(10);
                 $image = $data['image'];
                 unset($data['image']);
             } else {
@@ -54,6 +55,10 @@ class CurrencyService extends Service {
             }
 
             $currency = Currency::create($data);
+
+            if (!$this->logAdminAction($user, 'Created Currency', 'Created '.$currency->displayName)) {
+                throw new \Exception('Failed to log admin action.');
+            }
 
             if ($icon) {
                 $this->handleImage($icon, $currency->currencyIconPath, $currency->currencyIconFileName);
@@ -73,11 +78,11 @@ class CurrencyService extends Service {
     /**
      * Updates a currency.
      *
-     * @param Currency              $currency
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param \App\Models\Currency\Currency $currency
+     * @param array                         $data
+     * @param \App\Models\User\User         $user
      *
-     * @return bool|Currency
+     * @return \App\Models\Currency\Currency|bool
      */
     public function updateCurrency($currency, $data, $user) {
         DB::beginTransaction();
@@ -105,11 +110,16 @@ class CurrencyService extends Service {
 
             if (isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
+                $data['hash'] = randomString(10);
                 $image = $data['image'];
                 unset($data['image']);
             }
 
             $currency->update($data);
+
+            if (!$this->logAdminAction($user, 'Updated Currency', 'Updated '.$currency->displayName)) {
+                throw new \Exception('Failed to log admin action.');
+            }
 
             if ($icon) {
                 $this->handleImage($icon, $currency->currencyIconPath, $currency->currencyIconFileName);
@@ -129,11 +139,12 @@ class CurrencyService extends Service {
     /**
      * Deletes a currency.
      *
-     * @param Currency $currency
+     * @param \App\Models\Currency\Currency $currency
+     * @param mixed                         $user
      *
      * @return bool
      */
-    public function deleteCurrency($currency) {
+    public function deleteCurrency($currency, $user) {
         DB::beginTransaction();
 
         try {
@@ -144,7 +155,7 @@ class CurrencyService extends Service {
                 throw new \Exception('A prompt currently distributes this currency as a reward. Please remove the currency before deleting it.');
             }
             if (DB::table('shop_stock')->where('currency_id', $currency->id)->exists()) {
-                throw new \Exception('A shop currently requires this currency to purchase an item. Please change the currency before deleting it.');
+                throw new \Exception('A shop currently requires this currency to purchase an currency. Please change the currency before deleting it.');
             }
             // Disabled for now due to issues with JSON lookup with older mysql versions/mariaDB
             // if(DB::table('items')->where('data->resell', $currency->id)->exists()) throw new \Exception("An item currently uses this currency for its resale value. Please change the resale information before deleting this currency.");
@@ -153,6 +164,10 @@ class CurrencyService extends Service {
             // The reason this is allowed is that in instances where event currencies
             // are created for temporary use, it would be inconvenient to have to manually
             // remove them from user accounts before deleting the base currency.
+
+            if (!$this->logAdminAction($user, 'Deleted Currency', 'Deleted '.$currency->name)) {
+                throw new \Exception('Failed to log admin action.');
+            }
 
             UserCurrency::where('currency_id', $currency->id)->delete();
             CharacterCurrency::where('currency_id', $currency->id)->delete();
@@ -202,8 +217,8 @@ class CurrencyService extends Service {
     /**
      * Processes user input for creating/updating a currency.
      *
-     * @param array    $data
-     * @param Currency $currency
+     * @param array                         $data
+     * @param \App\Models\Currency\Currency $currency
      *
      * @return array
      */

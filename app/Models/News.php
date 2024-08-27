@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\User\User;
 use App\Traits\Commentable;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use Spatie\Feed\Feedable;
+use Spatie\Feed\FeedItem;
 
-class News extends Model {
+class News extends Model implements Feedable {
     use Commentable;
     /**
      * The attributes that are mass assignable.
@@ -25,18 +28,20 @@ class News extends Model {
     protected $table = 'news';
 
     /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'post_at' => 'datetime',
+    ];
+
+    /**
      * Whether the model contains timestamps to be saved and updated.
      *
      * @var string
      */
     public $timestamps = true;
-
-    /**
-     * Dates on the model to convert to Carbon instances.
-     *
-     * @var array
-     */
-    public $dates = ['post_at'];
 
     /**
      * Validation rules for creation.
@@ -68,7 +73,7 @@ class News extends Model {
      * Get the user who created the news post.
      */
     public function user() {
-        return $this->belongsTo('App\Models\User\User');
+        return $this->belongsTo(User::class);
     }
 
     /**********************************************************************************************
@@ -130,5 +135,53 @@ class News extends Model {
      */
     public function getUrlAttribute() {
         return url('news/'.$this->slug);
+    }
+
+    /**
+     * Gets the admin edit URL.
+     *
+     * @return string
+     */
+    public function getAdminUrlAttribute() {
+        return url('admin/news/edit/'.$this->id);
+    }
+
+    /**
+     * Gets the power required to edit this model.
+     *
+     * @return string
+     */
+    public function getAdminPowerAttribute() {
+        return 'edit_pages';
+    }
+
+    /**********************************************************************************************
+
+        OTHER FUNCTIONS
+
+    **********************************************************************************************/
+
+    /**
+     * Returns all feed items.
+     */
+    public static function getFeedItems() {
+        return self::visible()->get();
+    }
+
+    /**
+     * Generates feed item information.
+     *
+     * @return /Spatie/Feed/FeedItem;
+     */
+    public function toFeedItem(): FeedItem {
+        return FeedItem::create([
+            'id'         => '/news/'.$this->id,
+            'title'      => $this->title,
+            'summary'    => $this->parsed_text,
+            'updated'    => $this->updated_at,
+            'link'       => $this->url,
+            'author'     => $this->user->name,
+            'authorName' => $this->user->name,
+        ]);
     }
 }
