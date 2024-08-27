@@ -1,14 +1,11 @@
-<?php namespace App\Services;
+<?php
 
-use App\Services\Service;
-
-use DB;
-use Config;
+namespace App\Services;
 
 use App\Models\ThemeEditor;
+use DB;
 
-class ThemeEditorManager extends Service
-{
+class ThemeEditorManager extends Service {
     /*
     |--------------------------------------------------------------------------
     | Theme Editor Service
@@ -21,17 +18,17 @@ class ThemeEditorManager extends Service
     /**
      * Creates a theme.
      *
-     * @param  array                  $data
-     * @param  \App\Models\User\User  $user
-     * @return bool|\App\Models\ThemeEditor
+     * @param array                 $data
+     * @param \App\Models\User\User $user
+     *
+     * @return bool|ThemeEditor
      */
-    public function createTheme($data, $user)
-    {
+    public function createTheme($data, $user) {
         DB::beginTransaction();
 
         try {
-            $data['header_image_display'] = (isset($data['header_image_display'])) ?  'inline' : 'none'; 
-            $data['background_size'] = (isset($data['background_size'])) ?  'cover' : 'auto'; 
+            $data['header_image_display'] = (isset($data['header_image_display'])) ? 'inline' : 'none';
+            $data['background_size'] = (isset($data['background_size'])) ? 'cover' : 'auto';
             $data['header_image_url'] = (isset($data['header_image_url'])) ? $data['header_image_url'] : '';
             $data['background_image_url'] = (isset($data['background_image_url'])) ? $data['background_image_url'] : '';
 
@@ -42,55 +39,57 @@ class ThemeEditorManager extends Service
             dd($e->getMessage());
             $this->setError('error', $e->getMessage());
         }
+
         return $this->rollbackReturn(false);
     }
 
     /**
      * Updates a theme.
      *
-     * @param  \App\Models\SitePage   $news
-     * @param  array                  $data 
-     * @param  \App\Models\User\User  $user
-     * @return bool|\App\Models\SitePage
+     * @param array                 $data
+     * @param \App\Models\User\User $user
+     * @param mixed                 $theme
+     *
+     * @return \App\Models\SitePage|bool
      */
-    public function updateTheme($theme, $data, $user)
-    {
+    public function updateTheme($theme, $data, $user) {
         DB::beginTransaction();
 
         try {
-            $data['header_image_display'] = (isset($data['header_image_display'])) ?  'inline' : 'none'; 
-            $data['background_size'] = (isset($data['background_size'])) ?  'cover' : 'auto'; 
-            $data['header_image_url'] = (isset($data['header_image_url'])) ? $data['header_image_url'] : ''; 
-            $data['background_image_url'] = (isset($data['background_image_url'])) ? $data['background_image_url'] : ''; 
+            $data['header_image_display'] = (isset($data['header_image_display'])) ? 'inline' : 'none';
+            $data['background_size'] = (isset($data['background_size'])) ? 'cover' : 'auto';
+            $data['header_image_url'] = (isset($data['header_image_url'])) ? $data['header_image_url'] : '';
+            $data['background_image_url'] = (isset($data['background_image_url'])) ? $data['background_image_url'] : '';
             $data['is_released'] = (isset($data['is_released'])) ? 1 : 0;
 
             $theme->update($data);
 
             return $this->commitReturn($theme);
-        } catch(\Exception $e) { 
+        } catch (\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
+
         return $this->rollbackReturn(false);
     }
 
     /**
      * Deletes a theme.
      *
-     * @param  \App\Models\SitePage  $news
+     * @param mixed $theme
+     *
      * @return bool
      */
-    public function deleteTheme($theme)
-    {
+    public function deleteTheme($theme) {
         DB::beginTransaction();
 
         try {
-
             $theme->delete();
 
             return $this->commitReturn(true);
-        } catch(\Exception $e) { 
+        } catch (\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
+
         return $this->rollbackReturn(false);
     }
 }

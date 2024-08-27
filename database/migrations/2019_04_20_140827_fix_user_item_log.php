@@ -1,20 +1,16 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-class FixUserItemLog extends Migration
-{
+class FixUserItemLog extends Migration {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
-    {
+    public function up() {
         // Add sign to quantities, also rename count in the items log
-        Schema::table('user_items_log', function(Blueprint $table) {
+        Schema::table('user_items_log', function (Blueprint $table) {
             $table->dropColumn('count');
             $table->integer('quantity')->unsigned()->default(1);
         });
@@ -22,13 +18,10 @@ class FixUserItemLog extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
-    {
+    public function down() {
         //
-        Schema::table('user_items_log', function(Blueprint $table) {
+        Schema::table('user_items_log', function (Blueprint $table) {
             $table->dropColumn('quantity');
             $table->integer('count')->unsigned()->default(1);
         });

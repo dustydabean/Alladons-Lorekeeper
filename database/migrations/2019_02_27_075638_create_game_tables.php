@@ -1,18 +1,14 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-class CreateGameTables extends Migration
-{
+class CreateGameTables extends Migration {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
-    {
+    public function up() {
         // Tables for actual game use.
         // Most of these have a description field - these are intended for short descriptions, like
         // you would find in a tooltip, and should contain a link out to more detailed explanations
@@ -24,7 +20,7 @@ class CreateGameTables extends Migration
         Schema::create('rarities', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
-            
+
             $table->string('name');
             $table->string('description', 512);
             $table->integer('sort')->unsigned()->default(0);
@@ -38,7 +34,7 @@ class CreateGameTables extends Migration
         Schema::create('item_categories', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
-            
+
             $table->string('name');
             $table->string('description', 512);
             $table->integer('sort')->unsigned()->default(0);
@@ -49,7 +45,7 @@ class CreateGameTables extends Migration
             $table->increments('id');
             $table->integer('item_category_id')->unsigned()->nullable()->default(null);
             // For the sake of saving some headaches, item category can be left empty (which will put them in a generic "miscellaneous" category)
-            
+
             $table->string('name');
             $table->string('description', 512);
             $table->text('specifications')->nullable()->default(null);
@@ -75,7 +71,7 @@ class CreateGameTables extends Migration
             $table->foreign('user_id')->references('id')->on('users');
         });
 
-        Schema::create('inventory_log', function(Blueprint $table) {
+        Schema::create('inventory_log', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
             $table->integer('item_id')->unsigned();
@@ -99,12 +95,12 @@ class CreateGameTables extends Migration
 
         // Create species tables //////////////////////////////////////////////////////////////////
 
-        // These are named "species", but can also be used for making subspecies 
+        // These are named "species", but can also be used for making subspecies
         // (just change the wording on the views)
         // I'll add a recipe to add a category above species so that multiple species
         // with subspecies can be done, it just appears to be uncommon in ARPGs to
         // have so many levels of options at once.
-        Schema::create('specieses', function(Blueprint $table) {
+        Schema::create('specieses', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
             $table->string('name');
@@ -114,7 +110,7 @@ class CreateGameTables extends Migration
             $table->integer('sort')->unsigned()->default(0);
         });
         // "Trait" is a reserved keyword, so traits are going to be called "features" instead
-        Schema::create('feature_categories', function(Blueprint $table) {
+        Schema::create('feature_categories', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
 
@@ -123,7 +119,7 @@ class CreateGameTables extends Migration
             $table->boolean('has_image')->default(0);
             $table->integer('sort')->unsigned()->default(0);
         });
-        Schema::create('features', function(Blueprint $table) {
+        Schema::create('features', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
 
@@ -133,9 +129,9 @@ class CreateGameTables extends Migration
             // Species ID can be left as null for a trait that can be used by
             // any species in the database.
             $table->integer('species_id')->unsigned()->nullable()->default(null);
-            
+
             $table->integer('rarity_id')->unsigned();
-            
+
             $table->string('name');
             $table->string('description', 512);
             $table->text('specifications')->nullable()->default(null);
@@ -148,19 +144,19 @@ class CreateGameTables extends Migration
 
         // Create character tables ////////////////////////////////////////////////////////////////
 
-        Schema::create('character_categories', function(Blueprint $table) {
+        Schema::create('character_categories', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
 
             $table->string('code'); // A short code used to identify the category, e.g. MYO, GEN2, etc.
-            
+
             $table->string('name');
             $table->string('description', 512);
             $table->boolean('has_image')->default(0);
             $table->integer('sort')->unsigned()->default(0);
         });
 
-        Schema::create('character_images', function(Blueprint $table) {
+        Schema::create('character_images', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
 
@@ -189,11 +185,10 @@ class CreateGameTables extends Migration
 
             //$table->foreign('character_id')->references('id')->on('characters');
             $table->foreign('user_id')->references('id')->on('users');
-
         });
 
         // The actual character tables
-        Schema::create('characters', function(Blueprint $table) {
+        Schema::create('characters', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
 
@@ -222,17 +217,17 @@ class CreateGameTables extends Migration
 
             $table->boolean('is_visible')->default(1);
         });
-        Schema::create('character_features', function(Blueprint $table) {
+        Schema::create('character_features', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             // Images can have different features, so features are attached to images rather than characters
-            $table->integer('character_image_id')->unsigned(); 
-            $table->integer('feature_id')->unsigned(); 
+            $table->integer('character_image_id')->unsigned();
+            $table->integer('feature_id')->unsigned();
             $table->string('data'); // Any special notes about the usage of this feature
 
             $table->unique(['character_image_id', 'feature_id']);
         });
 
-        Schema::create('character_log', function(Blueprint $table) {
+        Schema::create('character_log', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
             $table->integer('character_id')->unsigned();
@@ -246,7 +241,7 @@ class CreateGameTables extends Migration
         });
 
         // A general queue for modifying characters
-        Schema::create('character_submissions', function(Blueprint $table) {
+        Schema::create('character_submissions', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
             $table->integer('user_id')->unsigned();
@@ -263,16 +258,15 @@ class CreateGameTables extends Migration
 
             $table->timestamps();
         });
-        
 
         // Tracks characters/MYO slots that enter or leave a user's possession.
-        // Main things to track: 
+        // Main things to track:
         // - Bought/traded for/was gifted a character/MYO slot
         // - Sold/traded away/gifted away a character/MYO slot
         // - Used a MYO slot (was approved)
         // Depending on the game owner's preferences, FTO status may be "doesn't currently own a character"
         // or "never had a character" (sometimes with additional qualifications, but usually the latter)
-        Schema::create('user_character_log', function(Blueprint $table) {
+        Schema::create('user_character_log', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
             $table->integer('character_id')->unsigned()->nullable()->default(null);
@@ -284,25 +278,21 @@ class CreateGameTables extends Migration
 
             $table->timestamps();
         });
-
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
-    {
+    public function down() {
         Schema::dropIfExists('user_character_log');
-        
+
         Schema::dropIfExists('character_submissions');
         Schema::dropIfExists('character_log');
         Schema::dropIfExists('character_features');
         Schema::dropIfExists('characters');
         Schema::dropIfExists('character_images');
         Schema::dropIfExists('character_categories');
-        
+
         Schema::dropIfExists('features');
         Schema::dropIfExists('feature_categories');
         Schema::dropIfExists('specieses');
@@ -311,7 +301,7 @@ class CreateGameTables extends Migration
         Schema::dropIfExists('inventory');
         Schema::dropIfExists('items');
         Schema::dropIfExists('item_categories');
-        
+
         Schema::dropIfExists('rarities');
     }
 }

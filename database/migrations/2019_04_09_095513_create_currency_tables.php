@@ -1,18 +1,14 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-class CreateCurrencyTables extends Migration
-{
+class CreateCurrencyTables extends Migration {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
-    {
+    public function up() {
         Schema::create('currencies', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
@@ -26,11 +22,11 @@ class CreateCurrencyTables extends Migration
             $table->integer('sort_user')->unsigned()->default(0); // larger shows up first
             $table->integer('sort_character')->unsigned()->default(0); // larger shows up first
 
-            // Applicable only to users. 
+            // Applicable only to users.
             // Chooses whether to show on the user profile,
             // or if it's only visible from the bank page.
             // This allows event-only currencies to be created for short-term use
-            // but not clutter up user profiles. 
+            // but not clutter up user profiles.
             // (Non-displayed currencies are not listed if the user doesn't own any,
             // but displayed ones will display as 0.)
             $table->boolean('is_displayed')->default(1);
@@ -57,12 +53,12 @@ class CreateCurrencyTables extends Migration
             $table->integer('currency_id')->unsigned();
 
             $table->integer('quantity')->default(0);
-            
+
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('character_id')->references('id')->on('characters');
             $table->foreign('currency_id')->references('id')->on('currencies');
         });
-        
+
         Schema::create('banks_log', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
@@ -83,23 +79,20 @@ class CreateCurrencyTables extends Migration
 
             // Any additional data, e.g. a reason for a staff grant, name of rewarded activity, etc.
             $table->string('data', 512);
-            
+
             $table->integer('currency_id')->unsigned();
             $table->integer('quantity')->default(0);
 
             $table->timestamps();
-            
+
             $table->foreign('currency_id')->references('id')->on('currencies');
         });
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
-    {
+    public function down() {
         Schema::dropIfExists('banks_log');
         Schema::dropIfExists('banks');
         Schema::dropIfExists('currencies');

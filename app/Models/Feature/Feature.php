@@ -2,22 +2,19 @@
 
 namespace App\Models\Feature;
 
-use Config;
-use DB;
 use App\Models\Model;
-use App\Models\Feature\FeatureCategory;
-use App\Models\Species\Species;
 use App\Models\Rarity;
+use App\Models\Species\Species;
+use DB;
 
-class Feature extends Model
-{
+class Feature extends Model {
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'feature_category_id', 'species_id', 'subtype_id', 'rarity_id', 'name', 'has_image', 'description', 'parsed_description'
+        'feature_category_id', 'species_id', 'subtype_id', 'rarity_id', 'name', 'has_image', 'description', 'parsed_description',
     ];
 
     /**
@@ -34,12 +31,12 @@ class Feature extends Model
      */
     public static $createRules = [
         'feature_category_id' => 'nullable',
-        'species_id' => 'nullable',
-        'subtype_id' => 'nullable',
-        'rarity_id' => 'required|exists:rarities,id',
-        'name' => 'required|unique:features|between:3,100',
-        'description' => 'nullable',
-        'image' => 'mimes:png',
+        'species_id'          => 'nullable',
+        'subtype_id'          => 'nullable',
+        'rarity_id'           => 'required|exists:rarities,id',
+        'name'                => 'required|unique:features|between:3,100',
+        'description'         => 'nullable',
+        'image'               => 'mimes:png',
     ];
 
     /**
@@ -49,12 +46,12 @@ class Feature extends Model
      */
     public static $updateRules = [
         'feature_category_id' => 'nullable',
-        'species_id' => 'nullable',
-        'subtype_id' => 'nullable',
-        'rarity_id' => 'required|exists:rarities,id',
-        'name' => 'required|between:3,100',
-        'description' => 'nullable',
-        'image' => 'mimes:png',
+        'species_id'          => 'nullable',
+        'subtype_id'          => 'nullable',
+        'rarity_id'           => 'required|exists:rarities,id',
+        'name'                => 'required|between:3,100',
+        'description'         => 'nullable',
+        'image'               => 'mimes:png',
     ];
 
     /**********************************************************************************************
@@ -66,32 +63,28 @@ class Feature extends Model
     /**
      * Get the rarity of this feature.
      */
-    public function rarity()
-    {
+    public function rarity() {
         return $this->belongsTo('App\Models\Rarity');
     }
 
     /**
      * Get the species the feature belongs to.
      */
-    public function species()
-    {
+    public function species() {
         return $this->belongsTo('App\Models\Species\Species');
     }
 
     /**
      * Get the subtype the feature belongs to.
      */
-    public function subtype()
-    {
+    public function subtype() {
         return $this->belongsTo('App\Models\Species\Subtype');
     }
 
     /**
      * Get the category the feature belongs to.
      */
-    public function category()
-    {
+    public function category() {
         return $this->belongsTo('App\Models\Feature\FeatureCategory', 'feature_category_id');
     }
 
@@ -104,73 +97,74 @@ class Feature extends Model
     /**
      * Scope a query to sort features in alphabetical order.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @param  bool                                   $reverse
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param bool                                  $reverse
+     *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeSortAlphabetical($query, $reverse = false)
-    {
+    public function scopeSortAlphabetical($query, $reverse = false) {
         return $query->orderBy('name', $reverse ? 'DESC' : 'ASC');
     }
 
     /**
      * Scope a query to sort features in category order.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @param  bool                                   $reverse
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeSortCategory($query)
-    {
+    public function scopeSortCategory($query) {
         $ids = FeatureCategory::orderBy('sort', 'DESC')->pluck('id')->toArray();
+
         return count($ids) ? $query->orderByRaw(DB::raw('FIELD(feature_category_id, '.implode(',', $ids).')')) : $query;
     }
 
     /**
      * Scope a query to sort features in species order.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @param  bool                                   $reverse
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeSortSpecies($query)
-    {
+    public function scopeSortSpecies($query) {
         $ids = Species::orderBy('sort', 'DESC')->pluck('id')->toArray();
+
         return count($ids) ? $query->orderByRaw(DB::raw('FIELD(species_id, '.implode(',', $ids).')')) : $query;
     }
 
     /**
      * Scope a query to sort features in rarity order.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @param  bool                                   $reverse
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param bool                                  $reverse
+     *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeSortRarity($query, $reverse = false)
-    {
+    public function scopeSortRarity($query, $reverse = false) {
         $ids = Rarity::orderBy('sort', $reverse ? 'ASC' : 'DESC')->pluck('id')->toArray();
+
         return count($ids) ? $query->orderByRaw(DB::raw('FIELD(rarity_id, '.implode(',', $ids).')')) : $query;
     }
 
     /**
      * Scope a query to sort features by newest first.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeSortNewest($query)
-    {
+    public function scopeSortNewest($query) {
         return $query->orderBy('id', 'DESC');
     }
 
     /**
      * Scope a query to sort features oldest first.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeSortOldest($query)
-    {
+    public function scopeSortOldest($query) {
         return $query->orderBy('id');
     }
 
@@ -185,9 +179,8 @@ class Feature extends Model
      *
      * @return string
      */
-    public function getDisplayNameAttribute()
-    {
-        return '<a href="'.$this->url.'" class="display-trait">'.$this->name.'</a>'.($this->rarity? ' (' . $this->rarity->displayName . ')' : '');
+    public function getDisplayNameAttribute() {
+        return '<a href="'.$this->url.'" class="display-trait">'.$this->name.'</a>'.($this->rarity ? ' ('.$this->rarity->displayName.')' : '');
     }
 
     /**
@@ -195,8 +188,7 @@ class Feature extends Model
      *
      * @return string
      */
-    public function getImageDirectoryAttribute()
-    {
+    public function getImageDirectoryAttribute() {
         return 'images/data/traits';
     }
 
@@ -205,9 +197,8 @@ class Feature extends Model
      *
      * @return string
      */
-    public function getImageFileNameAttribute()
-    {
-        return $this->id . '-image.png';
+    public function getImageFileNameAttribute() {
+        return $this->id.'-image.png';
     }
 
     /**
@@ -215,8 +206,7 @@ class Feature extends Model
      *
      * @return string
      */
-    public function getImagePathAttribute()
-    {
+    public function getImagePathAttribute() {
         return public_path($this->imageDirectory);
     }
 
@@ -225,10 +215,12 @@ class Feature extends Model
      *
      * @return string
      */
-    public function getImageUrlAttribute()
-    {
-        if (!$this->has_image) return null;
-        return asset($this->imageDirectory . '/' . $this->imageFileName);
+    public function getImageUrlAttribute() {
+        if (!$this->has_image) {
+            return null;
+        }
+
+        return asset($this->imageDirectory.'/'.$this->imageFileName);
     }
 
     /**
@@ -236,8 +228,7 @@ class Feature extends Model
      *
      * @return string
      */
-    public function getUrlAttribute()
-    {
+    public function getUrlAttribute() {
         return url('world/traits?name='.$this->name);
     }
 
@@ -246,8 +237,7 @@ class Feature extends Model
      *
      * @return string
      */
-    public function getSearchUrlAttribute()
-    {
+    public function getSearchUrlAttribute() {
         return url('masterlist?feature_id[]='.$this->id);
     }
 }

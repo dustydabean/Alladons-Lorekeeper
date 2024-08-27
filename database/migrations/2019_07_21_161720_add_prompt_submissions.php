@@ -1,18 +1,14 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-class AddPromptSubmissions extends Migration
-{
+class AddPromptSubmissions extends Migration {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
-    {
+    public function up() {
         //
         Schema::create('submissions', function (Blueprint $table) {
             $table->engine = 'InnoDB';
@@ -23,7 +19,7 @@ class AddPromptSubmissions extends Migration
             $table->integer('staff_id')->unsigned()->nullable()->default(null);
 
             $table->string('url', 200);
-            
+
             $table->text('comments')->nullable()->default(null);
             $table->text('staff_comments')->nullable()->default(null);
 
@@ -41,7 +37,7 @@ class AddPromptSubmissions extends Migration
 
             $table->string('data', 512)->nullable()->default(null);
         });
-        
+
         Schema::create('claims', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
@@ -56,7 +52,7 @@ class AddPromptSubmissions extends Migration
             $table->string('data', 512)->nullable()->default(null);
 
             $table->enum('status', ['Pending', 'Approved', 'Rejected'])->default('Pending');
-            
+
             $table->timestamps();
         });
         Schema::create('claim_characters', function (Blueprint $table) {
@@ -71,11 +67,8 @@ class AddPromptSubmissions extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
-    {
+    public function down() {
         //
         Schema::dropIfExists('claim_characters');
         Schema::dropIfExists('claims');

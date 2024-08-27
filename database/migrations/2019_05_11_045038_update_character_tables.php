@@ -1,18 +1,14 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-class UpdateCharacterTables extends Migration
-{
+class UpdateCharacterTables extends Migration {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
-    {
+    public function up() {
         //
         Schema::table('characters', function (Blueprint $table) {
             $table->string('name')->nullable()->default(null);
@@ -25,7 +21,7 @@ class UpdateCharacterTables extends Migration
 
         Schema::table('character_images', function (Blueprint $table) {
             $table->string('extension', 5);
-            
+
             // Whether to use the image cropper to generate the thumbnail
             $table->boolean('use_cropper')->default(0);
             $table->integer('x0')->nullable()->default(null);
@@ -41,7 +37,7 @@ class UpdateCharacterTables extends Migration
 
             // Marks if the image is valid.
             // This can be used in cases where you want to display
-            // the image (an old version of the design) for logging purposes, 
+            // the image (an old version of the design) for logging purposes,
             // but not allow the owner to use the design in the game
             $table->boolean('is_valid')->default(1);
 
@@ -58,7 +54,7 @@ class UpdateCharacterTables extends Migration
         Schema::create('character_image_creators', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
-            
+
             $table->integer('character_image_id')->unsigned();
 
             $table->enum('type', ['Artist', 'Designer']);
@@ -68,8 +64,8 @@ class UpdateCharacterTables extends Migration
             $table->foreign('character_image_id')->references('id')->on('character_images');
         });
 
-        Schema::create('character_profiles', function (Blueprint $table) { 
-            $table->engine = 'InnoDB';           
+        Schema::create('character_profiles', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->integer('character_id')->unsigned();
 
             $table->text('text')->nullable()->default(null);
@@ -78,8 +74,8 @@ class UpdateCharacterTables extends Migration
             $table->foreign('character_id')->references('id')->on('characters');
         });
 
-        Schema::create('user_profiles', function (Blueprint $table) {     
-            $table->engine = 'InnoDB';       
+        Schema::create('user_profiles', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->integer('user_id')->unsigned();
 
             $table->text('text')->nullable()->default(null);
@@ -87,16 +83,12 @@ class UpdateCharacterTables extends Migration
 
             $table->foreign('user_id')->references('id')->on('users');
         });
-
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
-    {
+    public function down() {
         //
         Schema::dropIfExists('user_profiles');
         Schema::dropIfExists('character_profiles');
@@ -112,7 +104,7 @@ class UpdateCharacterTables extends Migration
             $table->dropColumn('hash');
             $table->dropColumn('sort');
             $table->dropColumn('is_valid');
-            
+
             $table->string('designer_alias');
             $table->string('designer_url');
             $table->string('artist_alias');

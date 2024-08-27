@@ -1,27 +1,23 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-class AddSiteSettings extends Migration
-{
+class AddSiteSettings extends Migration {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
-    {
-        // 
-        Schema::create('site_settings', function(Blueprint $table) {
+    public function up() {
+        //
+        Schema::create('site_settings', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->string('key', 50)->unique()->primary();
             $table->string('value');
             $table->string('description', 1024);
         });
-        
-        Schema::create('site_pages', function(Blueprint $table) {
+
+        Schema::create('site_pages', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
             $table->string('key', 30)->unique();
@@ -35,11 +31,8 @@ class AddSiteSettings extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
-    {
+    public function down() {
         //
         Schema::dropIfExists('site_pages');
         Schema::dropIfExists('site_settings');
