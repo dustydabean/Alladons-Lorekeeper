@@ -9,6 +9,8 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
+        "benjamincrozat/laravel-dropbox-driver": "^3.0",
+        "boxconnect/deviant-php": "dev-master",
         "doctrine/dbal": "^3.7",
         "erusev/parsedown": "^1.7",
         "ezyang/htmlpurifier": "^4.10",
@@ -29,6 +31,8 @@
         "socialiteproviders/tumblr": "^4.1",
         "socialiteproviders/twitch": "^5.3",
         "spatie/laravel-feed": "^4.1",
+        "socialiteproviders/twitter": "^4.1",
+        "spatie/laravel-backup": "^6.16",
         "spatie/laravel-honeypot": "^4.1"
     },
     "require-dev": {
