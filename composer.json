@@ -9,7 +9,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
-        "benjamincrozat/laravel-dropbox-driver": "^3.0",
+        "benjamincrozat/laravel-dropbox-driver": "^4.0.1",
         "boxconnect/deviant-php": "dev-master",
         "doctrine/dbal": "^3.7",
         "erusev/parsedown": "^1.7",
