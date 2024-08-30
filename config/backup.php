@@ -117,7 +117,7 @@ return [
              * Change to or add 'dropbox' to enable dropbox storage.
              */
             'disks' => [
-                'local',
+                'dropbox',
             ],
         ],
 
@@ -200,10 +200,10 @@ return [
     'monitor_backups' => [
         [
             'name' => env('APP_NAME', 'laravel-backup'),
-            'disks' => ['local'],
+            'disks' => ['dropbox'],
             'health_checks' => [
                 \Spatie\Backup\Tasks\Monitor\HealthChecks\MaximumAgeInDays::class => 1,
-                \Spatie\Backup\Tasks\Monitor\HealthChecks\MaximumStorageInMegabytes::class => 25000,
+                \Spatie\Backup\Tasks\Monitor\HealthChecks\MaximumStorageInMegabytes::class => 100000,
             ],
         ],
 
@@ -262,7 +262,7 @@ return [
              * After cleaning up the backups remove the oldest backup until
              * this amount of megabytes has been reached.
              */
-            'delete_oldest_backups_when_using_more_megabytes_than' => 25000,
+            'delete_oldest_backups_when_using_more_megabytes_than' => 100000,
         ],
     ],
 
