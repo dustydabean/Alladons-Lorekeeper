@@ -1233,6 +1233,13 @@ class CharacterManager extends Service {
                     $new['name'] = $characterData['name'];
                 }
             }
+
+            if ($characterData['poucher_code'] != $character->poucher_code) {
+                $result[] = 'poucher_code';
+                $old['poucher_code'] = $character->poucher_code;
+                $new['poucher_code'] = $characterData['poucher_code'];
+            }
+
             if ($characterData['is_sellable'] != $character->is_sellable) {
                 $result[] = 'sellable status';
                 $old['is_sellable'] = $character->is_sellable;
@@ -1397,7 +1404,6 @@ class CharacterManager extends Service {
             // Update the character's profile
             if (!$character->is_myo_slot) {
                 $character->name = $data['name'];
-                $character->name = $data['poucher_code'];
             }
             $character->save();
 
