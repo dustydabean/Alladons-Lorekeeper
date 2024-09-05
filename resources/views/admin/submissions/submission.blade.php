@@ -232,7 +232,7 @@
                 </tr>
             </table>
         </div>
-        @include('widgets._loot_select_row', ['showLootTables' => true, 'showRaffles' => true]) <!--Removed from [] 'items' => $items, 'currencies' => $currencies,-->
+        @include('widgets._loot_select_row', ['items' => $items, 'currencies' => $currencies, 'showLootTables' => true, 'showRaffles' => true]) <!--Removed from [] -->
 
         <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
