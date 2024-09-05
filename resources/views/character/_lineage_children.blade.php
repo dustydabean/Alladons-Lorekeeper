@@ -9,7 +9,7 @@
                         <div class="col text-center">
                             <div>
                                 <a href="{{ $child->character->url }}">
-                                    <img src="{{ $child->character->image->thumbnailUrl }}" class="img-thumbnail" alt="Thumbnail for {{ $child->character->fullName }}" />
+                                    <img src="{{ $child->character->image->thumbnailUrl }}" class="img-thumbnail" alt="Thumbnail for {{ $child->character->fullName }}" width="150" height="150"/>
                                 </a>
                             </div>
                             <div class="mt-1">
