@@ -1,10 +1,10 @@
 @extends('admin.layout')
 
-@section('home-title')
+@section('admin-title')
     {{ $submission->prompt_id ? 'Submission' : 'Claim' }} (#{{ $submission->id }})
 @endsection
 
-@section('home-content')
+@section('admin-content')
     @if ($submission->prompt_id)
         {!! breadcrumbs(['Admin Panel' => 'admin', 'Prompt Queue' => 'admin/submissions/pending', 'Submission (#' . $submission->id . ')' => $submission->viewUrl]) !!}
     @else
@@ -232,7 +232,7 @@
                 </tr>
             </table>
         </div>
-        @include('widgets._loot_select_row', ['items' => $items, 'currencies' => $currencies, 'showLootTables' => true, 'showRaffles' => true])
+        @include('widgets._loot_select_row', [<!--'items' => $items, 'currencies' => $currencies,--> 'showLootTables' => true, 'showRaffles' => true])
 
         <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
