@@ -1,14 +1,14 @@
 @extends('world.layout')
 
 @section('world-title')
-    {{ $species->name }} Traits
+    {{ $species->name }} Mutations
 @endsection
 
 @section('content')
     {!! breadcrumbs(['World' => 'world', 'Species' => 'world/species', $species->name => $species->url, 'Traits' => 'world/species/' . $species->id . 'traits']) !!}
-    <h1>{{ $species->name }} Traits</h1>
+    <h1>{{ $species->name }} Mutations</h1>
 
-    <p>This is a visual index of all {!! $species->displayName !!}-specific traits. Click a trait to view more info on it!</p>
+    <p>This is a visual index of all {!! $species->displayName !!}-specific mutations. Click a mutation to view more info on it!</p>
 
     @foreach ($features as $categoryId => $categoryFeatures)
         @if (!isset($categories[$categoryId]) || (Auth::check() && Auth::user()->hasPower('edit_data')) || $categories[$categoryId]->is_visible)

@@ -7,7 +7,7 @@
 
             <div class="float-right small">
                 @if (isset($searchFeaturesUrl) && $searchFeaturesUrl)
-                    <a href="{{ $searchFeaturesUrl }}" class="world-entry-search text-muted small"><i class="fas fa-search"></i> Traits</a>
+                    <a href="{{ $searchFeaturesUrl }}" class="world-entry-search text-muted small"><i class="fas fa-search"></i> Mutations</a>
                 @endif
                 @if (isset($searchCharactersUrl) && $searchCharactersUrl)
                     <a href="{{ $searchCharactersUrl }}" class="world-entry-search text-muted small ml-4"><i class="fas fa-search"></i> Characters</a>

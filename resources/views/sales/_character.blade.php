@@ -46,7 +46,7 @@
                                             </div>
                                         @endforeach
                                     @else
-                                        <div>No traits listed.</div>
+                                        <div>No mutations listed.</div>
                                     @endif
                                 </div>
                             @else
@@ -66,7 +66,7 @@
                                             </div>
                                         @endforeach
                                     @else
-                                        <div>No traits listed.</div>
+                                        <div>No mutations listed.</div>
                                     @endif
                                 </div>
                             @endif

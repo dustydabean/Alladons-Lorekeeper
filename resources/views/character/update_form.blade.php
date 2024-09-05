@@ -30,7 +30,7 @@
         </div>
     @elseif(!$request)
         <p>No {{ $character->is_myo_slot ? 'MYO approval' : 'design update' }} request found. Would you like to create one?</p>
-        <p>This will prepare a request to approve {{ $character->is_myo_slot ? 'your MYO slot\'s design' : 'a design update for your character' }}, which will allow you to upload a new masterlist image, list their new traits and spend items/currency on
+        <p>This will prepare a request to approve {{ $character->is_myo_slot ? 'your MYO slot\'s design' : 'a design update for your character' }}, which will allow you to upload a new masterlist image, list their new mutations and spend items/currency on
             the design. You will be able to edit the contents of your request as much as you like before submission. Staff will be able to view the draft and provide feedback. </p>
         {!! Form::open(['url' => $character->is_myo_slot ? 'myo/' . $character->id . '/approval' : 'character/' . $character->slug . '/approval']) !!}
         <div class="text-right">

@@ -1,12 +1,12 @@
 @extends('world.layout')
 
 @section('world-title')
-    Traits
+    Mutations
 @endsection
 
 @section('content')
     {!! breadcrumbs(['World' => 'world', 'Traits' => 'world/traits']) !!}
-    <h1>Traits</h1>
+    <h1>Mutations</h1>
 
     <div>
         {!! Form::open(['method' => 'GET', 'class' => '']) !!}

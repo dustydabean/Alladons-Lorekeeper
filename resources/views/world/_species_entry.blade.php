@@ -19,7 +19,7 @@
         </h3>
         @if (count($species->features) && config('lorekeeper.extensions.species_trait_index.enable'))
             <a href="{{ $species->visualTraitsUrl }}">
-                <strong>Visual Trait Index</strong>
+                <strong>Visual Mutation Index</strong>
             </a>
         @endif
         @if (count($species->subtypes))

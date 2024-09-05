@@ -20,19 +20,19 @@
 </div>
 
 <div class="form-group">
-    {!! Form::label('Traits') !!}
-    <div><a href="#" class="btn btn-primary mb-2" id="add-feature">Add Trait</a></div>
+    {!! Form::label('Mutations') !!}
+    <div><a href="#" class="btn btn-primary mb-2" id="add-feature">Add Mutation</a></div>
     <div id="featureList">
         @foreach ($image->features as $feature)
             <div class="d-flex mb-2">
-                {!! Form::select('feature_id[]', $features, $feature->feature_id, ['class' => 'form-control mr-2 feature-select original', 'placeholder' => 'Select Trait']) !!}
+                {!! Form::select('feature_id[]', $features, $feature->feature_id, ['class' => 'form-control mr-2 feature-select original', 'placeholder' => 'Select Mutation']) !!}
                 {!! Form::text('feature_data[]', $feature->data, ['class' => 'form-control mr-2', 'placeholder' => 'Extra Info (Optional)']) !!}
                 <a href="#" class="remove-feature btn btn-danger mb-2">×</a>
             </div>
         @endforeach
     </div>
     <div class="feature-row hide mb-2">
-        {!! Form::select('feature_id[]', $features, null, ['class' => 'form-control mr-2 feature-select', 'placeholder' => 'Select Trait']) !!}
+        {!! Form::select('feature_id[]', $features, null, ['class' => 'form-control mr-2 feature-select', 'placeholder' => 'Select Mutation']) !!}
         {!! Form::text('feature_data[]', null, ['class' => 'form-control mr-2', 'placeholder' => 'Extra Info (Optional)']) !!}
         <a href="#" class="remove-feature btn btn-danger mb-2">×</a>
     </div>

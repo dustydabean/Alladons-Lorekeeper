@@ -103,7 +103,7 @@
 
                 <div class="mb-3">
                     <div>
-                        <h5>Traits</h5>
+                        <h5>Mutations</h5>
                     </div>
                     @if (config('lorekeeper.extensions.traits_by_category'))
                         <div>
@@ -130,7 +130,7 @@
                                     </div>
                                 @endforeach
                             @else
-                                <div>No traits listed.</div>
+                                <div>No mutationss listed.</div>
                             @endif
                         </div>
                     @else
@@ -150,7 +150,7 @@
                                     </div>
                                 @endforeach
                             @else
-                                <div>No traits listed.</div>
+                                <div>No mutations listed.</div>
                             @endif
                         </div>
                     @endif

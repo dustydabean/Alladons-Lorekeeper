@@ -220,7 +220,7 @@
             </div>
         @endif
 
-        <h3>Traits</h3>
+        <h3>Information</h3>
 
         <div class="form-group">
             {!! Form::label('Species') !!} @if ($isMyo)
@@ -253,16 +253,16 @@
         </div>
 
         <div class="form-group">
-            {!! Form::label('Traits') !!} @if ($isMyo)
+            {!! Form::label('Mutations') !!} @if ($isMyo)
                 {!! add_help(
                     'These traits will be listed as required traits for the slot. The user will still be able to add on more traits, but not be able to remove these. This is allowed to conflict with the rarity above; you may add traits above the character\'s specified rarity.',
                 ) !!}
             @endif
-            <div><a href="#" class="btn btn-primary mb-2" id="add-feature">Add Trait</a></div>
+            <div><a href="#" class="btn btn-primary mb-2" id="add-feature">Add Mut</a></div>
             <div id="featureList">
             </div>
             <div class="feature-row hide mb-2">
-                {!! Form::select('feature_id[]', $features, null, ['class' => 'form-control mr-2 feature-select', 'placeholder' => 'Select Trait']) !!}
+                {!! Form::select('feature_id[]', $features, null, ['class' => 'form-control mr-2 feature-select', 'placeholder' => 'Select Mutation']) !!}
                 {!! Form::text('feature_data[]', null, ['class' => 'form-control mr-2', 'placeholder' => 'Extra Info (Optional)']) !!}
                 <a href="#" class="remove-feature btn btn-danger mb-2">×</a>
             </div>
