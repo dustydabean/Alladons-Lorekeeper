@@ -6,13 +6,13 @@
         <br>
         @if ($max_depth == config('lorekeeper.lineage.lineage_depth') - 1)
             <a href="{{ $character ? $character->url : '#' }}" class="{{ $max_depth == config('lorekeeper.lineage.lineage_depth') - 1 ? 'h4' : '' }}">
-                {!! $character ? '<img src="' . $character->image->thumbnailUrl . '" class=\'img-thumbnail\' alt=\'Thumbnail for ' . $character->fullName . '\' />' : '' !!}
+                {!! $character ? '<img src="' . $character->image->thumbnailUrl . '" class=\'img-thumbnail\' alt=\'Thumbnail for ' . $character->fullName . '\' /width="150" height="150">' : '' !!}
                 <br>
                 {!! $character ? $character->fullName : 'Unknown' !!}
             </a>
         @else
             <a href="{{ $character ? $character->url : '#' }}" data-toggle="tooltip" data-placement="top"
-                title="{{ $character ? '<img src="' . $character->image->thumbnailUrl . '" class=\'img-thumbnail\' alt=\'Thumbnail for ' . $character->fullName . '\' />' : '' }}">
+                title="{{ $character ? '<img src="' . $character->image->thumbnailUrl . '" class=\'img-thumbnail\' alt=\'Thumbnail for ' . $character->fullName . '\' /width="150" height="150">' : '' }}">
                 {!! $character ? $character->fullName : 'Unknown' !!}
             </a>
         @endif

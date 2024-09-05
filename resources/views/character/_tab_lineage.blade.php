@@ -8,7 +8,7 @@
         ])
     @endif
     <h5>{{ $character->fullName }}'s Lineage</h5>
-    {!! $character ? '<img src="' . $character->image->thumbnailUrl . '" class=\'img-thumbnail\' alt=\'Thumbnail for ' . $character->fullName . '\' />' : '' !!}
+    {!! $character ? '<img src="' . $character->image->thumbnailUrl . '" class=\'img-thumbnail\' alt=\'Thumbnail for ' . $character->fullName . '\' / width="150" height="150">' : '' !!}
 <br>
 {!! $character ? $character->fullName : 'Unkown' !!}
     <div class="row">
