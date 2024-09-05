@@ -128,6 +128,9 @@
         @include('layouts.editable_theme', ['theme' => $decoratorTheme])
     @endif
 
+    @include('feed::links')
+
+    @include('js._external_link_alert_js')
 </head>
 
 <body>
