@@ -29,103 +29,11 @@
                         <a class="nav-link" href="{{ url('sales') }}">Sales</a>
                     @endif
                 </li>
-                @if (Auth::check())
-                    <li class="nav-item dropdown">
-                        <a id="inventoryDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                            Home
-                        </a>
 
-                        <div class="dropdown-menu" aria-labelledby="inventoryDropdown">
-                            <a class="dropdown-item" href="{{ url('characters') }}">
-                                My Alladons
-                            </a>
-                            <a class="dropdown-item" href="{{ url('inventory') }}">
-                                Inventory
-                            </a>
-                            <!--<a class="dropdown-item" href="{{ url('pets') }}">
-                               My Companions
-                            </a>-->
-                            <a class="dropdown-item" href="{{ url('collection') }}">
-                                Collections
-                            </a>
-                            <a class="dropdown-item" href="{{ url('bank') }}">
-                                Bank
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{{ url('comments/liked') }}">
-                                Liked Comments
-                            </a>
-                        </div>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a id="queueDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                            Activity
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="queueDropdown">
-                            <a class="dropdown-item" href="{{ url('prompts/prompts') }}">
-                                Prompts
-                            </a>
-                            <a class="dropdown-item" href="{{ url('raffles') }}">
-                            Raffles
-                             </a>
-                            <a class="dropdown-item" href="{{ url('shops') }}">
-                                Shops
-                            </a>
-                            <a class="dropdown-item" href="{{ url(__('dailies.dailies')) }}">
-                            {{__('dailies.dailies')}}
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{{ url('submissions') }}">
-                                Prompt Submissions
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{{ url('characters/transfers/incoming') }}">
-                                Alladon Transfers
-                            </a>
-                            <a class="dropdown-item" href="{{ url('trades/open') }}">
-                                Trades
-                            </a>
-                        </div>
-                    </li>
-                @endif
-                <li class="nav-item dropdown">
-
-                    @if (Auth::check() && Auth::user()->is_raffles_unread && config('lorekeeper.extensions.navbar_news_notif'))
-                        <a id="browseDropdown" class="nav-link dropdown-toggle text-warning" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                            <strong>Browse</strong> <i class="fas fa-bell"></i>
-                        </a>
-                    @else
-                    <a id="browseDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                            Browse
-                        </a>
-                    @endif
-
-                    <div class="dropdown-menu" aria-labelledby="browseDropdown">
-                        <a class="dropdown-item" href="{{ url('users') }}">
-                            Users
-                        </a>
-                        <a class="dropdown-item" href="{{ url('masterlist') }}">
-                            Alladon Masterlist
-                        </a>
-                        <a class="dropdown-item" href="{{ url('team') }}">
-                            Staff
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        @if (Auth::check() && Auth::user()->is_raffles_unread && config('lorekeeper.extensions.navbar_news_notif'))
-                            <a class="dropdown-item text-warning" href="{{ url('raffles') }}">
-                                Raffles <i class="fas fa-bell"></i>
-                            </a>
-                        @else
-                            <a class="dropdown-item" href="{{ url('raffles') }}">
-                                Raffles
-                            </a>
-                        @endif
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="{{ url('reports/bug-reports') }}">
-                            Bug Reports
-                        </a>
-                    </div>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url('masterlist') }}">Masterlist</a>
                 </li>
+                
                 <li class="nav-item dropdown">
                     <a id="loreDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                         World
@@ -139,6 +47,14 @@
                         <a class="dropdown-item" href="{{ url('faq') }}">
                             FAQ
                         </a>
+                        <div class="dropdown-menu" aria-labelledby="browseDropdown">
+                        <a class="dropdown-item" href="{{ url('users') }}">
+                            Users
+                        </a>
+                        <a class="dropdown-item" href="{{ url('team') }}">
+                            Staff
+                        </a>
+                    </div>
                     </div>
                 </li>
                 <li class="nav-item">
@@ -192,6 +108,83 @@
                             <a class="nav-link btn btn-secondary btn-sm" href="{{ url('notifications') }}"><span class="fas fa-envelope"></span> {{ Auth::user()->notifications_unread }}</a>
                         </li>
                     @endif
+                @if (Auth::check())
+                    <li class="nav-item dropdown">
+                        <a id="inventoryDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                            Home
+                        </a>
+
+                        <div class="dropdown-menu" aria-labelledby="inventoryDropdown">
+                            <a class="dropdown-item" href="{{ url('characters') }}">
+                                My Alladons
+                            </a>
+                            <a class="dropdown-item" href="{{ url('inventory') }}">
+                                Inventory
+                            </a>
+                            <!--<a class="dropdown-item" href="{{ url('pets') }}">
+                               My Companions
+                            </a>-->
+                            <a class="dropdown-item" href="{{ url('collection') }}">
+                                Collections
+                            </a>
+                            <a class="dropdown-item" href="{{ url('bank') }}">
+                                Bank
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{{ url('comments/liked') }}">
+                                Liked Comments
+                            </a>
+                            <a class="dropdown-item" href="{{ url('account/bookmarks') }}">
+                                Bookmarks
+                            </a>
+                        </div>
+                    </li>
+                @endif 
+
+                @if (Auth::check())
+                    <li class="nav-item dropdown">
+                    @if (Auth::check() && Auth::user()->is_raffles_unread && config('lorekeeper.extensions.navbar_news_notif'))
+                        <a id="queueDropdown" class="nav-link dropdown-toggle text-warning" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                            <strong>Activity</strong> <i class="fas fa-bell"></i>
+                        </a>
+                    @else
+                    <a id="queueDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                            Activity
+                        </a>
+                    @endif
+                        <div class="dropdown-menu" aria-labelledby="queueDropdown">
+                            <a class="dropdown-item" href="{{ url('prompts/prompts') }}">
+                                Prompts
+                            </a>
+                            @if (Auth::check() && Auth::user()->is_raffles_unread && config('lorekeeper.extensions.navbar_news_notif'))
+                            <a class="dropdown-item text-warning" href="{{ url('raffles') }}">
+                                Raffles <i class="fas fa-bell"></i>
+                            </a>
+                            @else
+                            <a class="dropdown-item" href="{{ url('raffles') }}">
+                                Raffles
+                            </a>
+                            @endif
+                            <a class="dropdown-item" href="{{ url('shops') }}">
+                                Shops
+                            </a>
+                            <a class="dropdown-item" href="{{ url(__('dailies.dailies')) }}">
+                            {{__('dailies.dailies')}}
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{{ url('submissions') }}">
+                                Prompt Submissions
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{{ url('characters/transfers/incoming') }}">
+                                Alladon Transfers
+                            </a>
+                            <a class="dropdown-item" href="{{ url('trades/open') }}">
+                                Trades
+                            </a>
+                        </div>
+                    </li>
+                @endif
 
                     <li class="nav-item dropdown">
                         <a id="browseDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
@@ -222,9 +215,6 @@
                             </a>
                             <a class="dropdown-item" href="{{ url('notifications') }}">
                                 Notifications
-                            </a>
-                            <a class="dropdown-item" href="{{ url('account/bookmarks') }}">
-                                Bookmarks
                             </a>
                             <a class="dropdown-item" href="{{ url('account/settings') }}">
                                 Settings

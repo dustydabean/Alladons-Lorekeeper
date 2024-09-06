@@ -9,7 +9,7 @@
             <div class="sidebar-item"><a href="{{ url('news') }}">All News >></a></div>
         </li>
 
-    <li class="sidebar-header"><a href="{{ url('logs') }}" class="card-link">Developpement Logs</a></li>
+    <li class="sidebar-header"><a href="{{ url('logs') }}" class="card-link">Development Logs</a></li>
     @if (isset($devLogses))
         <li class="sidebar-section">
             <div class="sidebar-section-header">On This Page</div>
