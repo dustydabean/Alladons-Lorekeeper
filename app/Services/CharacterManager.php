@@ -846,6 +846,8 @@ class CharacterManager extends Service {
         try {
             if (!$this->logAdminAction($user, 'Reuploaded Image', 'Reuploaded character image <a href="'.$image->character->url.'">#'.$image->id.'</a>')) {
                 throw new \Exception('Failed to log admin action.');
+                //Clear out longest side measurement since it might not be accurate anymore
+                $image->longest_side = null; // this will get saved via either side of the if check here
             }
 
             if (config('lorekeeper.settings.masterlist_image_format') != null) {
