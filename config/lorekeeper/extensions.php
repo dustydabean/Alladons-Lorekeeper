@@ -39,17 +39,17 @@ return [
 
     // Item Entry Expansion - Mercury
     'item_entry_expansion'                 => [
-        'extra_fields'    => 0,
-        'resale_function' => 0,
+        'extra_fields'    => 1,
+        'resale_function' => 1,
         'loot_tables'     => [
             // Adds the ability to use either rarity criteria for items or item categories with rarity criteria in loot tables. Note that disabling this does not apply retroactively.
-            'enable'              => 0,
-            'alternate_filtering' => 0, // By default this uses more broadly compatible methods to filter by rarity. If you are on Dreamhost/know your DB software can handle searching in JSON, it's recommended to set this to 1 instead.
+            'enable'              => 1,
+            'alternate_filtering' => 1, // By default this uses more broadly compatible methods to filter by rarity. If you are on Dreamhost/know your DB software can handle searching in JSON, it's recommended to set this to 1 instead.
         ],
     ],
 
     // Group Traits By Category - Uri
-    'traits_by_category'                   => 0,
+    'traits_by_category'                   => 1,
 
     // Scroll To Top - Uri
     'scroll_to_top'                        => 1, // 1 - On, 0 - off
@@ -57,7 +57,7 @@ return [
     // Character Reward Expansion - Uri
     'character_reward_expansion'           => [
         'expanded'          => 1,
-        'default_recipient' => 0, // 0 to default to the character's owner (if a user), 1 to default to the submission user.
+        'default_recipient' => 1, // 0 to default to the character's owner (if a user), 1 to default to the submission user.
     ],
 
     // MYO Image Hide/Remove - Mercury
@@ -94,7 +94,7 @@ return [
             'sidebar'      => 1,      // By default, ON, and will display in the sidebar.
             'indexbutton'  => 1, // By default, ON, and will display a button on the index.
         ],
-        'section_on_front' => 0, // By default, does not display on the front page. Enable to add a block above the footer.
+        'section_on_front' => 1, // By default, does not display on the front page. Enable to add a block above the footer.
     ],
 
     // collapsible admin sidebar - Newt
