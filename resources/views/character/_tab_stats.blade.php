@@ -11,7 +11,19 @@
         </div>
         <div class="col-lg-9 col-8">{!! $character->category->displayName !!}</div>
     </div>
+    <div class="row">
+        <div class="col-lg-3 col-4">
+            <h5>Poucher Code</h5>
+        </div>
+        <div class="col-lg-9 col-8">{!! $character->poucher_code ?? 'None' !!}</div>
+    </div>
 @endif
+<div class="row">
+    <div class="col-lg-3 col-4">
+        <h5>DOB</h5>
+    </div>
+    <div class="col-lg-9 col-8">{!! $character->dob->format('d M, Y') !!}</div>
+</div>
 <div class="row">
     <div class="col-lg-3 col-4">
         <h5 class="mb-0">Created</h5>

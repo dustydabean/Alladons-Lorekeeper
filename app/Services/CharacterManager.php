@@ -1142,6 +1142,7 @@ class CharacterManager extends Service {
             $characterData['is_giftable'] = isset($data['is_giftable']);
             $characterData['sale_value'] = $data['sale_value'] ?? 0;
             $characterData['transferrable_at'] = $data['transferrable_at'] ?? null;
+            $characterData['poucher_code'] = $data['poucher_code'] ?? null;
             if ($character->is_myo_slot) {
                 $characterData['name'] = (isset($data['name']) && $data['name']) ? $data['name'] : null;
             }
@@ -1197,6 +1198,11 @@ class CharacterManager extends Service {
                 $result[] = 'transfer cooldown';
                 $old['transferrable_at'] = $character->transferrable_at;
                 $new['transferrable_at'] = $characterData['transferrable_at'];
+            }
+            if ($characterData['poucher_code'] != $character->poucher_code) {
+                $result[] = 'poucher code';
+                $old['poucher_code'] = $character->poucher_code;
+                $new['poucher_code'] = $characterData['poucher_code'];
             }
 
             if (count($result)) {
@@ -1268,14 +1274,21 @@ class CharacterManager extends Service {
                 throw new \Exception('Failed to log admin action.');
             }
 
-            $old = ['is_visible' => $character->is_visible];
+            $old = [
+                'dob'        => $character->dob,
+                'is_visible' => $character->is_visible,
+            ];
 
+            $character->dob = $data['dob'] ?? null;
             $character->is_visible = isset($data['is_visible']);
             $character->save();
 
             // Add a log for the character
             // This logs all the updates made to the character
-            $this->createLog($user->id, null, null, null, $character->id, 'Character Visibility Updated', '', 'character', true, $old, ['is_visible' => $character->is_visible]);
+            $this->createLog($user->id, null, null, null, $character->id, 'Character Settings Updated', '', 'character', true, $old, [
+                'dob'        => $character->dob,
+                'is_visible' => $character->is_visible,
+            ]);
 
             return $this->commitReturn(true);
         } catch (\Exception $e) {
