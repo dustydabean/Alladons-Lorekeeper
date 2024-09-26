@@ -1197,7 +1197,7 @@ class CharacterManager extends Service {
 
             $characterData = Arr::only($data, [
                 'character_category_id',
-                'number', 'slug', 'poucher_code',
+                'number', 'slug', 
             ]);
             $characterData['is_sellable'] = isset($data['is_sellable']);
             $characterData['is_tradeable'] = isset($data['is_tradeable']);
@@ -1234,12 +1234,6 @@ class CharacterManager extends Service {
                     $old['name'] = $character->name;
                     $new['name'] = $characterData['name'];
                 }
-            }
-
-            if ($characterData['poucher_code'] != $character->poucher_code) {
-                $result[] = 'poucher_code';
-                $old['poucher_code'] = $character->poucher_code;
-                $new['poucher_code'] = $characterData['poucher_code'];
             }
 
             if ($characterData['is_sellable'] != $character->is_sellable) {
