@@ -45,7 +45,7 @@ class ShopController extends Controller {
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getShop($id) {
-        $categories = ItemCategory::orderBy('sort', 'DESC')->get();
+        $categories = ItemCategory::visible(Auth::user() ?? null)->orderBy('sort', 'DESC')->get();
         $petCategories = PetCategory::orderBy('sort', 'DESC')->get();
         $shop = Shop::where('id', $id)->where('is_active', 1)->first();
 

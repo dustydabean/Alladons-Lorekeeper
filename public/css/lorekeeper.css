@@ -806,3 +806,11 @@ tr.accountbound {
     justify-content: center;
     aspect-ratio: 1;
 }
+.content-warning {
+    filter: blur(2px) grayscale(60%);
+    transition: filter 0.25s ease;
+}
+
+.content-warning:hover {
+    filter: none;
+}

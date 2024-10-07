@@ -222,7 +222,7 @@ class CharacterController extends Controller {
      */
     public function getCharacterImages($slug) {
         return view('character.images', [
-            'user'                  => Auth::check() ? Auth::user() : null,
+            'user'                  => Auth::user() ?? null,
             'character'             => $this->character,
             'extPrevAndNextBtnsUrl' => '/images',
         ]);
@@ -236,7 +236,7 @@ class CharacterController extends Controller {
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getCharacterInventory($slug) {
-        $categories = ItemCategory::visible(Auth::check() ? Auth::user() : null)->where('is_character_owned', '1')->orderBy('sort', 'DESC')->get();
+        $categories = ItemCategory::visible(Auth::user() ?? null)->where('is_character_owned', '1')->orderBy('sort', 'DESC')->get();
         $itemOptions = Item::whereIn('item_category_id', $categories->pluck('id'));
 
         $items = count($categories) ?

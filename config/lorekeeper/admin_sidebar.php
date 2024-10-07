@@ -23,7 +23,7 @@ return [
             ],
             [
                 'name' => 'Admin Logs',
-                'url'  => 'admin/logs',
+                'url'  => 'admin/admin-logs',
             ],
             [
                 'name' => 'Staff Reward Settings',
@@ -260,6 +260,10 @@ return [
             [
                 'name' => 'Theme Manager',
                 'url' => 'admin/themes'
+            ],
+            [
+                'name' => 'Log Viewer',
+                'url'  => 'admin/logs',
             ],
         ]
     ],
