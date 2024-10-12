@@ -467,7 +467,7 @@ class SubmissionManager extends Service {
                     'character_id'  => $c->id,
                     'submission_id' => $submission->id,
                     'data'          => json_encode(getDataReadyAssets($assets)),
-                    /*'notify_owner' => isset($data['character_notify_owner']) && $data['character_notify_owner'][$c->id] ? $data['character_notify_owner'][$c->id] : 0,*/
+                    'notify_owner' => isset($data['character_notify_owner']) && $data['character_notify_owner'][$c->id] ? $data['character_notify_owner'][$c->id] : 0,
                 ]);
             }
 
@@ -509,7 +509,7 @@ class SubmissionManager extends Service {
             if (!$this->logAdminAction($user, 'Submission Approved', 'Approved submission <a href="'.$submission->viewurl.'">#'.$submission->id.'</a>')) {
                 throw new \Exception('Failed to log admin action.');
             }
-            /*// Get included characters that are set to notify
+            // Get included characters that are set to notify
             $notifiableCharacter = $submission->characters->where('notify_owner', true);
 
             if($notifiableCharacter->count()) {
@@ -526,7 +526,7 @@ class SubmissionManager extends Service {
                         ]);
                     }
                 }
-            }*/
+            }
 
             return $this->commitReturn($submission);
         } catch (\Exception $e) {
@@ -834,7 +834,7 @@ class SubmissionManager extends Service {
                 'character_id'  => $c->id,
                 'submission_id' => $submission->id,
                 'data'          => json_encode(getDataReadyAssets($assets)),
-                /*'notify_owner' => isset($data['character_notify_owner']) && $data['character_notify_owner'][$c->id] ? $data['character_notify_owner'][$c->id] : 0,*/
+                'notify_owner' => isset($data['character_notify_owner']) && $data['character_notify_owner'][$c->id] ? $data['character_notify_owner'][$c->id] : 0,
             ]);
         }
 

@@ -185,7 +185,7 @@ class SubmissionController extends Controller {
      * @param  string  $slug
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    /*public function getCharacterPermissions($slug)
+    public function getCharacterPermissions($slug)
     {
         $character = Character::visible()->where('slug', $slug)->first();
         $allowArt = $character->is_gift_art_allowed;
@@ -196,7 +196,7 @@ class SubmissionController extends Controller {
             'allowArt' => $allowArt,
             'allowWriting' => $allowWriting,
         ]);
-    }*/
+    }
 
     /**
      * Shows prompt information.
@@ -231,7 +231,7 @@ class SubmissionController extends Controller {
             $request->only([
                 'url', 'prompt_id', 'comments', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity',
                 'rewardable_type', 'rewardable_id', 'quantity', 'stack_id', 'stack_quantity', 'currency_id', 'currency_quantity',
-                'gallery_submission_id', /*'character_notify_owner'*/
+                'gallery_submission_id', 'character_notify_owner',
             ]),
             Auth::user(),
             false,
@@ -276,7 +276,7 @@ class SubmissionController extends Controller {
         if ($submit && $service->editSubmission($submission, $request->only([
             'url', 'prompt_id', 'comments', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity',
             'rewardable_type', 'rewardable_id', 'quantity', 'stack_id', 'stack_quantity', 'currency_id', 'currency_quantity',
-            'gallery_submission_id', /*'character_notify_owner'*/
+            'gallery_submission_id', 'character_notify_owner',
         ]), Auth::user(), false, $submit)) {
             flash('Draft submitted successfully.')->success();
         } elseif ($service->editSubmission($submission, $request->only([
@@ -474,7 +474,7 @@ class SubmissionController extends Controller {
      */
     public function postNewClaim(Request $request, SubmissionManager $service, $draft = false) {
         $request->validate(Submission::$createRules);
-        if ($submission = $service->createSubmission($request->only(['url', 'comments', 'stack_id', 'stack_quantity', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity', 'rewardable_type', 'rewardable_id', 'quantity', 'currency_id', 'currency_quantity',/*'character_notify_owner'*/]), Auth::user(), true, $draft)) {
+        if ($submission = $service->createSubmission($request->only(['url', 'comments', 'stack_id', 'stack_quantity', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity', 'rewardable_type', 'rewardable_id', 'quantity', 'currency_id', 'currency_quantity','character_notify_owner',]), Auth::user(), true, $draft)) {
             if ($submission->status == 'Draft') {
                 flash('Draft created successfully.')->success();
 
