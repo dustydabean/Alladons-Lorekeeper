@@ -5,12 +5,12 @@
     <div class="col-lg-9 col-8">{!! $character->displayOwner !!}</div>
 </div>
 @if (!$character->is_myo_slot)
-    <div class="row">
+    <!--<div class="row">
         <div class="col-lg-3 col-4">
             <h5>Category</h5>
         </div>
         <div class="col-lg-9 col-8">{!! $character->category->displayName !!}</div>
-    </div>
+    </div>--->
     <div class="row">
         <div class="col-lg-3 col-4">
             <h5>Poucher Code</h5>
@@ -24,12 +24,12 @@
     </div>
     <div class="col-lg-9 col-8">{!! $character->dob->format('d M, Y') !!}</div>
 </div>
-<div class="row">
+<!--<div class="row">
     <div class="col-lg-3 col-4">
         <h5 class="mb-0">Created</h5>
     </div>
     <div class="col-lg-9 col-8">{!! format_date($character->created_at) !!}</div>
-</div>
+</div>-->
 
     <hr />
 
