@@ -29,7 +29,7 @@
                     <div class="form-group gift-notifs">
                         <h4>Notify Owner?</h4>
                         <div class="row">
-                            {!! Form::select('character_notify_owner['.$character->character->id.']', [0 => 'No' , 1 => 'Yes' ], $character->notify_owner, ['class' => 'form-control ml-lg-3 col-5 col-md-9 character-notify-owner']) !!}-->
+                            ///{!! Form::select('character_notify_owner['.$character->character->id.']', [0 => 'No' , 1 => 'Yes' ], $character->notify_owner, ['class' => 'form-control ml-lg-3 col-5 col-md-9 character-notify-owner']) !!} -->
                             <!-- character gift status badges -->
                             <!--<div class="col">
                                 <span class="btn {{ $character->character->is_gift_writing_allowed == 1 ? 'badge-success' : ($character->character->is_gift_writing_allowed == 2 ? 'badge-warning text-light' : 'badge-danger') }}" data-toggle="tooltip" data-placement="top" title="{{$character->character->is_gift_writing_allowed == 1 ? 'OPEN for gift writing.' : ($character->character->is_gift_writing_allowed == 2 ? 'PLEASE ASK before gift writing.' : 'CLOSED for gift writing.') }}"><i class="fas fa-file-alt"></i></span>
