@@ -19,9 +19,15 @@
             </div>
         </div>
     </div>
-    <div class="form-group">
-        {!! Form::label('Character Code') !!} {!! add_help('This code identifies the character itself. This must be unique among all characters (as it\'s used to generate the character\'s page URL).') !!}
-        {!! Form::text('slug', $character->slug, ['class' => 'form-control', 'id' => 'code']) !!}
+    <div class="row">
+        <div class="col-md-6 form-group">
+            {!! Form::label('Character Code') !!} {!! add_help('This code identifies the character itself. This must be unique among all characters (as it\'s used to generate the character\'s page URL).') !!}
+            {!! Form::text('slug', $character->slug, ['class' => 'form-control', 'id' => 'code']) !!}
+        </div>
+        <div class="col-md-6 form-group">
+            {!! Form::label('poucher_code', 'Poucher Code') !!}
+            {!! Form::text('poucher_code', $character->poucher_code, ['class' => 'form-control']) !!}
+        </div>
     </div>
 @endif
 
