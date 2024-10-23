@@ -22,7 +22,7 @@
     <div class="col-lg-3 col-4">
         <h5>DOB</h5>
     </div>
-    <div class="col-lg-9 col-8">{!! $character->dob->format('d M, Y') !!}</div>
+    <div class="col-lg-9 col-8">{!! $character->dob ? $character->dob->format('d M, Y') : 'Unknown' !!}</div>
 </div>
 <!--<div class="row">
     <div class="col-lg-3 col-4">
