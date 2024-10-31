@@ -75,10 +75,45 @@
                 {!! Form::text('slug', old('slug'), ['class' => 'form-control', 'id' => 'code']) !!}
             </div>
 
-            <div class="col-md-6">
-                <div class="form-group">
-                    {!! Form::label('Poucher Code (Optional)') !!}
-                    {!! Form::text('poucher_code', old('poucher_code'), ['class' => 'form-control']) !!}
+            <div class="form-group">
+                {!! Form::label('Poucher Code (Optional)') !!}
+                {!! Form::text('poucher_code', old('poucher_code'), ['class' => 'form-control']) !!}
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        {!! Form::label('Nickname (Optional)') !!}
+                        {!! Form::text('nickname', old('nickname'), ['class' => 'form-control', 'placeholder' => 'Character\'s Nickname']) !!}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        {!! Form::label('Birth Date (Optional)') !!}
+                        {!! Form::text('birthdate', old('birthdate'), ['class' => 'form-control datepicker', 'placeholder' => 'Choose a Date of Birth']) !!}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        {!! Form::label('Character Generation (Optional)') !!}
+                        {!! Form::select('generation_id', $generations, old('generation_id'), ['class' => 'form-control', 'id' => 'generationSelect']) !!}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        {!! Form::label('Pedigree Name (Optional)') !!} {!! add_help('While this is optional, if you set a pedigree tag you must set a descriptor and vice versa.') !!}
+                        <div class="row no-gutters">
+                            <div class="col-6 pr-1">
+                                {!! Form::select('pedigree_id', $pedigrees, old('pedigree_id'), ['class' => 'form-control', 'id' => 'pedigreeSelect']) !!}
+                            </div>
+                            <div class="col-6 pl-1">
+                                {!! Form::text('pedigree_descriptor', old('pedigree_descriptor'), ['class' => 'form-control mr-2', 'placeholder' => 'Pedigree Descriptor']) !!}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         @endif
@@ -335,6 +370,9 @@
                 alert("AJAX call failed: " + textStatus + ", " + errorThrown);
             });
         });
+
+        $('#generationSelect').selectize();
+        $('#pedigreeSelect').selectize();
 
         $(document).ready(function() {
             $('.character-select').selectize();

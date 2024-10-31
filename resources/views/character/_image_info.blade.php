@@ -60,6 +60,30 @@
                     </div>
                     <div class="col-lg-8 col-md-6 col-8">{!! $image->rarity_id ? $image->rarity->displayName : 'None' !!}</div>
                 </div>
+                @if ($image->character->pedigree_id)
+                    <div class="row">
+                        <div class="col-lg-4 col-md-6 col-4">
+                            <h5>Pedigree Name</h5>
+                        </div>
+                        <div class="col-lg-8 col-md-6 col-8">{!! $image->character->pedigree_id ? $image->character->pedigreeName : 'None' !!}</div>
+                    </div>
+                @endif
+                @if ($image->character->birthdate)
+                    <div class="row">
+                        <div class="col-lg-4 col-md-6 col-4">
+                            <h5>DOB</h5>
+                        </div>
+                        <div class="col-lg-8 col-md-6 col-8">{!! $image->character->birthdate ? $image->character->birthdate->format('M d'.','.' Y') : 'Birthday Unknown' !!}</div>
+                    </div>
+                @endif
+                @if ($image->character->generation_id)
+                    <div class="row">
+                        <div class="col-lg-4 col-md-6 col-4">
+                            <h5>Generation</h5>
+                        </div>
+                        <div class="col-lg-8 col-md-6 col-8">{!! $image->character->generation_id ? $image->character->generation->name : 'None' !!}</div>
+                    </div>
+                @endif
                 @if ($image->sex)
                     <div class="row">
                         <div class="col-lg-4 col-md-6 col-4">

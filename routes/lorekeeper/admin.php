@@ -5,7 +5,7 @@
 | Admin Routes
 |--------------------------------------------------------------------------
 |
-| Routes for users with powers. 
+| Routes for users with powers.
 |
 */
 
@@ -302,6 +302,24 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('character-categories/delete/{id}', 'CharacterCategoryController@postDeleteCharacterCategory');
     Route::post('character-categories/sort', 'CharacterCategoryController@postSortCharacterCategory');
 
+    // CHARACTER GENERATIONS
+    Route::get('character-generations', 'CharacterGenerationController@getIndex');
+    Route::get('character-generations/create', 'CharacterGenerationController@getCreateCharacterGeneration');
+    Route::get('character-generations/edit/{id}', 'CharacterGenerationController@getEditCharacterGeneration');
+    Route::get('character-generations/delete/{id}', 'CharacterGenerationController@getDeleteCharacterGeneration');
+    Route::post('character-generations/create', 'CharacterGenerationController@postCreateEditCharacterGeneration');
+    Route::post('character-generations/edit/{id?}', 'CharacterGenerationController@postCreateEditCharacterGeneration');
+    Route::post('character-generations/delete/{id}', 'CharacterGenerationController@postDeleteCharacterGeneration');
+
+    // CHARACTER PEDIGREES
+    Route::get('character-pedigrees', 'CharacterPedigreeController@getIndex');
+    Route::get('character-pedigrees/create', 'CharacterPedigreeController@getCreateCharacterPedigree');
+    Route::get('character-pedigrees/edit/{id}', 'CharacterPedigreeController@getEditCharacterPedigree');
+    Route::get('character-pedigrees/delete/{id}', 'CharacterPedigreeController@getDeleteCharacterPedigree');
+    Route::post('character-pedigrees/create', 'CharacterPedigreeController@postCreateEditCharacterPedigree');
+    Route::post('character-pedigrees/edit/{id?}', 'CharacterPedigreeController@postCreateEditCharacterPedigree');
+    Route::post('character-pedigrees/delete/{id}', 'CharacterPedigreeController@postDeleteCharacterPedigree');
+
     // SUB MASTERLISTS
     Route::get('sublists', 'SublistController@getIndex');
     Route::get('sublists/create', 'SublistController@getCreateSublist');
@@ -339,7 +357,7 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('prompts/create', 'PromptController@postCreateEditPrompt');
     Route::post('prompts/edit/{id?}', 'PromptController@postCreateEditPrompt');
     Route::post('prompts/delete/{id}', 'PromptController@postDeletePrompt');
-    
+
     # DAILIES
     Route::get('dailies', 'DailyController@getIndex');
     Route::get('dailies/create', 'DailyController@getCreateDaily');
@@ -348,7 +366,7 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('dailies/create', 'DailyController@postCreateEditDaily');
     Route::post('dailies/edit/{id?}', 'DailyController@postCreateEditDaily');
     Route::post('dailies/delete/{id}', 'DailyController@postDeleteDaily');
-    Route::post('dailies/sort', 'DailyController@postSortDaily'); 
+    Route::post('dailies/sort', 'DailyController@postSortDaily');
 
     # COLLECTIONS
     Route::get('collections', 'CollectionController@getCollectionIndex');

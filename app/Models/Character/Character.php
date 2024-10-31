@@ -46,6 +46,7 @@ class Character extends Model {
         'sale_value', 'transferrable_at', 'is_visible',
         'is_gift_art_allowed', 'is_gift_writing_allowed', 'is_trading', 'sort',
         'is_myo_slot', 'name', 'trade_id', 'is_links_open', 'owner_url', 'poucher_code',
+        'nickname', 'pedigree_id', 'pedigree_descriptor', 'generation_id', 'birthdate',
     ];
 
     /**
@@ -62,6 +63,7 @@ class Character extends Model {
      */
     protected $casts = [
         'transferrable_at' => 'datetime',
+        'birthdate' => 'datetime',
     ];
 
     /**
@@ -95,6 +97,11 @@ class Character extends Model {
         'thumbnail'             => 'nullable|mimes:jpeg,jpg,gif,png|max:20000',
         'owner_url'             => 'url|nullable',
         'poucher_code'          => 'nullable|between:1,20',
+        'nickname'              => 'nullable',
+        'pedigree_id'           => 'nullable',
+        'pedigree_descriptor'   => 'nullable',
+        'generation_id'         => 'nullable',
+        'birthdate'             => 'nullable',
     ];
 
     /**
@@ -111,6 +118,11 @@ class Character extends Model {
         'poucher_code'          => 'nullable|between:1,20',
         'image'                 => 'nullable|mimes:jpeg,jpg,gif,png|max:20000',
         'thumbnail'             => 'nullable|mimes:jpeg,jpg,gif,png|max:20000',
+        'nickname'              => 'nullable',
+        'pedigree_id'           => 'nullable',
+        'pedigree_descriptor'   => 'nullable',
+        'generation_id'         => 'nullable',
+        'birthdate'             => 'nullable',
     ];
 
     /**
@@ -236,6 +248,20 @@ class Character extends Model {
         return $this->hasMany(CharacterRelation::class, 'character_1_id')->orWhere('character_2_id', $this->id);
     }
 
+    /*
+    * Get the pedigree for this character.
+    */
+    public function pedigree() {
+        return $this->belongsTo(CharacterPedigree::class, 'pedigree_id');
+    }
+
+    /*
+    * Get the generation for this character.
+    */
+    public function generation() {
+        return $this->belongsTo(CharacterGeneration::class, 'generation_id');
+    }
+
     /**********************************************************************************************
 
         SCOPES
@@ -351,7 +377,7 @@ class Character extends Model {
 
     /**
      * Displays the character's name, linked to their character page.
-     * Added Poucher Code. 
+     * Added Poucher Code.
      *
      * @return string
      */
@@ -371,6 +397,17 @@ class Character extends Model {
         } else {
             return $this->slug.($this->name ? ': '.$this->name : '');
         }
+    }
+
+    /**
+     * Gets the character's pedigree name.
+     *
+     * @return string
+     */
+    public function getPedigreeNameAttribute() {
+        $tag = $this->pedigree->name;
+
+        return $tag.' <i>'.$this->pedigree_descriptor.'</i>';
     }
 
     /**
@@ -619,7 +656,7 @@ class Character extends Model {
 
     /**
      * Gets the character's parent type (ex father, mother, parent) based on sex
-     * 
+     *
      */
     public function getParentTypeAttribute() {
         if (!$this->image->sex) {

@@ -7,7 +7,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Character\Character;
 use App\Models\Character\CharacterLink;
 use App\Models\Character\CharacterCategory;
+use App\Models\Character\CharacterGeneration;
 use App\Models\Character\CharacterLineageBlacklist;
+use App\Models\Character\CharacterPedigree;
 use App\Models\Character\CharacterTransfer;
 use App\Models\Feature\Feature;
 use App\Models\Rarity;
@@ -53,6 +55,8 @@ class CharacterController extends Controller {
             'userOptions'      => User::query()->orderBy('name')->pluck('name', 'id')->toArray(),
             'rarities'         => ['0' => 'Select Rarity'] + Rarity::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'specieses'        => ['0' => 'Select Species'] + Species::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'generations'      => [null => 'Select Generation'] + CharacterGeneration::orderBy('name')->pluck('name', 'id')->toArray(),
+            'pedigrees'        => [null => 'Select Pedigree Tag'] + CharacterPedigree::orderBy('name')->pluck('name', 'id')->toArray(),
             'subtypes'         => ['0' => 'Pick a Species First'],
             'features'         => Feature::getDropdownItems(1),
             'isMyo'            => false,
@@ -110,6 +114,8 @@ class CharacterController extends Controller {
             'species_id', 'subtype_id', 'rarity_id', 'feature_id', 'feature_data',
             'image', 'thumbnail', 'image_description',
             'sex', 'parent_1_id', 'parent_2_id',
+            'generation_id', 'pedigree_id', 'pedigree_descriptor',
+            'nickname', 'birthdate',
         ]);
         if ($character = $service->createCharacter($data, Auth::user())) {
             flash('Character created successfully.')->success();
@@ -175,6 +181,8 @@ class CharacterController extends Controller {
             'categories'  => CharacterCategory::orderBy('sort')->pluck('name', 'id')->toArray(),
             'userOptions' => User::query()->orderBy('name')->pluck('name', 'id')->toArray(),
             'number'      => format_masterlist_number($this->character->number, config('lorekeeper.settings.character_number_digits')),
+            'generations' => [null => 'Select Generation'] + CharacterGeneration::query()->orderBy('name')->pluck('name', 'id')->toArray(),
+            'pedigrees'   => [null => 'Select Pedigree Tag'] + CharacterPedigree::query()->orderBy('name')->pluck('name', 'id')->toArray(),
             'isMyo'       => false,
         ]);
     }
@@ -212,7 +220,8 @@ class CharacterController extends Controller {
         $data = $request->only([
             'character_category_id', 'number', 'slug', 'poucher_code',
             'is_giftable', 'is_tradeable', 'is_sellable', 'sale_value',
-            'transferrable_at',
+            'transferrable_at', 'generation_id', 'pedigree_id', 'pedigree_descriptor',
+            'nickname', 'birthdate',
         ]);
         $this->character = Character::where('slug', $slug)->first();
         if (!$this->character) {
@@ -571,7 +580,7 @@ class CharacterController extends Controller {
     {
         $this->character = Character::where('slug', $slug)->first();
         if(!$this->character) abort(404);
-        
+
         if($service->boundTransfer($request->only(['parent_id']), $this->character, Auth::user())) {
             flash('Character binding updated.')->success();
         }
@@ -580,7 +589,7 @@ class CharacterController extends Controller {
         }
         return redirect()->back();
     }
-    
+
     /**
      * Binds an MYO slot.
      *
@@ -593,7 +602,7 @@ class CharacterController extends Controller {
     {
         $this->character = Character::where('is_myo_slot', 1)->where('id', $id)->first();
         if(!$this->character) abort(404);
-        
+
         if($service->boundTransfer($request->only(['parent_id']), $this->character, Auth::user())) {
             flash('Character binding updated.')->success();
         }
