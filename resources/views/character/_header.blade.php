@@ -60,7 +60,7 @@
     @endif
     {!! $character->displayName !!}
     @if ($character->nickname)
-        <span class="text-muted">({!! $character->nickname !!})</span>
+        <span style="opacity: 0.45;">({!! $character->nickname !!})</span>
     @endif
     @if (!$character->is_myo_slot)
         <i data-toggle="tooltip" title="Click to Copy the Character Code" id="copy" style="font-size: 14px; vertical-align: middle;" class="far fa-copy text-small"></i>
