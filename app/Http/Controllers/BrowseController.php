@@ -216,6 +216,14 @@ class BrowseController extends Controller {
             $query->where('is_giftable', 1);
         }
 
+        if ($request->get('nickname')) {
+            if ($request->get('nickname_match')) {
+                $query->where('nickname', $request->get('nickname'));
+            } else {
+                $query->where('nickname', 'LIKE', '%'.$request->get('nickname').'%');
+            }
+        }
+
         if ($request->get('owner')) {
             $owner = User::find($request->get('owner'));
             $query->where(function ($query) use ($owner) {
@@ -689,7 +697,7 @@ class BrowseController extends Controller {
 
     /**
      * Returns a single FAQ question in modal.
-     * 
+     *
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getFaqQuestion($id) {
