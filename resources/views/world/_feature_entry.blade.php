@@ -22,6 +22,19 @@
                 <strong>Category:</strong> {!! $feature->category->displayName !!}
             </div>
         @endif
+        @if ($feature->mut_level)
+            <div>
+                <strong>Level:</strong> {!! $feature->level !!}
+            </div>
+        @endif
+        <div>
+            <strong>Status:</strong> {!! $feature->is_locked ? 'Locked' : 'Unlocked' !!}
+        </div>
+        @if ($feature->mut_type)
+            <div>
+                <strong>Type:</strong> {!! $feature->type !!}
+            </div>
+        @endif
         @if ($feature->species_id)
             <div>
                 <strong>Species:</strong> {!! $feature->species->displayName !!}

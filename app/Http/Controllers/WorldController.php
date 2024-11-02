@@ -154,7 +154,7 @@ class WorldController extends Controller
      */
     public function getFeatures(Request $request) {
         $query = Feature::visible(Auth::check() ? Auth::user() : null)->with('category')->with('rarity')->with('species');
-        $data = $request->only(['rarity_id', 'feature_category_id', 'species_id', 'subtype_id', 'name', 'sort']);
+        $data = $request->only(['rarity_id', 'feature_category_id', 'species_id', 'subtype_id', 'name', 'sort', 'mut_level', 'mut_type', 'is_locked']);
         if (isset($data['rarity_id']) && $data['rarity_id'] != 'none') {
             $query->where('rarity_id', $data['rarity_id']);
         }
@@ -181,6 +181,15 @@ class WorldController extends Controller
         }
         if (isset($data['name'])) {
             $query->where('name', 'LIKE', '%'.$data['name'].'%');
+        }
+        if (isset($data['mut_level']) && $data['mut_level'] > '0') {
+            $query->where('mut_level', $data['mut_level']);
+        }
+        if (isset($data['mut_type']) && $data['mut_type'] > '0') {
+            $query->where('mut_type', $data['mut_type']);
+        }
+        if (isset($data['is_locked']) && $data['is_locked'] != 'none') {
+            $query->locked($data['is_locked']);
         }
 
         if (isset($data['sort'])) {
@@ -223,6 +232,8 @@ class WorldController extends Controller
             'specieses'  => ['none' => 'Any Species'] + ['withoutOption' => 'Without Species'] + Species::visible(Auth::check() ? Auth::user() : null)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'subtypes'   => ['none' => 'Any Subtype'] + ['withoutOption' => 'Without Subtype'] + Subtype::visible(Auth::check() ? Auth::user() : null)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'categories' => ['none' => 'Any Category'] + ['withoutOption' => 'Without Category'] + FeatureCategory::visible(Auth::check() ? Auth::user() : null)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'levels'     => ['0' => 'Any Level', '1' => 'Minor', '2' => 'Major'],
+            'types'      => ['0' => 'Any Type', '1' => 'Breed Only', '2' => 'Custom Requestable'],
         ]);
     }
 
@@ -503,7 +514,7 @@ class WorldController extends Controller
         $data = $request->only(['name', 'sort', 'collection_category_id']);
         if(isset($data['name']))
             $query->where('name', 'LIKE', '%'.$data['name'].'%');
-        if(isset($data['collection_category_id']) && $data['collection_category_id'] != 'none') 
+        if(isset($data['collection_category_id']) && $data['collection_category_id'] != 'none')
             $query->where('collection_category_id', $data['collection_category_id']);
 
         if(isset($data['sort']))
@@ -561,9 +572,9 @@ class WorldController extends Controller
     {
         $query = CollectionCategory::query();
         $data = $request->only(['name']);
-        if(isset($data['name'])) 
+        if(isset($data['name']))
             $query->where('name', 'LIKE', '%'.$data['name'].'%');
-        return view('world.collection_categories', [  
+        return view('world.collection_categories', [
             'categories' => $query->orderBy('sort', 'DESC')->paginate(20)->appends($request->query())
         ]);
     }

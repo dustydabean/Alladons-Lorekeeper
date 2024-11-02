@@ -165,7 +165,7 @@ class FeatureController extends Controller {
      */
     public function getFeatureIndex(Request $request) {
         $query = Feature::query();
-        $data = $request->only(['rarity_id', 'feature_category_id', 'species_id', 'subtype_id', 'name']);
+        $data = $request->only(['rarity_id', 'feature_category_id', 'species_id', 'subtype_id', 'name', 'mut_level', 'mut_type', 'is_locked']);
         if (isset($data['rarity_id']) && $data['rarity_id'] != 'none') {
             $query->where('rarity_id', $data['rarity_id']);
         }
@@ -181,6 +181,15 @@ class FeatureController extends Controller {
         if (isset($data['name'])) {
             $query->where('name', 'LIKE', '%'.$data['name'].'%');
         }
+        if (isset($data['mut_level']) && $data['mut_level'] > '0') {
+            $query->where('mut_level', $data['mut_level']);
+        }
+        if (isset($data['mut_type']) && $data['mut_type'] > '0') {
+            $query->where('mut_type', $data['mut_type']);
+        }
+        if (isset($data['is_locked']) && $data['is_locked'] != 'none') {
+            $query->locked($data['is_locked']);
+        }
 
         return view('admin.features.features', [
             'features'   => $query->paginate(20)->appends($request->query()),
@@ -188,6 +197,8 @@ class FeatureController extends Controller {
             'specieses'  => ['none' => 'Any Species'] + Species::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'subtypes'   => ['none' => 'Any Subtype'] + Subtype::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'categories' => ['none' => 'Any Category'] + FeatureCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'levels'     => ['0' => 'Any Level', '1' => 'Minor', '2' => 'Major'],
+            'types'      => ['0' => 'Any Type', '1' => 'Breed Only', '2' => 'Custom Requestable'],
         ]);
     }
 
@@ -240,6 +251,7 @@ class FeatureController extends Controller {
         $id ? $request->validate(Feature::$updateRules) : $request->validate(Feature::$createRules);
         $data = $request->only([
             'name', 'species_id', 'subtype_id', 'rarity_id', 'feature_category_id', 'description', 'image', 'remove_image', 'is_visible', 'sex',
+            'mut_level', 'mut_type', 'is_locked',
         ]);
         if ($id && $service->updateFeature(Feature::find($id), $data, Auth::user())) {
             flash('Trait updated successfully.')->success();

@@ -404,6 +404,9 @@ class FeatureService extends Service {
         if (!isset($data['is_visible'])) {
             $data['is_visible'] = 0;
         }
+        if (!isset($data['is_locked'])) {
+            $data['is_locked'] = 0;
+        }
         if (isset($data['remove_image'])) {
             if ($feature && $feature->has_image && $data['remove_image']) {
                 $data['has_image'] = 0;
