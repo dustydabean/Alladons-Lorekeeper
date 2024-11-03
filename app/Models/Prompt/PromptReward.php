@@ -5,9 +5,9 @@ namespace App\Models\Prompt;
 use App\Models\Currency\Currency;
 use App\Models\Item\Item;
 use App\Models\Loot\LootTable;
+use App\Models\Model;
 use App\Models\Pet\Pet;
 use App\Models\Pet\PetVariant;
-use App\Models\Model;
 use App\Models\Raffle\Raffle;
 
 class PromptReward extends Model {

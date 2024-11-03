@@ -26,9 +26,9 @@ class CharacterPedigree extends Model {
      * @var array
      */
     public static $createRules = [
-        'name' => 'required|unique:character_pedigrees',
+        'name'         => 'required|unique:character_pedigrees',
         'description'  => 'nullable',
-        'image'       => 'mimes:png',
+        'image'        => 'mimes:png',
     ];
 
     /**
@@ -37,9 +37,9 @@ class CharacterPedigree extends Model {
      * @var array
      */
     public static $updateRules = [
-        'name' => 'required',
+        'name'         => 'required',
         'description'  => 'nullable',
-        'image'       => 'mimes:png',
+        'image'        => 'mimes:png',
     ];
 
     /**********************************************************************************************

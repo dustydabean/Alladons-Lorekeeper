@@ -1,18 +1,14 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-class AddAdminOnlyToSitePagesTable extends Migration
-{
+class AddAdminOnlyToSitePagesTable extends Migration {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
-    {
+    public function up() {
         Schema::table('site_pages', function (Blueprint $table) {
             $table->boolean('admin_only')->default(0);
         });
@@ -20,11 +16,8 @@ class AddAdminOnlyToSitePagesTable extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
-    {
+    public function down() {
         Schema::table('site_pages', function (Blueprint $table) {
             $table->dropColumn('admin_only');
         });

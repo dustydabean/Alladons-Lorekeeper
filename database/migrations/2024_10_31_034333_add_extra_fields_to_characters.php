@@ -39,7 +39,6 @@ return new class extends Migration {
      * Reverse the migrations.
      */
     public function down(): void {
-
         Schema::table('characters', function (Blueprint $table) {
             $table->dropForeign('characters_pedigree_id_foreign');
             $table->dropForeign('characters_generation_id_foreign');

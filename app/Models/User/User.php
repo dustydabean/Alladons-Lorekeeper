@@ -4,30 +4,27 @@ namespace App\Models\User;
 
 use App\Models\Character\Character;
 use App\Models\Character\CharacterBookmark;
+use App\Models\Character\CharacterDesignUpdate;
 use App\Models\Character\CharacterImageCreator;
+use App\Models\Character\CharacterTransfer;
+use App\Models\Collection\Collection;
 use App\Models\Comment\CommentLike;
 use App\Models\Currency\Currency;
 use App\Models\Currency\CurrencyLog;
 use App\Models\Gallery\GalleryCollaborator;
 use App\Models\Gallery\GalleryFavorite;
 use App\Models\Gallery\GallerySubmission;
-use App\Models\Theme;
 use App\Models\Item\Item;
 use App\Models\Item\ItemLog;
-use App\Models\Pet\PetLog;
 use App\Models\Notification;
+use App\Models\Pet\PetLog;
 use App\Models\Rank\Rank;
 use App\Models\Rank\RankPower;
+use App\Models\Report\Report;
 use App\Models\Shop\ShopLog;
 use App\Models\Submission\Submission;
-
-use App\Models\Character\CharacterDesignUpdate;
-use App\Models\Character\CharacterTransfer;
-use App\Models\Report\Report;
-use App\Models\Submission\SubmissionCharacter;
-use App\Models\User\UserCharacterLog;
+use App\Models\Theme;
 use App\Models\Trade;
-
 use App\Traits\Commenter;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -35,10 +32,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Fortify\TwoFactorAuthenticatable;
-
-use App\Models\Collection\Collection;
-use App\Models\User\UserCollection;
-use App\Models\User\UserCollectionLog;
 
 class User extends Authenticatable implements MustVerifyEmail {
     use Commenter, Notifiable, TwoFactorAuthenticatable;
@@ -111,8 +104,7 @@ class User extends Authenticatable implements MustVerifyEmail {
     /**
      * Get user theme.
      */
-    public function theme()
-    {
+    public function theme() {
         return $this->belongsTo('App\Models\Theme');
     }
 
@@ -123,9 +115,8 @@ class User extends Authenticatable implements MustVerifyEmail {
         return $this->belongsTo('App\Models\Theme', 'decorator_theme_id');
     }
 
-
     /**
-     * Get User Granted Themes 
+     * Get User Granted Themes.
      */
     /**
      * Get user theme.
@@ -151,8 +142,7 @@ class User extends Authenticatable implements MustVerifyEmail {
     /**
      * Get user staff profile data.
      */
-    public function staffProfile()
-    {
+    public function staffProfile() {
         return $this->hasOne('App\Models\User\StaffProfile');
     }
 
@@ -298,7 +288,9 @@ class User extends Authenticatable implements MustVerifyEmail {
      **********************************************************************************************/
 
     /**
-     * Checks if the user has the named recipe
+     * Checks if the user has the named recipe.
+     *
+     * @param mixed $theme_id
      *
      * @return bool
      */
@@ -306,9 +298,10 @@ class User extends Authenticatable implements MustVerifyEmail {
         $theme = Theme::find($theme_id);
         $user_has = $this->recipes && $this->recipes->contains($theme);
         $default = $theme->is_user_selectable;
+
         return $default ? true : $user_has;
     }
-    
+
     /**
      * Get the user's alias.
      *
@@ -514,29 +507,24 @@ class User extends Authenticatable implements MustVerifyEmail {
      */
     public function getcheckBirthdayAttribute() {
         $bday = $this->birthday;
-        if (!$bday || $bday->diffInYears(carbon::now()) < 13) {
+        if (!$bday || $bday->diffInYears(Carbon::now()) < 13) {
             return false;
         } else {
             return true;
         }
     }
 
-     /**
+    /**
      * Get the user's completed collections.
      */
-    public function collections()
-    {
+    public function collections() {
         return $this->belongsToMany('App\Models\Collection\Collection', 'user_collections')->withPivot('id');
     }
 
-    public function getIncompletedCollectionsAttribute()
-    { 
-        return Collection::visible()->whereNotIn('id', UserCollection::where('user_id',$this->id)->pluck('collection_id')->unique());
-
+    public function getIncompletedCollectionsAttribute() {
+        return Collection::visible()->whereNotIn('id', UserCollection::where('user_id', $this->id)->pluck('collection_id')->unique());
     }
 
-
- 
     /**********************************************************************************************
 
         OTHER FUNCTIONS
@@ -773,83 +761,93 @@ class User extends Authenticatable implements MustVerifyEmail {
      *
      * @param mixed $character
      *
-     * @return \App\Models\Character\CharacterBookmark
+     * @return CharacterBookmark
      */
     public function hasBookmarked($character) {
         return CharacterBookmark::where('user_id', $this->id)->where('character_id', $character->id)->first();
     }
 
-
     /**
      * Get the user's collection logs.
      *
-     * @param  int  $limit
-     * @return \Illuminate\Support\Collection|\Illuminate\Pagination\LengthAwarePaginator
+     * @param int $limit
+     *
+     * @return \Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Support\Collection
      */
-    public function getCollectionLogs($limit = 10)
-    {
+    public function getCollectionLogs($limit = 10) {
         $user = $this;
-        $query = UserCollectionLog::with('collection')->where(function($query) use ($user) {
+        $query = UserCollectionLog::with('collection')->where(function ($query) use ($user) {
             $query->with('sender')->where('sender_id', $user->id)->whereNotIn('log_type', ['Staff Grant', 'Prompt Rewards', 'Claim Rewards']);
-        })->orWhere(function($query) use ($user) {
+        })->orWhere(function ($query) use ($user) {
             $query->with('recipient')->where('recipient_id', $user->id)->where('log_type', '!=', 'Staff Removal');
         })->orderBy('id', 'DESC');
-        if($limit) return $query->take($limit)->get();
-        else return $query->paginate(30);
+        if ($limit) {
+            return $query->take($limit)->get();
+        } else {
+            return $query->paginate(30);
+        }
     }
 
-     /**
-     * Checks if the user has the named collection
+    /**
+     * Checks if the user has the named collection.
+     *
+     * @param mixed $collection_id
      *
      * @return bool
      */
-    public function hasCollection($collection_id)
-    {
+    public function hasCollection($collection_id) {
         $collection = Collection::find($collection_id);
         $user_has = $this->collections->contains($collection);
+
         return $user_has;
     }
-    
 
     /**
      * Returned collections listed that are completed
-     * Reversal simply
+     * Reversal simply.
+     *
+     * @param mixed $ids
+     * @param mixed $reverse
      *
      * @return object
      */
-    public function ownedCollections($ids, $reverse = false)
-    {
-        $collections = Collection::find($ids); $collectionCollection = [];
-        foreach($collections as $collection)
-        {
-            if($reverse) {
-                if(!$this->collections->contains($collection)) $collectionCollection[] = $collection;
-            }
-            else {
-                if($this->collections->contains($collection)) $collectionCollection[] = $collection;
+    public function ownedCollections($ids, $reverse = false) {
+        $collections = Collection::find($ids);
+        $collectionCollection = [];
+        foreach ($collections as $collection) {
+            if ($reverse) {
+                if (!$this->collections->contains($collection)) {
+                    $collectionCollection[] = $collection;
+                }
+            } else {
+                if ($this->collections->contains($collection)) {
+                    $collectionCollection[] = $collection;
+                }
             }
         }
+
         return $collectionCollection;
     }
 
     /**
-     * Check if there are any Admin Notifications
+     * Check if there are any Admin Notifications.
+     *
+     * @param mixed $user
      *
      * @return int
      */
-     public function hasAdminNotification($user)
-     {
+    public function hasAdminNotification($user) {
         $count = [];
-        $count[] = $this->hasPower('manage_submissions')    ? Submission::where('status', 'Pending')->whereNotNull('prompt_id')->count()    : 0; //submissionCount
-        $count[] = $this->hasPower('manage_submissions')    ? Submission::where('status', 'Pending')->whereNull('prompt_id')->count()       : 0; //claimCount
-        $count[] = $this->hasPower('manage_characters')     ? CharacterDesignUpdate::characters()->where('status', 'Pending')->count()      : 0; //designCount
-        $count[] = $this->hasPower('manage_characters')     ? CharacterDesignUpdate::myos()->where('status', 'Pending')->count()            : 0; //myoCount
-        $count[] = $this->hasPower('manage_characters')     ? CharacterTransfer::active()->where('is_approved', 0)->count()                 : 0; //transferCount
-        $count[] = $this->hasPower('manage_characters')     ? Trade::where('status', 'Pending')->count()                                    : 0; //tradeCount
-        $count[] = $this->hasPower('manage_characters')     ? Trade::where('status', 'Pending')->count()                                    : 0; //tradeCount
-        $count[] = $this->hasPower('manage_submissions')    ? GallerySubmission::pending()->collaboratorApproved()->count()                 : 0; //galleryCount
-        $count[] = $this->hasPower('manage_reports')        ? Report::where('status', 'Pending')->count()                                   : 0; //reportCount
-        $count[] = $this->hasPower('manage_reports')        ? Report::assignedToMe($this)->count()                                          : 0; //assignedReportCount
+        $count[] = $this->hasPower('manage_submissions') ? Submission::where('status', 'Pending')->whereNotNull('prompt_id')->count() : 0; //submissionCount
+        $count[] = $this->hasPower('manage_submissions') ? Submission::where('status', 'Pending')->whereNull('prompt_id')->count() : 0; //claimCount
+        $count[] = $this->hasPower('manage_characters') ? CharacterDesignUpdate::characters()->where('status', 'Pending')->count() : 0; //designCount
+        $count[] = $this->hasPower('manage_characters') ? CharacterDesignUpdate::myos()->where('status', 'Pending')->count() : 0; //myoCount
+        $count[] = $this->hasPower('manage_characters') ? CharacterTransfer::active()->where('is_approved', 0)->count() : 0; //transferCount
+        $count[] = $this->hasPower('manage_characters') ? Trade::where('status', 'Pending')->count() : 0; //tradeCount
+        $count[] = $this->hasPower('manage_characters') ? Trade::where('status', 'Pending')->count() : 0; //tradeCount
+        $count[] = $this->hasPower('manage_submissions') ? GallerySubmission::pending()->collaboratorApproved()->count() : 0; //galleryCount
+        $count[] = $this->hasPower('manage_reports') ? Report::where('status', 'Pending')->count() : 0; //reportCount
+        $count[] = $this->hasPower('manage_reports') ? Report::assignedToMe($this)->count() : 0; //assignedReportCount
 
         // If Adoption Center is installed:
         // $count[] = $this->hasPower('manage_submissions') && $this->hasPower('manage_characters') ? Surrender::where('status', 'Pending')->count() : 0; //surrenderCount
@@ -858,6 +856,5 @@ class User extends Authenticatable implements MustVerifyEmail {
         // $count[] = $this->hasPower('manage_affiliates')     ? Affiliate::where('status', 'Pending')->count()                                : 0; //affiliateCount
 
         return array_sum($count);
-     }
-
+    }
 }

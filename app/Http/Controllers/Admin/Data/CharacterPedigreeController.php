@@ -55,7 +55,7 @@ class CharacterPedigreeController extends Controller {
         }
 
         return view('admin.characters.create_edit_character_pedigree', [
-            'pedigree' => $pedigree,
+            'pedigree'   => $pedigree,
             'characters' => Character::where('pedigree_id', $pedigree->id)->get(),
         ]);
     }

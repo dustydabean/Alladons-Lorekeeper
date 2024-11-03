@@ -36,10 +36,10 @@ class SitePage extends Model {
      * @var array
      */
     public static $createRules = [
-        'key'   => 'required|unique:site_pages|between:3,25|alpha_dash',
-        'title' => 'required|between:3,100',
-        'text' => 'nullable',
-        'admin_only' => 'boolean'
+        'key'        => 'required|unique:site_pages|between:3,25|alpha_dash',
+        'title'      => 'required|between:3,100',
+        'text'       => 'nullable',
+        'admin_only' => 'boolean',
     ];
 
     /**
@@ -48,10 +48,10 @@ class SitePage extends Model {
      * @var array
      */
     public static $updateRules = [
-        'key'   => 'required|between:3,25|alpha_dash',
-        'title' => 'required|between:3,100',
-        'text' => 'nullable',
-        'admin_only' => 'boolean'
+        'key'        => 'required|between:3,25|alpha_dash',
+        'title'      => 'required|between:3,100',
+        'text'       => 'nullable',
+        'admin_only' => 'boolean',
     ];
 
     /**

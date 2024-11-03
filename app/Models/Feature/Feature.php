@@ -208,7 +208,7 @@ class Feature extends Model {
      * Scope a query to show only features locked or unlocked.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param mixed|null                            $user
+     * @param mixed                                 $locked
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -321,6 +321,7 @@ class Feature extends Model {
                 return 'Major';
                 break;
         }
+
         return '<i>Unknown</i>';
     }
 
@@ -338,6 +339,7 @@ class Feature extends Model {
                 return 'Custom Requestable';
                 break;
         }
+
         return '<i>Undefined</i>';
     }
 

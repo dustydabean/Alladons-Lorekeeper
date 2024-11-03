@@ -17,6 +17,7 @@ use App\Models\Item\ItemCategory;
 use App\Models\User\User;
 use App\Models\User\UserCurrency;
 use App\Models\User\UserItem;
+use App\Services\CharacterLinkService;
 use App\Services\CharacterManager;
 use App\Services\CurrencyManager;
 use App\Services\DesignUpdateManager;
@@ -25,12 +26,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Route;
-
-use App\Models\Species\Species;
-use App\Models\Rarity;
-use App\Models\Feature\Feature;
-use App\Services\CharacterLinkService;
-use App\Models\Currency\CurrencyLog;
 
 class CharacterController extends Controller {
     /*
@@ -692,6 +687,17 @@ class CharacterController extends Controller {
     }
 
     /**
+     * Shows the characters pets.
+     *
+     * @param string $slug
+     */
+    public function getCharacterPets($slug) {
+        return view('character.pets', [
+            'character'             => $this->character,
+        ]);
+    }
+
+    /**
      * Transfers inventory items back to a user.
      *
      * @param App\Services\InventoryManager $service
@@ -750,17 +756,5 @@ class CharacterController extends Controller {
         }
 
         return redirect()->back();
-    }
-
-    /**
-     * Shows the characters pets.
-     * 
-     * @param string $slug
-     * 
-     */
-    public function getCharacterPets($slug) {
-        return view('character.pets', [
-            'character'             => $this->character,
-        ]);
     }
 }

@@ -11,7 +11,6 @@ use App\Models\User\User;
 use App\Models\User\UserItem;
 use App\Services\PairingManager;
 use Auth;
-use Log;
 use Illuminate\Http\Request;
 
 class PairingController extends Controller {
@@ -72,9 +71,11 @@ class PairingController extends Controller {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
             }
+
             return redirect()->back();
         } else {
             flash('Pairing created successfully!')->success();
+
             return redirect()->to('characters/pairings?type=waiting');
         }
     }
@@ -91,14 +92,16 @@ class PairingController extends Controller {
         }
 
         return response()->json([
-            'status' => 'success',
-            'message' => 'Pairing is compatible!',
+            'status'   => 'success',
+            'message'  => 'Pairing is compatible!',
             'palettes' => config('lorekeeper.character_pairing.inherit_colours') ? $this->createColourPalettes($service, $data) : null,
         ]);
     }
 
     /**
      * Checks if a pairing is compatibile.
+     *
+     * @param mixed $character_codes
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */

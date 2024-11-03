@@ -74,7 +74,7 @@ class SpliceService extends Service {
 
         try {
             $tag->data = json_encode([
-                'variant_ids' => isset($data['variant_ids']) ? $data['variant_ids'] : null,
+                'variant_ids' => $data['variant_ids'] ?? null,
             ]);
 
             return $this->commitReturn(true);

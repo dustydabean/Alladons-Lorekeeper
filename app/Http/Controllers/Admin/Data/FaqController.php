@@ -48,6 +48,7 @@ class FaqController extends Controller {
             return ucwords($tag);
         }, $tags);
         ksort($tags);
+
         return view('admin.faq.faq', [
             'faqs' => $query->paginate(20)->appends($request->query()),
             'tags' => Config::get('lorekeeper.faq'),
@@ -67,6 +68,7 @@ class FaqController extends Controller {
             return ucwords($tag);
         }, $tags);
         ksort($tags);
+
         return view('admin.faq.create_edit_question', [
             'faq'  => new Faq,
             'tags' => $tags,
@@ -92,6 +94,7 @@ class FaqController extends Controller {
             return ucwords($tag);
         }, $tags);
         ksort($tags);
+
         return view('admin.faq.create_edit_question', [
             'faq'  => $faq,
             'tags' => $tags,
@@ -102,7 +105,7 @@ class FaqController extends Controller {
      * Creates or edits an faq.
      *
      * @param App\Services\FaqService $service
-     * @param int|null                 $id
+     * @param int|null                $id
      *
      * @return \Illuminate\Http\RedirectResponse
      */
@@ -145,7 +148,7 @@ class FaqController extends Controller {
      * Creates or edits an faq.
      *
      * @param App\Services\FaqService $service
-     * @param int                      $id
+     * @param int                     $id
      *
      * @return \Illuminate\Http\RedirectResponse
      */

@@ -3,7 +3,6 @@
 namespace App\Models;
 
 class Faq extends Model {
-
     /**
      * The attributes that are mass assignable.
      *
@@ -34,7 +33,7 @@ class Faq extends Model {
      */
     public static $createRules = [
         'question' => 'required',
-        'answer'  => 'required',
+        'answer'   => 'required',
     ];
 
     /**********************************************************************************************
@@ -49,7 +48,7 @@ class Faq extends Model {
      * @return string
      */
     public function getIdUrlAttribute() {
-        return url('faq/' . $this->id);
+        return url('faq/'.$this->id);
     }
 
     /**********************************************************************************************
@@ -62,6 +61,7 @@ class Faq extends Model {
      * Scope a query to only include visible posts.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param mixed|null                            $user
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */

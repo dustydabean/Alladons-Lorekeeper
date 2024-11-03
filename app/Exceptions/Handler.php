@@ -3,10 +3,10 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Validation\ValidationException;
-use Throwable;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class Handler extends ExceptionHandler {
     /**
@@ -51,13 +51,14 @@ class Handler extends ExceptionHandler {
      *
      * @return \Illuminate\Http\Response
      */
-    public function render($request, Throwable $exception)
-    {
+    public function render($request, Throwable $exception) {
         if ($exception instanceof ThrottleRequestsException) {
             Log::channel('too_many_attempts')->warning('Too many attempts: ', ['user' => $request->user()->name, 'parameters' => $request->all()]);
             flash('Too many attempts, this will be logged for the admins. Your action may have still worked as intended, please check your inventory/characters/MYOs before retrying.')->warning();
-            return redirect()->back(); 
+
+            return redirect()->back();
         }
+
         return parent::render($request, $exception);
     }
 }

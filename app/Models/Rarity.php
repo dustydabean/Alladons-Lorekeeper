@@ -38,10 +38,10 @@ class Rarity extends Model {
      * @var array
      */
     public static $updateRules = [
-        'name'        => 'required|between:3,100',
-        'color'       => 'nullable|regex:/^#?[0-9a-fA-F]{6}$/i',
-        'description' => 'nullable',
-        'image'       => 'mimes:png',
+        'name'           => 'required|between:3,100',
+        'color'          => 'nullable|regex:/^#?[0-9a-fA-F]{6}$/i',
+        'description'    => 'nullable',
+        'image'          => 'mimes:png',
         'inherit_chance' => 'numeric|min:1|max:100',
     ];
 

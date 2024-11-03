@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Character\Character;
 use App\Models\Character\CharacterImage;
 use App\Models\Character\Sublist;
+use App\Models\Collection\CollectionCategory;
 use App\Models\Currency\Currency;
 use App\Models\Gallery\Gallery;
 use App\Models\Gallery\GalleryCharacter;
@@ -22,11 +23,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Route;
-use App\Models\Character\CharacterCategory;
-use App\Models\Collection\CollectionCategory;
 
-class UserController extends Controller
-{
+class UserController extends Controller {
     /*
     |--------------------------------------------------------------------------
     | User Controller
@@ -76,14 +74,14 @@ class UserController extends Controller
         }
 
         return view('user.profile', [
-            'user'       => $this->user,
-            'name'       => $name,
-            'items'      => $this->user->items()->where('count', '>', 0)->orderBy('user_items.updated_at', 'DESC')->take(4)->get(),
+            'user'        => $this->user,
+            'name'        => $name,
+            'items'       => $this->user->items()->where('count', '>', 0)->orderBy('user_items.updated_at', 'DESC')->take(4)->get(),
             'collections' => $this->user->collections()->orderBy('user_collections.updated_at', 'DESC')->take(4)->get(),
-            'sublists' => Sublist::orderBy('sort', 'DESC')->get(),
-            'characters' => $characters,
-            'aliases'    => $aliases->orderBy('is_primary_alias', 'DESC')->orderBy('site')->get(),
-            'pets'       => $this->user->pets()->orderBy('user_pets.updated_at', 'DESC')->take(5)->get(),
+            'sublists'    => Sublist::orderBy('sort', 'DESC')->get(),
+            'characters'  => $characters,
+            'aliases'     => $aliases->orderBy('is_primary_alias', 'DESC')->orderBy('site')->get(),
+            'pets'        => $this->user->pets()->orderBy('user_pets.updated_at', 'DESC')->take(5)->get(),
         ]);
     }
 
@@ -418,11 +416,11 @@ class UserController extends Controller
     /**
      * Shows a user's collection logs.
      *
-     * @param  string  $name
+     * @param string $name
+     *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getUserCollectionLogs($name)
-    {
+    public function getUserCollectionLogs($name) {
         $user = $this->user;
         $categories = CollectionCategory::orderBy('sort', 'DESC')->get();
         $collections = count($categories) ?
@@ -437,13 +435,13 @@ class UserController extends Controller
             ->orderBy('updated_at')
             ->get()
             ->groupBy(['collection_category_id', 'id']);
+
         return view('user.collection_logs', [
-            'user' => $this->user,
-            'logs' => $this->user->getCollectionLogs(0),
-            'categories' => $categories->keyBy('id'),
+            'user'        => $this->user,
+            'logs'        => $this->user->getCollectionLogs(0),
+            'categories'  => $categories->keyBy('id'),
             'collections' => $collections,
-            'sublists' => Sublist::orderBy('sort', 'DESC')->get()
+            'sublists'    => Sublist::orderBy('sort', 'DESC')->get(),
         ]);
     }
-
 }

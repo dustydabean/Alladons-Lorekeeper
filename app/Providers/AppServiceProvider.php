@@ -4,13 +4,12 @@ namespace App\Providers;
 
 use App\Models\Theme;
 use App\Providers\Socialite\ToyhouseProvider;
+use Auth;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
-
-use Auth;
 use View;
 
 class AppServiceProvider extends ServiceProvider {
@@ -34,8 +33,8 @@ class AppServiceProvider extends ServiceProvider {
             $theme = Auth::user()->theme ?? Theme::where('is_default', true)->first() ?? null;
             $conditionalTheme = null;
             if (class_exists('\App\Models\Weather\WeatherSeason')) {
-                $conditionalTheme = \App\Models\Theme::where('link_type', 'season')->where('link_id', Settings::get('site_season'))->first() ??
-                \App\Models\Theme::where('link_type', 'weather')->where('link_id', Settings::get('site_weather'))->first() ??
+                $conditionalTheme = Theme::where('link_type', 'season')->where('link_id', Settings::get('site_season'))->first() ??
+                Theme::where('link_type', 'weather')->where('link_id', Settings::get('site_weather'))->first() ??
                 $theme;
             }
             $decoratorTheme = Auth::user()->decoratorTheme ?? null;

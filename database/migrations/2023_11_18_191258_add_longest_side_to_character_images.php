@@ -7,8 +7,6 @@ use Illuminate\Support\Facades\Schema;
 class AddLongestSideToCharacterImages extends Migration {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up() {
         Schema::table('character_images', function (Blueprint $table) {
@@ -18,8 +16,6 @@ class AddLongestSideToCharacterImages extends Migration {
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down() {
         Schema::table('character_images', function (Blueprint $table) {

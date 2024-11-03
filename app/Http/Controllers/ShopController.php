@@ -70,7 +70,7 @@ class ShopController extends Controller {
             }
             foreach ($shop->limits as $limit) {
                 $item = $limit->item_id;
-                $check = UserItem::where('item_id', $item)->where('user_id', auth::user()->id)->where('count', '>', 0)->first();
+                $check = UserItem::where('item_id', $item)->where('user_id', Auth::user()->id)->where('count', '>', 0)->first();
 
                 if (!$check) {
                     flash('You require a '.$limit->item->name.' to enter this store.')->error();
@@ -165,7 +165,7 @@ class ShopController extends Controller {
                     return in_array($itemId, json_decode($shop->allowed_coupons, 1));
                 });
             }
-            $check = UserItem::with('item')->whereIn('item_id', $itemIds)->where('user_id', auth::user()->id)->where('count', '>', 0)->get()->pluck('item.name', 'id');
+            $check = UserItem::with('item')->whereIn('item_id', $itemIds)->where('user_id', Auth::user()->id)->where('count', '>', 0)->get()->pluck('item.name', 'id');
         } else {
             $check = null;
         }

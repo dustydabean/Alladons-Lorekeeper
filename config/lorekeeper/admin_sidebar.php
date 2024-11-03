@@ -49,7 +49,7 @@ return [
             ],
             [
                 'name' => 'Dev Logs',
-                'url' => 'admin/devlogs'
+                'url'  => 'admin/devlogs',
             ],
         ],
     ],
@@ -188,11 +188,11 @@ return [
             ],
             [
                 'name' => 'Dailies',
-                'url' => 'admin/data/dailies'
+                'url'  => 'admin/data/dailies',
             ],
             [
                 'name' => 'Activities',
-                'url' => 'admin/data/activities'
+                'url'  => 'admin/data/activities',
             ],
             [
                 'name' => 'Currencies',
@@ -216,7 +216,7 @@ return [
             ],
             [
                 'name' => 'Collections',
-                'url' => 'admin/data/collections'
+                'url'  => 'admin/data/collections',
             ],
             [
                 'name' => 'FAQ',
@@ -267,8 +267,8 @@ return [
             ],
             [
                 'name' => 'Theme Manager',
-                'url' => 'admin/themes'
+                'url'  => 'admin/themes',
             ],
-        ]
+        ],
     ],
 ];

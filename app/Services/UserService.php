@@ -4,24 +4,23 @@ namespace App\Services;
 
 use App\Facades\Notifications;
 use App\Facades\Settings;
-use DB;
-use Auth;
-use File;
-use Image;
-use Carbon\Carbon;
-
-use App\Models\User\User;
-use App\Models\User\StaffProfile;
-use App\Models\Rank\Rank;
-use App\Models\Character\CharacterTransfer;
 use App\Models\Character\CharacterDesignUpdate;
+use App\Models\Character\CharacterTransfer;
 use App\Models\Gallery\GallerySubmission;
 use App\Models\Invitation;
+use App\Models\Rank\Rank;
 use App\Models\Submission\Submission;
 use App\Models\Trade;
+use App\Models\User\StaffProfile;
+use App\Models\User\User;
 use App\Models\User\UserUpdateLog;
+use Auth;
+use Carbon\Carbon;
+use DB;
+use File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Image;
 use Laravel\Fortify\Contracts\TwoFactorAuthenticationProvider;
 
 class UserService extends Service {
@@ -39,7 +38,7 @@ class UserService extends Service {
      *
      * @param array $data
      *
-     * @return \App\Models\User\User
+     * @return User
      */
     public function createUser($data) {
         // If the rank is not given, create a user with the lowest existing rank.
@@ -114,7 +113,7 @@ class UserService extends Service {
      *
      * @param array $data
      *
-     * @return \App\Models\User\User
+     * @return User
      */
     public function updateUser($data) {
         $user = User::find($data['id']);
@@ -131,8 +130,8 @@ class UserService extends Service {
     /**
      * Updates the user's password.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param array $data
+     * @param User  $user
      *
      * @return bool
      */
@@ -161,8 +160,8 @@ class UserService extends Service {
     /**
      * Updates the user's email and resends a verification email.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param array $data
+     * @param User  $user
      *
      * @return bool
      */
@@ -177,10 +176,12 @@ class UserService extends Service {
     }
 
     /**
-     * Updates user's birthday setting
+     * Updates user's birthday setting.
+     *
+     * @param mixed $data
+     * @param mixed $user
      */
-    public function updateDOB($data, $user)
-    {
+    public function updateDOB($data, $user) {
         $user->settings->birthday_setting = $data;
         $user->settings->save();
 
@@ -190,15 +191,16 @@ class UserService extends Service {
     /**
      * Updates the user's theme.
      *
-     * @param  array                  $data
-     * @param  \App\Models\User\User  $user
+     * @param array $data
+     * @param User  $user
+     *
      * @return bool
      */
-    public function updateTheme($data, $user)
-    {
+    public function updateTheme($data, $user) {
         $user->theme_id = $data['theme'];
         $user->decorator_theme_id = $data['decorator_theme'];
         $user->save();
+
         return true;
     }
 
@@ -230,7 +232,7 @@ class UserService extends Service {
      * @param mixed $user
      */
     public function updateBirthdayVisibilitySetting($data, $user) {
-        DB::beginTransaction(); 
+        DB::beginTransaction();
 
         try {
             $user->settings->birthday_setting = $data;
@@ -245,10 +247,12 @@ class UserService extends Service {
     }
 
     /**
-     * Updates user's dev log notification setting
+     * Updates user's dev log notification setting.
+     *
+     * @param mixed $data
+     * @param mixed $user
      */
-    public function updatedevLogNotif($data, $user)
-    {
+    public function updatedevLogNotif($data, $user) {
         $user->settings->dev_log_notif = $data;
         $user->settings->save();
 
@@ -317,8 +321,8 @@ class UserService extends Service {
     /**
      * Updates the user's avatar.
      *
-     * @param \App\Models\User\User $user
-     * @param mixed                 $avatar
+     * @param User  $user
+     * @param mixed $avatar
      *
      * @return bool
      */
@@ -367,76 +371,84 @@ class UserService extends Service {
     /**
      * Updates a user's username.
      *
-     * @param string                $username
-     * @param \App\Models\User\User $user
-     * Updates or creates a user's staff profile
+     * @param User  $user
+     *                    Updates or creates a user's staff profile
+     * @param mixed $data
      */
-    public function updateStaffProfile($data, $user)
-    {
+    public function updateStaffProfile($data, $user) {
         DB::beginTransaction();
 
         try {
-            if(!$user->isStaff) throw new \Exception("You must be a current staff member to update a staff profile.");
+            if (!$user->isStaff) {
+                throw new \Exception('You must be a current staff member to update a staff profile.');
+            }
 
             $staffProfile = StaffProfile::find($user->id);
-            if($staffProfile) {
+            if ($staffProfile) {
                 $staffProfile->update([
-                    'text' => $data['text']
-                    ]);
-            }
-            else {
+                    'text' => $data['text'],
+                ]);
+            } else {
                 $staffProfile = StaffProfile::create([
                     'user_id' => $user->id,
-                    'text' => $data['text']
-                    ]);
+                    'text'    => $data['text'],
+                ]);
             }
-            
+
             return $this->commitReturn($staffProfile);
-        } catch(\Exception $e) { 
+        } catch (\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
+
         return $this->rollbackReturn(false);
     }
 
     /**
-     * Updates or creates a user's staff links
+     * Updates or creates a user's staff links.
+     *
+     * @param mixed $data
+     * @param mixed $user
      */
-    public function updateStaffLinks($data, $user)
-    {
+    public function updateStaffLinks($data, $user) {
         DB::beginTransaction();
 
         try {
-            if(!$user->isStaff) throw new \Exception("You must be a current staff member to update your staff links.");
+            if (!$user->isStaff) {
+                throw new \Exception('You must be a current staff member to update your staff links.');
+            }
 
             $staffProfile = StaffProfile::find($user->id);
 
-            if($staffProfile) {
+            if ($staffProfile) {
                 $staffProfile->update([
                     'contacts' => !$data ? null : json_encode([
                         'site' => $data['site'],
-                        'url' =>  $data['url']
-                    ])
+                        'url'  => $data['url'],
+                    ]),
                 ]);
-            }
-            else {
+            } else {
                 $staffProfile = StaffProfile::create([
-                    'user_id' => $user->id,
+                    'user_id'  => $user->id,
                     'contacts' => !$data ? null : json_encode([
                         'site' => $data['site'],
-                        'url' =>  $data['url']
-                    ])
+                        'url'  => $data['url'],
+                    ]),
                 ]);
             }
-            
+
             return $this->commitReturn($staffProfile);
-        } catch(\Exception $e) { 
+        } catch (\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
+
         return $this->rollbackReturn(false);
     }
 
     /**
-     * Bans a user. 
+     * Bans a user.
+     *
+     * @param mixed $username
+     * @param mixed $user
      *
      * @return bool
      */
@@ -496,9 +508,9 @@ class UserService extends Service {
     /**
      * Bans a user.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
-     * @param \App\Models\User\User $staff
+     * @param array $data
+     * @param User  $user
+     * @param User  $staff
      *
      * @return bool
      */
@@ -584,8 +596,8 @@ class UserService extends Service {
     /**
      * Unbans a user.
      *
-     * @param \App\Models\User\User $user
-     * @param \App\Models\User\User $staff
+     * @param User $user
+     * @param User $staff
      *
      * @return bool
      */
@@ -618,9 +630,9 @@ class UserService extends Service {
     /**
      * Deactivates a user.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
-     * @param \App\Models\User\User $staff
+     * @param array $data
+     * @param User  $user
+     * @param User  $staff
      *
      * @return bool
      */
@@ -714,8 +726,8 @@ class UserService extends Service {
     /**
      * Reactivates a user account.
      *
-     * @param \App\Models\User\User $user
-     * @param \App\Models\User\User $staff
+     * @param User $user
+     * @param User $staff
      *
      * @return bool
      */

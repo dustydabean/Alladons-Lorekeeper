@@ -151,9 +151,10 @@ Route::group(['prefix' => 'character', 'namespace' => 'Characters'], function ()
 
     Route::get('{slug}/image/colours', function ($slug) {
         if (!config('lorekeeper.character_pairing.colours')) {
-            return "";
+            return '';
         }
-        return \App\Models\Character\Character::where('slug', $slug)->first()?->image->displayColours();
+
+        return App\Models\Character\Character::where('slug', $slug)->first()?->image->displayColours();
     });
     // LINKS
     Route::get('{slug}/links/edit', 'CharacterController@getCreateEditCharacterLinks');
@@ -267,18 +268,16 @@ Route::group(['prefix' => 'shops'], function () {
     Route::get('history', 'ShopController@getPurchaseHistory');
 });
 
-
 /**************************************************************************************************
     Dailies
 **************************************************************************************************/
 
-Route::group(['prefix' => __('dailies.dailies')], function() {
+Route::group(['prefix' => __('dailies.dailies')], function () {
     // throttle requests to 1 per ~10 seconds
     Route::middleware('throttle:1,0.16')->group(function () {
         Route::post('{id}', 'DailyController@postRoll');
     });
 });
-
 
 /**************************************************************************************************
     Activities
@@ -303,7 +302,7 @@ Route::group(['prefix' => 'comments', 'namespace' => 'Comments'], function () {
     Route::get('/liked', 'CommentController@getLikedComments');
 });
 
-Route::group(['prefix' => 'collection', 'namespace' => 'Users'], function() {
+Route::group(['prefix' => 'collection', 'namespace' => 'Users'], function () {
     Route::get('/', 'CollectionController@getIndex');
     Route::get('complete/{id}', 'CollectionController@getCompleteCollection');
     Route::post('complete/{id}', 'CollectionController@postCompleteCollection');

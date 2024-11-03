@@ -2,25 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
-use DB;
-use Auth;
-use Settings;
-use App\Models\User\User;
-use App\Models\Rank\Rank;
-use App\Models\Rank\RankPower;
-
 use App\Models\Character\Character;
 use App\Models\Character\CharacterCategory;
 use App\Models\Character\CharacterImage;
 use App\Models\Character\Sublist;
+use App\Models\Faq;
 use App\Models\Feature\Feature;
+use App\Models\Rank\Rank;
+use App\Models\Rank\RankPower;
 use App\Models\Rarity;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
-use App\Models\Faq;
-use Config;
+use App\Models\User\User;
+use Auth;
+use Illuminate\Http\Request;
+use Settings;
 
 class BrowseController extends Controller {
     /*
@@ -121,14 +117,14 @@ class BrowseController extends Controller {
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getTeamIndex()
-    {
+    public function getTeamIndex() {
         $staffRanks = RankPower::distinct()->get(['rank_id']);
-        $staff = User::join('ranks','users.rank_id',"=",'ranks.id')->select('users.*')->whereIn('rank_id', $staffRanks)->orderBy('sort', 'DESC')->get()->groupBy('rank_id');
+        $staff = User::join('ranks', 'users.rank_id', '=', 'ranks.id')->select('users.*')->whereIn('rank_id', $staffRanks)->orderBy('sort', 'DESC')->get()->groupBy('rank_id');
         $ranks = Rank::orderBy('id')->get()->keyBy('id');
+
         return view('browse.team_index', [
             'staff' => $staff,
-            'ranks' => $ranks
+            'ranks' => $ranks,
         ]);
     }
 
@@ -685,6 +681,8 @@ class BrowseController extends Controller {
     /**
      * Shows the frequently asked questions page.
      *
+     * @param mixed|null $id
+     *
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getFaq(Request $request, $id = null) {
@@ -695,6 +693,7 @@ class BrowseController extends Controller {
             return ucwords($tag);
         }, $tags);
         ksort($tags);
+
         return view('browse.faq', [
             'id'   => $id ?? null,
             'faqs' => Faq::visible(Auth::check() ? Auth::user() : null)->orderBy('created_at', 'DESC')->get(),
@@ -704,6 +703,8 @@ class BrowseController extends Controller {
 
     /**
      * Returns a single FAQ question in modal.
+     *
+     * @param mixed $id
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
@@ -717,7 +718,6 @@ class BrowseController extends Controller {
 
     /**
      * Returns query for the FAQ page.
-     *
      */
     public function getFaqSearch(Request $request) {
         $tags = $request->get('tags') ?? [];

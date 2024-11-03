@@ -2,19 +2,16 @@
 
 namespace App\Models\Collection;
 
-use App;
-use Config;
 use App\Models\Model;
 
-class CollectionReward extends Model
-{
+class CollectionReward extends Model {
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'collection_id', 'rewardable_type', 'rewardable_id', 'quantity'
+        'collection_id', 'rewardable_type', 'rewardable_id', 'quantity',
     ];
 
     /**
@@ -31,8 +28,8 @@ class CollectionReward extends Model
      */
     public static $createRules = [
         'rewardable_type' => 'required',
-        'rewardable_id' => 'required',
-        'quantity' => 'required|integer|min:1'
+        'rewardable_id'   => 'required',
+        'quantity'        => 'required|integer|min:1',
     ];
 
     /**
@@ -42,22 +39,20 @@ class CollectionReward extends Model
      */
     public static $updateRules = [
         'rewardable_type' => 'required',
-        'rewardable_id' => 'required',
-        'quantity' => 'required|integer|min:1'
+        'rewardable_id'   => 'required',
+        'quantity'        => 'required|integer|min:1',
     ];
 
     /**********************************************************************************************
-    
+
         RELATIONS
     **********************************************************************************************/
 
     /**
      * Get the reward attached to the loot entry.
      */
-    public function reward() 
-    {
-        switch ($this->rewardable_type)
-        {
+    public function reward() {
+        switch ($this->rewardable_type) {
             case 'Item':
                 return $this->belongsTo('App\Models\Item\Item', 'rewardable_id');
             case 'Currency':
@@ -68,6 +63,7 @@ class CollectionReward extends Model
                 // Laravel requires a relationship instance to be returned (cannot return null), so returning one that doesn't exist here.
                 return $this->belongsTo('App\Models\Collection\CollectionRewards', 'rewardable_id', 'collection_id')->whereNull('collection_id');
         }
+
         return null;
     }
 }

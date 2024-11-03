@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin\Characters;
 use App\Facades\Settings;
 use App\Http\Controllers\Controller;
 use App\Models\Character\Character;
-use App\Models\Character\CharacterLink;
 use App\Models\Character\CharacterCategory;
 use App\Models\Character\CharacterGeneration;
 use App\Models\Character\CharacterLineageBlacklist;
@@ -571,44 +570,50 @@ class CharacterController extends Controller {
     /**
      * Binds a character.
      *
-     * @param  \Illuminate\Http\Request       $request
-     * @param  App\Services\CharacterManager  $service
-     * @param  string                         $slug
+     * @param App\Services\CharacterManager $service
+     * @param string                        $slug
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postBind(Request $request, CharacterManager $service, $slug)
-    {
+    public function postBind(Request $request, CharacterManager $service, $slug) {
         $this->character = Character::where('slug', $slug)->first();
-        if(!$this->character) abort(404);
+        if (!$this->character) {
+            abort(404);
+        }
 
-        if($service->boundTransfer($request->only(['parent_id']), $this->character, Auth::user())) {
+        if ($service->boundTransfer($request->only(['parent_id']), $this->character, Auth::user())) {
             flash('Character binding updated.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
         }
-        else {
-            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
-        }
+
         return redirect()->back();
     }
 
     /**
      * Binds an MYO slot.
      *
-     * @param  \Illuminate\Http\Request       $request
-     * @param  App\Services\CharacterManager  $service
-     * @param  int                            $id
+     * @param App\Services\CharacterManager $service
+     * @param int                           $id
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postMyoBind(Request $request, CharacterManager $service, $id)
-    {
+    public function postMyoBind(Request $request, CharacterManager $service, $id) {
         $this->character = Character::where('is_myo_slot', 1)->where('id', $id)->first();
-        if(!$this->character) abort(404);
+        if (!$this->character) {
+            abort(404);
+        }
 
-        if($service->boundTransfer($request->only(['parent_id']), $this->character, Auth::user())) {
+        if ($service->boundTransfer($request->only(['parent_id']), $this->character, Auth::user())) {
             flash('Character binding updated.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
         }
-        else {
-            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
-        }
+
         return redirect()->back();
     }
 

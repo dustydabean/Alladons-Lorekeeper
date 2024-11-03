@@ -39,8 +39,8 @@ class CharacterCategoryController extends Controller {
     public function getCreateCharacterCategory() {
         return view('admin.characters.create_edit_character_category', [
             'lineageBlacklist' => null,
-            'category' => new CharacterCategory,
-            'sublists' => [0 => 'No Sublist'] + Sublist::orderBy('name', 'DESC')->pluck('name', 'id')->toArray(),
+            'category'         => new CharacterCategory,
+            'sublists'         => [0 => 'No Sublist'] + Sublist::orderBy('name', 'DESC')->pluck('name', 'id')->toArray(),
         ]);
     }
 
@@ -60,8 +60,8 @@ class CharacterCategoryController extends Controller {
 
         return view('admin.characters.create_edit_character_category', [
             'lineageBlacklist' => $lineageBlacklist,
-            'category' => $category,
-            'sublists' => [0 => 'No Sublist'] + Sublist::orderBy('name', 'DESC')->pluck('name', 'id')->toArray(),
+            'category'         => $category,
+            'sublists'         => [0 => 'No Sublist'] + Sublist::orderBy('name', 'DESC')->pluck('name', 'id')->toArray(),
         ]);
     }
 

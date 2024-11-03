@@ -6,6 +6,7 @@ use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
 use App\Actions\Fortify\UpdateUserProfileInformation;
+use App\Models\Theme;
 use App\Models\User\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -13,7 +14,6 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Fortify\Fortify;
 use Route;
-use App\Models\Theme;
 
 class FortifyServiceProvider extends ServiceProvider {
     /**
@@ -48,16 +48,16 @@ class FortifyServiceProvider extends ServiceProvider {
         Fortify::registerView(fn () => view('auth.register', [
             'userCount'        => User::count(),
             'altRegistrations' => $altRegistrations,
-            'defaultTheme' => Theme::where('is_default',true)->first(),
+            'defaultTheme'     => Theme::where('is_default', true)->first(),
         ]));
 
         $altLogins = array_filter(config('lorekeeper.sites'), function ($item) {
             return isset($item['login']) && $item['login'] === 1 && $item['display_name'] != 'tumblr';
         });
         Fortify::loginView(fn () => view('auth.login', [
-            'userCount' => User::count(),
-            'altLogins' => $altLogins,
-            'defaultTheme' => Theme::where('is_default',true)->first(),
+            'userCount'    => User::count(),
+            'altLogins'    => $altLogins,
+            'defaultTheme' => Theme::where('is_default', true)->first(),
         ]));
 
         Fortify::requestPasswordResetLinkView(fn () => view('auth.passwords.forgot'));

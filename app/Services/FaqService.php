@@ -2,10 +2,9 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Str;
 use App\Models\Faq;
-use Config;
 use DB;
+use Illuminate\Support\Str;
 
 class FaqService extends Service {
     /*
@@ -29,7 +28,7 @@ class FaqService extends Service {
      * @param array                 $data
      * @param \App\Models\User\User $user
      *
-     * @return \App\Models\Faq\Faq|bool
+     * @return bool|Faq\Faq
      */
     public function createFaq($data, $user) {
         DB::beginTransaction();
@@ -48,7 +47,7 @@ class FaqService extends Service {
 
             $faq = Faq::create($data);
 
-            if (!$this->logAdminAction($user, 'Created FAQ Question', 'Created FAQ Question:'. Str::words($faq->question, 5, '...'))) {
+            if (!$this->logAdminAction($user, 'Created FAQ Question', 'Created FAQ Question:'.Str::words($faq->question, 5, '...'))) {
                 throw new \Exception('Failed to log admin action.');
             }
 
@@ -63,17 +62,16 @@ class FaqService extends Service {
     /**
      * Updates an faq.
      *
-     * @param \App\Models\Faq\Faq $faq
+     * @param Faq\Faq               $faq
      * @param array                 $data
      * @param \App\Models\User\User $user
      *
-     * @return \App\Models\Faq\Faq|bool
+     * @return bool|Faq\Faq
      */
     public function updateFaq($faq, $data, $user) {
         DB::beginTransaction();
 
         try {
-
             if (!isset($data['is_visible'])) {
                 $data['is_visible'] = 0;
             }
@@ -85,7 +83,7 @@ class FaqService extends Service {
                 $data['tags'] = json_encode($data['tags']);
             }
 
-            if (!$this->logAdminAction($user, 'Updated FAQ Question', 'Updated FAQ Question:'. Str::words($faq->question, 5, '...'))) {
+            if (!$this->logAdminAction($user, 'Updated FAQ Question', 'Updated FAQ Question:'.Str::words($faq->question, 5, '...'))) {
                 throw new \Exception('Failed to log admin action.');
             }
 
@@ -102,8 +100,8 @@ class FaqService extends Service {
     /**
      * Deletes an faq.
      *
-     * @param \App\Models\Faq\Faq $faq
-     * @param mixed                 $user
+     * @param Faq\Faq $faq
+     * @param mixed   $user
      *
      * @return bool
      */
@@ -111,7 +109,7 @@ class FaqService extends Service {
         DB::beginTransaction();
 
         try {
-            if (!$this->logAdminAction($user, 'Deleted FAQ Question', 'Deleted FAQ Question:'. Str::words($faq->question, 5, '...'))) {
+            if (!$this->logAdminAction($user, 'Deleted FAQ Question', 'Deleted FAQ Question:'.Str::words($faq->question, 5, '...'))) {
                 throw new \Exception('Failed to log admin action.');
             }
             $faq->delete();

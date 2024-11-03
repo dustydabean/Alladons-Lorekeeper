@@ -27,10 +27,10 @@ class PairingService extends Service {
      */
     public function getEditData() {
         return [
-            'features'  => Feature::orderBy('name')->pluck('name', 'id'),
+            'features'   => Feature::orderBy('name')->pluck('name', 'id'),
             'categories' => FeatureCategory::orderBy('name')->pluck('name', 'id'),
-            'specieses' => Species::orderBy('name')->pluck('name', 'id'),
-            'subtypes'  => Subtype::orderBy('name')->pluck('name', 'id'),
+            'specieses'  => Species::orderBy('name')->pluck('name', 'id'),
+            'subtypes'   => Subtype::orderBy('name')->pluck('name', 'id'),
         ];
     }
 
@@ -49,7 +49,7 @@ class PairingService extends Service {
      * Processes the data attribute of the tag and returns it in the preferred format.
      *
      * @param mixed $tag
-     * @param array  $data
+     * @param array $data
      *
      * @return bool
      */
@@ -105,7 +105,7 @@ class PairingService extends Service {
 
         foreach ($featureCategories as $key=>$category) {
             $pairingData['guaranteed_feature_categories'][] = [
-                'id' => $category,
+                'id'     => $category,
                 'number' => $data['feature_category_number'][$key] ?? 1,
             ];
         }

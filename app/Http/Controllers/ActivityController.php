@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Auth;
-
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Models\Activity;
+use Auth;
+use Illuminate\Http\Request;
 
 class ActivityController extends Controller {
     /*
@@ -25,42 +23,49 @@ class ActivityController extends Controller {
      */
     public function getIndex() {
         return view('activities.index', [
-            'activities' => Activity::where('is_active', 1)->orderBy('sort', 'DESC')->get()
+            'activities' => Activity::where('is_active', 1)->orderBy('sort', 'DESC')->get(),
         ]);
     }
 
     /**
      * Shows an Activity.
      *
-     * @param  int  $id
+     * @param int $id
+     *
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getActivity($id) {
         $activity = Activity::where('id', $id)->where('is_active', 1)->first();
-        if (!$activity) abort(404);
+        if (!$activity) {
+            abort(404);
+        }
+
         return view('activities.activity', [
             'activity' => $activity,
         ] + $activity->service->getActData($activity));
     }
 
-
-
     /**
-     * Acts on the Activities module
+     * Acts on the Activities module.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  App\Services\ShopManager  $service
+     * @param mixed $id
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postAct(Request $request, $id) {
         $activity = Activity::where('id', $id)->where('is_active', 1)->first();
         $service = $activity->service;
-        if (!$activity) abort(404);
+        if (!$activity) {
+            abort(404);
+        }
         if ($service->act($activity, $request->all(), Auth::user())) {
             // Do nothing because the service will call flash directly
         } else {
-            foreach ($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
         }
+
         return redirect()->back();
     }
 }

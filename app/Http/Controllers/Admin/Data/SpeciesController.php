@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Admin\Data;
 
 use App\Http\Controllers\Controller;
+use App\Models\Character\CharacterLineageBlacklist;
 use App\Models\Character\Sublist;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
-use App\Models\Character\CharacterLineageBlacklist;
-
 use App\Services\SpeciesService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

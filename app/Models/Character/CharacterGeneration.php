@@ -26,9 +26,9 @@ class CharacterGeneration extends Model {
      * @var array
      */
     public static $createRules = [
-        'name' => 'required|unique:character_generations',
+        'name'         => 'required|unique:character_generations',
         'description'  => 'nullable',
-        'image'       => 'mimes:png',
+        'image'        => 'mimes:png',
     ];
 
     /**
@@ -37,9 +37,9 @@ class CharacterGeneration extends Model {
      * @var array
      */
     public static $updateRules = [
-        'name' => 'required',
+        'name'         => 'required',
         'description'  => 'nullable',
-        'image'       => 'mimes:png',
+        'image'        => 'mimes:png',
     ];
 
     /**********************************************************************************************

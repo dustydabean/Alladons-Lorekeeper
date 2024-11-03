@@ -21,7 +21,7 @@ class PageService extends Service {
      * @param array                 $data
      * @param \App\Models\User\User $user
      *
-     * @return \App\Models\SitePage|bool
+     * @return bool|SitePage
      */
     public function createPage($data, $user) {
         DB::beginTransaction();
@@ -34,8 +34,8 @@ class PageService extends Service {
             if (!isset($data['is_visible'])) {
                 $data['is_visible'] = 0;
             }
-            if(!isset($data['admin_only'])) {
-                $data['admin_only']     = 0;
+            if (!isset($data['admin_only'])) {
+                $data['admin_only'] = 0;
             }
             if (!isset($data['can_comment'])) {
                 $data['can_comment'] = 0;
@@ -45,7 +45,7 @@ class PageService extends Service {
             $page = SitePage::create($data);
 
             return $this->commitReturn($page);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
 
@@ -59,7 +59,7 @@ class PageService extends Service {
      * @param \App\Models\User\User $user
      * @param mixed                 $page
      *
-     * @return \App\Models\SitePage|bool
+     * @return bool|SitePage
      */
     public function updatePage($page, $data, $user) {
         DB::beginTransaction();
@@ -77,8 +77,8 @@ class PageService extends Service {
             if (!isset($data['is_visible'])) {
                 $data['is_visible'] = 0;
             }
-            if(!isset($data['admin_only'])) {
-                $data['admin_only']     = 0;
+            if (!isset($data['admin_only'])) {
+                $data['admin_only'] = 0;
             }
             if (!isset($data['can_comment'])) {
                 $data['can_comment'] = 0;

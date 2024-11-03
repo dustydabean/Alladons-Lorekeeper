@@ -34,19 +34,21 @@ class SubmissionManager extends Service {
     /**
      * Creates a new submission.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
-     * @param bool                  $isClaim
-     * @param mixed                 $isDraft
+     * @param array $data
+     * @param User  $user
+     * @param bool  $isClaim
+     * @param mixed $isDraft
+     * @param mixed $isActivity
      *
      * @return mixed
      */
     public function createSubmission(
-        $data, 
-        $user, 
-        $isClaim = false, 
-        $isDraft = false, 
-        $isActivity = false,) {
+        $data,
+        $user,
+        $isClaim = false,
+        $isDraft = false,
+        $isActivity = false,
+    ) {
         DB::beginTransaction();
 
         try {
@@ -63,7 +65,9 @@ class SubmissionManager extends Service {
             }
             if (!$isClaim) {
                 $prompt = Prompt::query();
-                if (!$isActivity) $prompt = $prompt->active();
+                if (!$isActivity) {
+                    $prompt = $prompt->active();
+                }
                 $prompt = $prompt->where('id', $data['prompt_id'])->with('rewards')->first();
                 if (!$prompt) {
                     throw new \Exception('Invalid prompt selected.');
@@ -113,11 +117,11 @@ class SubmissionManager extends Service {
     /**
      * Edits an existing submission.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
-     * @param bool                  $isClaim
-     * @param mixed                 $submission
-     * @param mixed                 $isSubmit
+     * @param array $data
+     * @param User  $user
+     * @param bool  $isClaim
+     * @param mixed $submission
+     * @param mixed $isSubmit
      *
      * @return mixed
      */
@@ -259,8 +263,8 @@ class SubmissionManager extends Service {
     /**
      * Rejects a submission.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param array $data
+     * @param User  $user
      *
      * @return mixed
      */
@@ -322,8 +326,8 @@ class SubmissionManager extends Service {
     /**
      * Approves a submission.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param array $data
+     * @param User  $user
      *
      * @return mixed
      */

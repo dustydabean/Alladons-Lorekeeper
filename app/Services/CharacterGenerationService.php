@@ -22,7 +22,7 @@ class CharacterGenerationService extends Service {
      * @param array                 $data
      * @param \App\Models\User\User $user
      *
-     * @return \App\Models\Character\CharacterGeneration|bool
+     * @return bool|CharacterGeneration
      */
     public function createCharacterGeneration($data, $user) {
         DB::beginTransaction();
@@ -67,11 +67,11 @@ class CharacterGenerationService extends Service {
     /**
      * Updates a generation.
      *
-     * @param \App\Models\Character\CharacterGeneration $generation
-     * @param array                         $data
-     * @param \App\Models\User\User         $user
+     * @param CharacterGeneration   $generation
+     * @param array                 $data
+     * @param \App\Models\User\User $user
      *
-     * @return \App\Models\Character\CharacterGeneration|bool
+     * @return bool|CharacterGeneration
      */
     public function updateCharacterGeneration($generation, $data, $user) {
         DB::beginTransaction();
@@ -122,8 +122,8 @@ class CharacterGenerationService extends Service {
     /**
      * Deletes a generation.
      *
-     * @param \App\Models\Character\CharacterGeneration $generation
-     * @param mixed                         $user
+     * @param CharacterGeneration $generation
+     * @param mixed               $user
      *
      * @return bool
      */

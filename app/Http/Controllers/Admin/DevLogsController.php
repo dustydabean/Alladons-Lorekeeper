@@ -2,92 +2,91 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\Http\Request;
-
-use Auth;
-
+use App\Http\Controllers\Controller;
 use App\Models\DevLogs;
 use App\Services\DevLogsService;
+use Auth;
+use Illuminate\Http\Request;
 
-use App\Http\Controllers\Controller;
-
-class DevLogsController extends Controller
-{
+class DevLogsController extends Controller {
     /**
      * Shows the logs index.
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getIndex()
-    {
+    public function getIndex() {
         return view('admin.devlogs.devlogs', [
-            'devLogses' => DevLogs::orderBy('updated_at', 'DESC')->paginate(20)
+            'devLogses' => DevLogs::orderBy('updated_at', 'DESC')->paginate(20),
         ]);
     }
-    
+
     /**
-     * Shows the create dev log page. 
+     * Shows the create dev log page.
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getCreatedevLogs()
-    {
+    public function getCreatedevLogs() {
         return view('admin.devlogs.create_edit_devlogs', [
-            'devLogs' => new DevLogs
+            'devLogs' => new DevLogs,
         ]);
     }
-    
+
     /**
      * Shows the edit dev log page.
      *
-     * @param  int  $id
+     * @param int $id
+     *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getEditdevLogs($id)
-    {
+    public function getEditdevLogs($id) {
         $devLogs = DevLogs::find($id);
-        if(!$devLogs) abort(404);
+        if (!$devLogs) {
+            abort(404);
+        }
+
         return view('admin.devlogs.create_edit_devlogs', [
-            'devLogs' => $devLogs
+            'devLogs' => $devLogs,
         ]);
     }
 
     /**
      * Creates or edits a dev log page.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  App\Services\DevLogsService  $service
-     * @param  int|null                  $id
+     * @param App\Services\DevLogsService $service
+     * @param int|null                    $id
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postCreateEditdevLogs(Request $request, DevLogsService $service, $id = null)
-    {
+    public function postCreateEditdevLogs(Request $request, DevLogsService $service, $id = null) {
         $id ? $request->validate(DevLogs::$updateRules) : $request->validate(DevLogs::$createRules);
         $data = $request->only([
-            'title', 'text', 'post_at', 'is_visible', 'bump'
+            'title', 'text', 'post_at', 'is_visible', 'bump',
         ]);
-        if($id && $service->updateDevLogs(DevLogs::find($id), $data, Auth::user())) {
+        if ($id && $service->updateDevLogs(DevLogs::find($id), $data, Auth::user())) {
             flash('Dev log updated successfully.')->success();
-        }
-        else if (!$id && $devLogs = $service->createdevLogs($data, Auth::user())) {
+        } elseif (!$id && $devLogs = $service->createdevLogs($data, Auth::user())) {
             flash('Dev log created successfully.')->success();
+
             return redirect()->to('admin/devlogs/edit/'.$devLogs->id);
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
         }
-        else {
-            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
-        }
+
         return redirect()->back();
     }
-    
+
     /**
      * Gets the dev log deletion modal.
      *
-     * @param  int  $id
+     * @param int $id
+     *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getDeletedevLogs($id)
-    {
+    public function getDeletedevLogs($id) {
         $devLogs = DevLogs::find($id);
+
         return view('admin.devlogs._delete_devlogs', [
             'devLogs' => $devLogs,
         ]);
@@ -96,20 +95,20 @@ class DevLogsController extends Controller
     /**
      * Deletes a dev logs page.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  App\Services\DevLogsService  $service
-     * @param  int                       $id
+     * @param App\Services\DevLogsService $service
+     * @param int                         $id
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postDeletedevLogs(Request $request, DevLogsService $service, $id)
-    {
-        if($id && $service->deletedevLogs(DevLogs::find($id))) {
+    public function postDeletedevLogs(Request $request, DevLogsService $service, $id) {
+        if ($id && $service->deletedevLogs(DevLogs::find($id))) {
             flash('Dev log deleted successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
         }
-        else {
-            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
-        }
+
         return redirect()->to('admin/devlogs');
     }
-
 }

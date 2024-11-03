@@ -3,179 +3,193 @@
 namespace App\Services;
 
 use App\Models\Activity;
-use App\Services\Service;
-
 use DB;
 
 class ActivityService extends Service {
-  /*
-    |--------------------------------------------------------------------------
-    | Activity Service
-    |--------------------------------------------------------------------------
-    |
-    | Handles the creation and editing of Activities
-    |
-    */
+    /*
+      |--------------------------------------------------------------------------
+      | Activity Service
+      |--------------------------------------------------------------------------
+      |
+      | Handles the creation and editing of Activities
+      |
+      */
 
-  /**********************************************************************************************
-     
-        SHOPS
+    /**********************************************************************************************
 
-   **********************************************************************************************/
+          SHOPS
 
-  /**
-   * Creates a new shop.
-   *
-   * @param  array                  $data 
-   * @param  \App\Models\User\User  $user
-   * @return bool|\App\Models\Shop\Shop
-   */
-  public function createActivity($data) {
-    DB::beginTransaction();
+     **********************************************************************************************/
 
-    try {
+    /**
+     * Creates a new shop.
+     *
+     * @param array $data
+     *
+     * @return \App\Models\Shop\Shop|bool
+     */
+    public function createActivity($data) {
+        DB::beginTransaction();
 
-      $data = $this->populateActivityData($data);
+        try {
+            $data = $this->populateActivityData($data);
 
-      $image = null;
-      if (isset($data['image']) && $data['image']) {
-        $data['has_image'] = 1;
-        $image = $data['image'];
-        unset($data['image']);
-      } else $data['has_image'] = 0;
+            $image = null;
+            if (isset($data['image']) && $data['image']) {
+                $data['has_image'] = 1;
+                $image = $data['image'];
+                unset($data['image']);
+            } else {
+                $data['has_image'] = 0;
+            }
 
-      $activity = Activity::create($data);
+            $activity = Activity::create($data);
 
-      if ($image) $this->handleImage($image, $activity->ImagePath, $activity->ImageFileName);
+            if ($image) {
+                $this->handleImage($image, $activity->ImagePath, $activity->ImageFileName);
+            }
 
-      return $this->commitReturn($activity);
-    } catch (\Exception $e) {
-      $this->setError('error', $e->getMessage());
-    }
-    return $this->rollbackReturn(false);
-  }
+            return $this->commitReturn($activity);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
 
-  /**
-   * Updates a shop.
-   *
-   * @param  \App\Models\Shop\Shop  $shop
-   * @param  array                  $data 
-   * @param  \App\Models\User\User  $user
-   * @return bool|\App\Models\Shop\Shop
-   */
-  public function updateActivity($activity, $data) {
-    DB::beginTransaction();
-
-    try {
-      // More specific validation
-      if (Activity::where('name', $data['name'])->where('id', '!=', $activity->id)->exists()) throw new \Exception("The name has already been taken.");
-
-      $data = $this->populateActivityData($data, $activity);
-
-      $image = null;
-      if (isset($data['image']) && $data['image']) {
-        $data['has_image'] = 1;
-        $image = $data['image'];
-        unset($data['image']);
-      }
-
-      // If changing modules, clear out the old data
-      if ($activity->module !== $data['module']) {
-        $activity->data = null;
-        $activity->save();
-      }
-      
-      
-      $activity->update($data);
-
-      if ($activity) $this->handleImage($image, $activity->ImagePath, $activity->ImageFileName);
-
-      return $this->commitReturn($activity);
-    } catch (\Exception $e) {
-      $this->setError('error', $e->getMessage());
-    }
-    return $this->rollbackReturn(false);
-  }
-
-
-  /**
-   * Processes user input for creating/updating a shop.
-   *
-   * @param  array                  $data 
-   * @param  \App\Models\Shop\Shop  $shop
-   * @return array
-   */
-  private function populateActivityData($data, $activity = null) {
-    if (isset($data['description']) && $data['description']) $data['parsed_description'] = parse($data['description']);
-    $data['is_active'] = isset($data['is_active']);
-
-    if (isset($data['remove_image'])) {
-      if ($activity && $activity->has_image && $data['remove_image']) {
-        $data['has_image'] = 0;
-        $this->deleteImage($activity->ImagePath, $activity->ImageFileName);
-      }
-      unset($data['remove_image']);
+        return $this->rollbackReturn(false);
     }
 
-    return $data;
-  }
+    /**
+     * Updates a shop.
+     *
+     * @param array $data
+     * @param mixed $activity
+     *
+     * @return \App\Models\Shop\Shop|bool
+     */
+    public function updateActivity($activity, $data) {
+        DB::beginTransaction();
 
-  /**
-   * Deletes a shop.
-   *
-   * @param  \App\Models\Shop\Shop  $shop
-   * @return bool
-   */
-  public function deleteActivity($activity) {
-    DB::beginTransaction();
+        try {
+            // More specific validation
+            if (Activity::where('name', $data['name'])->where('id', '!=', $activity->id)->exists()) {
+                throw new \Exception('The name has already been taken.');
+            }
 
-    try {
-      if ($activity->has_image) $this->deleteImage($activity->ImagePath, $activity->ImageFileName);
-      $activity->delete();
+            $data = $this->populateActivityData($data, $activity);
 
-      return $this->commitReturn(true);
-    } catch (\Exception $e) {
-      $this->setError('error', $e->getMessage());
+            $image = null;
+            if (isset($data['image']) && $data['image']) {
+                $data['has_image'] = 1;
+                $image = $data['image'];
+                unset($data['image']);
+            }
+
+            // If changing modules, clear out the old data
+            if ($activity->module !== $data['module']) {
+                $activity->data = null;
+                $activity->save();
+            }
+
+            $activity->update($data);
+
+            if ($activity) {
+                $this->handleImage($image, $activity->ImagePath, $activity->ImageFileName);
+            }
+
+            return $this->commitReturn($activity);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
     }
-    return $this->rollbackReturn(false);
-  }
 
-  /**
-   * Sorts shop order.
-   *
-   * @param  string  $data
-   * @return bool
-   */
-  public function sortActivity($data) {
-    DB::beginTransaction();
+    /**
+     * Deletes a shop.
+     *
+     * @param mixed $activity
+     *
+     * @return bool
+     */
+    public function deleteActivity($activity) {
+        DB::beginTransaction();
 
-    try {
-      // explode the sort array and reverse it since the order is inverted
-      $sort = array_reverse(explode(',', $data));
+        try {
+            if ($activity->has_image) {
+                $this->deleteImage($activity->ImagePath, $activity->ImageFileName);
+            }
+            $activity->delete();
 
-      foreach ($sort as $key => $s) {
-        Activity::where('id', $s)->update(['sort' => $key]);
-      }
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
 
-      return $this->commitReturn(true);
-    } catch (\Exception $e) {
-      $this->setError('error', $e->getMessage());
+        return $this->rollbackReturn(false);
     }
-    return $this->rollbackReturn(false);
-  }
 
+    /**
+     * Sorts shop order.
+     *
+     * @param string $data
+     *
+     * @return bool
+     */
+    public function sortActivity($data) {
+        DB::beginTransaction();
 
-  public function updateModule($activity, $data) {
-    DB::beginTransaction();
+        try {
+            // explode the sort array and reverse it since the order is inverted
+            $sort = array_reverse(explode(',', $data));
 
-    try {
-      $activity->data = $activity->service->updateData($activity, $data);
-      $activity->save();
+            foreach ($sort as $key => $s) {
+                Activity::where('id', $s)->update(['sort' => $key]);
+            }
 
-      return $this->commitReturn(true);
-    } catch (\Exception $e) {
-      $this->setError('error', $e->getMessage());
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
     }
-    return $this->rollbackReturn(false);
-  }
+
+    public function updateModule($activity, $data) {
+        DB::beginTransaction();
+
+        try {
+            $activity->data = $activity->service->updateData($activity, $data);
+            $activity->save();
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Processes user input for creating/updating a shop.
+     *
+     * @param array      $data
+     * @param mixed|null $activity
+     *
+     * @return array
+     */
+    private function populateActivityData($data, $activity = null) {
+        if (isset($data['description']) && $data['description']) {
+            $data['parsed_description'] = parse($data['description']);
+        }
+        $data['is_active'] = isset($data['is_active']);
+
+        if (isset($data['remove_image'])) {
+            if ($activity && $activity->has_image && $data['remove_image']) {
+                $data['has_image'] = 0;
+                $this->deleteImage($activity->ImagePath, $activity->ImageFileName);
+            }
+            unset($data['remove_image']);
+        }
+
+        return $data;
+    }
 }

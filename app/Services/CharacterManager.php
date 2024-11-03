@@ -2,22 +2,6 @@
 
 namespace App\Services;
 
-use Carbon\Carbon;
-
-use DB;
-use Auth;
-use Config;
-use Image;
-use Notifications;
-use Settings;
-use File;
-
-use App\Services\CurrencyManager;
-use App\Services\InventoryManager;
-
-use Illuminate\Support\Arr;
-use App\Models\User\User;
-use App\Models\User\UserItem;
 use App\Models\Character\Character;
 use App\Models\Character\CharacterBookmark;
 use App\Models\Character\CharacterCategory;
@@ -26,20 +10,25 @@ use App\Models\Character\CharacterDesignUpdate;
 use App\Models\Character\CharacterFeature;
 use App\Models\Character\CharacterGeneration;
 use App\Models\Character\CharacterImage;
-use App\Models\Character\CharacterTransfer;
 use App\Models\Character\CharacterLineage;
 use App\Models\Character\CharacterPedigree;
-use App\Models\Sales\SalesCharacter;
-
 use App\Models\Character\CharacterProfileCustomValue;
-use App\Models\User\UserCharacterLog;
-use App\Models\Species\Species;
+use App\Models\Character\CharacterTransfer;
+use App\Models\Sales\SalesCharacter;
 use App\Models\Species\Subtype;
-
-use League\ColorExtractor\Palette;
-use League\ColorExtractor\ColorExtractor;
-use League\ColorExtractor\Color;
+use App\Models\User\User;
 use App\Models\User\UserPet;
+use Auth;
+use Carbon\Carbon;
+use Config;
+use DB;
+use Illuminate\Support\Arr;
+use Image;
+use League\ColorExtractor\Color;
+use League\ColorExtractor\ColorExtractor;
+use League\ColorExtractor\Palette;
+use Notifications;
+use Settings;
 
 class CharacterManager extends Service {
     /*
@@ -91,11 +80,11 @@ class CharacterManager extends Service {
     /**
      * Creates a new character or MYO slot.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
-     * @param bool                  $isMyo
+     * @param array $data
+     * @param User  $user
+     * @param bool  $isMyo
      *
-     * @return \App\Models\Character\Character|bool
+     * @return bool|Character
      */
     public function createCharacter($data, $user, $isMyo = false) {
         DB::beginTransaction();
@@ -232,7 +221,7 @@ class CharacterManager extends Service {
     /**
      * Trims and optionally resizes and watermarks an image.
      *
-     * @param \App\Models\Character\CharacterImage $characterImage
+     * @param CharacterImage $characterImage
      */
     public function processImage($characterImage) {
         $imageProperties = getimagesize($characterImage->imagePath.'/'.$characterImage->imageFileName);
@@ -376,9 +365,9 @@ class CharacterManager extends Service {
     /**
      * Crops a thumbnail for the given image.
      *
-     * @param array                                $points
-     * @param \App\Models\Character\CharacterImage $characterImage
-     * @param mixed                                $isMyo
+     * @param array          $points
+     * @param CharacterImage $characterImage
+     * @param mixed          $isMyo
      */
     public function cropThumbnail($points, $characterImage, $isMyo = false) {
         $imageProperties = getimagesize($characterImage->imagePath.'/'.$characterImage->imageFileName);
@@ -578,11 +567,11 @@ class CharacterManager extends Service {
     /**
      * Creates a character image.
      *
-     * @param array                           $data
-     * @param \App\Models\Character\Character $character
-     * @param \App\Models\User\User           $user
+     * @param array     $data
+     * @param Character $character
+     * @param User      $user
      *
-     * @return \App\Models\Character\Character|bool
+     * @return bool|Character
      */
     public function createImage($data, $character, $user) {
         DB::beginTransaction();
@@ -653,9 +642,9 @@ class CharacterManager extends Service {
     /**
      * Updates a character image.
      *
-     * @param array                                $data
-     * @param \App\Models\Character\CharacterImage $image
-     * @param \App\Models\User\User                $user
+     * @param array          $data
+     * @param CharacterImage $image
+     * @param User           $user
      *
      * @return bool
      */
@@ -729,9 +718,9 @@ class CharacterManager extends Service {
     /**
      * Updates image data.
      *
-     * @param array                                $data
-     * @param \App\Models\Character\CharacterImage $image
-     * @param \App\Models\User\User                $user
+     * @param array          $data
+     * @param CharacterImage $image
+     * @param User           $user
      *
      * @return bool
      */
@@ -765,9 +754,9 @@ class CharacterManager extends Service {
     /**
      * Updates image credits.
      *
-     * @param array                                $data
-     * @param \App\Models\Character\CharacterImage $image
-     * @param \App\Models\User\User                $user
+     * @param array          $data
+     * @param CharacterImage $image
+     * @param User           $user
      *
      * @return bool
      */
@@ -857,9 +846,9 @@ class CharacterManager extends Service {
     /**
      * Reuploads an image.
      *
-     * @param array                                $data
-     * @param \App\Models\Character\CharacterImage $image
-     * @param \App\Models\User\User                $user
+     * @param array          $data
+     * @param CharacterImage $image
+     * @param User           $user
      *
      * @return bool
      */
@@ -927,9 +916,9 @@ class CharacterManager extends Service {
     /**
      * Deletes an image.
      *
-     * @param \App\Models\Character\CharacterImage $image
-     * @param \App\Models\User\User                $user
-     * @param bool                                 $forceDelete
+     * @param CharacterImage $image
+     * @param User           $user
+     * @param bool           $forceDelete
      *
      * @return bool
      */
@@ -977,9 +966,9 @@ class CharacterManager extends Service {
     /**
      * Updates image settings.
      *
-     * @param array                                $data
-     * @param \App\Models\Character\CharacterImage $image
-     * @param \App\Models\User\User                $user
+     * @param array          $data
+     * @param CharacterImage $image
+     * @param User           $user
      *
      * @return bool
      */
@@ -1014,8 +1003,8 @@ class CharacterManager extends Service {
     /**
      * Updates a character's active image.
      *
-     * @param \App\Models\Character\CharacterImage $image
-     * @param \App\Models\User\User                $user
+     * @param CharacterImage $image
+     * @param User           $user
      *
      * @return bool
      */
@@ -1052,9 +1041,9 @@ class CharacterManager extends Service {
     /**
      * Sorts a character's images.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
-     * @param mixed                 $character
+     * @param array $data
+     * @param User  $user
+     * @param mixed $character
      *
      * @return bool
      */
@@ -1099,6 +1088,10 @@ class CharacterManager extends Service {
 
     /**
      * Generates a colour palette based on the image.
+     *
+     * @param mixed      $character_image
+     * @param mixed      $user
+     * @param mixed|null $colours
      */
     public function imageColours($character_image, $user, $colours = null) {
         DB::beginTransaction();
@@ -1120,7 +1113,7 @@ class CharacterManager extends Service {
             $character_image->colours = json_encode($colours);
             $character_image->save();
 
-            $this->createLog($user->id, null, null, null, $character_image->character_id, 'Image Colours ' . ($created ? 'Generated' : 'Updated'), '', 'character');
+            $this->createLog($user->id, null, null, null, $character_image->character_id, 'Image Colours '.($created ? 'Generated' : 'Updated'), '', 'character');
 
             return $this->commitReturn(true);
         } catch (\Exception $e) {
@@ -1133,8 +1126,8 @@ class CharacterManager extends Service {
     /**
      * Sorts a user's characters.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param array $data
+     * @param User  $user
      *
      * @return bool
      */
@@ -1167,8 +1160,8 @@ class CharacterManager extends Service {
     /**
      * Sorts a character's pets.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param array $data
+     * @param User  $user
      *
      * @return bool
      */
@@ -1197,12 +1190,13 @@ class CharacterManager extends Service {
 
         return $this->rollbackReturn(false);
     }
+
     /**
      * Updates a character's stats.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
-     * @param mixed                 $character
+     * @param array $data
+     * @param User  $user
+     * @param mixed $character
      *
      * @return bool
      */
@@ -1280,9 +1274,9 @@ class CharacterManager extends Service {
                 }
                 if ($characterData['pedigree_id'] != $character->pedigree_id || $characterData['pedigree_descriptor'] != $character->pedigree_descriptor) {
                     $result[] = 'pedigree';
-                    $old['pedigree'] = $character->pedigree_id ? $character->pedigree->name . ' ' . $character->pedigree_descriptor : 'No Pedigree Name';
+                    $old['pedigree'] = $character->pedigree_id ? $character->pedigree->name.' '.$character->pedigree_descriptor : 'No Pedigree Name';
                     if (CharacterPedigree::find($characterData['pedigree_id'])) {
-                        $new['pedigree'] = CharacterPedigree::find($characterData['pedigree_id'])->name . ' ' . $characterData['pedigree_descriptor'];
+                        $new['pedigree'] = CharacterPedigree::find($characterData['pedigree_id'])->name.' '.$characterData['pedigree_descriptor'];
                     } else {
                         $new['pedigree'] = 'No Pedigree Name';
                     }
@@ -1356,9 +1350,9 @@ class CharacterManager extends Service {
     /**
      * Updates a character's description.
      *
-     * @param array                           $data
-     * @param \App\Models\Character\Character $character
-     * @param \App\Models\User\User           $user
+     * @param array     $data
+     * @param Character $character
+     * @param User      $user
      *
      * @return bool
      */
@@ -1392,9 +1386,9 @@ class CharacterManager extends Service {
     /**
      * Updates a character's settings.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
-     * @param mixed                 $character
+     * @param array $data
+     * @param User  $user
+     * @param mixed $character
      *
      * @return bool
      */
@@ -1426,10 +1420,10 @@ class CharacterManager extends Service {
     /**
      * Updates a character's profile.
      *
-     * @param array                           $data
-     * @param \App\Models\Character\Character $character
-     * @param \App\Models\User\User           $user
-     * @param bool                            $isAdmin
+     * @param array     $data
+     * @param Character $character
+     * @param User      $user
+     * @param bool      $isAdmin
      *
      * @return bool
      */
@@ -1490,18 +1484,18 @@ class CharacterManager extends Service {
             if (!$character->is_myo_slot) {
                 // clear old custom values and add new ones.
                 $character->profile->custom_values()->delete();
-                if(isset($data['custom_values_data'])) {
-                    foreach( $data['custom_values_data'] as $i => $val) {
+                if (isset($data['custom_values_data'])) {
+                    foreach ($data['custom_values_data'] as $i => $val) {
                         $val_parsed = parse($val);
-                        if ($val_parsed != "") {
+                        if ($val_parsed != '') {
                             $group = isset($data['custom_values_group']) ? $data['custom_values_group'][$i] : null;
                             $name = isset($data['custom_values_name']) ? $data['custom_values_name'][$i] : null;
                             $custom_value = CharacterProfileCustomValue::create([
                                 'character_id' => $character->id,
-                                'group' => $group,
-                                'name' => $name,
-                                'data' => $val,
-                                'data_parsed' => $val_parsed,
+                                'group'        => $group,
+                                'name'         => $name,
+                                'data'         => $val,
+                                'data_parsed'  => $val_parsed,
                             ]);
                         }
                     }
@@ -1509,8 +1503,7 @@ class CharacterManager extends Service {
                 $character->profile->save();
             }
 
-            if($isAdmin && isset($data['alert_user']) && $character->is_visible && $character->user_id)
-            {
+            if ($isAdmin && isset($data['alert_user']) && $character->is_visible && $character->user_id) {
                 Notifications::create('CHARACTER_PROFILE_EDIT', $character->user, [
                     'character_name' => $character->name,
                     'character_slug' => $character->is_myo_slot ? $character->id : $character->slug,
@@ -1540,8 +1533,8 @@ class CharacterManager extends Service {
     /**
      * Deletes a character.
      *
-     * @param \App\Models\Character\Character $character
-     * @param \App\Models\User\User           $user
+     * @param Character $character
+     * @param User      $user
      *
      * @return bool
      */
@@ -1592,9 +1585,9 @@ class CharacterManager extends Service {
     /**
      * Creates a character transfer.
      *
-     * @param array                           $data
-     * @param \App\Models\Character\Character $character
-     * @param \App\Models\User\User           $user
+     * @param array     $data
+     * @param Character $character
+     * @param User      $user
      *
      * @return bool
      */
@@ -1668,9 +1661,9 @@ class CharacterManager extends Service {
     /**
      * Forces an admin transfer of a character.
      *
-     * @param array                           $data
-     * @param \App\Models\Character\Character $character
-     * @param \App\Models\User\User           $user
+     * @param array     $data
+     * @param Character $character
+     * @param User      $user
      *
      * @return bool
      */
@@ -1750,8 +1743,8 @@ class CharacterManager extends Service {
     /**
      * Processes a character transfer.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param array $data
+     * @param User  $user
      *
      * @return bool
      */
@@ -1818,8 +1811,8 @@ class CharacterManager extends Service {
     /**
      * Cancels a character transfer.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param array $data
+     * @param User  $user
      *
      * @return bool
      */
@@ -1854,8 +1847,8 @@ class CharacterManager extends Service {
     /**
      * Processes a character transfer in the approvals queue.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param array $data
+     * @param User  $user
      *
      * @return bool
      */
@@ -1950,11 +1943,11 @@ class CharacterManager extends Service {
     /**
      * Moves a character from one user to another.
      *
-     * @param \App\Models\Character\Character $character
-     * @param \App\Models\User\User           $recipient
-     * @param string                          $data
-     * @param int                             $cooldown
-     * @param string                          $logType
+     * @param Character $character
+     * @param User      $recipient
+     * @param string    $data
+     * @param int       $cooldown
+     * @param string    $logType
      */
     public function moveCharacter($character, $recipient, $data, $cooldown = -1, $logType = null) {
         $sender = $character->user;
@@ -2033,12 +2026,51 @@ class CharacterManager extends Service {
     }
 
     /**
+     * Updates a character's lineage.
+     *
+     * @param array     $data
+     * @param Character $character
+     * @param User      $user
+     * @param bool      $isAdmin
+     *
+     * @return bool
+     */
+    public function updateCharacterLineage($data, $character, $user, $isAdmin = false) {
+        DB::beginTransaction();
+
+        try {
+            if (!$user->hasPower('manage_characters')) {
+                throw new \Exception('You do not have the required permissions to do this.');
+            }
+
+            if (!$character->lineage) {
+                return $this->handleCharacterLineage($data, $character);
+            } else {
+                $character->lineage->update([
+                    'parent_1_id'   => $data['parent_1_id'] ?? null,
+                    'parent_1_name' => $data['parent_1_id'] ? null : ($data['parent_1_name'] ?? null),
+                    'parent_1_id'   => $data['parent_2_id'] ?? null,
+                    'parent_2_name' => $data['parent_2_id'] ? null : ($data['parent_2_name'] ?? null),
+                    'depth'         => $data['depth'] ?? 0,
+                ]);
+            }
+            // CUSTOM ANCESTRY - TODO
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
      * Handles character data.
      *
      * @param array $data
      * @param bool  $isMyo
      *
-     * @return \App\Models\Character\Character|bool
+     * @return bool|Character
      */
     private function handleCharacter($data, $isMyo = false) {
         try {
@@ -2100,8 +2132,8 @@ class CharacterManager extends Service {
      * @param bool  $isMyo
      * @param mixed $character
      *
-     * @return \App\Models\Character\Character           $character
-     * @return \App\Models\Character\CharacterImage|bool
+     * @return Character           $character
+     * @return bool|CharacterImage
      */
     private function handleCharacterImage($data, $character, $isMyo = false) {
         try {
@@ -2233,7 +2265,7 @@ class CharacterManager extends Service {
     /**
      * Generates a list of features for displaying.
      *
-     * @param \App\Models\Character\CharacterImage $image
+     * @param CharacterImage $image
      *
      * @return string
      */
@@ -2249,7 +2281,7 @@ class CharacterManager extends Service {
     /**
      * Generates a list of image credits for displaying.
      *
-     * @param \App\Models\Character\CharacterImage $image
+     * @param CharacterImage $image
      *
      * @return string
      */
@@ -2266,53 +2298,16 @@ class CharacterManager extends Service {
     }
 
     /**
-     * Updates a character's lineage.
-     *
-     * @param  array                            $data
-     * @param  \App\Models\Character\Character  $character
-     * @param  \App\Models\User\User            $user
-     * @param  bool                             $isAdmin
-     * @return  bool
-     */
-    public function updateCharacterLineage($data, $character, $user, $isAdmin = false)
-    {
-        DB::beginTransaction();
-
-        try {
-            if(!$user->hasPower('manage_characters')) throw new \Exception('You do not have the required permissions to do this.');
-
-            if (!$character->lineage) {
-                return $this->handleCharacterLineage($data, $character);
-            } else {
-                $character->lineage->update([
-                    'parent_1_id'   => $data['parent_1_id'] ?? null,
-                    'parent_1_name' => $data['parent_1_id'] ? null : ($data['parent_1_name'] ?? null),
-                    'parent_1_id'   => $data['parent_2_id'] ?? null,
-                    'parent_2_name' => $data['parent_2_id'] ? null : ($data['parent_2_name'] ?? null),
-                    'depth'       => $data['depth'] ?? 0,
-                ]);
-            }
-            // CUSTOM ANCESTRY - TODO
-
-            return $this->commitReturn(true);
-        } catch(\Exception $e) {
-            $this->setError('error', $e->getMessage());
-        }
-        return $this->rollbackReturn(false);
-    }
-
-    /**
      * Handles character lineage data.
      *
-     * @param  array                            $data
-     * @return \App\Models\Character\Character  $character
-     * @param  bool                             $isMyo
-     * @return \App\Models\Character\CharacterLineage|bool
+     * @param array $data
+     * @param mixed $character
+     *
+     * @return Character             $character
+     * @return bool|CharacterLineage
      */
-    private function handleCharacterLineage($data, $character)
-    {
+    private function handleCharacterLineage($data, $character) {
         try {
-
             if (!isset($data['parent_1_id']) && !isset($data['parent_1_name']) && !isset($data['parent_2_id']) && !isset($data['parent_2_name'])) {
                 throw new \Exception('No lineage data provided.');
             }
@@ -2341,10 +2336,10 @@ class CharacterManager extends Service {
             ]);
 
             return $this->commitReturn($lineage);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
-        return false;
 
+        return false;
     }
 }

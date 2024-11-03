@@ -22,7 +22,7 @@ class CharacterPedigreeService extends Service {
      * @param array                 $data
      * @param \App\Models\User\User $user
      *
-     * @return \App\Models\Character\CharacterPedigree|bool
+     * @return bool|CharacterPedigree
      */
     public function createCharacterPedigree($data, $user) {
         DB::beginTransaction();
@@ -67,11 +67,11 @@ class CharacterPedigreeService extends Service {
     /**
      * Updates a pedigree.
      *
-     * @param \App\Models\Character\CharacterPedigree $pedigree
-     * @param array                         $data
-     * @param \App\Models\User\User         $user
+     * @param CharacterPedigree     $pedigree
+     * @param array                 $data
+     * @param \App\Models\User\User $user
      *
-     * @return \App\Models\Character\CharacterPedigree|bool
+     * @return bool|CharacterPedigree
      */
     public function updateCharacterPedigree($pedigree, $data, $user) {
         DB::beginTransaction();
@@ -122,8 +122,8 @@ class CharacterPedigreeService extends Service {
     /**
      * Deletes a pedigree.
      *
-     * @param \App\Models\Character\CharacterPedigree $pedigree
-     * @param mixed                         $user
+     * @param CharacterPedigree $pedigree
+     * @param mixed             $user
      *
      * @return bool
      */

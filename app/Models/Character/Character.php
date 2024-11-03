@@ -2,34 +2,21 @@
 
 namespace App\Models\Character;
 
-use Config;
-use DB;
-use Carbon\Carbon;
-use Notifications;
-use App\Models\Model;
-
-use App\Models\User\User;
-use App\Models\User\UserCharacterLog;
-
-use App\Models\Character\Character;
-use App\Models\Character\CharacterCategory;
-use App\Models\Character\CharacterTransfer;
-use App\Models\Character\CharacterBookmark;
-use App\Models\Character\CharacterRelation;
-
-use App\Models\Character\CharacterCurrency;
 use App\Models\Currency\Currency;
 use App\Models\Currency\CurrencyLog;
-use App\Models\Character\CharacterLineage;
-use App\Models\Character\CharacterLineageBlacklist;
 use App\Models\Gallery\GalleryCharacter;
 use App\Models\Item\Item;
 use App\Models\Item\ItemLog;
+use App\Models\Model;
 use App\Models\Rarity;
 use App\Models\Submission\Submission;
 use App\Models\Submission\SubmissionCharacter;
 use App\Models\Trade;
+use App\Models\User\User;
+use App\Models\User\UserCharacterLog;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Notifications;
 
 class Character extends Model {
     use SoftDeletes;
@@ -63,7 +50,7 @@ class Character extends Model {
      */
     protected $casts = [
         'transferrable_at' => 'datetime',
-        'birthdate' => 'datetime',
+        'birthdate'        => 'datetime',
     ];
 
     /**
@@ -227,16 +214,14 @@ class Character extends Model {
     /**
      * Get the lineage of the character.
      */
-    public function lineage()
-    {
+    public function lineage() {
         return $this->hasOne(CharacterLineage::class, 'character_id');
     }
 
     /**
      * Get the character's children from the lineages.
      */
-    public function children()
-    {
+    public function children() {
         return $this->hasMany(CharacterLineage::class, 'parent_1_id')->orWhere('parent_2_id', $this->id);
     }
 
@@ -382,7 +367,7 @@ class Character extends Model {
      * @return string
      */
     public function getDisplayNameAttribute() {
-        return '<a href="'.$this->url.'" class="display-character">'.$this->fullName.'</a>'. (isset($this->poucher_code) ? ' ('.$this->poucher_code.')' : '' );
+        return '<a href="'.$this->url.'" class="display-character">'.$this->fullName.'</a>'.(isset($this->poucher_code) ? ' ('.$this->poucher_code.')' : '');
     }
 
     /**
@@ -645,26 +630,26 @@ class Character extends Model {
      * Finds the lineage blacklist level of this character.
      * 0 is no restriction at all
      * 1 is ancestors but no children
-     * 2 is no lineage at all
+     * 2 is no lineage at all.
+     *
+     * @param mixed $maxLevel
      *
      * @return int
      */
-    public function getLineageBlacklistLevel($maxLevel = 2)
-    {
+    public function getLineageBlacklistLevel($maxLevel = 2) {
         return CharacterLineageBlacklist::getBlacklistLevel($this, $maxLevel);
     }
 
     /**
-     * Gets the character's parent type (ex father, mother, parent) based on sex
-     *
+     * Gets the character's parent type (ex father, mother, parent) based on sex.
      */
     public function getParentTypeAttribute() {
         if (!$this->image->sex) {
-            return "Parent";
-        } else if ($this->image->sex == "Male") {
-            return "Father";
+            return 'Parent';
+        } elseif ($this->image->sex == 'Male') {
+            return 'Father';
         } else {
-            return "Mother";
+            return 'Mother';
         }
     }
 }

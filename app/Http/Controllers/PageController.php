@@ -25,15 +25,18 @@ class PageController extends Controller {
     public function getPage($key) {
         $page = SitePage::where('key', $key)->where('is_visible', 1)->first();
 
-        if(!$page) abort(404);
+        if (!$page) {
+            abort(404);
+        }
 
         if ($page->admin_only && (auth()->user() == null || !auth()->user()->isStaff)) {
             flash('You do not have the permission to access this page.')->error();
+
             return redirect('/');
         }
+
         return view('pages.page', ['page' => $page]);
     }
-
 
     /**
      * Shows the credits page.
@@ -43,8 +46,7 @@ class PageController extends Controller {
     public function getCreditsPage() {
         return view('pages.credits', [
             'credits'       => SitePage::where('key', 'credits')->first(),
-            'extensions'    => DB::table('site_extensions')->get()
+            'extensions'    => DB::table('site_extensions')->get(),
         ]);
     }
-
 }
