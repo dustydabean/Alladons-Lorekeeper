@@ -22,6 +22,8 @@
                     <li class="list-group-item"><a href="{{ url('world/trait-categories') }}">Mutation Categories</a></li>
                     <li class="list-group-item"><a href="{{ url('world/traits') }}">All Mutations</a></li>
                     <li class="list-group-item"><a href="{{ url('world/character-categories') }}">Character Categories</a></li>
+                    <li class="list-group-item"><a href="{{ url('world/character-pedigrees') }}">Character Pedigrees</a></li>
+                    <li class="list-group-item"><a href="{{ url('world/character-generations') }}">Character Generations</a></li>
                 </ul>
             </div>
         </div>

@@ -36,10 +36,24 @@ class CharacterGenerationService extends Service {
                 $data['parsed_description'] = parse($data['description']);
             }
 
+            $image = null;
+            if (isset($data['image']) && $data['image']) {
+                $data['has_image'] = 1;
+                $data['hash'] = randomString(10);
+                $image = $data['image'];
+                unset($data['image']);
+            } else {
+                $data['has_image'] = 0;
+            }
+
             $generation = CharacterGeneration::create($data);
 
-            if (!$this->logAdminAction($user, 'Created Generation', 'Created '.$generation->name)) {
+            if (!$this->logAdminAction($user, 'Created Generation', 'Created '.$generation->displayName)) {
                 throw new \Exception('Failed to log admin action.');
+            }
+
+            if ($image) {
+                $this->handleImage($image, $generation->imagePath, $generation->imageFileName);
             }
 
             return $this->commitReturn($generation);
@@ -71,10 +85,30 @@ class CharacterGenerationService extends Service {
                 $data['parsed_description'] = parse($data['description']);
             }
 
+            if (isset($data['remove_image'])) {
+                if ($generation && $generation->has_image && $data['remove_image']) {
+                    $data['has_image'] = 0;
+                    $this->deleteImage($generation->imagePath, $generation->imageFileName);
+                }
+                unset($data['remove_image']);
+            }
+
+            $image = null;
+            if (isset($data['image']) && $data['image']) {
+                $data['has_image'] = 1;
+                $data['hash'] = randomString(10);
+                $image = $data['image'];
+                unset($data['image']);
+            }
+
             $generation->update($data);
 
-            if (!$this->logAdminAction($user, 'Updated Generation', 'Updated '.$generation->name)) {
+            if (!$this->logAdminAction($user, 'Updated Generation', 'Updated '.$generation->displayName)) {
                 throw new \Exception('Failed to log admin action.');
+            }
+
+            if ($image) {
+                $this->handleImage($image, $generation->imagePath, $generation->imageFileName);
             }
 
             return $this->commitReturn($generation);
@@ -106,6 +140,9 @@ class CharacterGenerationService extends Service {
                 throw new \Exception('Failed to log admin action.');
             }
 
+            if ($generation->has_image) {
+                $this->deleteImage($generation->imagePath, $generation->imageFileName);
+            }
             $generation->delete();
 
             return $this->commitReturn(true);

@@ -81,7 +81,7 @@
                         <div class="col-lg-4 col-md-6 col-4">
                             <h5>Generation</h5>
                         </div>
-                        <div class="col-lg-8 col-md-6 col-8">{!! $image->character->generation_id ? $image->character->generation->name : 'None' !!}</div>
+                        <div class="col-lg-8 col-md-6 col-8">{!! $image->character->generation_id ? $image->character->generation->displayName : 'None' !!}</div>
                     </div>
                 @endif
                 @if ($image->sex)

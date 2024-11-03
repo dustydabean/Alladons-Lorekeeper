@@ -8,6 +8,8 @@
         <div class="sidebar-item"><a href="{{ url('world/trait-categories') }}" class="{{ set_active('world/trait-categories*') }}">Mutation Categories</a></div>
         <div class="sidebar-item"><a href="{{ url('world/traits') }}" class="{{ set_active('world/traits*') }}">All Mutations</a></div>
         <div class="sidebar-item"><a href="{{ url('world/character-categories') }}" class="{{ set_active('world/character-categories*') }}">Character Categories</a></div>
+        <div class="sidebar-item"><a href="{{ url('world/character-pedigrees') }}" class="{{ set_active('world/character-pedigrees*') }}">Character Pedigrees</a></div>
+        <div class="sidebar-item"><a href="{{ url('world/character-generations') }}" class="{{ set_active('world/character-generations*') }}">Character Generations</a></div>
     </li>
     <li class="sidebar-section">
         <div class="sidebar-section-header">Items</div>

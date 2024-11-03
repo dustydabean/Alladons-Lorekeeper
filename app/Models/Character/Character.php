@@ -405,7 +405,7 @@ class Character extends Model {
      * @return string
      */
     public function getPedigreeNameAttribute() {
-        $tag = $this->pedigree->name;
+        $tag = $this->pedigree->displayName;
 
         return $tag.' <i>'.$this->pedigree_descriptor.'</i>';
     }

@@ -216,6 +216,13 @@ class BrowseController extends Controller {
             $query->where('is_giftable', 1);
         }
 
+        if ($request->get('pedigree_id')) {
+            $query->where('pedigree_id', $request->get('pedigree_id'));
+        }
+        if ($request->get('generation_id')) {
+            $query->where('generation_id', $request->get('generation_id'));
+        }
+
         if ($request->get('nickname')) {
             if ($request->get('nickname_match')) {
                 $query->where('nickname', $request->get('nickname'));

@@ -71,7 +71,7 @@ class CharacterGenerationController extends Controller {
     public function postCreateEditCharacterGeneration(Request $request, CharacterGenerationService $service, $id = null) {
         $id ? $request->validate(CharacterGeneration::$updateRules) : $request->validate(CharacterGeneration::$createRules);
         $data = $request->only([
-            'name', 'description',
+            'name', 'description', 'image', 'remove_image',
         ]);
         if ($id && $service->updateCharacterGeneration(CharacterGeneration::find($id), $data, Auth::user())) {
             flash('Character generation updated successfully.')->success();

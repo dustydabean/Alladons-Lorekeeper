@@ -71,7 +71,7 @@ class CharacterPedigreeController extends Controller {
     public function postCreateEditCharacterPedigree(Request $request, CharacterPedigreeService $service, $id = null) {
         $id ? $request->validate(CharacterPedigree::$updateRules) : $request->validate(CharacterPedigree::$createRules);
         $data = $request->only([
-            'name', 'description',
+            'name', 'description', 'image', 'remove_image',
         ]);
         if ($id && $service->updateCharacterPedigree(CharacterPedigree::find($id), $data, Auth::user())) {
             flash('Character pedigree updated successfully.')->success();

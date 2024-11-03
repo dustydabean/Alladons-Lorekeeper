@@ -142,6 +142,8 @@ Route::group(['prefix' => 'world'], function () {
     Route::get('prompt-categories', 'WorldController@getPromptCategories');
     Route::get('prompts', 'WorldController@getPrompts');
     Route::get('character-categories', 'WorldController@getCharacterCategories');
+    Route::get('character-pedigrees', 'WorldController@getCharacterPedigrees');
+    Route::get('character-generations', 'WorldController@getCharacterGenerations');
 
     Route::get('collections', 'WorldController@getCollections');
     Route::get('collections/{id}', 'WorldController@getCollection');

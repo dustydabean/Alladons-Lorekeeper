@@ -36,10 +36,24 @@ class CharacterPedigreeService extends Service {
                 $data['parsed_description'] = parse($data['description']);
             }
 
+            $image = null;
+            if (isset($data['image']) && $data['image']) {
+                $data['has_image'] = 1;
+                $data['hash'] = randomString(10);
+                $image = $data['image'];
+                unset($data['image']);
+            } else {
+                $data['has_image'] = 0;
+            }
+
             $pedigree = CharacterPedigree::create($data);
 
-            if (!$this->logAdminAction($user, 'Created Pedigree', 'Created '.$pedigree->name)) {
+            if (!$this->logAdminAction($user, 'Created Pedigree', 'Created '.$pedigree->displayName)) {
                 throw new \Exception('Failed to log admin action.');
+            }
+
+            if ($image) {
+                $this->handleImage($image, $pedigree->imagePath, $pedigree->imageFileName);
             }
 
             return $this->commitReturn($pedigree);
@@ -71,10 +85,30 @@ class CharacterPedigreeService extends Service {
                 $data['parsed_description'] = parse($data['description']);
             }
 
+            if (isset($data['remove_image'])) {
+                if ($pedigree && $pedigree->has_image && $data['remove_image']) {
+                    $data['has_image'] = 0;
+                    $this->deleteImage($pedigree->imagePath, $pedigree->imageFileName);
+                }
+                unset($data['remove_image']);
+            }
+
+            $image = null;
+            if (isset($data['image']) && $data['image']) {
+                $data['has_image'] = 1;
+                $data['hash'] = randomString(10);
+                $image = $data['image'];
+                unset($data['image']);
+            }
+
             $pedigree->update($data);
 
-            if (!$this->logAdminAction($user, 'Updated Pedigree', 'Updated '.$pedigree->name)) {
+            if (!$this->logAdminAction($user, 'Updated Pedigree', 'Updated '.$pedigree->displayName)) {
                 throw new \Exception('Failed to log admin action.');
+            }
+
+            if ($image) {
+                $this->handleImage($image, $pedigree->imagePath, $pedigree->imageFileName);
             }
 
             return $this->commitReturn($pedigree);
@@ -106,6 +140,9 @@ class CharacterPedigreeService extends Service {
                 throw new \Exception('Failed to log admin action.');
             }
 
+            if ($pedigree->has_image) {
+                $this->deleteImage($pedigree->imagePath, $pedigree->imageFileName);
+            }
             $pedigree->delete();
 
             return $this->commitReturn(true);

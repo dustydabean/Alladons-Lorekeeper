@@ -15,6 +15,8 @@ use App\Models\Shop\ShopStock;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
 use App\Models\Character\CharacterCategory;
+use App\Models\Character\CharacterPedigree;
+use App\Models\Character\CharacterGeneration;
 use App\Models\User\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -562,7 +564,7 @@ class WorldController extends Controller
         ]);
     }
 
-     /**
+    /**
      * Shows the collection categories page.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -576,6 +578,40 @@ class WorldController extends Controller
             $query->where('name', 'LIKE', '%'.$data['name'].'%');
         return view('world.collection_categories', [
             'categories' => $query->orderBy('sort', 'DESC')->paginate(20)->appends($request->query())
+        ]);
+    }
+
+    /**
+     * Shows the character pedigree tags page.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCharacterPedigrees(Request $request) {
+        $query = CharacterPedigree::query();
+        $data = $request->only(['name']);
+        if (isset($data['name'])) {
+            $query->where('name', 'LIKE', '%'.$data['name'].'%');
+        }
+        return view('world.character_pedigrees', [
+            'pedigrees' => $query->paginate(20)->appends($request->query())
+        ]);
+    }
+
+    /**
+     * Shows the character generations page.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCharacterGenerations(Request $request) {
+        $query = CharacterGeneration::query();
+        $data = $request->only(['name']);
+        if (isset($data['name'])) {
+            $query->where('name', 'LIKE', '%'.$data['name'].'%');
+        }
+        return view('world.character_generations', [
+            'generations' => $query->paginate(20)->appends($request->query())
         ]);
     }
 }
