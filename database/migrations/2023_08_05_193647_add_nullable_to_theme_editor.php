@@ -7,8 +7,6 @@ use Illuminate\Support\Facades\Schema;
 class AddNullableToThemeEditor extends Migration {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up() {
         Schema::table('theme_editor', function (Blueprint $table) {
@@ -39,19 +37,17 @@ class AddNullableToThemeEditor extends Migration {
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down() {
         Schema::table('theme_editor', function (Blueprint $table) {
-            $table->string('title_color')->default("#ffffff")->change();
-            $table->string('nav_color')->default("#343a40")->change();
-            $table->string('nav_text_color')->default("#ffffff")->change();
+            $table->string('title_color')->default('#ffffff')->change();
+            $table->string('nav_color')->default('#343a40')->change();
+            $table->string('nav_text_color')->default('#ffffff')->change();
 
-            $table->string('header_image_display')->default("inline")->change();
-            $table->string('header_image_url')->default("/images/header.png")->change();
+            $table->string('header_image_display')->default('inline')->change();
+            $table->string('header_image_url')->default('/images/header.png')->change();
 
-            $table->string('background_color')->default("#ddd")->change();
+            $table->string('background_color')->default('#ddd')->change();
             $table->string('background_image_url')->default('')->change();
             $table->string('background_size')->default('cover')->change();
 

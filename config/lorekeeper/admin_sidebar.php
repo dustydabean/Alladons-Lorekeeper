@@ -10,7 +10,7 @@ return [
     | Admin panel sidebar links.
     | Add links here to have them show up in the admin panel.
     | Users that do not have the listed power will not be able to
-    | view the links in that section. 
+    | view the links in that section.
     |
     */
 
@@ -49,7 +49,7 @@ return [
             ],
             [
                 'name' => 'Dev Logs',
-                'url' => 'admin/devlogs'
+                'url'  => 'admin/devlogs',
             ],
         ],
     ],
@@ -188,11 +188,11 @@ return [
             ],
             [
                 'name' => 'Dailies',
-                'url' => 'admin/data/dailies'
+                'url'  => 'admin/data/dailies',
             ],
             [
                 'name' => 'Activities',
-                'url' => 'admin/data/activities'
+                'url'  => 'admin/data/activities',
             ],
             [
                 'name' => 'Currencies',
@@ -216,12 +216,20 @@ return [
             ],
             [
                 'name' => 'Collections',
-                'url' => 'admin/data/collections'
+                'url'  => 'admin/data/collections',
             ],
             [
                 'name' => 'FAQ',
                 'url'  => 'admin/data/faq',
-            ]
+            ],
+            [
+                'name' => 'Character Generations',
+                'url'  => 'admin/data/character-generations',
+            ],
+            [
+                'name' => 'Character Pedigrees',
+                'url'  => 'admin/data/character-pedigrees',
+            ],
         ],
     ],
     'Raffles'    => [
@@ -259,7 +267,7 @@ return [
             ],
             [
                 'name' => 'Theme Manager',
-                'url' => 'admin/themes'
+                'url'  => 'admin/themes',
             ],
             [
                 'name' => 'Log Viewer',

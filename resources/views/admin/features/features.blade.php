@@ -34,7 +34,18 @@
             <div class="form-group ml-3 mb-3">
                 {!! Form::select('feature_category_id', $categories, Request::get('feature_category_id'), ['class' => 'form-control']) !!}
             </div>
-        </div>
+            <div class="form-group mr-3 mb-3">
+                {!! Form::select('mut_level', $levels, Request::get('mut_level'), ['class' => 'form-control']) !!}
+            </div>
+            <div class="form-group mr-3 mb-3">
+                {!! Form::select('mut_type', $types, Request::get('mut_type'), ['class' => 'form-control']) !!}
+            </div>
+            <div class="form-check mr-3 mb-3">
+                {!! Form::select('is_locked', ['none' => 'Any Status', '0' => 'Unlocked', '1' => 'Locked'], Request::get('is_locked'), ['class' => 'form-control']) !!}
+            </div>
+            <div class="form-group mb-3">
+                {!! Form::submit('Search', ['class' => 'btn btn-primary']) !!}
+            </div>
         <div class="form-inline justify-content-end">
             <div class="form-group ml-3 mb-3">
                 {!! Form::select(
@@ -105,6 +116,9 @@
                                 <div class="logs-table-cell">
                                     @if (!$feature->is_visible)
                                         <i class="fas fa-eye-slash mr-1"></i>
+                                    @endif
+                                    @if ($feature->is_locked)
+                                        <i class="fas fa-lock mr-1"></i>
                                     @endif
                                     {{ $feature->name }}
                                 </div>

@@ -4,9 +4,9 @@ namespace App\Services;
 
 use App\Models\Raffle\Raffle;
 use App\Models\Raffle\RaffleGroup;
+use App\Models\User\User;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
-use App\Models\User\User;
 
 class RaffleService extends Service {
     /*
@@ -50,8 +50,10 @@ class RaffleService extends Service {
      */
     public function updateRaffle($data, $raffle) {
         DB::beginTransaction();
-        if(!isset($data['is_active'])) $data['is_active'] = 0;
-        $raffle->update(Arr::only($data, ['name', 'is_active', 'winner_count', 'group_id', 'order','ticket_cap']));
+        if (!isset($data['is_active'])) {
+            $data['is_active'] = 0;
+        }
+        $raffle->update(Arr::only($data, ['name', 'is_active', 'winner_count', 'group_id', 'order', 'ticket_cap']));
 
         if (isset($data['bump']) && $data['is_active'] == 1 && $data['bump'] == 1) {
             $this->alertUsers();
@@ -136,8 +138,7 @@ class RaffleService extends Service {
         DB::commit();
 
         return true;
-    }   
-
+    }
 
     /**
      * Updates the unread raffles flag for all users so that
@@ -145,9 +146,9 @@ class RaffleService extends Service {
      *
      * @return bool
      */
-    private function alertUsers()
-    {
+    private function alertUsers() {
         User::query()->update(['is_raffles_unread' => 1]);
+
         return true;
     }
 }

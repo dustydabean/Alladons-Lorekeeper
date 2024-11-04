@@ -7,8 +7,6 @@ use Illuminate\Support\Facades\Schema;
 class AddBackgroundToThemeAndMore extends Migration {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up() {
         Schema::table('theme_editor', function (Blueprint $table) {
@@ -17,14 +15,12 @@ class AddBackgroundToThemeAndMore extends Migration {
 
         Schema::table('themes', function (Blueprint $table) {
             $table->boolean('has_background')->default(0);
-            $table->string('extension_background',5)->nullable()->default(null);
+            $table->string('extension_background', 5)->nullable()->default(null);
         });
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down() {
         Schema::table('theme_editor', function (Blueprint $table) {

@@ -38,15 +38,17 @@ class SubmissionManager extends Service {
      * @param User  $user
      * @param bool  $isClaim
      * @param mixed $isDraft
+     * @param mixed $isActivity
      *
      * @return mixed
      */
     public function createSubmission(
-        $data, 
-        $user, 
-        $isClaim = false, 
-        $isDraft = false, 
-        $isActivity = false,) {
+        $data,
+        $user,
+        $isClaim = false,
+        $isDraft = false,
+        $isActivity = false,
+    ) {
         DB::beginTransaction();
 
         try {
@@ -63,7 +65,9 @@ class SubmissionManager extends Service {
             }
             if (!$isClaim) {
                 $prompt = Prompt::query();
-                if (!$isActivity) $prompt = $prompt->active();
+                if (!$isActivity) {
+                    $prompt = $prompt->active();
+                }
                 $prompt = $prompt->where('id', $data['prompt_id'])->with('rewards')->first();
                 if (!$prompt) {
                     throw new \Exception('Invalid prompt selected.');

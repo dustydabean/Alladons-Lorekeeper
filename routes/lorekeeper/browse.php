@@ -31,8 +31,8 @@ Route::group(['prefix' => 'news'], function () {
 /**************************************************************************************************
     Dev Logs
 **************************************************************************************************/
-# PROFILES
-Route::group(['prefix' => 'devlogs'], function() {
+// PROFILES
+Route::group(['prefix' => 'devlogs'], function () {
     Route::get('/', 'DevLogsController@getIndex');
     Route::get('{id}.{slug?}', 'DevLogsController@getdevLogs');
     Route::get('{id}.', 'DevLogsController@getdevLogs');
@@ -82,7 +82,7 @@ Route::group(['prefix' => 'user', 'namespace' => 'Users'], function () {
     Route::get('{name}/collection-logs', 'UserController@getUserCollectionLogs');
 });
 
-# STAFF TEAM
+// STAFF TEAM
 Route::group(['prefix' => 'team'], function () {
     Route::get('/', 'BrowseController@getTeamIndex');
 });
@@ -108,7 +108,7 @@ Route::group(['prefix' => 'character', 'namespace' => 'Characters'], function ()
     Route::get('{slug}/submissions', 'CharacterController@getCharacterSubmissions');
     Route::get('{slug}/gallery', 'CharacterController@getCharacterGallery');
 
-    # lineage
+    // lineage
     Route::get('{slug}/lineage', 'CharacterLineageController@getCharacterLineage');
     Route::get('{slug}/pets', 'CharacterController@getCharacterPets');
 });
@@ -146,6 +146,8 @@ Route::group(['prefix' => 'world'], function () {
     Route::get('prompts', 'WorldController@getPrompts');
     Route::get('traits/modal/{id}', 'WorldController@getFeatureDetail')->where(['id' => '[0-9]+']);
     Route::get('character-categories', 'WorldController@getCharacterCategories');
+    Route::get('character-pedigrees', 'WorldController@getCharacterPedigrees');
+    Route::get('character-generations', 'WorldController@getCharacterGenerations');
 
     Route::get('collections', 'WorldController@getCollections');
     Route::get('collections/{id}', 'WorldController@getCollection');
@@ -165,11 +167,10 @@ Route::group(['prefix' => 'shops'], function () {
     Route::get('{id}/{stockId}', 'ShopController@getShopStock')->where(['id' => '[0-9]+', 'stockId' => '[0-9]+']);
 });
 
-Route::group(['prefix' => __('dailies.dailies')], function() {
+Route::group(['prefix' => __('dailies.dailies')], function () {
     Route::get('/', 'DailyController@getIndex');
     Route::get('{id}', 'DailyController@getDaily')->where(['id' => '[0-9]+']);
 });
-
 
 /**************************************************************************************************
     Site Pages
@@ -222,7 +223,7 @@ Route::group(['prefix' => 'reports', 'namespace' => 'Users'], function () {
 /**************************************************************************************************
     FAQ
 **************************************************************************************************/
-Route::group(['prefix' => 'faq',], function () {
+Route::group(['prefix' => 'faq'], function () {
     Route::get('/{id?}', 'BrowseController@getFaq')->where(['id' => '[0-9]+']);
     Route::get('/modal/{id}', 'BrowseController@getFaqQuestion')->where(['id' => '[0-9]+']);
     Route::get('/search', 'BrowseController@getFaqSearch');

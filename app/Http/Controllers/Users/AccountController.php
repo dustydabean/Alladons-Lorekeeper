@@ -2,32 +2,25 @@
 
 namespace App\Http\Controllers\Users;
 
-use File;
-use Image;
-
+use App\Http\Controllers\Controller;
+use App\Models\Notification;
 use App\Models\Theme;
+use App\Models\User\StaffProfile;
 use App\Models\User\User;
 use App\Models\User\UserAlias;
-use App\Models\User\StaffProfile;
-
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use App\Models\Notification;
-use App\Models\ThemeEditor;
-
-use App\Services\UserService;
 use App\Services\LinkService;
+use App\Services\UserService;
 use BaconQrCode\Renderer\Color\Rgb;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
 use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\RendererStyle\Fill;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Fortify\Contracts\TwoFactorAuthenticationProvider;
 use Laravel\Fortify\RecoveryCode;
-use App\Http\Controllers\Controller;
 
 class AccountController extends Controller {
     /*
@@ -72,9 +65,9 @@ class AccountController extends Controller {
      */
     public function getSettings() {
         $user = Auth::user();
-        
-            $links = StaffProfile::where('user_id', Auth::user()->id)->first();
-            
+
+        $links = StaffProfile::where('user_id', Auth::user()->id)->first();
+
         if ($user->isStaff || $user->isAdmin) {
             // staff can see all active themes
             $themeOptions = ['0' => 'Select Theme'] + Theme::where('is_active', 1)->where('theme_type', 'base')->get()->pluck('displayName', 'id')->toArray();
@@ -86,8 +79,8 @@ class AccountController extends Controller {
         $decoratorOptions = ['0' => 'Select Decorator Theme'] + Theme::where('is_active', 1)->where('theme_type', 'decorator')->where('is_user_selectable', 1)->get()->pluck('displayName', 'id')->toArray();
 
         return view('account.settings', [
-            'links' => $links ? $links : null,
-            'themeOptions' => $themeOptions + Auth::user()->themes()->where('theme_type', 'base')->get()->pluck('displayName', 'id')->toArray(),
+            'links'           => $links ? $links : null,
+            'themeOptions'    => $themeOptions + Auth::user()->themes()->where('theme_type', 'base')->get()->pluck('displayName', 'id')->toArray(),
             'decoratorThemes' => $decoratorOptions + Auth::user()->themes()->where('theme_type', 'decorator')->get()->pluck('displayName', 'id')->toArray(),
         ]);
     }
@@ -106,40 +99,40 @@ class AccountController extends Controller {
 
         return redirect()->back();
     }
-    
+
     /**
      * Edits the user's staff profile.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postStaffProfile(Request $request, UserService $service)
-    {
-        $request->validate(staffProfile::$createRules);
-        if($service->updateStaffProfile($request->only(['text']), Auth::user())) {
+    public function postStaffProfile(Request $request, UserService $service) {
+        $request->validate(StaffProfile::$createRules);
+        if ($service->updateStaffProfile($request->only(['text']), Auth::user())) {
             flash('Staff profile updated successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
         }
-        else {
-            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
-        }
+
         return redirect()->back();
     }
-    
+
     /**
      * Edits the user's staff contacts/links.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postStaffLinks(Request $request, UserService $service)
-    {
-        $request->validate(staffProfile::$createRules);
-        if($service->updateStaffLinks($request->only(['site', 'url']), Auth::user())) {
+    public function postStaffLinks(Request $request, UserService $service) {
+        $request->validate(StaffProfile::$createRules);
+        if ($service->updateStaffLinks($request->only(['site', 'url']), Auth::user())) {
             flash('Staff links updated successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
         }
-        else {
-            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
-        }
+
         return redirect()->back();
     }
 
@@ -152,63 +145,73 @@ class AccountController extends Controller {
         if ($service->updateAvatar($request->file('avatar'), Auth::user())) {
             flash('Avatar updated successfully.')->success();
         } else {
-            foreach ($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
         }
+
         return redirect()->back();
     }
 
     /**
      * Edits the user's theme.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postTheme(Request $request, UserService $service) {
         if ($service->updateTheme($request->only(['theme', 'decorator_theme']), Auth::user())) {
             flash('Theme updated successfully.')->success();
         } else {
-            foreach ($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
         }
+
         return redirect()->back();
     }
-
 
     /**
      * Changes the user's password.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  App\Services\UserService  $service
+     * @param App\Services\UserService $service
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postPassword(Request $request, UserService $service) {
         $request->validate([
             'old_password' => 'required|string',
-            'new_password' => 'required|string|min:8|confirmed'
+            'new_password' => 'required|string|min:8|confirmed',
         ]);
         if ($service->updatePassword($request->only(['old_password', 'new_password', 'new_password_confirmation']), Auth::user())) {
             flash('Password updated successfully.')->success();
         } else {
-            foreach ($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
         }
+
         return redirect()->back();
     }
 
     /**
      * Changes the user's email address and sends a verification email.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  App\Services\UserService  $service
+     * @param App\Services\UserService $service
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postEmail(Request $request, UserService $service) {
         $request->validate([
-            'email' => 'required|string|email|max:255|unique:users'
+            'email' => 'required|string|email|max:255|unique:users',
         ]);
         if ($service->updateEmail($request->only(['email']), Auth::user())) {
             flash('Email updated successfully. A verification email has been sent to your new email address.')->success();
         } else {
-            foreach ($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
         }
+
         return redirect()->back();
     }
 
@@ -340,20 +343,21 @@ class AccountController extends Controller {
     }
 
     /**
-     * Changes user dev log notification setting
+     * Changes user dev log notification setting.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  App\Services\UserService  $service
+     * @param App\Services\UserService $service
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postdevLogNotif(Request $request, UserService $service)
-    {
-        if($service->updatedevLogNotif($request->input('dev_log_notif'), Auth::user())) {
+    public function postdevLogNotif(Request $request, UserService $service) {
+        if ($service->updatedevLogNotif($request->input('dev_log_notif'), Auth::user())) {
             flash('Setting updated successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
         }
-        else {
-            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
-        }
+
         return redirect()->back();
     }
 

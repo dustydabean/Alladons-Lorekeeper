@@ -2,6 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Character\CharacterCategory;
+use App\Models\Character\CharacterGeneration;
+use App\Models\Character\CharacterPedigree;
+use App\Models\Collection\Collection;
+use App\Models\Collection\CollectionCategory;
 use App\Models\Currency\Currency;
 use App\Models\Feature\Feature;
 use App\Models\Feature\FeatureCategory;
@@ -14,16 +19,11 @@ use App\Models\Shop\Shop;
 use App\Models\Shop\ShopStock;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
-use App\Models\Character\CharacterCategory;
 use App\Models\User\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-use App\Models\Collection\Collection;
-use App\Models\Collection\CollectionCategory;
-
-class WorldController extends Controller
-{
+class WorldController extends Controller {
     /*
     |--------------------------------------------------------------------------
     | World Controller
@@ -153,8 +153,8 @@ class WorldController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getFeatures(Request $request) {
-        $query = Feature::visible(Auth::user() ?? null)->with('category')->with('rarity')->with('species');
-        $data = $request->only(['rarity_id', 'feature_category_id', 'species_id', 'subtype_id', 'name', 'sort']);
+        $query = Feature::visible(Auth::check() ? Auth::user() : null)->with('category')->with('rarity')->with('species');
+        $data = $request->only(['rarity_id', 'feature_category_id', 'species_id', 'subtype_id', 'name', 'sort', 'mut_level', 'mut_type', 'is_locked']);
         if (isset($data['rarity_id']) && $data['rarity_id'] != 'none') {
             $query->where('rarity_id', $data['rarity_id']);
         }
@@ -181,6 +181,15 @@ class WorldController extends Controller
         }
         if (isset($data['name'])) {
             $query->where('name', 'LIKE', '%'.$data['name'].'%');
+        }
+        if (isset($data['mut_level']) && $data['mut_level'] > '0') {
+            $query->where('mut_level', $data['mut_level']);
+        }
+        if (isset($data['mut_type']) && $data['mut_type'] > '0') {
+            $query->where('mut_type', $data['mut_type']);
+        }
+        if (isset($data['is_locked']) && $data['is_locked'] != 'none') {
+            $query->locked($data['is_locked']);
         }
 
         if (isset($data['sort'])) {
@@ -220,9 +229,11 @@ class WorldController extends Controller
         return view('world.features', [
             'features'   => $query->paginate(20)->appends($request->query()),
             'rarities'   => ['none' => 'Any Rarity'] + Rarity::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'specieses'  => ['none' => 'Any Species'] + ['withoutOption' => 'Without Species'] + Species::visible(Auth::user() ?? null)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'subtypes'   => ['none' => 'Any Subtype'] + ['withoutOption' => 'Without Subtype'] + Subtype::visible(Auth::user() ?? null)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'categories' => ['none' => 'Any Category'] + ['withoutOption' => 'Without Category'] + FeatureCategory::visible(Auth::user() ?? null)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'specieses'  => ['none' => 'Any Species'] + ['withoutOption' => 'Without Species'] + Species::visible(Auth::check() ? Auth::user() : null)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'subtypes'   => ['none' => 'Any Subtype'] + ['withoutOption' => 'Without Subtype'] + Subtype::visible(Auth::check() ? Auth::user() : null)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'categories' => ['none' => 'Any Category'] + ['withoutOption' => 'Without Category'] + FeatureCategory::visible(Auth::check() ? Auth::user() : null)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'levels'     => ['0' => 'Any Level', '1' => 'Minor', '2' => 'Major'],
+            'types'      => ['0' => 'Any Type', '1' => 'Breed Only', '2' => 'Custom Requestable'],
         ]);
     }
 
@@ -549,21 +560,20 @@ class WorldController extends Controller
     /**
      * Shows the items page.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getCollections(Request $request)
-    {
+    public function getCollections(Request $request) {
         $query = Collection::visible();
         $data = $request->only(['name', 'sort', 'collection_category_id']);
-        if(isset($data['name']))
+        if (isset($data['name'])) {
             $query->where('name', 'LIKE', '%'.$data['name'].'%');
-        if(isset($data['collection_category_id']) && $data['collection_category_id'] != 'none') 
+        }
+        if (isset($data['collection_category_id']) && $data['collection_category_id'] != 'none') {
             $query->where('collection_category_id', $data['collection_category_id']);
+        }
 
-        if(isset($data['sort']))
-        {
-            switch($data['sort']) {
+        if (isset($data['sort'])) {
+            switch ($data['sort']) {
                 case 'alpha':
                     $query->sortAlphabetical();
                     break;
@@ -577,49 +587,86 @@ class WorldController extends Controller
                     $query->sortOldest();
                     break;
             }
+        } else {
+            $query->sortNewest();
         }
-        else $query->sortNewest();
 
         return view('world.collections.collections', [
             'collections' => $query->paginate(20)->appends($request->query()),
-            'categories' => ['none' => 'Any Category'] + CollectionCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'categories'  => ['none' => 'Any Category'] + CollectionCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
         ]);
     }
 
     /**
      * Shows an individual collection;ss page.
      *
-     * @param  int  $id
+     * @param int $id
+     *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getCollection($id)
-    {
+    public function getCollection($id) {
         $collection = Collection::visible()->where('id', $id)->first();
         $categories = CollectionCategory::orderBy('sort', 'DESC')->get();
-        if(!$collection) abort(404);
+        if (!$collection) {
+            abort(404);
+        }
 
         return view('world.collections._collection_page', [
-            'collection' => $collection,
-            'imageUrl' => $collection->imageUrl,
-            'name' => $collection->displayName,
+            'collection'  => $collection,
+            'imageUrl'    => $collection->imageUrl,
+            'name'        => $collection->displayName,
             'description' => $collection->parsed_description,
         ]);
     }
 
-     /**
+    /**
      * Shows the collection categories page.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getCollectionCategories(Request $request)
-    {
+    public function getCollectionCategories(Request $request) {
         $query = CollectionCategory::query();
         $data = $request->only(['name']);
-        if(isset($data['name'])) 
+        if (isset($data['name'])) {
             $query->where('name', 'LIKE', '%'.$data['name'].'%');
-        return view('world.collection_categories', [  
-            'categories' => $query->orderBy('sort', 'DESC')->paginate(20)->appends($request->query())
+        }
+
+        return view('world.collection_categories', [
+            'categories' => $query->orderBy('sort', 'DESC')->paginate(20)->appends($request->query()),
+        ]);
+    }
+
+    /**
+     * Shows the character pedigree tags page.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCharacterPedigrees(Request $request) {
+        $query = CharacterPedigree::query();
+        $data = $request->only(['name']);
+        if (isset($data['name'])) {
+            $query->where('name', 'LIKE', '%'.$data['name'].'%');
+        }
+
+        return view('world.character_pedigrees', [
+            'pedigrees' => $query->paginate(20)->appends($request->query()),
+        ]);
+    }
+
+    /**
+     * Shows the character generations page.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCharacterGenerations(Request $request) {
+        $query = CharacterGeneration::query();
+        $data = $request->only(['name']);
+        if (isset($data['name'])) {
+            $query->where('name', 'LIKE', '%'.$data['name'].'%');
+        }
+
+        return view('world.character_generations', [
+            'generations' => $query->paginate(20)->appends($request->query()),
         ]);
     }
 }

@@ -16,6 +16,7 @@ class Feature extends Model {
      */
     protected $fillable = [
         'feature_category_id', 'species_id', 'subtype_id', 'rarity_id', 'name', 'has_image', 'description', 'parsed_description', 'is_visible', 'hash',
+        'mut_level', 'mut_type', 'is_locked',
     ];
 
     /**
@@ -37,6 +38,8 @@ class Feature extends Model {
         'name'                => 'required|unique:features|between:3,100',
         'description'         => 'nullable',
         'image'               => 'mimes:png',
+        'mut_level'           => 'nullable',
+        'mut_type'            => 'nullable',
     ];
 
     /**
@@ -52,6 +55,8 @@ class Feature extends Model {
         'name'                => 'required|between:3,100',
         'description'         => 'nullable',
         'image'               => 'mimes:png',
+        'mut_level'           => 'nullable',
+        'mut_type'            => 'nullable',
     ];
 
     /**********************************************************************************************
@@ -199,6 +204,18 @@ class Feature extends Model {
         return $query->where('is_visible', 1);
     }
 
+    /**
+     * Scope a query to show only features locked or unlocked.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param mixed                                 $locked
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeLocked($query, $locked = true) {
+        return $query->where('is_locked', $locked);
+    }
+
     /**********************************************************************************************
 
         ACCESSORS
@@ -288,6 +305,42 @@ class Feature extends Model {
      */
     public function getAdminPowerAttribute() {
         return 'edit_data';
+    }
+
+    /**
+     * Gets the mutation level of the feature.
+     *
+     * @return string
+     */
+    public function getLevelAttribute() {
+        switch ($this->mut_level) {
+            case 1:
+                return 'Minor';
+                break;
+            case 2:
+                return 'Major';
+                break;
+        }
+
+        return '<i>Unknown</i>';
+    }
+
+    /**
+     * Gets the mutation type of the feature.
+     *
+     * @return string
+     */
+    public function getTypeAttribute() {
+        switch ($this->mut_type) {
+            case 1:
+                return 'Breed Only';
+                break;
+            case 2:
+                return 'Custom Requestable';
+                break;
+        }
+
+        return '<i>Undefined</i>';
     }
 
     /**********************************************************************************************

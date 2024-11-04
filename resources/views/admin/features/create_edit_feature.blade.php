@@ -59,7 +59,28 @@
         {!! Form::textarea('description', $feature->description, ['class' => 'form-control wysiwyg']) !!}
     </div>
 
-    <div class="form-group">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                {!! Form::label('Level (Optional)') !!}
+                {!! Form::select('mut_level', ['1' => 'Minor', '2' => 'Major' ], $feature->mut_level, ['class' => 'form-control', 'placeholder' => 'Select a Level']) !!}
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                {!! Form::label('Type (Optional)') !!}
+                {!! Form::select('mut_type', ['1' => 'Breed Only', '2' => 'Custom Requestable'], $feature->mut_type, ['class' => 'form-control', 'placeholder' => 'Select a Type']) !!}
+            </div>
+        </div>
+        <div class="col-md-4 pt-md-4">
+            <div class="form-group">
+                {!! Form::checkbox('is_locked', 1, $feature->id ? $feature->is_locked : 0, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
+                {!! Form::label('is_locked', 'Locked?', ['class' => 'form-check-label ml-3']) !!} {!! add_help('When off, the mutation will be labelled as unlocked. Toggling this on will label the mutation as locked.') !!}
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group pl-3 pl-md-0">
         {!! Form::checkbox('is_visible', 1, $feature->id ? $feature->is_visible : 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
         {!! Form::label('is_visible', 'Is Visible', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If turned off, the trait will not be visible in the trait list or available for selection in search and design updates. Permissioned staff will still be able to add them to characters, however.') !!}
     </div>

@@ -2,43 +2,33 @@
 
 namespace App\Services;
 
-use Carbon\Carbon;
-
-use DB;
-use Auth;
-use Config;
-use Image;
-use Notifications;
-use Settings;
-use File;
-
-use App\Services\CurrencyManager;
-use App\Services\InventoryManager;
-
-use Illuminate\Support\Arr;
-use App\Models\User\User;
-use App\Models\User\UserItem;
 use App\Models\Character\Character;
 use App\Models\Character\CharacterBookmark;
 use App\Models\Character\CharacterCategory;
 use App\Models\Character\CharacterCurrency;
 use App\Models\Character\CharacterDesignUpdate;
 use App\Models\Character\CharacterFeature;
+use App\Models\Character\CharacterGeneration;
 use App\Models\Character\CharacterImage;
 use App\Models\Character\CharacterImageSubtype;
-use App\Models\Character\CharacterTransfer;
-use App\Models\Character\CharacterLineage;
-use App\Models\Sales\SalesCharacter;
-
+use App\Models\Character\CharacterPedigree;
 use App\Models\Character\CharacterProfileCustomValue;
-use App\Models\User\UserCharacterLog;
-use App\Models\Species\Species;
+use App\Models\Character\CharacterTransfer;
+use App\Models\Sales\SalesCharacter;
 use App\Models\Species\Subtype;
-
-use League\ColorExtractor\Palette;
-use League\ColorExtractor\ColorExtractor;
-use League\ColorExtractor\Color;
+use App\Models\User\User;
 use App\Models\User\UserPet;
+use Auth;
+use Carbon\Carbon;
+use Config;
+use DB;
+use Illuminate\Support\Arr;
+use Image;
+use League\ColorExtractor\Color;
+use League\ColorExtractor\ColorExtractor;
+use League\ColorExtractor\Palette;
+use Notifications;
+use Settings;
 
 class CharacterManager extends Service {
     /*
@@ -132,6 +122,27 @@ class CharacterManager extends Service {
                 }
             } else {
                 $data['subtype_ids'] = null;
+            }
+
+            if (isset($data['generation_id']) && $data['generation_id']) {
+                $generation = CharacterGeneration::find($data['generation_id']);
+                if (!$generation) {
+                    throw new \Exception('Selected generation is invalid.');
+                }
+            } else {
+                $data['generation_id'] = null;
+            }
+            if ((isset($data['pedigree_id']) && $data['pedigree_id']) || (isset($data['pedigree_descriptor']) && $data['pedigree_descriptor'])) {
+                $pedigree = CharacterPedigree::find($data['pedigree_id']);
+                if ((!isset($data['pedigree_descriptor']) && $data['pedigree_id']) || (!isset($data['pedigree_id']) && $data['pedigree_descriptor'])) {
+                    throw new \Exception('If you are assigning this character a pedigree name, then both pedigree tag and pedigree descriptor must be set.');
+                }
+                if (!$pedigree) {
+                    throw new \Exception('Selected pedigree tag is invalid.');
+                }
+            } else {
+                $data['pedigree_id'] = null;
+                $data['pedigree_descriptor'] = null;
             }
 
             // Get owner info
@@ -1111,6 +1122,10 @@ class CharacterManager extends Service {
 
     /**
      * Generates a colour palette based on the image.
+     *
+     * @param mixed      $character_image
+     * @param mixed      $user
+     * @param mixed|null $colours
      */
     public function imageColours($character_image, $user, $colours = null) {
         DB::beginTransaction();
@@ -1132,7 +1147,7 @@ class CharacterManager extends Service {
             $character_image->colours = json_encode($colours);
             $character_image->save();
 
-            $this->createLog($user->id, null, null, null, $character_image->character_id, 'Image Colours ' . ($created ? 'Generated' : 'Updated'), '', 'character');
+            $this->createLog($user->id, null, null, null, $character_image->character_id, 'Image Colours '.($created ? 'Generated' : 'Updated'), '', 'character');
 
             return $this->commitReturn(true);
         } catch (\Exception $e) {
@@ -1178,9 +1193,9 @@ class CharacterManager extends Service {
 
     /**
      * Sorts a character's pets.
-     * 
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     *
+     * @param array $data
+     * @param User  $user
      *
      * @return bool
      */
@@ -1209,6 +1224,7 @@ class CharacterManager extends Service {
 
         return $this->rollbackReturn(false);
     }
+
     /**
      * Updates a character's stats.
      *
@@ -1230,9 +1246,27 @@ class CharacterManager extends Service {
                 throw new \Exception('Character code must be unique.');
             }
 
+            if (isset($data['generation_id']) && $data['generation_id']) {
+                $generation = CharacterGeneration::find($data['generation_id']);
+                if (!$generation) {
+                    throw new \Exception('Selected generation is invalid.');
+                }
+            }
+            if ((isset($data['pedigree_id']) && $data['pedigree_id']) || (isset($data['pedigree_descriptor']) && $data['pedigree_descriptor'])) {
+                $pedigree = CharacterPedigree::find($data['pedigree_id']);
+                if ((!isset($data['pedigree_descriptor']) && $data['pedigree_id']) || (!isset($data['pedigree_id']) && $data['pedigree_descriptor'])) {
+                    throw new \Exception('If you are assigning this character a pedigree name, then both pedigree tag and pedigree descriptor must be set.');
+                }
+                if (!$pedigree) {
+                    throw new \Exception('Selected pedigree tag is invalid.');
+                }
+            }
+
             $characterData = Arr::only($data, [
                 'character_category_id',
-                'number', 'slug', 
+                'number', 'slug', 'poucher_code',
+                'generation_id', 'pedigree_id', 'pedigree_descriptor',
+                'nickname', 'birthdate',
             ]);
             $characterData['is_sellable'] = isset($data['is_sellable']);
             $characterData['is_tradeable'] = isset($data['is_tradeable']);
@@ -1262,6 +1296,34 @@ class CharacterManager extends Service {
                     $result[] = 'character code';
                     $old['slug'] = $character->slug;
                     $new['slug'] = $characterData['slug'];
+                }
+                if ($characterData['generation_id'] != $character->generation_id) {
+                    $result[] = 'generation';
+                    $old['generation'] = $character->generation_id ? $character->generation->name : 'No Generation';
+                    if (CharacterGeneration::find($characterData['generation_id'])) {
+                        $new['generation'] = CharacterGeneration::find($characterData['generation_id'])->name;
+                    } else {
+                        $new['generation'] = 'No Generation';
+                    }
+                }
+                if ($characterData['pedigree_id'] != $character->pedigree_id || $characterData['pedigree_descriptor'] != $character->pedigree_descriptor) {
+                    $result[] = 'pedigree';
+                    $old['pedigree'] = $character->pedigree_id ? $character->pedigree->name.' '.$character->pedigree_descriptor : 'No Pedigree Name';
+                    if (CharacterPedigree::find($characterData['pedigree_id'])) {
+                        $new['pedigree'] = CharacterPedigree::find($characterData['pedigree_id'])->name.' '.$characterData['pedigree_descriptor'];
+                    } else {
+                        $new['pedigree'] = 'No Pedigree Name';
+                    }
+                }
+                if ($characterData['nickname'] != $character->nickname) {
+                    $result[] = 'nickname';
+                    $old['nickname'] = $character->nickname;
+                    $new['nickname'] = $characterData['nickname'];
+                }
+                if ($characterData['birthdate'] != $character->birthdate) {
+                    $result[] = 'birthdate';
+                    $old['birthdate'] = $character->birthdate;
+                    $new['birthdate'] = $characterData['birthdate'];
                 }
             } else {
                 if ($characterData['name'] != $character->name) {
@@ -1454,18 +1516,18 @@ class CharacterManager extends Service {
             if (!$character->is_myo_slot) {
                 // clear old custom values and add new ones.
                 $character->profile->custom_values()->delete();
-                if(isset($data['custom_values_data'])) {
-                    foreach( $data['custom_values_data'] as $i => $val) {
+                if (isset($data['custom_values_data'])) {
+                    foreach ($data['custom_values_data'] as $i => $val) {
                         $val_parsed = parse($val);
-                        if ($val_parsed != "") {
+                        if ($val_parsed != '') {
                             $group = isset($data['custom_values_group']) ? $data['custom_values_group'][$i] : null;
                             $name = isset($data['custom_values_name']) ? $data['custom_values_name'][$i] : null;
                             $custom_value = CharacterProfileCustomValue::create([
                                 'character_id' => $character->id,
-                                'group' => $group,
-                                'name' => $name,
-                                'data' => $val,
-                                'data_parsed' => $val_parsed,
+                                'group'        => $group,
+                                'name'         => $name,
+                                'data'         => $val,
+                                'data_parsed'  => $val_parsed,
                             ]);
                         }
                     }
@@ -1473,8 +1535,7 @@ class CharacterManager extends Service {
                 $character->profile->save();
             }
 
-            if($isAdmin && isset($data['alert_user']) && $character->is_visible && $character->user_id)
-            {
+            if ($isAdmin && isset($data['alert_user']) && $character->is_visible && $character->user_id) {
                 Notifications::create('CHARACTER_PROFILE_EDIT', $character->user, [
                     'character_name' => $character->name,
                     'character_slug' => $character->is_myo_slot ? $character->id : $character->slug,
@@ -1682,7 +1743,7 @@ class CharacterManager extends Service {
             $sender = $character->user;
 
             $this->moveCharacter($character, $recipient, 'Transferred by '.$user->displayName.(isset($data['reason']) ? ': '.$data['reason'] : ''), $data['cooldown'] ?? -1);
-            
+
             // Add notifications for the old and new owners
             if ($sender) {
                 Notifications::create('CHARACTER_SENT', $sender, [
@@ -1997,6 +2058,45 @@ class CharacterManager extends Service {
     }
 
     /**
+     * Updates a character's lineage.
+     *
+     * @param array     $data
+     * @param Character $character
+     * @param User      $user
+     * @param bool      $isAdmin
+     *
+     * @return bool
+     */
+    public function updateCharacterLineage($data, $character, $user, $isAdmin = false) {
+        DB::beginTransaction();
+
+        try {
+            if (!$user->hasPower('manage_characters')) {
+                throw new \Exception('You do not have the required permissions to do this.');
+            }
+
+            if (!$character->lineage) {
+                return $this->handleCharacterLineage($data, $character);
+            } else {
+                $character->lineage->update([
+                    'parent_1_id'   => $data['parent_1_id'] ?? null,
+                    'parent_1_name' => $data['parent_1_id'] ? null : ($data['parent_1_name'] ?? null),
+                    'parent_1_id'   => $data['parent_2_id'] ?? null,
+                    'parent_2_name' => $data['parent_2_id'] ? null : ($data['parent_2_name'] ?? null),
+                    'depth'         => $data['depth'] ?? 0,
+                ]);
+            }
+            // CUSTOM ANCESTRY - TODO
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
      * Handles character data.
      *
      * @param array $data
@@ -2013,12 +2113,20 @@ class CharacterManager extends Service {
                 $data['species_id'] = isset($data['species_id']) && $data['species_id'] ? $data['species_id'] : null;
                 $data['subtype_ids'] = isset($data['subtype_ids']) && $data['subtype_ids'] ? $data['subtype_ids'] : null;
                 $data['rarity_id'] = isset($data['rarity_id']) && $data['rarity_id'] ? $data['rarity_id'] : null;
+            } else {
+                $data['generation_id'] = isset($data['generation_id']) && $data['generation_id'] ? $data['generation_id'] : null;
+                $data['pedigree_id'] = isset($data['pedigree_id']) && $data['pedigree_id'] ? $data['pedigree_id'] : null;
+                $data['pedigree_descriptor'] = isset($data['pedigree_descriptor']) && $data['pedigree_descriptor'] ? $data['pedigree_descriptor'] : null;
+                $data['nickname'] = isset($data['nickname']) && $data['nickname'] ? $data['nickname'] : null;
+                $data['birthdate'] = isset($data['birthdate']) && $data['birthdate'] ? $data['birthdate'] : null;
             }
 
             $characterData = Arr::only($data, [
                 'character_category_id', 'rarity_id', 'user_id',
                 'number', 'slug', 'description',
                 'sale_value', 'transferrable_at', 'is_visible',
+                'generation_id', 'pedigree_id', 'pedigree_descriptor',
+                'nickname', 'birthdate',
             ]);
 
             $characterData['name'] = ($isMyo && isset($data['name'])) ? $data['name'] : null;
@@ -2232,53 +2340,16 @@ class CharacterManager extends Service {
     }
 
     /**
-     * Updates a character's lineage.
-     *
-     * @param  array                            $data
-     * @param  \App\Models\Character\Character  $character
-     * @param  \App\Models\User\User            $user
-     * @param  bool                             $isAdmin
-     * @return  bool
-     */
-    public function updateCharacterLineage($data, $character, $user, $isAdmin = false)
-    {
-        DB::beginTransaction();
-
-        try {
-            if(!$user->hasPower('manage_characters')) throw new \Exception('You do not have the required permissions to do this.');
-
-            if (!$character->lineage) {
-                return $this->handleCharacterLineage($data, $character);
-            } else {
-                $character->lineage->update([
-                    'parent_1_id'   => $data['parent_1_id'] ?? null,
-                    'parent_1_name' => $data['parent_1_id'] ? null : ($data['parent_1_name'] ?? null),
-                    'parent_1_id'   => $data['parent_2_id'] ?? null,
-                    'parent_2_name' => $data['parent_2_id'] ? null : ($data['parent_2_name'] ?? null),
-                    'depth'       => $data['depth'] ?? 0,
-                ]);
-            }
-            // CUSTOM ANCESTRY - TODO
-
-            return $this->commitReturn(true);
-        } catch(\Exception $e) {
-            $this->setError('error', $e->getMessage());
-        }
-        return $this->rollbackReturn(false);
-    }
-
-    /**
      * Handles character lineage data.
      *
-     * @param  array                            $data
-     * @return \App\Models\Character\Character  $character
-     * @param  bool                             $isMyo
-     * @return \App\Models\Character\CharacterLineage|bool
+     * @param array $data
+     * @param mixed $character
+     *
+     * @return Character             $character
+     * @return bool|CharacterLineage
      */
-    private function handleCharacterLineage($data, $character)
-    {
+    private function handleCharacterLineage($data, $character) {
         try {
-
             if (!isset($data['parent_1_id']) && !isset($data['parent_1_name']) && !isset($data['parent_2_id']) && !isset($data['parent_2_name'])) {
                 throw new \Exception('No lineage data provided.');
             }
@@ -2307,10 +2378,10 @@ class CharacterManager extends Service {
             ]);
 
             return $this->commitReturn($lineage);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
-        return false;
 
+        return false;
     }
 }

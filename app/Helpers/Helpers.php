@@ -453,10 +453,10 @@ function prettyProfileName($url) {
 
 /**
  * Returns the euclidean distance between two colours.
- * 
+ *
  * @param array $rgb1
  * @param array $rgb2
- * 
+ *
  * @return float
  */
 function colourDistance($rgb1, $rgb2) {
@@ -470,19 +470,19 @@ function colourDistance($rgb1, $rgb2) {
  *
  * @return string
  */
-function LiveClock($LCtimezone = NULL)
-{
-    $date = NULL;
+function LiveClock($LCtimezone = null) {
+    $date = null;
     try {
         $date = new DateTimeZone($LCtimezone);
+    } catch (Exception $e) { /* Do Nothing If Wrong, Will End Up As Default */
     }
-    catch(Exception $e) { /* Do Nothing If Wrong, Will End Up As Default */}
 
     $LCtimezone = Carbon\Carbon::now($date);
 
     $LCcode = '<span class="LiveClock" LiveClockOffset="'.$LCtimezone->utcOffset().'"></span>';
-    $LCtz = '<abbr data-toggle="tooltip" title="UTC'.$LCtimezone->timezone->toOffsetName().'">' . strtoupper($LCtimezone->timezone->getAbbreviatedName($LCtimezone->isDST())) . '</abbr>';
-    return $LCcode . " " . $LCtz;
+    $LCtz = '<abbr data-toggle="tooltip" title="UTC'.$LCtimezone->timezone->toOffsetName().'">'.strtoupper($LCtimezone->timezone->getAbbreviatedName($LCtimezone->isDST())).'</abbr>';
+
+    return $LCcode.' '.$LCtz;
 }
 
 /**
@@ -496,7 +496,7 @@ function LiveClock($LCtimezone = NULL)
 function parseLiveClock($text) {
     $matches = null;
     $matches2 = null;
-    
+
     $count = preg_match_all('/\[liveclock\]/', $text, $matches);
     if ($count) {
         $matches = array_unique($matches);

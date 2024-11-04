@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Auth;
-
-use Illuminate\Support\Facades\View;
-use App\Http\Controllers\Controller;
-
-use App\Models\News;
 use App\Models\DevLogs;
+use App\Models\News;
+use Auth;
+use Illuminate\Support\Facades\View;
 
 class NewsController extends Controller {
     /*
@@ -39,7 +36,7 @@ class NewsController extends Controller {
         }
 
         return view('news.index', [
-        'newses' => News::visible()->orderBy('updated_at', 'DESC')->paginate(10),
+            'newses' => News::visible()->orderBy('updated_at', 'DESC')->paginate(10),
         ]);
     }
 

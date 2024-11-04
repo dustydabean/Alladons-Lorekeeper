@@ -23,7 +23,7 @@ return new class extends Migration {
         DB::statement('ALTER TABLE character_relations ADD CONSTRAINT check_chara_order CHECK (character_1_id < character_2_id)');
 
         DB::unprepared('
-            CREATE TRIGGER before_insert_character_relations 
+            CREATE TRIGGER before_insert_character_relations
             BEFORE INSERT ON character_relations
             FOR EACH ROW
             BEGIN
@@ -41,6 +41,6 @@ return new class extends Migration {
      */
     public function down(): void {
         // This migration is not reversible
-        throw new \RuntimeException('This migration is not reversible.');
+        throw new RuntimeException('This migration is not reversible.');
     }
 };

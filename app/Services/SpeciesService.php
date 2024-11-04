@@ -4,9 +4,9 @@ namespace App\Services;
 
 use App\Models\Character\CharacterImage;
 use App\Models\Character\CharacterImageSubtype;
+use App\Models\Character\CharacterLineageBlacklist;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
-use App\Models\Character\CharacterLineageBlacklist;
 use Illuminate\Support\Facades\DB;
 
 class SpeciesService extends Service {

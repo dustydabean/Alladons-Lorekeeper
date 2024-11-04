@@ -2,9 +2,6 @@
 
 namespace App\Models;
 
-use Config;
-use App\Models\Model;
-
 class Activity extends Model {
     /**
      * The attributes that are mass assignable.
@@ -12,7 +9,7 @@ class Activity extends Model {
      * @var array
      */
     protected $fillable = [
-        'name', 'sort', 'has_image', 'description', 'parsed_description', 'is_active', 'module', 'data'
+        'name', 'sort', 'has_image', 'description', 'parsed_description', 'is_active', 'module', 'data',
     ];
 
     /**
@@ -28,9 +25,9 @@ class Activity extends Model {
      * @var array
      */
     public static $createRules = [
-        'name' => 'required|between:3,100',
+        'name'        => 'required|between:3,100',
         'description' => 'nullable',
-        'image' => 'mimes:jpeg,jpg,gif,png',
+        'image'       => 'mimes:jpeg,jpg,gif,png',
     ];
 
     /**
@@ -39,13 +36,13 @@ class Activity extends Model {
      * @var array
      */
     public static $updateRules = [
-        'name' => 'required|between:3,100',
+        'name'        => 'required|between:3,100',
         'description' => 'nullable',
-        'image' => 'mimes:jpeg,jpg,gif,png',
+        'image'       => 'mimes:jpeg,jpg,gif,png',
     ];
 
     /**********************************************************************************************
-    
+
         ACCESSORS
 
      **********************************************************************************************/
@@ -56,7 +53,7 @@ class Activity extends Model {
      * @return string
      */
     public function getDisplayNameAttribute() {
-        return '<a href="' . $this->url . '">' . $this->name . '</a>';
+        return '<a href="'.$this->url.'">'.$this->name.'</a>';
     }
 
     /**
@@ -74,7 +71,7 @@ class Activity extends Model {
      * @return string
      */
     public function getImageFileNameAttribute() {
-        return $this->id . '-image.png';
+        return $this->id.'-image.png';
     }
 
     /**
@@ -92,8 +89,11 @@ class Activity extends Model {
      * @return string
      */
     public function getImageUrlAttribute() {
-        if (!$this->has_image) return null;
-        return asset($this->imageDirectory . '/' . $this->ImageFileName);
+        if (!$this->has_image) {
+            return null;
+        }
+
+        return asset($this->imageDirectory.'/'.$this->ImageFileName);
     }
 
     /**
@@ -102,11 +102,13 @@ class Activity extends Model {
      * @return string
      */
     public function getUrlAttribute() {
-        return url('activities/' . $this->id);
+        return url('activities/'.$this->id);
     }
 
     /**
      * Get the data attribute as an associative array.
+     *
+     * @param mixed $data
      *
      * @return array
      */
@@ -120,7 +122,8 @@ class Activity extends Model {
      * @return mixed
      */
     public function getServiceAttribute() {
-        $class = 'App\Services\Activity\\' . str_replace(' ', '', ucwords(str_replace('_', ' ', $this->module))) . 'Service';
-        return (new $class());
+        $class = 'App\Services\Activity\\'.str_replace(' ', '', ucwords(str_replace('_', ' ', $this->module))).'Service';
+
+        return new $class;
     }
 }

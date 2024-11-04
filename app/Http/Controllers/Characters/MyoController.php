@@ -62,8 +62,8 @@ class MyoController extends Controller {
     public function getCharacter($id) {
         return view('character.myo.character', [
             'character' => $this->character,
-            'parent' => CharacterLink::where('child_id', $this->character->id)->orderBy('parent_id', 'DESC')->first(),
-            'children' => CharacterLink::where('parent_id', $this->character->id)->orderBy('child_id', 'DESC')->get()
+            'parent'    => CharacterLink::where('child_id', $this->character->id)->orderBy('parent_id', 'DESC')->first(),
+            'children'  => CharacterLink::where('parent_id', $this->character->id)->orderBy('child_id', 'DESC')->get(),
         ]);
     }
 

@@ -13,11 +13,10 @@ use App\Models\Species\Subtype;
 use App\Models\User\User;
 use App\Models\User\UserItem;
 use Carbon\Carbon;
-use Config;
 use DB;
 use Illuminate\Support\Arr;
-use Notifications;
 use Log;
+use Notifications;
 
 class PairingManager extends Service {
     /*
@@ -47,7 +46,7 @@ class PairingManager extends Service {
      * @param mixed $user
      * @param mixed $data
      *
-     * @return \App\Models\Pairing\Pairing|bool
+     * @return bool|Pairing
      */
     public function createPairing($data, $user) {
         DB::beginTransaction();
@@ -245,10 +244,11 @@ class PairingManager extends Service {
      * Validates that all information is correct for a pairing.
      * This is a preliminary check to make sure characters are valid for pairing,
      * e.g. they are not lineage blacklisted, are not within lineage_depth etc.
+     *
+     * @param mixed $character_codes
      */
     public function checkCharacterPairingBasics($character_codes) {
         try {
-
             if (!isset($character_codes) || count($character_codes) != 2) {
                 throw new \Exception('Please enter two character codes.');
             }
@@ -289,11 +289,11 @@ class PairingManager extends Service {
             // this means we have to go back $lineage_depth generations and check all of them
             // we dont have to check children, as any potential children will check their parents
             $lineage = [
-                [$character_1->lineage?->parents, $character_2->lineage?->parents]
+                [$character_1->lineage?->parents, $character_2->lineage?->parents],
             ];
 
             for ($i = 0; $i < $lineage_depth && $i < count($lineage); $i++) {
-                foreach($lineage[$i] as $parents) {
+                foreach ($lineage[$i] as $parents) {
                     if ($parents) {
                         $lineage[] = [$parents[0]?->lineage?->parents, $parents[1]?->lineage?->parents];
                     }
@@ -304,7 +304,7 @@ class PairingManager extends Service {
             $lineage = array_filter(array_merge(...$lineage));
             $seen_ids = [];
             foreach ($lineage as $parents) {
-                Log::info("parents: " . $parents[0]?->id . ' ' . $parents[1]?->id);
+                Log::info('parents: '.$parents[0]?->id.' '.$parents[1]?->id);
                 // this checks if one character is an ancestor of the other
                 if ($parents[0]?->id == $character_1->id || $parents[1]?->id == $character_1->id || $parents[0]?->id == $character_2->id || $parents[1]?->id == $character_2->id) {
                     throw new \Exception('Characters are too closely related to be paired.');
@@ -329,10 +329,12 @@ class PairingManager extends Service {
     /**
      * Creates colour_palette_count colour palettes for the pairing.
      *
+     * @param mixed $character_codes
+     * @param mixed $user
+     * @param mixed $is_myo
      */
     public function createColourPalettes($character_codes, $user, $is_myo = false) {
         try {
-
             if (!config('lorekeeper.character_pairing.inherit_colours')) {
                 throw new \Exception('Colour inheritance is disabled.');
             }
@@ -460,7 +462,7 @@ class PairingManager extends Service {
      *
      * @param mixed $pairing
      *
-     * @return \App\Models\Pairing\Pairing|bool
+     * @return bool|Pairing
      */
     public function approvePairing($pairing) {
         DB::beginTransaction();
@@ -498,7 +500,7 @@ class PairingManager extends Service {
      * @param mixed $user
      * @param mixed $pairing
      *
-     * @return \App\Models\Pairing\Pairing|bool
+     * @return bool|Pairing
      */
     public function rejectPairing($pairing, $user) {
         DB::beginTransaction();
@@ -551,7 +553,7 @@ class PairingManager extends Service {
      * @param mixed $user
      * @param mixed $pairing
      *
-     * @return \App\Models\Pairing\Pairing|bool
+     * @return bool|Pairing
      */
     public function createMyos($pairing, $user) {
         DB::beginTransaction();
@@ -604,7 +606,7 @@ class PairingManager extends Service {
                 $chosen_features_ids = $this->getChosenFeatures($tag, $characters, $feature_pool, $boosts);
                 $feature_data = $this->getFeatureData($tag, $characters, $species, $chosen_features_ids, $species_id, $subtype_id);
                 $rarity_id = $this->getRarityId($boosts, $chosen_features_ids);
-                $palette =  $this->createColourPalettes([$pairing->character_1->slug, $pairing->character_2->slug], $user, true);
+                $palette = $this->createColourPalettes([$pairing->character_1->slug, $pairing->character_2->slug], $user, true);
 
                 //create MYO
                 if (!$myo = $this->saveMyo(
@@ -673,7 +675,7 @@ class PairingManager extends Service {
      * @param mixed $data
      * @param mixed $user
      *
-     * @return \App\Models\Pairing\Pairing|bool
+     * @return bool|Pairing
      */
     public function rollTestMyos($data, $user) {
         try {
@@ -719,7 +721,7 @@ class PairingManager extends Service {
                     $feature_data = $this->getFeatureData($tag, $characters, $species, $chosen_features_ids, $species_id, $subtype_id);
                     $rarity_id = $this->getRarityId($boosts, $chosen_features_ids);
                     if (config('lorekeeper.character_pairing.inherit_colours')) {
-                        $palette =  $this->createColourPalettes($data['character_codes'], $user, false);
+                        $palette = $this->createColourPalettes($data['character_codes'], $user, false);
                     }
                     $test_myos[] = [
                         'user'         => $user,
@@ -982,8 +984,7 @@ class PairingManager extends Service {
             if (isset($tag->getData()['feature_id']) && $id == $tag->getData()['feature_id']) {
                 // set subtype/species of other parent if a trait was set for it.
                 $feature_data[] = $pairing_feature_data;
-            }
-            else {
+            } else {
                 $feature_data[] = null;
             }
         }
@@ -1025,6 +1026,7 @@ class PairingManager extends Service {
             if (!$default_species_id) {
                 throw new \Exception('No default species was set for this item.');
             }
+
             return $default_species_id; // should never be null as pairing gets rejected when no default is set and no species is valid
         }
     }
@@ -1082,19 +1084,19 @@ class PairingManager extends Service {
      * Gives the character the rarity of the highest trait rarity.
      *
      * @param mixed $chosen_features
+     * @param mixed $boosts
      */
     private function getRarityId($boosts, $chosen_features) {
         if (config('lorekeeper.character_pairing.rarity_inheritance')) {
             $rarity_sorts = [];
             //add all chosen features to rarity ids
-            foreach($chosen_features as $feature) {
+            foreach ($chosen_features as $feature) {
                 $rarity = $feature->rarity;
                 $rarity_sorts[] = $rarity->sort;
             }
 
             //WARNING this assumes the highest rarity has the highest sort number and sort 0 is the lowest
             $rarity_sort = count($rarity_sorts) > 0 ? max($rarity_sorts) : 0;
-
         } else {
             $features = Feature::whereIn('id', array_keys($chosen_features))->get();
             $rarity_sorts = $features->pluck('rarity.sort')->toArray();
@@ -1132,14 +1134,15 @@ class PairingManager extends Service {
     /**
      * Creates the myo slot.
      *
-     * @param mixed $user
-     * @param mixed $sex
-     * @param mixed $species_id
-     * @param mixed $subtype_id
-     * @param mixed $rarity_id
-     * @param mixed $feature_ids
-     * @param mixed $feature_data
-     * @param mixed $characters
+     * @param mixed      $user
+     * @param mixed      $sex
+     * @param mixed      $species_id
+     * @param mixed      $subtype_id
+     * @param mixed      $rarity_id
+     * @param mixed      $feature_ids
+     * @param mixed      $feature_data
+     * @param mixed      $characters
+     * @param mixed|null $palette
      */
     private function saveMyo($user, $sex, $species_id, $subtype_id, $rarity_id, $feature_ids, $feature_data, $characters, $palette = null) {
         DB::beginTransaction();

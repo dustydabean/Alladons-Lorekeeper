@@ -13,6 +13,6 @@ return [
     'myos',
     'items',
     'prompts',
-    'events'
+    'events',
 
 ];

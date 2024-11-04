@@ -7,8 +7,6 @@ use Illuminate\Support\Facades\Schema;
 class CreateActivities extends Migration {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up() {
         Schema::create('activities', function (Blueprint $table) {
@@ -26,8 +24,6 @@ class CreateActivities extends Migration {
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down() {
         Schema::dropIfExists('activities');

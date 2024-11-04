@@ -31,6 +31,16 @@
                         </div>
                     </div>
                 </div>
+                <div class="masterlist-search-field">
+                    {!! Form::label('nickname', 'Search Nicknames: ') !!}
+                    {!! Form::text('nickname', Request::get('nickname'), ['class' => 'form-control mr-2', 'style' => 'width: 250px']) !!}
+                </div>
+                <div class="masterlist-search-field">
+                    {!! Form::checkbox('nickname_match', 1, Request::get('nickname_match'), ['class' => 'form-check-input mr-2', 'data-toggle' => 'toggle']) !!}
+                    <span class="ml-2">Match the nickname exactly? {!! add_help(
+                        'If turned on, the search will only return characters with the exact nickname entered. If turned off, the search will return characters with the nickname entered as a partial match.',
+                    ) !!}</span>
+                </div>
                 <hr />
             @endif
             <div class="masterlist-search-field">

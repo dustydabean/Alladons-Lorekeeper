@@ -4,13 +4,11 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class EditPairingLineageTables extends Migration
-{
+class EditPairingLineageTables extends Migration {
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
+    public function up(): void {
         //
         Schema::table('character_lineages', function (Blueprint $table) {
             // first we're gonna rename father_id and mother_id to parent ids
@@ -30,8 +28,7 @@ class EditPairingLineageTables extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down(): void
-    {
+    public function down(): void {
         //
         Schema::table('character_lineages', function (Blueprint $table) {
             $table->renameColumn('parent_1_id', 'father_id');
@@ -44,4 +41,4 @@ class EditPairingLineageTables extends Migration
             $table->dropColumn('colours');
         });
     }
-};
+}

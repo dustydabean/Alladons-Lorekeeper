@@ -10,8 +10,8 @@ use App\Models\Shop\Shop;
 use App\Models\Shop\ShopStock;
 use App\Services\ShopService;
 use Illuminate\Http\Request;
-use Log;
 use Illuminate\Support\Facades\Auth;
+use Log;
 
 class ShopController extends Controller {
     /*
@@ -154,7 +154,7 @@ class ShopController extends Controller {
         }
         // get base modal from type using asset helper
         $model = getAssetModelString(strtolower($type));
-        log::info([$model, $type]);
+        Log::info([$model, $type]);
 
         return view('admin.shops._stock_item', [
             'items' => $model::orderBy('name')->pluck('name', 'id'),

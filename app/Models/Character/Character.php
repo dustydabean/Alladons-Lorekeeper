@@ -2,34 +2,21 @@
 
 namespace App\Models\Character;
 
-use Config;
-use DB;
-use Carbon\Carbon;
-use Notifications;
-use App\Models\Model;
-
-use App\Models\User\User;
-use App\Models\User\UserCharacterLog;
-
-use App\Models\Character\Character;
-use App\Models\Character\CharacterCategory;
-use App\Models\Character\CharacterTransfer;
-use App\Models\Character\CharacterBookmark;
-use App\Models\Character\CharacterRelation;
-
-use App\Models\Character\CharacterCurrency;
 use App\Models\Currency\Currency;
 use App\Models\Currency\CurrencyLog;
-use App\Models\Character\CharacterLineage;
-use App\Models\Character\CharacterLineageBlacklist;
 use App\Models\Gallery\GalleryCharacter;
 use App\Models\Item\Item;
 use App\Models\Item\ItemLog;
+use App\Models\Model;
 use App\Models\Rarity;
 use App\Models\Submission\Submission;
 use App\Models\Submission\SubmissionCharacter;
 use App\Models\Trade;
+use App\Models\User\User;
+use App\Models\User\UserCharacterLog;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Notifications;
 
 class Character extends Model {
     use SoftDeletes;
@@ -45,7 +32,8 @@ class Character extends Model {
         'is_sellable', 'is_tradeable', 'is_giftable',
         'sale_value', 'transferrable_at', 'is_visible',
         'is_gift_art_allowed', 'is_gift_writing_allowed', 'is_trading', 'sort',
-        'is_myo_slot', 'name', 'trade_id', 'is_links_open', 'owner_url', 
+        'is_myo_slot', 'name', 'trade_id', 'is_links_open', 'owner_url', 'poucher_code',
+        'nickname', 'pedigree_id', 'pedigree_descriptor', 'generation_id', 'birthdate',
     ];
 
     /**
@@ -62,6 +50,7 @@ class Character extends Model {
      */
     protected $casts = [
         'transferrable_at' => 'datetime',
+        'birthdate'        => 'datetime',
     ];
 
     /**
@@ -94,6 +83,12 @@ class Character extends Model {
         'image'                 => 'required|mimes:jpeg,jpg,gif,png|max:20000',
         'thumbnail'             => 'nullable|mimes:jpeg,jpg,gif,png|max:20000',
         'owner_url'             => 'url|nullable',
+        'poucher_code'          => 'nullable|between:1,20',
+        'nickname'              => 'nullable',
+        'pedigree_id'           => 'nullable',
+        'pedigree_descriptor'   => 'nullable',
+        'generation_id'         => 'nullable',
+        'birthdate'             => 'nullable',
     ];
 
     /**
@@ -109,6 +104,11 @@ class Character extends Model {
         'sale_value'            => 'nullable',
         'image'                 => 'nullable|mimes:jpeg,jpg,gif,png|max:20000',
         'thumbnail'             => 'nullable|mimes:jpeg,jpg,gif,png|max:20000',
+        'nickname'              => 'nullable',
+        'pedigree_id'           => 'nullable',
+        'pedigree_descriptor'   => 'nullable',
+        'generation_id'         => 'nullable',
+        'birthdate'             => 'nullable',
     ];
 
     /**
@@ -213,16 +213,14 @@ class Character extends Model {
     /**
      * Get the lineage of the character.
      */
-    public function lineage()
-    {
+    public function lineage() {
         return $this->hasOne(CharacterLineage::class, 'character_id');
     }
 
     /**
      * Get the character's children from the lineages.
      */
-    public function children()
-    {
+    public function children() {
         return $this->hasMany(CharacterLineage::class, 'parent_1_id')->orWhere('parent_2_id', $this->id);
     }
 
@@ -232,6 +230,20 @@ class Character extends Model {
     public function links() {
         // character id can be in either column
         return $this->hasMany(CharacterRelation::class, 'character_1_id')->orWhere('character_2_id', $this->id);
+    }
+
+    /*
+    * Get the pedigree for this character.
+    */
+    public function pedigree() {
+        return $this->belongsTo(CharacterPedigree::class, 'pedigree_id');
+    }
+
+    /*
+    * Get the generation for this character.
+    */
+    public function generation() {
+        return $this->belongsTo(CharacterGeneration::class, 'generation_id');
     }
 
     /**********************************************************************************************
@@ -349,12 +361,12 @@ class Character extends Model {
 
     /**
      * Displays the character's name, linked to their character page.
-     *  
+     * Added Poucher Code.
      *
      * @return string
      */
     public function getDisplayNameAttribute() {
-        return '<a href="'.$this->url.'" class="display-character">'.$this->fullName.'</a>';
+        return '<a href="'.$this->url.'" class="display-character">'.$this->fullName.'</a>'.(isset($this->poucher_code) ? ' ('.$this->poucher_code.')' : '');
     }
 
     /**
@@ -382,6 +394,16 @@ class Character extends Model {
         return null;
     }
 
+    /*** Gets the character's pedigree name.
+     *
+     * @return string
+     */
+    public function getPedigreeNameAttribute() {
+        $tag = $this->pedigree->displayName;
+
+        return $tag.' <i>'.$this->pedigree_descriptor.'</i>';
+    }
+    
     /**
      * Gets the character's page's URL.
      *
@@ -637,26 +659,26 @@ class Character extends Model {
      * Finds the lineage blacklist level of this character.
      * 0 is no restriction at all
      * 1 is ancestors but no children
-     * 2 is no lineage at all
+     * 2 is no lineage at all.
+     *
+     * @param mixed $maxLevel
      *
      * @return int
      */
-    public function getLineageBlacklistLevel($maxLevel = 2)
-    {
+    public function getLineageBlacklistLevel($maxLevel = 2) {
         return CharacterLineageBlacklist::getBlacklistLevel($this, $maxLevel);
     }
 
     /**
-     * Gets the character's parent type (ex father, mother, parent) based on sex
-     * 
+     * Gets the character's parent type (ex father, mother, parent) based on sex.
      */
     public function getParentTypeAttribute() {
         if (!$this->image->sex) {
-            return "Parent";
-        } else if ($this->image->sex == "Male") {
-            return "Father";
+            return 'Parent';
+        } elseif ($this->image->sex == 'Male') {
+            return 'Father';
         } else {
-            return "Mother";
+            return 'Mother';
         }
     }
 }

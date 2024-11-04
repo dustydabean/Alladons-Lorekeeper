@@ -2,25 +2,16 @@
 
 namespace App\Models;
 
-use Config;
-use DB;
-use App\Models\Model;
-use App\Models\Theme\ThemeCategory;
-
 use App\Models\User\User;
-use App\Models\Shop\Shop;
-use App\Models\Prompt\Prompt;
-use App\Models\User\UserTheme;
 
-class Theme extends Model
-{
+class Theme extends Model {
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'hash', 'is_default', 'is_active', 'has_css', 'has_header', 'has_background', 'extension', 'extension_background', 'creators', 'prioritize_css', 'link_id', 'link_type', 'is_user_selectable', 'theme_type'
+        'name', 'hash', 'is_default', 'is_active', 'has_css', 'has_header', 'has_background', 'extension', 'extension_background', 'creators', 'prioritize_css', 'link_id', 'link_type', 'is_user_selectable', 'theme_type',
     ];
 
     /**
@@ -36,11 +27,11 @@ class Theme extends Model
      * @var array
      */
     public static $createRules = [
-        'name' => 'required|unique:themes|between:3,100',
-        'header' => 'mimes:png,jpg,jpeg,gif,svg',
+        'name'       => 'required|unique:themes|between:3,100',
+        'header'     => 'mimes:png,jpg,jpeg,gif,svg',
         'background' => 'mimes:png,jpg,jpeg',
-        'active' => 'nullable|boolean',
-        'default' => 'nullable|boolean',
+        'active'     => 'nullable|boolean',
+        'default'    => 'nullable|boolean',
     ];
 
     /**
@@ -49,11 +40,11 @@ class Theme extends Model
      * @var array
      */
     public static $updateRules = [
-        'name' => 'required|between:3,100',
-        'header' => 'mimes:png,jpg,jpeg,gif,svg',
+        'name'       => 'required|between:3,100',
+        'header'     => 'mimes:png,jpg,jpeg,gif,svg',
         'background' => 'mimes:png,jpg,jpeg',
-        'active' => 'nullable|boolean',
-        'default' => 'nullable|boolean',
+        'active'     => 'nullable|boolean',
+        'default'    => 'nullable|boolean',
     ];
 
     /**********************************************************************************************
@@ -65,13 +56,12 @@ class Theme extends Model
     /**
      * Get the users who are using this theme.
      */
-    public function users()
-    {
+    public function users() {
         return $this->hasMany('App\Models\User\User', 'theme_id');
     }
 
-    /** 
-     * Get the ThemeEditor attached to this theme
+    /**
+     * Get the ThemeEditor attached to this theme.
      */
     public function themeEditor() {
         return $this->hasOne('App\Models\ThemeEditor', 'theme_id');
@@ -86,45 +76,45 @@ class Theme extends Model
     /**
      * Scope a query to sort themes in alphabetical order.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @param  bool                                   $reverse
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param bool                                  $reverse
+     *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeSortAlphabetical($query, $reverse = false)
-    {
+    public function scopeSortAlphabetical($query, $reverse = false) {
         return $query->orderBy('name', $reverse ? 'DESC' : 'ASC');
     }
 
     /**
      * Scope a query to sort themes by newest first.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeSortNewest($query)
-    {
+    public function scopeSortNewest($query) {
         return $query->orderBy('id', 'DESC');
     }
 
     /**
      * Scope a query to sort features oldest first.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeSortOldest($query)
-    {
+    public function scopeSortOldest($query) {
         return $query->orderBy('id');
     }
 
     /**
      * Scope a query to show only released or "released" (at least one user-owned stack has ever existed) themes.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeVisible($query)
-    {
+    public function scopeVisible($query) {
         return $query->where('is_active', 1);
     }
 
@@ -139,24 +129,27 @@ class Theme extends Model
      *
      * @return string
      */
-    public function getDisplayNameAttribute()
-    {
-        if(!$this->is_active) return '<s>'.$this->name.'</a>';
-        if($this->is_default) return $this->name . ' (default)';
-        else return $this->name ;
+    public function getDisplayNameAttribute() {
+        if (!$this->is_active) {
+            return '<s>'.$this->name.'</a>';
+        }
+        if ($this->is_default) {
+            return $this->name.' (default)';
+        } else {
+            return $this->name;
+        }
     }
 
     /**
-     * Displays the theme's creators' names and Urls
+     * Displays the theme's creators' names and Urls.
      *
      * @return string
      */
-    public function getCreatorDataAttribute()
-    {
-        $creators = json_decode($this->creators,true);
+    public function getCreatorDataAttribute() {
+        $creators = json_decode($this->creators, true);
 
-        $names = implode(', ',array_keys($creators));
-        $urls =  implode(', ',array_values($creators));
+        $names = implode(', ', array_keys($creators));
+        $urls = implode(', ', array_values($creators));
 
         return ['name' => $names, 'url' => $urls];
     }
@@ -166,11 +159,13 @@ class Theme extends Model
      *
      * @return string
      */
-    public function getCreatorDisplayNameAttribute()
-    {
+    public function getCreatorDisplayNameAttribute() {
         $names = [];
-        foreach(json_decode($this->creators,true) as $name => $url) $names[] = '<a href="'. $url . '">'. $name . '</a>';
-        return implode(', ',$names);
+        foreach (json_decode($this->creators, true) as $name => $url) {
+            $names[] = '<a href="'.$url.'">'.$name.'</a>';
+        }
+
+        return implode(', ', $names);
     }
 
     /**
@@ -178,8 +173,7 @@ class Theme extends Model
      *
      * @return string
      */
-    public function getImageDirectoryAttribute()
-    {
+    public function getImageDirectoryAttribute() {
         return 'themes';
     }
 
@@ -188,9 +182,8 @@ class Theme extends Model
      *
      * @return string
      */
-    public function getHeaderImageFileNameAttribute()
-    {
-        return $this->id . '-header.'.$this->extension;
+    public function getHeaderImageFileNameAttribute() {
+        return $this->id.'-header.'.$this->extension;
     }
 
     /**
@@ -198,9 +191,8 @@ class Theme extends Model
      *
      * @return string
      */
-    public function getBackgroundImageFileNameAttribute()
-    {
-        return $this->id . '-background.'.$this->extension_background;
+    public function getBackgroundImageFileNameAttribute() {
+        return $this->id.'-background.'.$this->extension_background;
     }
 
     /**
@@ -208,8 +200,7 @@ class Theme extends Model
      *
      * @return string
      */
-    public function getImagePathAttribute()
-    {
+    public function getImagePathAttribute() {
         return public_path($this->imageDirectory);
     }
 
@@ -218,10 +209,12 @@ class Theme extends Model
      *
      * @return string
      */
-    public function getHeaderImageUrlAttribute()
-    {
-        if (!$this->has_header && !$this->themeEditor?->header_image_url) return asset('images/header.png');
-        return $this->extension ? asset($this->imageDirectory . '/' . $this->headerImageFileName . '?' . $this->hash) : $this->themeEditor?->header_image_url;
+    public function getHeaderImageUrlAttribute() {
+        if (!$this->has_header && !$this->themeEditor?->header_image_url) {
+            return asset('images/header.png');
+        }
+
+        return $this->extension ? asset($this->imageDirectory.'/'.$this->headerImageFileName.'?'.$this->hash) : $this->themeEditor?->header_image_url;
     }
 
     /**
@@ -229,10 +222,12 @@ class Theme extends Model
      *
      * @return string
      */
-    public function getBackgroundImageUrlAttribute()
-    {
-        if (!$this->has_background && !$this->themeEditor?->background_image_url) return '';
-        return $this->extension_background ? asset($this->imageDirectory . '/' . $this->backgroundImageFileName . '?' . $this->hash) : $this->themeEditor?->background_image_url;
+    public function getBackgroundImageUrlAttribute() {
+        if (!$this->has_background && !$this->themeEditor?->background_image_url) {
+            return '';
+        }
+
+        return $this->extension_background ? asset($this->imageDirectory.'/'.$this->backgroundImageFileName.'?'.$this->hash) : $this->themeEditor?->background_image_url;
     }
 
     /**
@@ -240,9 +235,8 @@ class Theme extends Model
      *
      * @return string
      */
-    public function getCSSFileNameAttribute()
-    {
-        return $this->id . '.css';
+    public function getCSSFileNameAttribute() {
+        return $this->id.'.css';
     }
 
     /**
@@ -250,20 +244,21 @@ class Theme extends Model
      *
      * @return string
      */
-    public function getCSSUrlAttribute()
-    {
-        if (!$this->has_css) return null;
-        return $this->ImageDirectory . '/' . $this->CSSFileName;
+    public function getCSSUrlAttribute() {
+        if (!$this->has_css) {
+            return null;
+        }
+
+        return $this->ImageDirectory.'/'.$this->CSSFileName;
     }
 
     /**
-     * Gets the number of users who have this
+     * Gets the number of users who have this.
      *
      * @return string
      */
-    public function getUserCountAttribute()
-    {
-        return User::where('is_banned',0)->where('theme_id',$this->id)->count();
+    public function getUserCountAttribute() {
+        return User::where('is_banned', 0)->where('theme_id', $this->id)->count();
     }
 
     /**
@@ -274,14 +269,10 @@ class Theme extends Model
     public function getAssetTypeAttribute() {
         return 'themes';
     }
-    
+
     /**********************************************************************************************
 
         OTHER FUNCTIONS
 
     **********************************************************************************************/
-
-
-
-
 }

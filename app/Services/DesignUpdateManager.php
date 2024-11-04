@@ -20,10 +20,9 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Intervention\Image\Facades\Image;
-
-use League\ColorExtractor\Palette;
-use League\ColorExtractor\ColorExtractor;
 use League\ColorExtractor\Color;
+use League\ColorExtractor\ColorExtractor;
+use League\ColorExtractor\Palette;
 
 class DesignUpdateManager extends Service {
     /*

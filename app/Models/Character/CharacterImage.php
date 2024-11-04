@@ -2,17 +2,15 @@
 
 namespace App\Models\Character;
 
-use Config;
-use DB;
-use File;
-use Settings;
-use Image;
 use App\Models\Model;
 use App\Models\Rarity;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
 use App\Models\User\User;
+use File;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Image;
+use Settings;
 
 class CharacterImage extends Model {
     use SoftDeletes;
@@ -301,7 +299,7 @@ class CharacterImage extends Model {
         $block_colours = [];
         foreach ($colours as $key=>$colour) {
             $block_colours[] = '<div style="background-color: '.$colour.'; width: 20px; height: 20px; display: inline-block; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd;'
-            .($key == 0 ? 'border-left: 1px solid #ddd;' : '').($key == count($colours)-1 ? 'border-right: 1px solid #ddd;' : '').'"></div>';
+            .($key == 0 ? 'border-left: 1px solid #ddd;' : '').($key == count($colours) - 1 ? 'border-right: 1px solid #ddd;' : '').'"></div>';
         }
         $display_colours[] = ($is_myo ? '<div class="row">' : '').implode(' ', $block_colours).($is_myo ? '</div>' : '');
 
@@ -316,7 +314,6 @@ class CharacterImage extends Model {
 
             // now check if we are making alternative palettes
             if (config('lorekeeper.character_pairing.alternative_palettes')) {
-
                 // if we are we also display the blocks for the alternative palettes
                 // generate two different palettes
 
@@ -326,7 +323,7 @@ class CharacterImage extends Model {
                 ];
 
                 foreach ($filters as $filter) {
-                    $display_colours[] = '<div class="row" style="filter: '.$filter.'">'. implode(' ', $block_colours).'</div>';
+                    $display_colours[] = '<div class="row" style="filter: '.$filter.'">'.implode(' ', $block_colours).'</div>';
                     if (config('lorekeeper.character_pairing.blend_colours')) {
                         $display_colours[] = '<div class="row"><div style="background: linear-gradient(to right, '.implode(', ', $colours).'); width: '.config('lorekeeper.character_pairing.colour_count') * 20 * 2 .'px; height: 20px; display: inline-block; filter: '.$filter.'"></div></div>';
                     }
@@ -337,24 +334,32 @@ class CharacterImage extends Model {
         return implode(' ', $display_colours);
     }
 
-
     /**
-     * Gets the longest side of the image if it hasn't already been calculated
+     * Gets the longest side of the image if it hasn't already been calculated.
+     *
+     * @param mixed $value
      *
      * @return string
      */
     public function getLongestSideAttribute($value) {
         $longestSide = $value;
-        if (!isset($longestSide) && File::exists($this->imagePath . '/' . $this->imageFileName)) {
-            $image = Image::make($this->imagePath . '/' . $this->imageFileName);
+        if (!isset($longestSide) && File::exists($this->imagePath.'/'.$this->imageFileName)) {
+            $image = Image::make($this->imagePath.'/'.$this->imageFileName);
             $width = $image->width();
             $height = $image->height();
-            if ($width > $height) $longestSide = 'width';
-            else if ($height > $width) $longestSide = 'height';
-            else if (Settings::get('default_side') === 0) $longestSide = 'square';
-            else if (Settings::get('default_side') === 1) $longestSide = 'width';
-            else $longestSide = 'height';
+            if ($width > $height) {
+                $longestSide = 'width';
+            } elseif ($height > $width) {
+                $longestSide = 'height';
+            } elseif (Settings::get('default_side') === 0) {
+                $longestSide = 'square';
+            } elseif (Settings::get('default_side') === 1) {
+                $longestSide = 'width';
+            } else {
+                $longestSide = 'height';
+            }
         }
+
         return $longestSide;
     }
 

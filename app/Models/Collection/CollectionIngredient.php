@@ -3,19 +3,16 @@
 namespace App\Models\Collection;
 
 use App;
-use Config;
-use DB;
 use App\Models\Model;
 
-class CollectionIngredient extends Model
-{
+class CollectionIngredient extends Model {
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'collection_id', 'ingredient_type', 'ingredient_data', 'quantity'
+        'collection_id', 'ingredient_type', 'ingredient_data', 'quantity',
     ];
 
     /**
@@ -31,10 +28,10 @@ class CollectionIngredient extends Model
      * @var array
      */
     public static $createRules = [
-        'collection_id' => 'required',
+        'collection_id'   => 'required',
         'ingredient_type' => 'required',
         'ingredient_data' => 'required',
-        'quantity' => 'required|integer|min:1',
+        'quantity'        => 'required|integer|min:1',
     ];
 
     /**
@@ -43,27 +40,26 @@ class CollectionIngredient extends Model
      * @var array
      */
     public static $updateRules = [
-        'collection_id' => 'required',
+        'collection_id'   => 'required',
         'ingredient_type' => 'required',
         'ingredient_data' => 'required',
-        'quantity' => 'required|integer|min:1',
+        'quantity'        => 'required|integer|min:1',
     ];
 
     /**********************************************************************************************
-    
+
         RELATIONS
     **********************************************************************************************/
 
     /**
      * Get the associated collection.
      */
-    public function collection() 
-    {
+    public function collection() {
         return $this->belongsTo('App\Models\Collection\Collection');
     }
 
     /**********************************************************************************************
-    
+
         ACCESSORS
     **********************************************************************************************/
 
@@ -72,8 +68,7 @@ class CollectionIngredient extends Model
      *
      * @return string
      */
-    public function getDataAttribute()
-    {
+    public function getDataAttribute() {
         return json_decode($this->ingredient_data);
     }
 
@@ -82,13 +77,12 @@ class CollectionIngredient extends Model
      *
      * @return string
      */
-    public function getIngredientAttribute()
-    {
-        switch ($this->ingredient_type)
-        {
+    public function getIngredientAttribute() {
+        switch ($this->ingredient_type) {
             case 'Item':
                 return App\Models\Item\Item::where('id', $this->data[0])->get()[0];
         }
+
         return null;
     }
 }

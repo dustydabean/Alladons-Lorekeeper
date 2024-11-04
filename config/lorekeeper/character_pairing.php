@@ -19,7 +19,7 @@ return [
 
     /////////////////////////////////////
     //  COLOURS
-    // 
+    //
     //  Recommended to leave these settings alone unless you know what you're doing
     /////////////////////////////////////
 

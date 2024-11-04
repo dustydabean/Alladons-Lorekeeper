@@ -20,8 +20,8 @@
 @endif
 <div class="character-masterlist-categories">
     @if (!$character->is_myo_slot)
-        {!! $character->category->displayName !!} ・ {!! 
-        $character->image->species->displayName !!} ・ {!! 
+        {!! $character->category->displayName !!} ・ {!!
+        $character->image->species->displayName !!} ・ {!!
         $character->image->rarity->displayName !!}
     @else
         MYO Slot @if ($character->image->species_id)
@@ -59,6 +59,9 @@
         <i class="fas fa-eye-slash"></i>
     @endif
     {!! $character->displayName !!}
+    @if ($character->nickname)
+        <span style="opacity: 0.45;">({!! $character->nickname !!})</span>
+    @endif
     @if (!$character->is_myo_slot)
         <i data-toggle="tooltip" title="Click to Copy the Character Code" id="copy" style="font-size: 14px; vertical-align: middle;" class="far fa-copy text-small"></i>
     @endif

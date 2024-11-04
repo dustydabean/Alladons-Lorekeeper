@@ -4,15 +4,11 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddCollectionTables extends Migration
-{
-        /**
+class AddCollectionTables extends Migration {
+    /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
-    {
+    public function up() {
         Schema::create('collections', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
@@ -25,7 +21,6 @@ class AddCollectionTables extends Migration
             $table->string('artist_url', 191)->nullable();
             $table->text('output')->nullable()->default(null);
         });
-
 
         Schema::create('collection_ingredients', function (Blueprint $table) {
             $table->engine = 'InnoDB';
@@ -64,9 +59,9 @@ class AddCollectionTables extends Migration
             // The sender_id, if granted by an admin, is the admin user's id.
             // Recipes shouldn't be user-user transferrable, so if it's null then it's implied that it's purchased.
             // Recipes should always belong to a user, but they can be purchased using character currency, ergo character_id
-            $table->unsignedInteger('sender_id')->nullable(); 
+            $table->unsignedInteger('sender_id')->nullable();
             $table->unsignedInteger('recipient_id')->nullable(); // Nullable in the case that a collection has to be rescinded for whatever reason
-            $table->unsignedInteger('character_id')->nullable(); 
+            $table->unsignedInteger('character_id')->nullable();
 
             $table->timestamps();
         });
@@ -74,11 +69,8 @@ class AddCollectionTables extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
-    {
+    public function down() {
         Schema::dropIfExists('collections');
         Schema::dropIfExists('collection_ingredient');
         Schema::dropIfExists('collection_rewards');

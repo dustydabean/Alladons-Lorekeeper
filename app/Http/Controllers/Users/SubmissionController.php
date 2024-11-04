@@ -182,7 +182,8 @@ class SubmissionController extends Controller {
     /**
      * Shows character gift art/writing permissions.
      *
-     * @param  string  $slug
+     * @param mixed $id
+     *
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getCharacterPermissions($slug)
