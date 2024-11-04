@@ -19,10 +19,9 @@
     <div class="col-lg-9 col-8">{!! format_date($character->created_at) !!}</div>
 </div>-->
 
-    <hr />
+    <hr/>
 
-<hr />
-
+<hr/>
 
 <h5>
     <i class="text-{{ $character->is_giftable ? 'success far fa-circle' : 'danger fas fa-times' }} fa-fw mr-2"></i> {{ $character->is_giftable ? 'Can' : 'Cannot' }} be gifted
