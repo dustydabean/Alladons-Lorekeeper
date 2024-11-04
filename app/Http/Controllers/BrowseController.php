@@ -305,9 +305,6 @@ class BrowseController extends Controller {
                 $query->where('characters.name', 'LIKE', '%'.$request->get('name').'%')->orWhere('characters.slug', 'LIKE', '%'.$request->get('name').'%');
             });
         }
-        if ($request->get('poucher_code')) {
-            $query->where('characters.poucher_code', 'LIKE', '%'.$request->get('poucher_code').'%');
-        }
         if ($request->get('rarity_id')) {
             $query->where('rarity_id', $request->get('rarity_id'));
         }

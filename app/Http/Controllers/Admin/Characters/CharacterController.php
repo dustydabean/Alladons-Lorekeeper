@@ -211,7 +211,7 @@ class CharacterController extends Controller {
     public function postEditCharacterStats(Request $request, CharacterManager $service, $slug) {
         $request->validate(Character::$updateRules);
         $data = $request->only([
-            'character_category_id', 'number', 'slug', 'poucher_code',
+            'character_category_id', 'number', 'slug',
             'is_giftable', 'is_tradeable', 'is_sellable', 'sale_value',
             'transferrable_at',
         ]);
@@ -370,7 +370,7 @@ class CharacterController extends Controller {
      */
     public function postCharacterSettings(Request $request, CharacterManager $service, $slug) {
         $data = $request->only([
-            'is_visible', 'dob',
+            'is_visible', 
         ]);
         $this->character = Character::where('slug', $slug)->first();
         if (!$this->character) {
