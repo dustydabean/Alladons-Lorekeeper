@@ -33,7 +33,7 @@ class Character extends Model {
         'sale_value', 'transferrable_at', 'is_visible',
         'is_gift_art_allowed', 'is_gift_writing_allowed', 'is_trading', 'sort',
         'is_myo_slot', 'name', 'trade_id', 'is_links_open', 'owner_url', 'poucher_code',
-        'nickname', 'pedigree_id', 'pedigree_descriptor', 'generation_id', 'birthdate',
+        'nickname', 'pedigree_id', 'pedigree_descriptor', 'generation_id', 'birthdate', 'poucher_code',
     ];
 
     /**

@@ -26,6 +26,11 @@
         </div>
     </div>
 
+    <div class="col-md-6 form-group">
+            {!! Form::label('poucher_code', 'Poucher Code') !!}
+            {!! Form::text('poucher_code', $character->poucher_code, ['class' => 'form-control']) !!}
+        </div>
+
     <div class="row">
         <div class="col-md-6">
             <div class="form-group">

@@ -221,7 +221,7 @@ class CharacterController extends Controller {
             'character_category_id', 'number', 'slug',
             'is_giftable', 'is_tradeable', 'is_sellable', 'sale_value',
             'transferrable_at', 'generation_id', 'pedigree_id', 'pedigree_descriptor',
-            'nickname', 'birthdate',
+            'nickname', 'birthdate', 'poucher_code',
         ]);
         $this->character = Character::where('slug', $slug)->first();
         if (!$this->character) {

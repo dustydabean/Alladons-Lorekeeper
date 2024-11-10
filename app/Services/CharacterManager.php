@@ -1273,6 +1273,7 @@ class CharacterManager extends Service {
             $characterData['is_giftable'] = isset($data['is_giftable']);
             $characterData['sale_value'] = $data['sale_value'] ?? 0;
             $characterData['transferrable_at'] = $data['transferrable_at'] ?? null;
+            $characterData['poucher_code'] = $data['poucher_code'] ?? null;
             if ($character->is_myo_slot) {
                 $characterData['name'] = (isset($data['name']) && $data['name']) ? $data['name'] : null;
             }
@@ -1357,6 +1358,11 @@ class CharacterManager extends Service {
                 $result[] = 'transfer cooldown';
                 $old['transferrable_at'] = $character->transferrable_at;
                 $new['transferrable_at'] = $characterData['transferrable_at'];
+            }
+            if ($characterData['poucher_code'] != $character->poucher_code) {
+                $result[] = 'poucher code';
+                $old['poucher_code'] = $character->poucher_code;
+                $new['poucher_code'] = $characterData['poucher_code'];
             }
 
             if (count($result)) {
