@@ -14,6 +14,7 @@ use App\Models\Character\CharacterImageSubtype;
 use App\Models\Character\CharacterPedigree;
 use App\Models\Character\CharacterProfileCustomValue;
 use App\Models\Character\CharacterTransfer;
+use App\Models\Character\CharacterLineage;
 use App\Models\Sales\SalesCharacter;
 use App\Models\Species\Subtype;
 use App\Models\User\User;
