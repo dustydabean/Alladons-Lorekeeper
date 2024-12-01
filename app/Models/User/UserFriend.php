@@ -17,7 +17,7 @@ class UserFriend extends Model
     ];
 
     /**
-     * The attributes that should be cast to native types.
+     * Dates on the model to convert to Carbon instances.
      *
      * @var array
      */
