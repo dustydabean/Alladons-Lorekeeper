@@ -52,7 +52,7 @@ class InventoryController extends Controller {
         return view('home.inventory', [
             'categories'  => $categories->keyBy('id'),
             'items'       => $items,
-            'userOptions' => User::visible()->where('id', '!=', Auth::user()->id)->orderBy('name')->pluck('name', 'id')->toArray(),
+            'userOptions' => Auth::user()->userOptions,
             'user'        => Auth::user(),
         ]);
     }

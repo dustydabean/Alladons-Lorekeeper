@@ -314,3 +314,17 @@ Route::group(['prefix' => 'collection', 'namespace' => 'Users'], function () {
     Route::get('complete/{id}', 'CollectionController@getCompleteCollection');
     Route::post('complete/{id}', 'CollectionController@postCompleteCollection');
 });
+
+/**************************************************************************************************
+    Friends
+**************************************************************************************************/
+Route::group(['prefix' => 'friends', 'namespace' => 'Users'], function () {
+    Route::get('/', 'FriendController@getIndex');
+    Route::get('requests', 'FriendController@getFriendRequests');
+    Route::post('requests/{id}', 'FriendController@sendFriendRequest');
+    Route::post('requests/{id}/{accept}', 'FriendController@postAcceptRequest');
+    // remove friend
+    Route::post('remove/{id}', 'FriendController@postRemoveFriend');
+    // block friend
+    Route::post('block/{id}', 'FriendController@postBlockUser');
+});

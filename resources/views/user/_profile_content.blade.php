@@ -26,6 +26,23 @@
             @endif
         </div>
 
+@if(Auth::check() && Auth::user()->id != $user->id && !$user->isBlocked(Auth::user()))
+    <h4>
+        @if($user->isPendingFriendsWith(Auth::user()))
+            <small><i data-toggle="tooltip" title="You have a pending request to be friends with {{ $user->name }}." class="fas fa-user text-info float-right"></i></small>
+        @elseif($user->isFriendsWith(Auth::user()))
+            <small><i data-toggle="tooltip" title="You are friends with {{ $user->name }}." class="fas fa-user text-success float-right"></i></small>
+        @else
+            {!! Form::open(['url' => 'friends/requests/'.$user->id]) !!}
+                {!! Form::button('<i class="fas fa-plus"></i>', ['class' => 'btn badge badge-success mr-2 float-right', 'data-toggle' => 'tooltip', 'title' => 'Add this user as friend.', 'type' => 'submit']) !!}
+            {!! Form::close() !!}
+        @endif
+        {!! Form::open(['url' => 'friends/block/'.$user->id]) !!}
+            {!! Form::button('Block', ['class' => 'btn badge badge-danger mr-2 float-right', 'data-toggle' => 'tooltip', 'title' => 'Blocking this user will prevent them from viewing your profile.', 'type' => 'submit']) !!}
+        {!! Form::close() !!}
+    </h4>
+@endif    
+
         <!-- User Information -->
         <div class="row no-gutters">
             <div class="row col-sm-5">

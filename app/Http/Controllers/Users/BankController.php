@@ -29,7 +29,7 @@ class BankController extends Controller {
     public function getIndex() {
         return view('home.bank', [
             'currencyOptions' => Currency::where('allow_user_to_user', 1)->where('is_user_owned', 1)->whereIn('id', UserCurrency::where('user_id', Auth::user()->id)->pluck('currency_id')->toArray())->orderBy('sort_user', 'DESC')->pluck('name', 'id')->toArray(),
-            'userOptions'     => User::visible()->where('id', '!=', Auth::user()->id)->orderBy('name')->pluck('name', 'id')->toArray(),
+            'userOptions'     => Auth::user()->userOptions,
             // only get currency with currency_conversions relationship
             'convertOptions'  => Currency::where('is_user_owned', 1)->whereHas('conversions')->orderBy('sort_user', 'DESC')->pluck('name', 'id')->toArray(),
             'canTransfer'     => Settings::get('can_transfer_currency_directly'),
