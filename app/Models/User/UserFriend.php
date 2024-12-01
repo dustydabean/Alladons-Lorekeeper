@@ -17,11 +17,14 @@ class UserFriend extends Model
     ];
 
     /**
-     * Dates on the model to convert to Carbon instances.
+     * The attributes that should be cast to native types.
      *
      * @var array
      */
-    protected $dates = ['created_at', 'accepted_at'];
+    protected $casts = [
+        'created_at' => 'datetime',
+        'accepted_at' => 'datetime',
+    ];
 
     /**********************************************************************************************
 
