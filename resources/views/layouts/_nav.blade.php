@@ -131,6 +131,9 @@
                                 Bank
                             </a>
                             <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{{ url('friends') }}" class="{{ set_active('friends') }}">
+                                My Friends
+                            </a>
                             <a class="dropdown-item" href="{{ url('comments/liked') }}">
                                 Liked Comments
                             </a>
