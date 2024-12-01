@@ -2088,7 +2088,7 @@ class CharacterManager extends Service {
                 $character->lineage->update([
                     'parent_1_id'   => $data['parent_1_id'] ?? null,
                     'parent_1_name' => $data['parent_1_id'] ? null : ($data['parent_1_name'] ?? null),
-                    'parent_1_id'   => $data['parent_2_id'] ?? null,
+                    'parent_2_id'   => $data['parent_2_id'] ?? null,
                     'parent_2_name' => $data['parent_2_id'] ? null : ($data['parent_2_name'] ?? null),
                     'depth'         => $data['depth'] ?? 0,
                 ]);
