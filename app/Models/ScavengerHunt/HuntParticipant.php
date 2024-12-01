@@ -32,8 +32,18 @@ class HuntParticipant extends Model
      *
      * @var array
      */
-    public $dates = ['target_1', 'target_2', 'target_3', 'target_4', 'target_5',
-    'target_6', 'target_7', 'target_8', 'target_9', 'target_10'];
+    protected $casts = [
+        'target_1'  => 'datetime',
+        'target_2'  => 'datetime',
+        'target_3'  => 'datetime',
+        'target_4'  => 'datetime',
+        'target_5'  => 'datetime',
+        'target_6'  => 'datetime',
+        'target_7'  => 'datetime',
+        'target_8'  => 'datetime',
+        'target_9'  => 'datetime',
+        'target_10' => 'datetime',
+    ];
 
     /**
      * Whether the model contains timestamps to be saved and updated.
