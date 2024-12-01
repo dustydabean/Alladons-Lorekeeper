@@ -50,9 +50,6 @@
                         <a class="dropdown-item" href="{{ url('team') }}">
                             Staff
                         </a>
-                        <a class="dropdown-item" href="{{ url('faq') }}">
-                            FAQ
-                        </a>
                     </div>
                 </li>
                 <li class="nav-item">
@@ -65,6 +62,9 @@
                     </a>
 
                     <div class="dropdown-menu" aria-labelledby="loreDropdown">
+                        <a class="dropdown-item" href="{{ url('faq') }}">
+                            FAQ
+                        </a>
                         <a class="dropdown-item" href="{{ url('claims') }}">
                             Claims
                         </a>
