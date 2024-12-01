@@ -297,6 +297,16 @@ Route::group(['prefix' => 'activities'], function () {
 });
 
 /**************************************************************************************************
+    Scavenger Hunts
+**************************************************************************************************/
+
+Route::group(['prefix' => 'hunts'], function() {
+    Route::get('{id}', 'HuntController@getHunt');
+    Route::get('targets/{pageId}', 'HuntController@getTarget');
+    Route::post('targets/claim', 'HuntController@postClaimTarget');
+});
+
+/**************************************************************************************************
     Comments
 **************************************************************************************************/
 Route::group(['prefix' => 'comments', 'namespace' => 'Comments'], function () {

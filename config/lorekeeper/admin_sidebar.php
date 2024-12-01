@@ -230,6 +230,10 @@ return [
                 'name' => 'Character Pedigrees',
                 'url'  => 'admin/data/character-pedigrees',
             ],
+            [
+                'name' => 'Scavenger Hunts',
+                'url' => 'admin/data/hunts',
+            ],
         ],
     ],
     'Raffles'    => [
