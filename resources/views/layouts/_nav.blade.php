@@ -44,15 +44,14 @@
                             Encyclopedia
                         </a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="{{ url('faq') }}">
-                            FAQ
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="browseDropdown">
                         <a class="dropdown-item" href="{{ url('users') }}">
                             Users
                         </a>
                         <a class="dropdown-item" href="{{ url('team') }}">
                             Staff
+                        </a>
+                        <a class="dropdown-item" href="{{ url('faq') }}">
+                            FAQ
                         </a>
                     </div>
                     </div>
