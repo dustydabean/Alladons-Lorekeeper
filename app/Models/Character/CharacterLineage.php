@@ -11,7 +11,7 @@ class CharacterLineage extends Model {
      * @var array
      */
     protected $fillable = [
-        'character_id', 'parent_1_id', 'parent_1__name', 'parent_2_id', 'parent_2_name',
+        'character_id', 'parent_1_id', 'parent_1_name', 'parent_2_id', 'parent_2_name',
     ];
 
     /**
