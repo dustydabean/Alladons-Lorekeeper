@@ -4,28 +4,12 @@
     </div>
     <div class="col-lg-9 col-8">{!! $character->displayOwner !!}</div>
 </div>
-@if (!$character->is_myo_slot)
-    <!--<div class="row">
-        <div class="col-lg-3 col-4">
-            <h5>Category</h5>
-        </div>
-        <div class="col-lg-9 col-8">{!! $character->category->displayName !!}</div>
-    </div>--->
-    <div class="row">
-        <div class="col-lg-3 col-4">
-            <h5>Poucher Code</h5>
-        </div>
-        <div class="col-lg-9 col-8">{!! $character->poucher_code ?? 'None' !!}</div>
-    </div>
-@endif
-<!--<div class="row">
+<div class="row">
     <div class="col-lg-3 col-4">
-        <h5 class="mb-0">Created</h5>
+        <h5>Rarity</h5>
     </div>
-    <div class="col-lg-9 col-8">{!! format_date($character->created_at) !!}</div>
-</div>-->
-
-    <hr/>
+    <div class="col-lg-8 col-md-6 col-8">{!! $character->image->rarity_id ? $character->image->rarity->displayName : 'None' !!}</div>
+</div>
 
 <hr/>
 
