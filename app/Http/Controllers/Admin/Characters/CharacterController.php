@@ -9,6 +9,7 @@ use App\Models\Character\CharacterCategory;
 use App\Models\Character\CharacterLineageBlacklist;
 use App\Models\Character\CharacterImage;
 use App\Models\Character\CharacterTransfer;
+use App\Models\Character\CharacterGeneration;
 use App\Models\Feature\Feature;
 use App\Models\Rarity;
 use App\Models\Species\Species;
