@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin\Characters;
 
 use App\Http\Controllers\Controller;
 use App\Models\Character\Character;
+use App\Models\Character\CharacterGeneration;
 use App\Models\Character\CharacterImage;
+use App\Models\Character\CharacterPedigree;
 use App\Models\Feature\Feature;
 use App\Models\Rarity;
 use App\Models\Species\Species;
@@ -103,9 +105,10 @@ class CharacterImageController extends Controller {
 
         return view('character.admin._edit_features_modal', [
             'image'     => $image,
-            'rarities'  => ['0' => 'Select Rarity'] + Rarity::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'specieses' => ['0' => 'Select Species'] + Species::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'subtypes'  => Subtype::where('species_id', '=', $image->species_id)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'generations' => [null => 'Select Generation'] + CharacterGeneration::query()->orderBy('name')->pluck('name', 'id')->toArray(),
+            'pedigrees'   => [null => 'Select Pedigree Tag'] + CharacterPedigree::query()->orderBy('name')->pluck('name', 'id')->toArray(),
             'features'  => Feature::getDropdownItems(1),
         ]);
     }
@@ -119,7 +122,9 @@ class CharacterImageController extends Controller {
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postEditImageFeatures(Request $request, CharacterManager $service, $id) {
-        $data = $request->only(['species_id', 'subtype_ids', 'rarity_id', 'feature_id', 'feature_data', 'sex']);
+        $data = $request->only(['species_id', 'subtype_ids', 'feature_id', 'feature_data', 'sex', 
+        'nickname', 'birthdate', 'poucher_code',
+        'generation_id', 'pedigree_id', 'pedigree_descriptor',]);
         $image = CharacterImage::find($id);
         if (!$image) {
             abort(404);

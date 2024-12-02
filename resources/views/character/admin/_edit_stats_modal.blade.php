@@ -24,50 +24,9 @@
             {!! Form::label('Character Code') !!} {!! add_help('This code identifies the character itself. This must be unique among all characters (as it\'s used to generate the character\'s page URL).') !!}
             {!! Form::text('slug', $character->slug, ['class' => 'form-control', 'id' => 'code']) !!}
         </div>
-    </div>
-
-    <div class="col-md-6 form-group">
-            {!! Form::label('poucher_code', 'Poucher Code') !!}
-            {!! Form::text('poucher_code', $character->poucher_code, ['class' => 'form-control']) !!}
-        </div>
-
-    <div class="row">
-        <div class="col-md-6">
-            <div class="form-group">
-                {!! Form::label('Nickname (Optional)') !!}
-                {!! Form::text('nickname', $character->nickname, ['class' => 'form-control']) !!}
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                {!! Form::label('Generation (Optional)') !!}
-                {!! Form::select('generation_id', $generations, $character->generation_id, ['class' => 'form-control', 'id' => 'generationSelect']) !!}
-            </div>
-        </div>
-    </div>
-
-    <div class="form-group">
-        {!! Form::label('Birthdate (Optional)') !!}
-        <div class="input-group">
-            {!! Form::text('birthdate', $character->birthdate, ['class' => 'form-control datepickerdob']) !!}
-            <div class="input-group-append">
-                <a class="btn btn-info collapsed" href="#collapseddob" data-toggle="collapse"><i class="fas fa-calendar-alt"></i></a>
-            </div>
-        </div>
-        <div class="collapse dobpicker" id="collapseddob" style="position: relative; z-index: 9999;"></div>
-    </div>
-
-    {!! Form::label('Pedigree Name (Optional)') !!} {!! add_help('While this is optional, if you set a pedigree tag you must set a descriptor and vice versa.') !!}
-    <div class="row">
-        <div class="col-md-6">
-            <div class="form-group">
-                {!! Form::select('pedigree_id', $pedigrees, $character->pedigree_id, ['class' => 'form-control', 'id' => 'pedigreeSelect']) !!}
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                {!! Form::text('pedigree_descriptor', $character->pedigree_descriptor, ['class' => 'form-control']) !!}
-            </div>
+        <div class="col-md-6 form-group">
+            {!! Form::label('Character Rarity') !!}
+            {!! Form::select('rarity_id', $rarities, $character->image->rarity_id, ['class' => 'form-control']) !!}
         </div>
     </div>
 @endif
@@ -111,7 +70,6 @@
 </div>
 {!! Form::close() !!}
 
-@include('widgets._datetimepicker_js', ['dtinline' => 'datepickeralt', 'dtvalue' => $character->transferrable_at, 'dobpicker' => true])
 <script>
     $('#generationSelect').selectize();
     $('#pedigreeSelect').selectize();

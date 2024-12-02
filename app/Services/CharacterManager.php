@@ -17,6 +17,7 @@ use App\Models\Character\CharacterTransfer;
 use App\Models\Character\CharacterLineage;
 use App\Models\Sales\SalesCharacter;
 use App\Models\Species\Subtype;
+use App\Models\Rarity;
 use App\Models\User\User;
 use App\Models\User\UserPet;
 use Auth;
@@ -685,6 +686,25 @@ class CharacterManager extends Service {
                 }
             }
 
+            if (isset($data['generation_id']) && $data['generation_id']) {
+                $generation = CharacterGeneration::find($data['generation_id']);
+                if (!$generation) {
+                    throw new \Exception('Selected generation is invalid.');
+                }
+            }
+
+            if ((isset($data['pedigree_id']) && $data['pedigree_id']) || (isset($data['pedigree_descriptor']) && $data['pedigree_descriptor'])) {
+                $pedigree = CharacterPedigree::find($data['pedigree_id']);
+
+                if ((!isset($data['pedigree_descriptor']) && $data['pedigree_id']) || (!isset($data['pedigree_id']) && $data['pedigree_descriptor'])) {
+                    throw new \Exception('If you are assigning this character a pedigree name, then both pedigree tag and pedigree descriptor must be set.');
+                }
+
+                if (!$pedigree) {
+                    throw new \Exception('Selected pedigree tag is invalid.');
+                }
+            }
+
             if (!$this->logAdminAction($user, 'Updated Image', 'Updated character image features on <a href="'.$image->character->url.'">#'.$image->id.'</a>')) {
                 throw new \Exception('Failed to log admin action.');
             }
@@ -694,8 +714,13 @@ class CharacterManager extends Service {
             $old['features'] = $this->generateFeatureList($image);
             $old['species'] = $image->species_id ? $image->species->displayName : null;
             $old['subtypes'] = count($image->subtypes) ? $image->displaySubtypes() : null;
-            $old['rarity'] = $image->rarity_id ? $image->rarity->displayName : null;
             $old['sex'] = $image->sex ? $image->sex : null;
+
+            $old['generation'] = $image->character->generation_id ? $image->character->generation->name : 'No Generation';
+            $old['pedigree'] = $image->character->pedigree_id ? $image->character->pedigree->name.' '.$image->character->pedigree_descriptor : 'No Pedigree Name';
+            $old['nickname'] = $image->character->nickname ?? 'No Nickname';
+            $old['birthdate'] = $image->character->birthdate ?? 'Birthdate Unknown';
+            $old['poucher_code'] = $image->character->poucher_code ?? 'No Poucher Code';
 
             // Clear old features
             $image->features()->delete();
@@ -722,9 +747,17 @@ class CharacterManager extends Service {
                     ]);
                 }
             }
-            $image->rarity_id = $data['rarity_id'];
             $image->sex = $data['sex'];
             $image->save();
+
+            // Update Character Stats
+            $image->character->generation_id = $data['generation_id'] ?? null;
+            $image->character->pedigree_id = $data['pedigree_id'] ?? null;
+            $image->character->pedigree_descriptor = $data['pedigree_descriptor'] ?? null;
+            $image->character->nickname = $data['nickname'] ?? null;
+            $image->character->birthdate = $data['birthdate'] ?? null;
+            $image->character->poucher_code = $data['poucher_code'] ?? null;
+            $image->character->save();
 
             $new = [];
             $new['features'] = $this->generateFeatureList($image);
@@ -733,9 +766,23 @@ class CharacterManager extends Service {
             $new['rarity'] = $image->rarity_id ? $image->rarity->displayName : null;
             $new['sex'] = $image->sex ? $image->sex : null;
 
-            // Character also keeps track of these features
-            $image->character->rarity_id = $image->rarity_id;
-            $image->character->save();
+            if (isset($data['generation_id']) && $data['generation_id']) {
+                $generation = CharacterGeneration::find($data['generation_id']);
+            } else {
+                $generation = null;
+            }
+
+            if (isset($data['pedigree_id']) && $data['pedigree_id']) {
+                $pedigree = CharacterPedigree::find($data['pedigree_id']);
+            } else {
+                $pedigree = null;
+            }
+
+            $new['generation'] = isset($generation) ? $generation->name : 'No Generation';
+            $new['pedigree'] = isset($pedigree) ? $pedigree->name.' '.$data['pedigree_descriptor']: 'No Pedigree Name';
+            $new['nickname'] = $data['nickname'] ?? 'No Nickname';
+            $new['birthdate'] = $data['birthdate'] ?? 'Birthdate Unknown';
+            $new['poucher_code'] = $data['poucher_code'] ?? 'No Poucher Code';
 
             // Add a log for the character
             // This logs all the updates made to the character
@@ -1247,34 +1294,23 @@ class CharacterManager extends Service {
                 throw new \Exception('Character code must be unique.');
             }
 
-            if (isset($data['generation_id']) && $data['generation_id']) {
-                $generation = CharacterGeneration::find($data['generation_id']);
-                if (!$generation) {
-                    throw new \Exception('Selected generation is invalid.');
-                }
-            }
-            if ((isset($data['pedigree_id']) && $data['pedigree_id']) || (isset($data['pedigree_descriptor']) && $data['pedigree_descriptor'])) {
-                $pedigree = CharacterPedigree::find($data['pedigree_id']);
-                if ((!isset($data['pedigree_descriptor']) && $data['pedigree_id']) || (!isset($data['pedigree_id']) && $data['pedigree_descriptor'])) {
-                    throw new \Exception('If you are assigning this character a pedigree name, then both pedigree tag and pedigree descriptor must be set.');
-                }
-                if (!$pedigree) {
-                    throw new \Exception('Selected pedigree tag is invalid.');
+            if (isset($data['rarity_id']) && $data['rarity_id']) {
+                $rarity = Rarity::find($data['rarity_id']);
+                if (!$rarity) {
+                    throw new \Exception('Selected rarity is invalid.');
                 }
             }
 
             $characterData = Arr::only($data, [
                 'character_category_id',
-                'number', 'slug', 'poucher_code',
-                'generation_id', 'pedigree_id', 'pedigree_descriptor',
-                'nickname', 'birthdate',
+                'number', 'slug', 'rarity_id',
             ]);
             $characterData['is_sellable'] = isset($data['is_sellable']);
             $characterData['is_tradeable'] = isset($data['is_tradeable']);
             $characterData['is_giftable'] = isset($data['is_giftable']);
+            $characterData['rarity_id'] = $data['rarity_id'] ?? $character->rarity_id;
             $characterData['sale_value'] = $data['sale_value'] ?? 0;
             $characterData['transferrable_at'] = $data['transferrable_at'] ?? null;
-            $characterData['poucher_code'] = $data['poucher_code'] ?? null;
             if ($character->is_myo_slot) {
                 $characterData['name'] = (isset($data['name']) && $data['name']) ? $data['name'] : null;
             }
@@ -1299,33 +1335,16 @@ class CharacterManager extends Service {
                     $old['slug'] = $character->slug;
                     $new['slug'] = $characterData['slug'];
                 }
-                if ($characterData['generation_id'] != $character->generation_id) {
-                    $result[] = 'generation';
-                    $old['generation'] = $character->generation_id ? $character->generation->name : 'No Generation';
-                    if (CharacterGeneration::find($characterData['generation_id'])) {
-                        $new['generation'] = CharacterGeneration::find($characterData['generation_id'])->name;
-                    } else {
-                        $new['generation'] = 'No Generation';
-                    }
-                }
-                if ($characterData['pedigree_id'] != $character->pedigree_id || $characterData['pedigree_descriptor'] != $character->pedigree_descriptor) {
-                    $result[] = 'pedigree';
-                    $old['pedigree'] = $character->pedigree_id ? $character->pedigree->name.' '.$character->pedigree_descriptor : 'No Pedigree Name';
-                    if (CharacterPedigree::find($characterData['pedigree_id'])) {
-                        $new['pedigree'] = CharacterPedigree::find($characterData['pedigree_id'])->name.' '.$characterData['pedigree_descriptor'];
-                    } else {
-                        $new['pedigree'] = 'No Pedigree Name';
-                    }
-                }
-                if ($characterData['nickname'] != $character->nickname) {
-                    $result[] = 'nickname';
-                    $old['nickname'] = $character->nickname;
-                    $new['nickname'] = $characterData['nickname'];
-                }
-                if ($characterData['birthdate'] != $character->birthdate) {
-                    $result[] = 'birthdate';
-                    $old['birthdate'] = $character->birthdate;
-                    $new['birthdate'] = $characterData['birthdate'];
+                if ($characterData['rarity_id'] != $character->rarity_id) {
+                    $result[] = 'rarity';
+                    $old['rarity'] = $character->rarity_id ? $character->rarity->displayName : 'No Rarity';
+                    $new['rarity'] = Rarity::find($characterData['rarity_id'])->displayName;
+
+                    $character->rarity_id = $characterData['rarity_id'];
+                    $character->save();
+
+                    $character->image->rarity_id = $characterData['rarity_id'];
+                    $character->image->save();
                 }
             } else {
                 if ($characterData['name'] != $character->name) {
@@ -1359,11 +1378,6 @@ class CharacterManager extends Service {
                 $result[] = 'transfer cooldown';
                 $old['transferrable_at'] = $character->transferrable_at;
                 $new['transferrable_at'] = $characterData['transferrable_at'];
-            }
-            if ($characterData['poucher_code'] != $character->poucher_code) {
-                $result[] = 'poucher code';
-                $old['poucher_code'] = $character->poucher_code;
-                $new['poucher_code'] = $characterData['poucher_code'];
             }
 
             if (count($result)) {
