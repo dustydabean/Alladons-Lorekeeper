@@ -7,7 +7,7 @@
         ]
         $('a').each(function() {
             let link = $(this);
-            let isExternal = this.host !== window.location.host && !allowedUrls.includes(this.href);
+            let isExternal = this.host !== window.location.host && !allowedUrls.includes(this.href) && ($(this).attr('href') !== undefined);
 
             if (isExternal) {
                 link.addClass('external-link');
