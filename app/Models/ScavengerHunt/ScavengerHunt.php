@@ -25,14 +25,14 @@ class ScavengerHunt extends Model
      */
     protected $table = 'scavenger_hunts';
 
-    /**
-     * Dates on the model to convert to Carbon instances.
+     /**
+     * The attributes that should be cast to native types.
      *
      * @var array
      */
     protected $casts = [
-        'created_at' => 'datetime',
-        'accepted_at' => 'datetime',
+        'start_at' => 'datetime',
+        'end_at'   => 'datetime',
     ];
     
     /**
