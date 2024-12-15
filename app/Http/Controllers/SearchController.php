@@ -2,24 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\IndexSiteData;
-use Illuminate\Http\Request;
 use DB;
+use Illuminate\Http\Request;
 
 class SearchController extends Controller {
-    
     public function siteSearch(Request $request) {
-
         $input = $request->input('s');
 
         $result = DB::table('site_index')
-        ->where('title', 'like', '%' . $input . '%')
-        ->orWhere('description', 'like', '%' . $input . '%')
-        ->limit(25)
-        ->get();
+            ->where('title', 'like', '%'.$input.'%')
+            ->orWhere('description', 'like', '%'.$input.'%')
+            ->limit(25)
+            ->get();
 
-        $result_list = array();
-
+        $result_list = [];
 
         foreach ($result as $r) {
             $url = findPageUrlStructure($r->type, $r->identifier);

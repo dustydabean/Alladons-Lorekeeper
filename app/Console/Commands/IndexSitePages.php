@@ -2,14 +2,10 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Character\Character;
 use DB;
-use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Schema;
-
-use App\Models\Character\Character;
-use App\Models\SitePage;
-use App\Models\IndexSiteData;
 
 class IndexSitePages extends Command {
     /**
@@ -39,12 +35,10 @@ class IndexSitePages extends Command {
      * @return int
      */
     public function handle() {
-
         if (Schema::hasTable('site_temp_index')) {
-
             //A. ------------------ Clear the temp table for extra insurance
             DB::table('site_temp_index')->truncate();
-            
+
             //B. ------------------ Index types of content
             //1. FIND ALL CHARACTERS TO INDEX
             $existingCharacters = DB::table('characters')->pluck('id');
@@ -52,10 +46,10 @@ class IndexSitePages extends Command {
             foreach ($characters as $character) {
                 DB::table('site_temp_index')->insert([
                     // input all neccessary fields
-                    'id' => $character->id,
-                    'title' => $character->slug.': '.$character->name,
-                    'type'  => 'Character',
-                    'identifier' => $character->slug,
+                    'id'          => $character->id,
+                    'title'       => $character->slug.': '.$character->name,
+                    'type'        => 'Character',
+                    'identifier'  => $character->slug,
                     'description' => $character->name,
                 ]);
             }
@@ -65,10 +59,10 @@ class IndexSitePages extends Command {
             foreach ($pages as $page) {
                 DB::table('site_temp_index')->insert([
                     // input all neccessary fields
-                    'id' => $page->id,
-                    'title' => $page->title,
-                    'type'  => 'Page',
-                    'identifier' => $page->key,
+                    'id'          => $page->id,
+                    'title'       => $page->title,
+                    'type'        => 'Page',
+                    'identifier'  => $page->key,
                     'description' => substr_replace(strip_tags($page->text), '...', 100),
                 ]);
             }
@@ -78,11 +72,11 @@ class IndexSitePages extends Command {
             foreach ($users as $user) {
                 DB::table('site_temp_index')->insert([
                     // input all neccessary fields
-                    'id' => $user->id,
-                    'title' => $user->name,
-                    'type'  => 'User',
-                    'identifier' => $user->name,
-                    'description' => NULL,
+                    'id'          => $user->id,
+                    'title'       => $user->name,
+                    'type'        => 'User',
+                    'identifier'  => $user->name,
+                    'description' => null,
                 ]);
             }
 
@@ -91,10 +85,10 @@ class IndexSitePages extends Command {
             foreach ($items as $item) {
                 DB::table('site_temp_index')->insert([
                     // input all neccessary fields
-                    'id' => $item->id,
-                    'title' => $item->name,
-                    'type'  => 'Item',
-                    'identifier' => $item->id,
+                    'id'          => $item->id,
+                    'title'       => $item->name,
+                    'type'        => 'Item',
+                    'identifier'  => $item->id,
                     'description' => substr_replace(strip_tags($item->description), '...', 100),
                 ]);
             }
@@ -104,10 +98,10 @@ class IndexSitePages extends Command {
             foreach ($prompts as $prompt) {
                 DB::table('site_temp_index')->insert([
                     // input all neccessary fields
-                    'id' => $prompt->id,
-                    'title' => $prompt->name,
-                    'type'  => 'Prompt',
-                    'identifier' => $prompt->id,
+                    'id'          => $prompt->id,
+                    'title'       => $prompt->name,
+                    'type'        => 'Prompt',
+                    'identifier'  => $prompt->id,
                     'description' => substr_replace(strip_tags($prompt->description), '...', 100),
                 ]);
             }
@@ -117,10 +111,10 @@ class IndexSitePages extends Command {
             foreach ($shops as $shop) {
                 DB::table('site_temp_index')->insert([
                     // input all neccessary fields
-                    'id' => $shop->id,
-                    'title' => $shop->name,
-                    'type'  => 'Shop',
-                    'identifier' => $shop->id,
+                    'id'          => $shop->id,
+                    'title'       => $shop->name,
+                    'type'        => 'Shop',
+                    'identifier'  => $shop->id,
                     'description' => substr_replace(strip_tags($shop->description), '...', 100),
                 ]);
             }
@@ -138,17 +132,16 @@ class IndexSitePages extends Command {
             foreach ($index as $row) {
                 DB::table('site_index')->insert([
                     // input all neccessary fields
-                    'id' => $row->id,
-                    'title' => $row->title,
-                    'type'  => $row->type,
-                    'identifier' => $row->identifier,
+                    'id'          => $row->id,
+                    'title'       => $row->title,
+                    'type'        => $row->type,
+                    'identifier'  => $row->identifier,
                     'description' => $row->description,
                 ]);
             }
 
             // ------------------ D. Dump the Temp Table
             DB::table('site_temp_index')->truncate();
-
         }
     }
 }
