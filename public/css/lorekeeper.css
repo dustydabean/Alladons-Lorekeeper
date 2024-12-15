@@ -306,6 +306,121 @@ main > .row {
 
 /**************************************************************************************************
 
+    Live Ajax Search
+
+**************************************************************************************************/
+
+/* Search Bar */
+.search-bar {
+	position: relative;
+}
+.dark-input {
+	background-color: color-mix(in oklab, var(--dark) 100%, #fff 10%);
+	outline: none;
+	box-shadow: none;
+	border: 0;
+	padding: 6px 15px;
+	min-width: 180px;
+	border-radius: 15px;
+	color: var(--text);
+	transition: 250ms all;
+}
+.search-bar:after {
+	content: "\f002";
+	display: inline-block;
+	position: absolute;
+	right: 15px;
+	top: 5px;
+	font-family: "Font Awesome 5 Free";
+	font-weight: 900;
+}
+.search-bar.loader:after {
+	
+}
+.dark-input:hover, .dark-input:focus {
+	filter: brightness(1.5);
+}
+.dark-input:focus, .dark-input.active {
+	min-width: 250px;
+}
+/*Search Dropdown*/
+#searchResult {
+	width: 15vw;
+	min-height: 30px;
+	max-height: 300px;
+	background-color:var(--light);
+	box-shadow: 0 0 10px 0 rgba(0,0,0,0.25);
+	position: absolute;
+	z-index: 999;
+	border-radius: 10px;
+	top: 50px;
+	right: 0;
+	border: 2px solid rgba(255, 255, 255, .1);
+	padding: 10px;
+	overflow-y:auto;
+}
+#searchResult:after {
+	position: absolute;
+	content: "";
+	width: 0; 
+  	height: 0; 
+  	border-left: 15px solid transparent;
+  	border-right: 15px solid transparent;
+  	border-bottom: 15px solid #3C4248;
+	top: -15px;
+	left: 10px
+}
+.resultrow {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	padding: 10px;
+	transition: 250ms all;
+}
+.resultrow:hover {
+	background-color: rgba(0,0,0,0.05);
+}
+.resultrow:not(:last-of-type) {
+	border-bottom: 1px solid rgba(0, 0, 0, .1);
+}
+.resultrow div, .resultrow small {
+	width: 100%;
+}
+.resultrow small {
+	color: #9f9f9f;
+}
+.resultrow span {
+	text-transform: uppercase;
+	margin-right: 10px;
+	background-color: rgba(0,0,0,0.25);
+	color: var(--dark);
+	font-size: 12px;
+}
+/* SPINNER */
+.loader:after {
+	content: "";
+	top: 8px;
+    width: 15px;
+    height: 15px;
+    border: 2px solid rgba(255, 255, 255, .5);
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+    }
+
+    @keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+    } 
+
+/**************************************************************************************************
+
     Content
 
 **************************************************************************************************/
