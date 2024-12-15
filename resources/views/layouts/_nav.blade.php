@@ -125,6 +125,7 @@
 
             <!-- Right Side Of Navbar -->
             <ul class="navbar-nav ml-auto">
+            @include('layouts._searchindexbar')
                 <!-- Authentication Links -->
                 @guest
                     <li class="nav-item">
