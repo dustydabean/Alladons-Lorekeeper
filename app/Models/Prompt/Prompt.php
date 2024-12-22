@@ -254,7 +254,7 @@ class Prompt extends Model {
      * @return string
      */
     public function getImageFileNameAttribute() {
-        return $this->hash.$this->id.'-image.png';
+        return $this->id.'-'.$this->hash.'-image.png';
     }
 
     /**

@@ -125,7 +125,7 @@ class Species extends Model {
      * @return string
      */
     public function getSpeciesImageFileNameAttribute() {
-        return $this->hash.$this->id.'-image.png';
+        return $this->id.'-'.$this->hash.'-image.png';
     }
 
     /**

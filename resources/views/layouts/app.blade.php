@@ -47,8 +47,10 @@
     <script src="{{ asset('js/tinymce.min.js') }}"></script>
     <script src="{{ asset('js/jquery.tinymce.min.js') }}"></script>
     <script defer src="{{ asset('js/bootstrap-colorpicker.min.js') }}"></script>
+    <script src="{{ asset('js/bs-custom-file-input.min.js') }}"></script>
     <script defer src="{{ asset('js/jquery-ui-timepicker-addon.js') }}"></script>
     <script defer src="{{ asset('js/croppie.min.js') }}"></script>
+    <script src="{{ asset('js/jquery.ui.touch-punch.min.js') }}"></script>
 
     <!-- Scripts for wheel of fortune dailies -->
     <script src="{{ asset('js/winwheel.min.js') }}"></script>
@@ -63,7 +65,7 @@
     <link href="{{ asset('css/lorekeeper.css?v=' . filemtime(public_path('css/lorekeeper.css'))) }}" rel="stylesheet">
 
     {{-- Font Awesome --}}
-    <link defer href="{{ asset('css/all.min.css') }}" rel="stylesheet">
+    <link defer href="{{ faVersion() }}" rel="stylesheet">
 
     {{-- jQuery UI --}}
     <link defer href="{{ asset('css/jquery-ui.min.css') }}" rel="stylesheet">
@@ -266,6 +268,7 @@
                     spoiler_caption: 'Toggle Spoiler',
                     target_list: false
                 });
+                bsCustomFileInput.init();
                 var $mobileMenuButton = $('#mobileMenuButton');
                 var $sidebar = $('#sidebar');
                 $('#mobileMenuButton').on('click', function(e) {
