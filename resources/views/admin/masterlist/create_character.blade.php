@@ -384,17 +384,18 @@
             });
         });
 
-        $('#generationSelect').selectize();
-        $('#pedigreeSelect').selectize();
-
         $(document).ready(function() {
             $('.character-select').selectize();
             $('#advanced_lineage').on('click', function(e) {
                 e.preventDefault();
             });
-        });    
-        $("#subtype").selectize({
-            maxItems: {{ config('lorekeeper.extensions.multiple_subtype_limit') }},
+
+            $('#generationSelect').selectize();
+            $('#pedigreeSelect').selectize();
+
+            $("#subtype").selectize({
+                maxItems: {{ config('lorekeeper.extensions.multiple_subtype_limit') }},
+            });
         });
     </script>
 @endsection

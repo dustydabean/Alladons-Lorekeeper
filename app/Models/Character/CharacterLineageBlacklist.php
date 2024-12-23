@@ -175,6 +175,7 @@ class CharacterLineageBlacklist extends Model {
             ->join('character_images', 'characters.character_image_id', '=', 'character_images.id')
             ->whereNotIn('species_id', self::getBlacklistSpecies())
             ->whereNotIn('suptype_id', self::getBlacklistSubtypes())
+            ->orderByRaw('LENGTH(characters.slug) ASC')
             ->orderBy('characters.slug'); // Ensure orderBy is correct
 
         if ($character) {
