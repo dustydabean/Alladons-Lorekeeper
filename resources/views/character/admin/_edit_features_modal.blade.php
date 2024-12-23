@@ -104,6 +104,9 @@
             removeFeatureRow($(this));
         })
 
+        $('#generationSelect').selectize();
+        $('#pedigreeSelect').selectize();
+
         function addFeatureRow() {
             var $clone = $('.feature-row').clone();
             $('#featureList').append($clone);
