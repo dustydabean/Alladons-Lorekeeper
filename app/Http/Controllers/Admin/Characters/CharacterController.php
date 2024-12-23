@@ -6,10 +6,11 @@ use App\Facades\Settings;
 use App\Http\Controllers\Controller;
 use App\Models\Character\Character;
 use App\Models\Character\CharacterCategory;
-use App\Models\Character\CharacterGeneration;
 use App\Models\Character\CharacterLineageBlacklist;
-use App\Models\Character\CharacterPedigree;
+use App\Models\Character\CharacterImage;
 use App\Models\Character\CharacterTransfer;
+use App\Models\Character\CharacterGeneration;
+use App\Models\Character\CharacterPedigree;
 use App\Models\Feature\Feature;
 use App\Models\Rarity;
 use App\Models\Species\Species;
@@ -70,12 +71,12 @@ class CharacterController extends Controller {
      */
     public function getCreateMyo() {
         return view('admin.masterlist.create_character', [
-            'userOptions'      => User::query()->orderBy('name')->pluck('name', 'id')->toArray(),
-            'rarities'         => ['0' => 'Select Rarity'] + Rarity::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'specieses'        => ['0' => 'Select Species'] + Species::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'subtypes'         => ['0' => 'Pick a Species First'],
-            'features'         => Feature::getDropdownItems(1),
-            'isMyo'            => true,
+            'userOptions' => User::query()->orderBy('name')->pluck('name', 'id')->toArray(),
+            'rarities'    => ['0' => 'Select Rarity'] + Rarity::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'specieses'   => ['0' => 'Select Species'] + Species::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'subtypes'    => [],
+            'features'    => Feature::getDropdownItems(1),
+            'isMyo'       => true,
             'characterOptions' => CharacterLineageBlacklist::getAncestorOptions(),
         ]);
     }
@@ -89,7 +90,7 @@ class CharacterController extends Controller {
         $species = $request->input('species');
 
         return view('admin.masterlist._create_character_subtype', [
-            'subtypes' => ['0' => 'Select Subtype'] + Subtype::where('species_id', '=', $species)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'subtypes' => Subtype::where('species_id', '=', $species)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'isMyo'    => $request->input('myo'),
         ]);
     }
@@ -104,14 +105,14 @@ class CharacterController extends Controller {
     public function postCreateCharacter(Request $request, CharacterManager $service) {
         $request->validate(Character::$createRules);
         $data = $request->only([
-            'user_id', 'owner_url', 'character_category_id', 'number', 'slug', 'poucher_code',
+            'user_id', 'owner_url', 'character_category_id', 'number', 'slug', 
             'description', 'is_visible', 'is_giftable', 'is_tradeable', 'is_sellable',
             'sale_value', 'transferrable_at', 'use_cropper',
             'x0', 'x1', 'y0', 'y1',
             'designer_id', 'designer_url',
             'artist_id', 'artist_url',
             'species_id', 'subtype_id', 'rarity_id', 'feature_id', 'feature_data',
-            'image', 'thumbnail', 'image_description',
+            'image', 'thumbnail', 'image_description', 'content_warnings',
             'sex', 'parent_1_id', 'parent_2_id',
             'generation_id', 'pedigree_id', 'pedigree_descriptor',
             'nickname', 'birthdate',
@@ -145,7 +146,7 @@ class CharacterController extends Controller {
             'x0', 'x1', 'y0', 'y1',
             'designer_id', 'designer_url',
             'artist_id', 'artist_url',
-            'species_id', 'subtype_id', 'rarity_id', 'feature_id', 'feature_data',
+            'species_id', 'subtype_ids', 'rarity_id', 'feature_id', 'feature_data',
             'image', 'thumbnail',
             'parent_1_id', 'parent_2_id',
         ]);
@@ -180,8 +181,7 @@ class CharacterController extends Controller {
             'categories'  => CharacterCategory::orderBy('sort')->pluck('name', 'id')->toArray(),
             'userOptions' => User::query()->orderBy('name')->pluck('name', 'id')->toArray(),
             'number'      => format_masterlist_number($this->character->number, config('lorekeeper.settings.character_number_digits')),
-            'generations' => [null => 'Select Generation'] + CharacterGeneration::query()->orderBy('name')->pluck('name', 'id')->toArray(),
-            'pedigrees'   => [null => 'Select Pedigree Tag'] + CharacterPedigree::query()->orderBy('name')->pluck('name', 'id')->toArray(),
+            'rarities'  => ['0' => 'Select Rarity'] + Rarity::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'isMyo'       => false,
         ]);
     }
@@ -217,10 +217,9 @@ class CharacterController extends Controller {
     public function postEditCharacterStats(Request $request, CharacterManager $service, $slug) {
         $request->validate(Character::$updateRules);
         $data = $request->only([
-            'character_category_id', 'number', 'slug', 'poucher_code',
+            'character_category_id', 'number', 'slug',
             'is_giftable', 'is_tradeable', 'is_sellable', 'sale_value',
-            'transferrable_at', 'generation_id', 'pedigree_id', 'pedigree_descriptor',
-            'nickname', 'birthdate',
+            'transferrable_at', 'rarity_id',
         ]);
         $this->character = Character::where('slug', $slug)->first();
         if (!$this->character) {
@@ -377,7 +376,7 @@ class CharacterController extends Controller {
      */
     public function postCharacterSettings(Request $request, CharacterManager $service, $slug) {
         $data = $request->only([
-            'is_visible',
+            'is_visible', 
         ]);
         $this->character = Character::where('slug', $slug)->first();
         if (!$this->character) {
@@ -820,5 +819,22 @@ class CharacterController extends Controller {
         return view('admin.masterlist.myo_index', [
             'slots' => Character::myo(1)->orderBy('id', 'DESC')->paginate(30),
         ]);
+    }
+
+    /**
+     * Gets all extant content warnings.
+     *
+     * @return string
+     */
+    public function getContentWarnings() {
+        $contentWarnings = CharacterImage::whereNotNull('content_warnings')->pluck('content_warnings')->flatten()->map(function ($warnings) {
+            return collect($warnings)->map(function ($warning) {
+                $lower = strtolower(trim($warning));
+
+                return ['warning' => ucwords($lower)];
+            });
+        })->sort()->flatten(1)->unique()->values()->toJson();
+
+        return $contentWarnings;
     }
 }

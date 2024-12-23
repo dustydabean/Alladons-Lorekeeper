@@ -10,12 +10,14 @@ use App\Models\Character\CharacterDesignUpdate;
 use App\Models\Character\CharacterFeature;
 use App\Models\Character\CharacterGeneration;
 use App\Models\Character\CharacterImage;
-use App\Models\Character\CharacterLineage;
+use App\Models\Character\CharacterImageSubtype;
 use App\Models\Character\CharacterPedigree;
 use App\Models\Character\CharacterProfileCustomValue;
 use App\Models\Character\CharacterTransfer;
+use App\Models\Character\CharacterLineage;
 use App\Models\Sales\SalesCharacter;
 use App\Models\Species\Subtype;
+use App\Models\Rarity;
 use App\Models\User\User;
 use App\Models\User\UserPet;
 use Auth;
@@ -105,16 +107,23 @@ class CharacterManager extends Service {
                     throw new \Exception('Characters require a rarity.');
                 }
             }
-            if (isset($data['subtype_id']) && $data['subtype_id']) {
-                $subtype = Subtype::find($data['subtype_id']);
+            if (isset($data['subtype_ids']) && $data['subtype_ids']) {
+                if (count($data['subtype_ids']) > config('lorekeeper.extensions.multiple_subtype_limit')) {
+                    throw new \Exception('Too many subtypes selected.');
+                }
+
                 if (!(isset($data['species_id']) && $data['species_id'])) {
                     throw new \Exception('Species must be selected to select a subtype.');
                 }
-                if (!$subtype || $subtype->species_id != $data['species_id']) {
-                    throw new \Exception('Selected subtype invalid or does not match species.');
+
+                foreach ($data['subtype_ids'] as $subtypeId) {
+                    $subtype = Subtype::find($subtypeId);
+                    if (!$subtype || $subtype->species_id != $data['species_id']) {
+                        throw new \Exception('Selected subtype invalid or does not match species.');
+                    }
                 }
             } else {
-                $data['subtype_id'] = null;
+                $data['subtype_ids'] = null;
             }
 
             if (isset($data['generation_id']) && $data['generation_id']) {
@@ -585,16 +594,21 @@ class CharacterManager extends Service {
                     throw new \Exception('Characters require a rarity.');
                 }
             }
-            if (isset($data['subtype_id']) && $data['subtype_id']) {
-                $subtype = Subtype::find($data['subtype_id']);
+            if (isset($data['subtype_ids']) && $data['subtype_ids']) {
+                if (count($data['subtype_ids']) > config('lorekeeper.extensions.multiple_subtype_limit')) {
+                    throw new \Exception('Too many subtypes selected.');
+                }
                 if (!(isset($data['species_id']) && $data['species_id'])) {
                     throw new \Exception('Species must be selected to select a subtype.');
                 }
-                if (!$subtype || $subtype->species_id != $data['species_id']) {
-                    throw new \Exception('Selected subtype invalid or does not match species.');
+                foreach ($data['subtype_ids'] as $subtypeId) {
+                    $subtype = Subtype::find($subtypeId);
+                    if (!$subtype || $subtype->species_id != $data['species_id']) {
+                        throw new \Exception('Selected subtype invalid or does not match species.');
+                    }
                 }
             } else {
-                $data['subtype_id'] = null;
+                $data['subtype_ids'] = null;
             }
 
             $data['is_visible'] = 1;
@@ -653,13 +667,41 @@ class CharacterManager extends Service {
 
         try {
             // Check that the subtype matches
-            if (isset($data['subtype_id']) && $data['subtype_id']) {
-                $subtype = Subtype::find($data['subtype_id']);
+            if (isset($data['subtype_ids']) && $data['subtype_ids']) {
+                if (count($data['subtype_ids']) > config('lorekeeper.extensions.multiple_subtype_limit')) {
+                    throw new \Exception('Too many subtypes selected.');
+                }
+
                 if (!(isset($data['species_id']) && $data['species_id'])) {
                     throw new \Exception('Species must be selected to select a subtype.');
                 }
-                if (!$subtype || $subtype->species_id != $data['species_id']) {
-                    throw new \Exception('Selected subtype invalid or does not match species.');
+
+                $species_id = $data['species_id'] != $image->species_id ? $data['species_id'] : $image->species_id;
+
+                foreach ($data['subtype_ids'] as $subtypeId) {
+                    $subtype = Subtype::find($subtypeId);
+                    if (!$subtype || $subtype->species_id != $species_id) {
+                        throw new \Exception('Selected subtype invalid or does not match species.');
+                    }
+                }
+            }
+
+            if (isset($data['generation_id']) && $data['generation_id']) {
+                $generation = CharacterGeneration::find($data['generation_id']);
+                if (!$generation) {
+                    throw new \Exception('Selected generation is invalid.');
+                }
+            }
+
+            if ((isset($data['pedigree_id']) && $data['pedigree_id']) || (isset($data['pedigree_descriptor']) && $data['pedigree_descriptor'])) {
+                $pedigree = CharacterPedigree::find($data['pedigree_id']);
+
+                if ((!isset($data['pedigree_descriptor']) && $data['pedigree_id']) || (!isset($data['pedigree_id']) && $data['pedigree_descriptor'])) {
+                    throw new \Exception('If you are assigning this character a pedigree name, then both pedigree tag and pedigree descriptor must be set.');
+                }
+
+                if (!$pedigree) {
+                    throw new \Exception('Selected pedigree tag is invalid.');
                 }
             }
 
@@ -671,9 +713,14 @@ class CharacterManager extends Service {
             $old = [];
             $old['features'] = $this->generateFeatureList($image);
             $old['species'] = $image->species_id ? $image->species->displayName : null;
-            $old['subtype'] = $image->subtype_id ? $image->subtype->displayName : null;
-            $old['rarity'] = $image->rarity_id ? $image->rarity->displayName : null;
+            $old['subtypes'] = count($image->subtypes) ? $image->displaySubtypes() : null;
             $old['sex'] = $image->sex ? $image->sex : null;
+
+            $old['generation'] = $image->character->generation_id ? $image->character->generation->name : 'No Generation';
+            $old['pedigree'] = $image->character->pedigree_id ? $image->character->pedigree->name.' '.$image->character->pedigree_descriptor : 'No Pedigree Name';
+            $old['nickname'] = $image->character->nickname ?? 'No Nickname';
+            $old['birthdate'] = $image->character->birthdate ?? 'Birthdate Unknown';
+            $old['poucher_code'] = $image->character->poucher_code ?? 'No Poucher Code';
 
             // Clear old features
             $image->features()->delete();
@@ -687,21 +734,55 @@ class CharacterManager extends Service {
 
             // Update other stats
             $image->species_id = $data['species_id'];
-            $image->subtype_id = $data['subtype_id'] ?: null;
-            $image->rarity_id = $data['rarity_id'];
+            // SUBTYPES
+            $image->subtypes()->delete();
+            if (isset($data['subtype_ids']) && $data['subtype_ids']) {
+                if (count($data['subtype_ids']) > config('lorekeeper.extensions.multiple_subtype_limit')) {
+                    throw new \Exception('Too many subtypes selected.');
+                }
+                foreach ($data['subtype_ids'] as $subtypeId) {
+                    CharacterImageSubtype::create([
+                        'character_image_id' => $image->id,
+                        'subtype_id'         => $subtypeId,
+                    ]);
+                }
+            }
             $image->sex = $data['sex'];
             $image->save();
+
+            // Update Character Stats
+            $image->character->generation_id = $data['generation_id'] ?? null;
+            $image->character->pedigree_id = $data['pedigree_id'] ?? null;
+            $image->character->pedigree_descriptor = $data['pedigree_descriptor'] ?? null;
+            $image->character->nickname = $data['nickname'] ?? null;
+            $image->character->birthdate = $data['birthdate'] ?? null;
+            $image->character->poucher_code = $data['poucher_code'] ?? null;
+            $image->character->save();
 
             $new = [];
             $new['features'] = $this->generateFeatureList($image);
             $new['species'] = $image->species_id ? $image->species->displayName : null;
-            $new['subtype'] = $image->subtype_id ? $image->subtype->displayName : null;
+            $new['subtypes'] = count($image->subtypes) ? $image->displaySubtypes() : null;
             $new['rarity'] = $image->rarity_id ? $image->rarity->displayName : null;
             $new['sex'] = $image->sex ? $image->sex : null;
 
-            // Character also keeps track of these features
-            $image->character->rarity_id = $image->rarity_id;
-            $image->character->save();
+            if (isset($data['generation_id']) && $data['generation_id']) {
+                $generation = CharacterGeneration::find($data['generation_id']);
+            } else {
+                $generation = null;
+            }
+
+            if (isset($data['pedigree_id']) && $data['pedigree_id']) {
+                $pedigree = CharacterPedigree::find($data['pedigree_id']);
+            } else {
+                $pedigree = null;
+            }
+
+            $new['generation'] = isset($generation) ? $generation->name : 'No Generation';
+            $new['pedigree'] = isset($pedigree) ? $pedigree->name.' '.$data['pedigree_descriptor']: 'No Pedigree Name';
+            $new['nickname'] = $data['nickname'] ?? 'No Nickname';
+            $new['birthdate'] = $data['birthdate'] ?? 'Birthdate Unknown';
+            $new['poucher_code'] = $data['poucher_code'] ?? 'No Poucher Code';
 
             // Add a log for the character
             // This logs all the updates made to the character
@@ -986,6 +1067,7 @@ class CharacterManager extends Service {
 
             $image->is_valid = isset($data['is_valid']);
             $image->is_visible = isset($data['is_visible']);
+            $image->content_warnings = isset($data['content_warnings']) ? explode(',', $data['content_warnings']) : null;
             $image->save();
 
             // Add a log for the character
@@ -1212,31 +1294,21 @@ class CharacterManager extends Service {
                 throw new \Exception('Character code must be unique.');
             }
 
-            if (isset($data['generation_id']) && $data['generation_id']) {
-                $generation = CharacterGeneration::find($data['generation_id']);
-                if (!$generation) {
-                    throw new \Exception('Selected generation is invalid.');
-                }
-            }
-            if ((isset($data['pedigree_id']) && $data['pedigree_id']) || (isset($data['pedigree_descriptor']) && $data['pedigree_descriptor'])) {
-                $pedigree = CharacterPedigree::find($data['pedigree_id']);
-                if ((!isset($data['pedigree_descriptor']) && $data['pedigree_id']) || (!isset($data['pedigree_id']) && $data['pedigree_descriptor'])) {
-                    throw new \Exception('If you are assigning this character a pedigree name, then both pedigree tag and pedigree descriptor must be set.');
-                }
-                if (!$pedigree) {
-                    throw new \Exception('Selected pedigree tag is invalid.');
+            if (isset($data['rarity_id']) && $data['rarity_id']) {
+                $rarity = Rarity::find($data['rarity_id']);
+                if (!$rarity) {
+                    throw new \Exception('Selected rarity is invalid.');
                 }
             }
 
             $characterData = Arr::only($data, [
                 'character_category_id',
-                'number', 'slug', 'poucher_code',
-                'generation_id', 'pedigree_id', 'pedigree_descriptor',
-                'nickname', 'birthdate',
+                'number', 'slug', 'rarity_id',
             ]);
             $characterData['is_sellable'] = isset($data['is_sellable']);
             $characterData['is_tradeable'] = isset($data['is_tradeable']);
             $characterData['is_giftable'] = isset($data['is_giftable']);
+            $characterData['rarity_id'] = $data['rarity_id'] ?? $character->rarity_id;
             $characterData['sale_value'] = $data['sale_value'] ?? 0;
             $characterData['transferrable_at'] = $data['transferrable_at'] ?? null;
             if ($character->is_myo_slot) {
@@ -1263,33 +1335,16 @@ class CharacterManager extends Service {
                     $old['slug'] = $character->slug;
                     $new['slug'] = $characterData['slug'];
                 }
-                if ($characterData['generation_id'] != $character->generation_id) {
-                    $result[] = 'generation';
-                    $old['generation'] = $character->generation_id ? $character->generation->name : 'No Generation';
-                    if (CharacterGeneration::find($characterData['generation_id'])) {
-                        $new['generation'] = CharacterGeneration::find($characterData['generation_id'])->name;
-                    } else {
-                        $new['generation'] = 'No Generation';
-                    }
-                }
-                if ($characterData['pedigree_id'] != $character->pedigree_id || $characterData['pedigree_descriptor'] != $character->pedigree_descriptor) {
-                    $result[] = 'pedigree';
-                    $old['pedigree'] = $character->pedigree_id ? $character->pedigree->name.' '.$character->pedigree_descriptor : 'No Pedigree Name';
-                    if (CharacterPedigree::find($characterData['pedigree_id'])) {
-                        $new['pedigree'] = CharacterPedigree::find($characterData['pedigree_id'])->name.' '.$characterData['pedigree_descriptor'];
-                    } else {
-                        $new['pedigree'] = 'No Pedigree Name';
-                    }
-                }
-                if ($characterData['nickname'] != $character->nickname) {
-                    $result[] = 'nickname';
-                    $old['nickname'] = $character->nickname;
-                    $new['nickname'] = $characterData['nickname'];
-                }
-                if ($characterData['birthdate'] != $character->birthdate) {
-                    $result[] = 'birthdate';
-                    $old['birthdate'] = $character->birthdate;
-                    $new['birthdate'] = $characterData['birthdate'];
+                if ($characterData['rarity_id'] != $character->rarity_id) {
+                    $result[] = 'rarity';
+                    $old['rarity'] = $character->rarity_id ? $character->rarity->displayName : 'No Rarity';
+                    $new['rarity'] = Rarity::find($characterData['rarity_id'])->displayName;
+
+                    $character->rarity_id = $characterData['rarity_id'];
+                    $character->save();
+
+                    $character->image->rarity_id = $characterData['rarity_id'];
+                    $character->image->save();
                 }
             } else {
                 if ($characterData['name'] != $character->name) {
@@ -1297,12 +1352,6 @@ class CharacterManager extends Service {
                     $old['name'] = $character->name;
                     $new['name'] = $characterData['name'];
                 }
-            }
-
-            if ($characterData['poucher_code'] != $character->poucher_code) {
-                $result[] = 'poucher_code';
-                $old['poucher_code'] = $character->poucher_code;
-                $new['poucher_code'] = $characterData['poucher_code'];
             }
 
             if ($characterData['is_sellable'] != $character->is_sellable) {
@@ -1400,14 +1449,18 @@ class CharacterManager extends Service {
                 throw new \Exception('Failed to log admin action.');
             }
 
-            $old = ['is_visible' => $character->is_visible];
+            $old = [
+                'is_visible' => $character->is_visible,
+            ];
 
             $character->is_visible = isset($data['is_visible']);
             $character->save();
 
             // Add a log for the character
             // This logs all the updates made to the character
-            $this->createLog($user->id, null, null, null, $character->id, 'Character Visibility Updated', '', 'character', true, $old, ['is_visible' => $character->is_visible]);
+            $this->createLog($user->id, null, null, null, $character->id, 'Character Settings Updated', '', 'character', true, $old, [
+                'is_visible' => $character->is_visible,
+            ]);
 
             return $this->commitReturn(true);
         } catch (\Exception $e) {
@@ -2049,7 +2102,7 @@ class CharacterManager extends Service {
                 $character->lineage->update([
                     'parent_1_id'   => $data['parent_1_id'] ?? null,
                     'parent_1_name' => $data['parent_1_id'] ? null : ($data['parent_1_name'] ?? null),
-                    'parent_1_id'   => $data['parent_2_id'] ?? null,
+                    'parent_2_id'   => $data['parent_2_id'] ?? null,
                     'parent_2_name' => $data['parent_2_id'] ? null : ($data['parent_2_name'] ?? null),
                     'depth'         => $data['depth'] ?? 0,
                 ]);
@@ -2079,7 +2132,7 @@ class CharacterManager extends Service {
                 $data['number'] = null;
                 $data['slug'] = null;
                 $data['species_id'] = isset($data['species_id']) && $data['species_id'] ? $data['species_id'] : null;
-                $data['subtype_id'] = isset($data['subtype_id']) && $data['subtype_id'] ? $data['subtype_id'] : null;
+                $data['subtype_ids'] = isset($data['subtype_ids']) && $data['subtype_ids'] ? $data['subtype_ids'] : null;
                 $data['rarity_id'] = isset($data['rarity_id']) && $data['rarity_id'] ? $data['rarity_id'] : null;
             } else {
                 $data['generation_id'] = isset($data['generation_id']) && $data['generation_id'] ? $data['generation_id'] : null;
@@ -2138,9 +2191,8 @@ class CharacterManager extends Service {
     private function handleCharacterImage($data, $character, $isMyo = false) {
         try {
             if ($isMyo) {
-                $data['species_id'] = (isset($data['species_id']) && $data['species_id']) ? $data['species_id'] : null;
-                $data['subtype_id'] = isset($data['subtype_id']) && $data['subtype_id'] ? $data['subtype_id'] : null;
-                $data['rarity_id'] = (isset($data['rarity_id']) && $data['rarity_id']) ? $data['rarity_id'] : null;
+                $data['species_id'] = isset($data['species_id']) && $data['species_id'] ? $data['species_id'] : null;
+                $data['rarity_id'] = isset($data['rarity_id']) && $data['rarity_id'] ? $data['rarity_id'] : null;
 
                 // Use default images for MYO slots without an image provided
                 if (!isset($data['image'])) {
@@ -2153,8 +2205,8 @@ class CharacterManager extends Service {
                 }
             }
             $imageData = Arr::only($data, [
-                'species_id', 'subtype_id', 'rarity_id', 'use_cropper',
-                'x0', 'x1', 'y0', 'y1',
+                'species_id', 'rarity_id', 'use_cropper',
+                'x0', 'x1', 'y0', 'y1', 'content_warnings',
             ]);
             $imageData['use_cropper'] = isset($data['use_cropper']);
             $imageData['description'] = $data['image_description'] ?? null;
@@ -2167,8 +2219,19 @@ class CharacterManager extends Service {
             $imageData['extension'] = (config('lorekeeper.settings.masterlist_image_format') ?? ($data['extension'] ?? $data['image']->getClientOriginalExtension()));
             $imageData['fullsize_extension'] = (config('lorekeeper.settings.masterlist_fullsizes_format') ?? ($data['fullsize_extension'] ?? $data['image']->getClientOriginalExtension()));
             $imageData['character_id'] = $character->id;
+            $imageData['content_warnings'] = isset($data['content_warnings']) ? explode(',', $data['content_warnings']) : null;
 
             $image = CharacterImage::create($imageData);
+
+            // create subtype relations
+            if (isset($data['subtype_ids']) && $data['subtype_ids']) {
+                foreach ($data['subtype_ids'] as $subtypeId) {
+                    CharacterImageSubtype::create([
+                        'character_image_id' => $image->id,
+                        'subtype_id'         => $subtypeId,
+                    ]);
+                }
+            }
 
             // Check if entered url(s) have aliases associated with any on-site users
             $designers = array_filter($data['designer_url']); // filter null values

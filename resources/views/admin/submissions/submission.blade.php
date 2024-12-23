@@ -47,6 +47,14 @@
                 </div>
                 <div class="col-md-10 col-8"><a href="{{ $submission->url }}">{{ $submission->url }}</a></div>
             </div>
+            @if (config('lorekeeper.settings.allow_gallery_submissions_on_prompts') && isset($submission->data['gallery_submission_id']))
+                <div class="row mb-2 no-gutters">
+                    <div class="col-md-2">
+                        <h5 class="mb-0">Gallery Submission</h5>
+                    </div>
+                    <div class="col-md-10"><a href="{{ $submission->gallerySubmission->url }}">{{ $submission->gallerySubmission->title }}</a></div>
+                </div>
+            @endif
             <div class="row">
                 <div class="col-md-2 col-4">
                     <h5>Submitted</h5>
@@ -83,8 +91,7 @@
 
         <h2>Characters</h2>
         <div id="characters" class="mb-3">
-            @if (count(
-                    $submission->characters()->whereRelation('character', 'deleted_at', null)->get()) != count($submission->characters()->get()))
+            @if (count($submission->characters()->whereRelation('character', 'deleted_at', null)->get()) != count($submission->characters()->get()))
                 <div class="alert alert-warning">
                     Some characters have been deleted since this submission was created.
                 </div>
@@ -174,13 +181,13 @@
                                 {!! Form::label('slug', 'Character Code') !!}
                                 {!! Form::select('slug[]', $characters, null, ['class' => 'form-control character-code', 'placeholder' => 'Select Character']) !!}
                             </div>
-                            <!--<div class="form-group gift-notifs hide">
+                            <div class="form-group gift-notifs hide">
                             <h4>Notify Owner?</h4>
                             <div class="row">
                                 {!! Form::select('character-notify-owner[]', [0 => 'No' , 1 => 'Yes' ], 0, ['class' => 'form-control ml-lg-3 col-5 col-md-9 character-notify-owner']) !!}
                                 <div class="col character-gift-permissions"></div>
                             </div>
-                        </div>-->
+                        </div>
                             <div class="character-rewards hide">
                                 <h4>Character Rewards</h4>
                                 <table class="table table-sm">

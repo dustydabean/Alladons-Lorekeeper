@@ -39,6 +39,7 @@ Route::group(['prefix' => 'account', 'namespace' => 'Users'], function () {
     Route::post('remove-alias/{id}', 'AccountController@postRemoveAlias');
     Route::post('dob', 'AccountController@postBirthday');
     Route::post('devlog-notif', 'AccountController@postdevLogNotif');
+    Route::post('warning', 'AccountController@postWarningVisibility');
 
     Route::get('two-factor/confirm', 'AccountController@getConfirmTwoFactor');
     Route::post('two-factor/enable', 'AccountController@postEnableTwoFactor');
@@ -114,6 +115,9 @@ Route::group(['prefix' => 'characters', 'namespace' => 'Users'], function () {
 Route::group(['prefix' => 'bank', 'namespace' => 'Users'], function () {
     Route::get('/', 'BankController@getIndex');
     Route::post('transfer', 'BankController@postTransfer');
+    Route::get('convert/{id}', 'BankController@getConvertCurrency');
+    Route::get('convert/{currency_id}/rate/{conversion_id}', 'BankController@getConvertCurrencyRate');
+    Route::post('convert', 'BankController@postConvertCurrency');
 });
 
 Route::group(['prefix' => 'trades', 'namespace' => 'Users'], function () {
@@ -205,7 +209,7 @@ Route::group(['prefix' => 'submissions', 'namespace' => 'Users'], function () {
     Route::get('/', 'SubmissionController@getIndex');
     Route::get('new', 'SubmissionController@getNewSubmission');
     Route::get('new/character/{slug}', 'SubmissionController@getCharacterInfo');
-    /*Route::get('new/character-permissions/{slug}', 'SubmissionController@getCharacterPermissions');*/
+    Route::get('new/character-permissions/{slug}', 'SubmissionController@getCharacterPermissions');
     Route::get('new/prompt/{id}', 'SubmissionController@getPromptInfo');
     Route::post('new', 'SubmissionController@postNewSubmission');
     Route::post('new/{draft}', 'SubmissionController@postNewSubmission')->where('draft', 'draft');
@@ -257,6 +261,9 @@ Route::group(['prefix' => 'designs', 'namespace' => 'Characters'], function () {
 
     Route::get('{id}/delete', 'DesignController@getDelete');
     Route::post('{id}/delete', 'DesignController@postDelete');
+
+    Route::get('{id}/cancel', 'DesignController@getCancel');
+    Route::post('{id}/cancel', 'DesignController@postCancel');
 });
 
 /**************************************************************************************************
@@ -290,20 +297,44 @@ Route::group(['prefix' => 'activities'], function () {
 });
 
 /**************************************************************************************************
+    Scavenger Hunts
+**************************************************************************************************/
+
+Route::group(['prefix' => 'hunts'], function() {
+    Route::get('{id}', 'HuntController@getHunt');
+    Route::get('targets/{pageId}', 'HuntController@getTarget');
+    Route::post('targets/claim', 'HuntController@postClaimTarget');
+});
+
+/**************************************************************************************************
     Comments
 **************************************************************************************************/
 Route::group(['prefix' => 'comments', 'namespace' => 'Comments'], function () {
     Route::post('make/{model}/{id}', 'CommentController@store');
-    Route::delete('/{comment}', 'CommentController@destroy')->name('comments.destroy');
+    Route::delete('{comment}', 'CommentController@destroy')->name('comments.destroy')->where('comment', '[0-9]+');
     Route::post('edit/{comment}', 'CommentController@update')->name('comments.update');
-    Route::post('/{comment}', 'CommentController@reply')->name('comments.reply');
-    Route::post('/{id}/feature', 'CommentController@feature')->name('comments.feature');
-    Route::post('/{id}/like/{action}', 'CommentController@like')->name('comments.like');
-    Route::get('/liked', 'CommentController@getLikedComments');
+    Route::post('{comment}', 'CommentController@reply')->name('comments.reply');
+    Route::post('{id}/feature', 'CommentController@feature')->name('comments.feature');
+    Route::post('{id}/like/{action}', 'CommentController@like')->name('comments.like');
+    Route::get('liked', 'CommentController@getLikedComments');
 });
 
 Route::group(['prefix' => 'collection', 'namespace' => 'Users'], function () {
     Route::get('/', 'CollectionController@getIndex');
     Route::get('complete/{id}', 'CollectionController@getCompleteCollection');
     Route::post('complete/{id}', 'CollectionController@postCompleteCollection');
+});
+
+/**************************************************************************************************
+    Friends
+**************************************************************************************************/
+Route::group(['prefix' => 'friends', 'namespace' => 'Users'], function () {
+    Route::get('/', 'FriendController@getIndex');
+    Route::get('requests', 'FriendController@getFriendRequests');
+    Route::post('requests/{id}', 'FriendController@sendFriendRequest');
+    Route::post('requests/{id}/{accept}', 'FriendController@postAcceptRequest');
+    // remove friend
+    Route::post('remove/{id}', 'FriendController@postRemoveFriend');
+    // block friend
+    Route::post('block/{id}', 'FriendController@postBlockUser');
 });

@@ -142,7 +142,10 @@ class AccountController extends Controller {
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postAvatar(Request $request, UserService $service) {
-        if ($service->updateAvatar($request->file('avatar'), Auth::user())) {
+        $data = $request->only([
+            'avatar', 'x0', 'x1', 'y0', 'y1',
+        ]);
+        if ($service->updateAvatar($data, Auth::user())) {
             flash('Avatar updated successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
@@ -351,6 +354,25 @@ class AccountController extends Controller {
      */
     public function postdevLogNotif(Request $request, UserService $service) {
         if ($service->updatedevLogNotif($request->input('dev_log_notif'), Auth::user())) {
+            flash('Setting updated successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
+    }
+
+    /**
+     * Changes user character warning visibility setting.
+     *
+     * @param App\Services\UserService $service
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postWarningVisibility(Request $request, UserService $service) {
+        if ($service->updateContentWarningVisibility($request->input('content_warning_visibility'), Auth::user())) {
             flash('Setting updated successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {

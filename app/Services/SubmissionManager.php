@@ -100,7 +100,7 @@ class SubmissionManager extends Service {
                 'data' => json_encode([
                     'user'    => Arr::only(getDataReadyAssets($userAssets), ['user_items', 'currencies']),
                     'rewards' => getDataReadyAssets($promptRewards),
-                ]), // list of rewards and addons
+                ] + (config('lorekeeper.settings.allow_gallery_submissions_on_prompts') ? ['gallery_submission_id' => $data['gallery_submission_id'] ?? null] : [])),
             ]);
 
             // Set characters that have been attached.
@@ -172,7 +172,7 @@ class SubmissionManager extends Service {
                 'data'          => json_encode([
                     'user'          => Arr::only(getDataReadyAssets($userAssets), ['user_items', 'currencies']),
                     'rewards'       => getDataReadyAssets($promptRewards),
-                ]), // list of rewards and addons
+                ] + (config('lorekeeper.settings.allow_gallery_submissions_on_prompts') ? ['gallery_submission_id' => $data['gallery_submission_id'] ?? null] : [])),
             ] + ($isClaim ? [] : ['prompt_id' => $prompt->id]));
 
             return $this->commitReturn($submission);
@@ -230,8 +230,9 @@ class SubmissionManager extends Service {
                     'staff_id'              => $user->id,
                     'status'                => 'Draft',
                     'data'                  => json_encode([
-                        'user'      => $userAssets,
-                        'rewards'   => getDataReadyAssets($promptRewards),
+                        'user'                  => $userAssets,
+                        'rewards'               => getDataReadyAssets($promptRewards),
+                        'gallery_submission_id' => $submission->data['gallery_submission_id'] ?? null,
                     ]), // list of rewards and addons
                 ]);
 
@@ -246,8 +247,9 @@ class SubmissionManager extends Service {
                     'status'     => 'Draft',
                     'updated_at' => Carbon::now(),
                     'data'       => json_encode([
-                        'user'      => $userAssets,
-                        'rewards'   => getDataReadyAssets($promptRewards),
+                        'user'                  => $userAssets,
+                        'rewards'               => getDataReadyAssets($promptRewards),
+                        'gallery_submission_id' => $submission->data['gallery_submission_id'] ?? null,
                     ]), // list of rewards and addons
                 ]);
             }
@@ -469,7 +471,7 @@ class SubmissionManager extends Service {
                     'character_id'  => $c->id,
                     'submission_id' => $submission->id,
                     'data'          => json_encode(getDataReadyAssets($assets)),
-                    /*'notify_owner' => isset($data['character_notify_owner']) && $data['character_notify_owner'][$c->id] ? $data['character_notify_owner'][$c->id] : 0,*/
+                    'notify_owner' => isset($data['character_notify_owner']) && $data['character_notify_owner'][$c->id] ? $data['character_notify_owner'][$c->id] : 0,
                 ]);
             }
 
@@ -496,8 +498,9 @@ class SubmissionManager extends Service {
                 'staff_id'              => $user->id,
                 'status'                => 'Approved',
                 'data'                  => json_encode([
-                    'user'    => $addonData,
-                    'rewards' => getDataReadyAssets($rewards),
+                    'user'                  => $addonData,
+                    'rewards'               => getDataReadyAssets($rewards),
+                    'gallery_submission_id' => $submission->data['gallery_submission_id'] ?? null,
                 ]), // list of rewards
             ]);
 
@@ -510,7 +513,7 @@ class SubmissionManager extends Service {
             if (!$this->logAdminAction($user, 'Submission Approved', 'Approved submission <a href="'.$submission->viewurl.'">#'.$submission->id.'</a>')) {
                 throw new \Exception('Failed to log admin action.');
             }
-            /*// Get included characters that are set to notify
+            // Get included characters that are set to notify
             $notifiableCharacter = $submission->characters->where('notify_owner', true);
 
             if($notifiableCharacter->count()) {
@@ -527,7 +530,7 @@ class SubmissionManager extends Service {
                         ]);
                     }
                 }
-            }*/
+            }
 
             return $this->commitReturn($submission);
         } catch (\Exception $e) {
@@ -835,7 +838,7 @@ class SubmissionManager extends Service {
                 'character_id'  => $c->id,
                 'submission_id' => $submission->id,
                 'data'          => json_encode(getDataReadyAssets($assets)),
-                /*'notify_owner' => isset($data['character_notify_owner']) && $data['character_notify_owner'][$c->id] ? $data['character_notify_owner'][$c->id] : 0,*/
+                'notify_owner' => isset($data['character_notify_owner']) && $data['character_notify_owner'][$c->id] ? $data['character_notify_owner'][$c->id] : 0,
             ]);
         }
 

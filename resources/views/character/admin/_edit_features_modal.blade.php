@@ -5,13 +5,53 @@
 </div>
 
 <div class="form-group" id="subtypes">
-    {!! Form::label('Subtype (Optional)') !!}
-    {!! Form::select('subtype_id', $subtypes, $image->subtype_id, ['class' => 'form-control', 'id' => 'subtype']) !!}
+    {!! Form::label('Subtypes (Optional)') !!}
+    {!! Form::select('subtype_ids[]', $subtypes, $image->subtypes()->pluck('subtype_id')->toArray() ?? [], ['class' => 'form-control', 'id' => 'subtype', 'multiple']) !!}
 </div>
 
 <div class="form-group">
-    {!! Form::label('Character Rarity') !!}
-    {!! Form::select('rarity_id', $rarities, $image->rarity_id, ['class' => 'form-control']) !!}
+    {!! Form::label('Nickname (Optional)') !!}
+    {!! Form::text('nickname', $image->character->nickname, ['class' => 'form-control']) !!}
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-group">
+            {!! Form::label('poucher_code', 'Poucher Code') !!}
+            {!! Form::text('poucher_code', $image->character->poucher_code, ['class' => 'form-control']) !!}
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="form-group">
+            {!! Form::label('Generation (Optional)') !!}
+            {!! Form::select('generation_id', $generations, $image->character->generation_id, ['class' => 'form-control', 'id' => 'generationSelect']) !!}
+        </div>
+    </div>
+</div>
+
+{!! Form::label('Pedigree Name (Optional)') !!} {!! add_help('While this is optional, if you set a pedigree tag you must set a descriptor and vice versa.') !!}
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-group">
+            {!! Form::select('pedigree_id', $pedigrees, $image->character->pedigree_id, ['class' => 'form-control', 'id' => 'pedigreeSelect']) !!}
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="form-group">
+            {!! Form::text('pedigree_descriptor', $image->character->pedigree_descriptor, ['class' => 'form-control']) !!}
+        </div>
+    </div>
+</div>
+
+<div class="form-group">
+    {!! Form::label('Birthdate (Optional)') !!}
+    <div class="input-group">
+        {!! Form::text('birthdate', $image->character->birthdate, ['class' => 'form-control datepickerdob']) !!}
+        <div class="input-group-append">
+            <a class="btn btn-info collapsed" href="#collapseddob" data-toggle="collapse"><i class="fas fa-calendar-alt"></i></a>
+        </div>
+    </div>
+    <div class="collapse dobpicker" id="collapseddob" style="position: relative; z-index: 9999;"></div>
 </div>
 
 <div class="form-group">
@@ -43,6 +83,7 @@
 </div>
 {!! Form::close() !!}
 
+@include('widgets._datetimepicker_js', ['dtinline' => 'datepickeralt', 'dtvalue' => $image->character->transferrable_at, 'dobpicker' => true, 'character' => $image->character])
 <script>
     $(document).ready(function() {
         @if (config('lorekeeper.extensions.organised_traits_dropdown'))
@@ -107,9 +148,15 @@
             dataType: "text"
         }).done(function(res) {
             $("#subtypes").html(res);
+            $("#subtype").selectize({
+                maxItems: {{ config('lorekeeper.extensions.multiple_subtype_limit') }},
+            });
         }).fail(function(jqXHR, textStatus, errorThrown) {
             alert("AJAX call failed: " + textStatus + ", " + errorThrown);
         });
-
     };
+
+    $("#subtype").selectize({
+        maxItems: {{ config('lorekeeper.extensions.multiple_subtype_limit') }},
+    });
 </script>

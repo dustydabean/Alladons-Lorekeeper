@@ -44,17 +44,12 @@
                             Encyclopedia
                         </a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="{{ url('faq') }}">
-                            FAQ
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="browseDropdown">
                         <a class="dropdown-item" href="{{ url('users') }}">
                             Users
                         </a>
                         <a class="dropdown-item" href="{{ url('team') }}">
                             Staff
                         </a>
-                    </div>
                     </div>
                 </li>
                 <li class="nav-item">
@@ -67,6 +62,9 @@
                     </a>
 
                     <div class="dropdown-menu" aria-labelledby="loreDropdown">
+                        <a class="dropdown-item" href="{{ url('faq') }}">
+                            FAQ
+                        </a>
                         <a class="dropdown-item" href="{{ url('claims') }}">
                             Claims
                         </a>
@@ -131,6 +129,9 @@
                                 Bank
                             </a>
                             <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{{ url('friends') }}" class="{{ set_active('friends') }}">
+                                My Friends
+                            </a>
                             <a class="dropdown-item" href="{{ url('comments/liked') }}">
                                 Liked Comments
                             </a>

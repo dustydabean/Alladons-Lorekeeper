@@ -526,4 +526,18 @@ return [
         'message' => 'Your character (<a href="{character_url}">{character_name}</a>) has {count} submissions by other users. (<a href="{url}">View {character_name}’s Submissions</a>)',
         'url'     => '{character_url}/submissions',
     ],
+
+    // FRIEND_REQUEST_SENT
+    516 => [
+        'name'    => 'Friend Request Sent',
+        'message' => '<a href="{sender_url}">{sender}</a> has sent you a friend request. (<a href="{url}">View Request.</a>)',
+        'url'     => 'friends/requests',
+    ],
+
+    // FRIEND_REQUEST_ACCEPTED
+    517 => [
+        'name'    => 'Friend Request Accepted',
+        'message' => '<a href="{sender_url}">{sender}</a> has accepted your friend request. (<a href="{url}">View Friend List.</a>)',
+        'url'     => 'friends',
+    ],
 ];

@@ -94,6 +94,13 @@ return [
             'driver' => 'daily',
             'path'   => storage_path('logs/too-many-attempts.log'),
         ],
+
+        'throttle'   => [
+            'driver' => 'daily',
+            'path'   => storage_path('logs/throttle.log'),
+            'level'  => 'info',
+            'days'   => 14,
+        ],
     ],
 
 ];

@@ -33,7 +33,7 @@ class Character extends Model {
         'sale_value', 'transferrable_at', 'is_visible',
         'is_gift_art_allowed', 'is_gift_writing_allowed', 'is_trading', 'sort',
         'is_myo_slot', 'name', 'trade_id', 'is_links_open', 'owner_url', 'poucher_code',
-        'nickname', 'pedigree_id', 'pedigree_descriptor', 'generation_id', 'birthdate',
+        'nickname', 'pedigree_id', 'pedigree_descriptor', 'generation_id', 'birthdate', 'poucher_code',
     ];
 
     /**
@@ -102,7 +102,6 @@ class Character extends Model {
         'slug'                  => 'required',
         'description'           => 'nullable',
         'sale_value'            => 'nullable',
-        'poucher_code'          => 'nullable|between:1,20',
         'image'                 => 'nullable|mimes:jpeg,jpg,gif,png|max:20000',
         'thumbnail'             => 'nullable|mimes:jpeg,jpg,gif,png|max:20000',
         'nickname'              => 'nullable',
@@ -385,7 +384,17 @@ class Character extends Model {
     }
 
     /**
-     * Gets the character's pedigree name.
+     * Gets the character's warnings, if they exist.
+     */
+    public function getWarningsAttribute() {
+        if (config('lorekeeper.settings.enable_character_content_warnings') && $this->image->content_warnings) {
+            return '<i class="fa fa-exclamation-triangle text-danger" data-toggle="tooltip" title="'.implode(', ', $this->image->content_warnings).'"></i> ';
+        }
+
+        return null;
+    }
+
+    /*** Gets the character's pedigree name.
      *
      * @return string
      */
@@ -394,7 +403,7 @@ class Character extends Model {
 
         return $tag.' <i>'.$this->pedigree_descriptor.'</i>';
     }
-
+    
     /**
      * Gets the character's page's URL.
      *
@@ -424,6 +433,26 @@ class Character extends Model {
      */
     public function getLogTypeAttribute() {
         return 'Character';
+    }
+
+    /**
+     * Gets the character's trading, gift art and gift writing status as badges.
+     * If this is a MYO slot, only returns trading status.
+     *
+     * @return string
+     */
+    public function getMiniBadgeAttribute() {
+        $tradingCode = $this->is_trading ? 'badge-success' : 'badge-danger';
+        $tradingSection = "<span class='badge ".$tradingCode."'><i class='fas fa-comments-dollar'></i></span>";
+        $nonMyoSection = '';
+
+        if (!$this->is_myo_slot) {
+            $artCode = $this->is_gift_art_allowed == 1 ? 'badge-success' : ($this->is_gift_art_allowed == 2 ? 'badge-warning text-light' : 'badge-danger');
+            $writingCode = $this->is_gift_writing_allowed == 1 ? 'badge-success' : ($this->is_gift_writing_allowed == 2 ? 'badge-warning text-light' : 'badge-danger');
+            $nonMyoSection = "<span class='badge ".$artCode."'><i class='fas fa-pencil-ruler'></i></span> <span class='badge ".$writingCode."'><i class='fas fa-file-alt'></i></span> ";
+        }
+
+        return ' ・ <i class="fas fa-info-circle help-icon m-0" data-toggle="tooltip" data-html="true" title="'.$nonMyoSection.$tradingSection.'"></i>';
     }
 
     /**********************************************************************************************

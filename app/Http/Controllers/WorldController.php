@@ -92,7 +92,7 @@ class WorldController extends Controller {
         return view('world.specieses', [
             'specieses' => $query->with(['subtypes' => function ($query) {
                 $query->visible(Auth::user() ?? null)->orderBy('sort', 'DESC');
-            }])->visible(Auth::user() ?? null)->orderBy('sort', 'DESC')->paginate(20)->appends($request->query()),
+            }])->visible(Auth::user() ?? null)->orderBy('sort', 'DESC')->orderBy('id')->paginate(20)->appends($request->query()),
         ]);
     }
 
@@ -109,7 +109,7 @@ class WorldController extends Controller {
         }
 
         return view('world.subtypes', [
-            'subtypes' => $query->with('species')->visible(Auth::user() ?? null)->orderBy('sort', 'DESC')->paginate(20)->appends($request->query()),
+            'subtypes' => $query->with('species')->visible(Auth::user() ?? null)->orderBy('sort', 'DESC')->orderBy('id')->paginate(20)->appends($request->query()),
         ]);
     }
 
@@ -126,7 +126,7 @@ class WorldController extends Controller {
         }
 
         return view('world.item_categories', [
-            'categories' => $query->visible(Auth::user() ?? null)->orderBy('sort', 'DESC')->paginate(20)->appends($request->query()),
+            'categories' => $query->visible(Auth::user() ?? null)->orderBy('sort', 'DESC')->orderBy('id')->paginate(20)->appends($request->query()),
         ]);
     }
 
@@ -143,7 +143,7 @@ class WorldController extends Controller {
         }
 
         return view('world.feature_categories', [
-            'categories' => $query->visible(Auth::user() ?? null)->orderBy('sort', 'DESC')->paginate(20)->appends($request->query()),
+            'categories' => $query->visible(Auth::user() ?? null)->orderBy('sort', 'DESC')->orderBy('id')->paginate(20)->appends($request->query()),
         ]);
     }
 
@@ -247,44 +247,25 @@ class WorldController extends Controller {
     public function getSpeciesFeatures($id) {
         $categories = FeatureCategory::orderBy('sort', 'DESC')->get();
         $rarities = Rarity::orderBy('sort', 'ASC')->get();
-        $species = Species::visible(Auth::check() ? Auth::user() : null)->where('id', $id)->first();
+        $species = Species::visible(Auth::user() ?? null)->where('id', $id)->first();
         if (!$species) {
             abort(404);
         }
-        if (!config('lorekeeper.extensions.species_trait_index.enable')) {
+        if (!config('lorekeeper.extensions.visual_trait_index.enable_species_index')) {
             abort(404);
         }
 
+        $features = $species->features()->visible(Auth::user() ?? null);
         $features = count($categories) ?
-            $species->features()
-                ->visible(Auth::check() ? Auth::user() : null)
-                ->orderByRaw('FIELD(feature_category_id,'.implode(',', $categories->pluck('id')->toArray()).')')
-                ->orderByRaw('FIELD(rarity_id,'.implode(',', $rarities->pluck('id')->toArray()).')')
-                ->orderBy('has_image', 'DESC')
-                ->orderBy('name')
-                ->get()
-                ->filter(function ($feature) {
-                    if ($feature->subtype) {
-                        return $feature->subtype->is_visible;
-                    }
-
-                    return true;
-                })
-                ->groupBy(['feature_category_id', 'id']) :
-            $species->features()
-                ->visible(Auth::check() ? Auth::user() : null)
-                ->orderByRaw('FIELD(rarity_id,'.implode(',', $rarities->pluck('id')->toArray()).')')
-                ->orderBy('has_image', 'DESC')
-                ->orderBy('name')
-                ->get()
-                ->filter(function ($feature) {
-                    if ($feature->subtype) {
-                        return $feature->subtype->is_visible;
-                    }
-
-                    return true;
-                })
-                ->groupBy(['feature_category_id', 'id']);
+            $features->orderByRaw('FIELD(feature_category_id,'.implode(',', $categories->pluck('id')->toArray()).')') :
+            $features;
+        $features = $features->orderByRaw('FIELD(rarity_id,'.implode(',', $rarities->pluck('id')->toArray()).')')
+            ->orderBy('has_image', 'DESC')
+            ->orderBy('name')
+            ->get()->filter(function ($feature) {
+                return $feature->subtype?->is_visible !== 0;
+            })
+            ->groupBy(['feature_category_id', 'id']);
 
         return view('world.species_features', [
             'species'    => $species,
@@ -295,20 +276,94 @@ class WorldController extends Controller {
     }
 
     /**
-     * Provides a single trait's description html for use in a modal.
+     * Shows a subtype's visual trait list.
      *
-     * @param mixed $speciesId
      * @param mixed $id
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getSpeciesFeatureDetail($speciesId, $id) {
-        $feature = Feature::where('id', $id)->first();
-
-        if (!$feature) {
+    public function getSubtypeFeatures($id, Request $request) {
+        $categories = FeatureCategory::orderBy('sort', 'DESC')->get();
+        $rarities = Rarity::orderBy('sort', 'ASC')->get();
+        $speciesBasics = $request->get('add_basics');
+        $subtype = Subtype::visible(Auth::user() ?? null)->where('id', $id)->first();
+        $species = Species::visible(Auth::user() ?? null)->where('id', $subtype->species->id)->first();
+        if (!$subtype) {
             abort(404);
         }
-        if (!config('lorekeeper.extensions.species_trait_index.trait_modals')) {
+        if (!config('lorekeeper.extensions.visual_trait_index.enable_subtype_index')) {
+            abort(404);
+        }
+
+        $features = $speciesBasics ? $species : $subtype;
+        $features = $features->features()->visible(Auth::user() ?? null);
+        $features = count($categories) ?
+            $features->orderByRaw('FIELD(feature_category_id,'.implode(',', $categories->pluck('id')->toArray()).')') :
+            $features;
+        $features = $features->orderByRaw('FIELD(rarity_id,'.implode(',', $rarities->pluck('id')->toArray()).')')
+            ->orderBy('has_image', 'DESC')
+            ->orderBy('name')
+            ->get();
+
+        if (!$speciesBasics) {
+            $features = $features->groupBy(['feature_category_id', 'id']);
+        } else {
+            $features = $features
+                ->filter(function ($feature) use ($subtype) {
+                    return !($feature->subtype && $feature->subtype->id != $subtype->id);
+                })
+                ->groupBy(['feature_category_id', 'id']);
+        }
+
+        return view('world.subtype_features', [
+            'subtype'    => $subtype,
+            'categories' => $categories->keyBy('id'),
+            'rarities'   => $rarities->keyBy('id'),
+            'features'   => $features,
+        ]);
+    }
+
+    /**
+     * Shows a universal visual trait list.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getUniversalFeatures(Request $request) {
+        $categories = FeatureCategory::orderBy('sort', 'DESC')->get();
+        $rarities = Rarity::orderBy('sort', 'ASC')->get();
+
+        if (!config('lorekeeper.extensions.visual_trait_index.enable_universal_index')) {
+            abort(404);
+        }
+
+        $features = Feature::whereNull('species_id')
+            ->visible(Auth::user() ?? null);
+        $features = count($categories) ?
+            $features->orderByRaw('FIELD(feature_category_id,'.implode(',', $categories->pluck('id')->toArray()).')') :
+            $features;
+        $features = $features->orderByRaw('FIELD(rarity_id,'.implode(',', $rarities->pluck('id')->toArray()).')')
+            ->orderBy('has_image', 'DESC')
+            ->orderBy('name')
+            ->get()->groupBy(['feature_category_id', 'id']);
+
+        return view('world.universal_features', [
+            'categories' => $categories->keyBy('id'),
+            'rarities'   => $rarities->keyBy('id'),
+            'features'   => $features,
+        ]);
+    }
+
+    /**
+     * Provides a single trait's description html for use in a modal.
+     *
+     * @param mixed $id
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getFeatureDetail($id) {
+        $feature = Feature::visible(Auth::user() ?? null)->where('id', $id)->first();
+
+        if (!$feature) {
             abort(404);
         }
 
@@ -325,13 +380,13 @@ class WorldController extends Controller {
     public function getItems(Request $request) {
         $query = Item::with('category')->released(Auth::user() ?? null);
 
-        $categoryVisibleCheck = ItemCategory::visible(Auth::check() ? Auth::user() : null)->pluck('id', 'name')->toArray();
+        $categoryVisibleCheck = ItemCategory::visible(Auth::user() ?? null)->pluck('id', 'name')->toArray();
         // query where category is visible, or, no category and released
         $query->where(function ($query) use ($categoryVisibleCheck) {
             $query->whereIn('item_category_id', $categoryVisibleCheck)->orWhereNull('item_category_id');
         });
-        $data = $request->only(['item_category_id', 'name', 'sort', 'artist']);
-        if (isset($data['item_category_id']) && $data['item_category_id'] != 'none') {
+        $data = $request->only(['item_category_id', 'name', 'sort', 'artist', 'rarity_id']);
+        if (isset($data['item_category_id'])) {
             if ($data['item_category_id'] == 'withoutOption') {
                 $query->whereNull('item_category_id');
             } else {
@@ -341,8 +396,15 @@ class WorldController extends Controller {
         if (isset($data['name'])) {
             $query->where('name', 'LIKE', '%'.$data['name'].'%');
         }
-        if (isset($data['artist']) && $data['artist'] != 'none') {
+        if (isset($data['artist'])) {
             $query->where('artist_id', $data['artist']);
+        }
+        if (isset($data['rarity_id'])) {
+            if ($data['rarity_id'] == 'withoutOption') {
+                $query->whereNull('data->rarity_id');
+            } else {
+                $query->where('data->rarity_id', $data['rarity_id']);
+            }
         }
 
         if (isset($data['sort'])) {
@@ -368,10 +430,11 @@ class WorldController extends Controller {
         }
 
         return view('world.items', [
-            'items'      => $query->paginate(20)->appends($request->query()),
-            'categories' => ['none' => 'Any Category'] + ['withoutOption' => 'Without Category'] + ItemCategory::visible(Auth::user() ?? null)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'shops'      => Shop::orderBy('sort', 'DESC')->get(),
-            'artists'    => ['none' => 'Any Artist'] + User::whereIn('id', Item::whereNotNull('artist_id')->pluck('artist_id')->toArray())->pluck('name', 'id')->toArray(),
+            'items'       => $query->orderBy('id')->paginate(20)->appends($request->query()),
+            'categories'  => ['withoutOption' => 'Without Category'] + ItemCategory::visible(Auth::user() ?? null)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'shops'       => Shop::orderBy('sort', 'DESC')->get(),
+            'artists'     => User::whereIn('id', Item::whereNotNull('artist_id')->pluck('artist_id')->toArray())->pluck('name', 'id')->toArray(),
+            'rarities'    => ['withoutOption' => 'Without Rarity'] + Rarity::orderBy('rarities.sort', 'DESC')->pluck('name', 'id')->toArray(),
         ]);
     }
 

@@ -165,18 +165,30 @@ class FeatureController extends Controller {
      */
     public function getFeatureIndex(Request $request) {
         $query = Feature::query();
-        $data = $request->only(['rarity_id', 'feature_category_id', 'species_id', 'subtype_id', 'name', 'mut_level', 'mut_type', 'is_locked']);
+        $data = $request->only(['rarity_id', 'feature_category_id', 'species_id', 'subtype_id', 'name', 'sort', 'visibility', 'mut_level', 'mut_type', 'is_locked']);
         if (isset($data['rarity_id']) && $data['rarity_id'] != 'none') {
             $query->where('rarity_id', $data['rarity_id']);
         }
         if (isset($data['feature_category_id']) && $data['feature_category_id'] != 'none') {
-            $query->where('feature_category_id', $data['feature_category_id']);
+            if ($data['feature_category_id'] == 'withoutOption') {
+                $query->whereNull('feature_category_id');
+            } else {
+                $query->where('feature_category_id', $data['feature_category_id']);
+            }
         }
         if (isset($data['species_id']) && $data['species_id'] != 'none') {
-            $query->where('species_id', $data['species_id']);
+            if ($data['species_id'] == 'withoutOption') {
+                $query->whereNull('species_id');
+            } else {
+                $query->where('species_id', $data['species_id']);
+            }
         }
         if (isset($data['subtype_id']) && $data['subtype_id'] != 'none') {
-            $query->where('subtype_id', $data['subtype_id']);
+            if ($data['subtype_id'] == 'withoutOption') {
+                $query->whereNull('subtype_id');
+            } else {
+                $query->where('subtype_id', $data['subtype_id']);
+            }
         }
         if (isset($data['name'])) {
             $query->where('name', 'LIKE', '%'.$data['name'].'%');
@@ -191,12 +203,54 @@ class FeatureController extends Controller {
             $query->locked($data['is_locked']);
         }
 
+        if (isset($data['visibility']) && $data['visibility'] != 'none') {
+            if ($data['visibility'] == 'visibleOnly') {
+                $query->where('is_visible', '=', 1);
+            } else {
+                $query->where('is_visible', '=', 0);
+            }
+        }
+
+        if (isset($data['sort'])) {
+            switch ($data['sort']) {
+                case 'alpha':
+                    $query->sortAlphabetical();
+                    break;
+                case 'alpha-reverse':
+                    $query->sortAlphabetical(true);
+                    break;
+                case 'category':
+                    $query->sortCategory();
+                    break;
+                case 'rarity':
+                    $query->sortRarity();
+                    break;
+                case 'rarity-reverse':
+                    $query->sortRarity(true);
+                    break;
+                case 'species':
+                    $query->sortSpecies();
+                    break;
+                case 'subtypes':
+                    $query->sortSubtype();
+                    break;
+                case 'newest':
+                    $query->sortNewest();
+                    break;
+                case 'oldest':
+                    $query->sortOldest();
+                    break;
+            }
+        } else {
+            $query->sortOldest();
+        }
+
         return view('admin.features.features', [
             'features'   => $query->paginate(20)->appends($request->query()),
             'rarities'   => ['none' => 'Any Rarity'] + Rarity::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'specieses'  => ['none' => 'Any Species'] + Species::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'subtypes'   => ['none' => 'Any Subtype'] + Subtype::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'categories' => ['none' => 'Any Category'] + FeatureCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'specieses'  => ['none' => 'Any Species'] + ['withoutOption' => 'Without Species'] + Species::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'subtypes'   => ['none' => 'Any Subtype'] + ['withoutOption' => 'Without Subtype'] + Subtype::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'categories' => ['none' => 'Any Category'] + ['withoutOption' => 'Without Category'] + FeatureCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'levels'     => ['0' => 'Any Level', '1' => 'Minor', '2' => 'Major'],
             'types'      => ['0' => 'Any Type', '1' => 'Breed Only', '2' => 'Custom Requestable'],
         ]);

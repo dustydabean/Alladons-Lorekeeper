@@ -32,6 +32,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use Settings;
 
 class User extends Authenticatable implements MustVerifyEmail {
     use Commenter, Notifiable, TwoFactorAuthenticatable;
@@ -43,7 +44,7 @@ class User extends Authenticatable implements MustVerifyEmail {
      */
     protected $fillable = [
         'name', 'alias', 'rank_id', 'email', 'email_verified_at', 'password', 'is_news_unread', 'is_dev_logs_unread', 'is_banned', 'has_alias', 'avatar', 'is_sales_unread', 'birthday',
-        'is_deactivated', 'deactivater_id', 'is_raffles_unread',
+        'is_deactivated', 'deactivater_id', 'is_raffles_unread', 'content_warning_visibility',
     ];
 
     /**
@@ -215,8 +216,9 @@ class User extends Authenticatable implements MustVerifyEmail {
     public function gallerySubmissions() {
         return $this->hasMany(GallerySubmission::class)
             ->where('user_id', $this->id)
-            ->orWhereIn('id', GalleryCollaborator::where('user_id', $this->id)->where('type', 'Collab')->pluck('gallery_submission_id')->toArray())
-            ->visible($this)->accepted()->orderBy('created_at', 'DESC');
+            ->orWhereIn('id', GalleryCollaborator::where('user_id', $this->id)
+                ->where('type', 'Collab')->pluck('gallery_submission_id')->toArray())
+            ->orderBy('created_at', 'DESC');
     }
 
     /**
@@ -238,6 +240,15 @@ class User extends Authenticatable implements MustVerifyEmail {
      */
     public function commentLikes() {
         return $this->hasMany(CommentLike::class);
+    }
+
+    /**
+     * Gets all of the user's friends.
+     */
+    public function getFriendsAttribute()
+    {
+        // return this has many where initiator_id matches this id or where recipient_id matches this id
+        return UserFriend::where('recipient_approved', 1)->where('initiator_id', $this->id)->orWhere('recipient_id', $this->id)->get();
     }
 
     /**********************************************************************************************
@@ -507,7 +518,7 @@ class User extends Authenticatable implements MustVerifyEmail {
      */
     public function getcheckBirthdayAttribute() {
         $bday = $this->birthday;
-        if (!$bday || $bday->diffInYears(Carbon::now()) < 13) {
+        if (!$bday || $bday->diffInYears(Carbon::now()) < 16) {
             return false;
         } else {
             return true;
@@ -752,7 +763,7 @@ class User extends Authenticatable implements MustVerifyEmail {
      * @return \Illuminate\Pagination\LengthAwarePaginator
      */
     public function getSubmissions($user = null) {
-        return Submission::with('user')->with('prompt')->viewable($user ? $user : null)->where('user_id', $this->id)->orderBy('id', 'DESC')->paginate(30);
+        return Submission::with('user')->with('prompt')->viewable($user ? $user : null)->where('user_id', $this->id)->orderBy('id', 'DESC');
     }
 
     /**
@@ -856,5 +867,68 @@ class User extends Authenticatable implements MustVerifyEmail {
         // $count[] = $this->hasPower('manage_affiliates')     ? Affiliate::where('status', 'Pending')->count()                                : 0; //affiliateCount
 
         return array_sum($count);
+    }
+
+    /**
+     * Checks if a user is blocked by another user.
+     *
+     * @param mixed $user
+     */
+    public function isBlocked($user)
+    {
+        return UserBlock::where('user_id', $user->id)->where('blocked_id', $this->id)->exists();
+    }
+
+    /**
+     * Checks if a user is friends with another user.
+     *
+     * @param mixed $user
+     */
+    public function isFriendsWith($user)
+    {
+        // check both initiator_id, recipient_id for this user and the other user
+        return UserFriend::where('recipient_approved', 1)
+            ->where('initiator_id', $this->id)->where('recipient_id', $user->id)
+            ->orWhere('initiator_id', $user->id)->where('recipient_id', $this->id)->exists();
+    }
+
+    /**
+     * Checks if a user has a pending request with another user.
+     *
+     * @param mixed $user
+     */
+    public function isPendingFriendsWith($user)
+    {
+        // check both initiator_id, recipient_id for this user and the other user
+        if ($this->isFriendsWith($user)) {
+            return false;
+        }
+
+        return UserFriend::where('recipient_approved', 0)
+            ->where('initiator_id', $this->id)->where('recipient_id', $user->id)
+            ->orWhere('initiator_id', $user->id)->where('recipient_id', $this->id)->exists();
+    }
+
+    /**
+     * gets userOptions for the user divided by friends and all.
+     */
+    public function getUserOptionsAttribute()
+    {
+        $userOptions = [];
+        $friends = [];
+        foreach ($this->friends as $friend) {
+            $friends[] = $friend->other($this->id)->id;
+        }
+        $blocked = [];
+        if (!Settings::get('allow_blocked_transfers')) {
+            $blocked = UserBlock::where('blocked_id', $this->id)->pluck('user_id')->toArray();
+            $friends = array_diff($friends, $blocked);
+        }
+        $userOptions['Friends'] = self::visible()->where('id', '!=', $this->id)->whereIn('id', $friends)->orderBy('name')->pluck('name', 'id')->toArray();
+        $userOptions['All Users'] = self::visible()->where('id', '!=', $this->id)->whereNotIn('id', $friends)
+            ->whereNotIn('id', $blocked)
+            ->orderBy('name')->pluck('name', 'id')->toArray();
+
+        return $userOptions;
     }
 }

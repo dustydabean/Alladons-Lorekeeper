@@ -205,7 +205,7 @@ class UserService extends Service {
     }
 
     /**
-     * Updates the user's avatar.
+     * Updates the user's birthday.
      *
      * @param mixed $data
      * @param mixed $user
@@ -319,17 +319,39 @@ class UserService extends Service {
     }
 
     /**
-     * Updates the user's avatar.
+     * Updates user's warning visibility setting.
      *
-     * @param User  $user
-     * @param mixed $avatar
-     *
-     * @return bool
+     * @param mixed $data
+     * @param mixed $user
      */
-    public function updateAvatar($avatar, $user) {
+    public function updateContentWarningVisibility($data, $user) {
         DB::beginTransaction();
 
         try {
+            $user->settings->content_warning_visibility = $data;
+            $user->settings->save();
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Updates the user's avatar.
+     *
+     * @param User  $user
+     * @param mixed $data
+     *
+     * @return bool
+     */
+    public function updateAvatar($data, $user) {
+        DB::beginTransaction();
+
+        try {
+            $avatar = $data['avatar'];
             if (!$avatar) {
                 throw new \Exception('Please upload a file.');
             }
@@ -352,7 +374,13 @@ class UserService extends Service {
                     throw new \Exception('Failed to move file.');
                 }
             } else {
-                if (!Image::make($avatar)->resize(150, 150)->save(public_path('images/avatars/'.$filename))) {
+                // crop image first
+                $cropWidth = $data['x1'] - $data['x0'];
+                $cropHeight = $data['y1'] - $data['y0'];
+
+                $image = Image::make($avatar);
+                $image->crop($cropWidth, $cropHeight, $data['x0'], $data['y0']);
+                if (!$image->resize(150, 150)->save(public_path('images/avatars/'.$filename))) {
                     throw new \Exception('Failed to process avatar.');
                 }
             }
@@ -369,11 +397,7 @@ class UserService extends Service {
     }
 
     /**
-     * Updates a user's username.
-     *
-     * @param User  $user
-     *                    Updates or creates a user's staff profile
-     * @param mixed $data
+     * Updates or creates a user's staff profile
      */
     public function updateStaffProfile($data, $user) {
         DB::beginTransaction();
@@ -445,12 +469,10 @@ class UserService extends Service {
     }
 
     /**
-     * Bans a user.
+    * Updates a user's username.
      *
-     * @param mixed $username
-     * @param mixed $user
-     *
-     * @return bool
+     * @param string                $username
+     * @param \App\Models\User\User $user
      */
     public function updateUsername($username, $user) {
         DB::beginTransaction();

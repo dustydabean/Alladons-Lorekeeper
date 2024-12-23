@@ -18,23 +18,22 @@
     <h3>Basic Information</h3>
 
     <div class="row">
-        <div class="col-md-6">
-            <div class="form-group">
-                {!! Form::label('Name') !!}
-                {!! Form::text('name', $feature->name, ['class' => 'form-control']) !!}
-            </div>
+        <div class="col-md-6 form-group">
+            {!! Form::label('Name') !!}
+            {!! Form::text('name', $feature->name, ['class' => 'form-control']) !!}
         </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                {!! Form::label('Rarity') !!}
-                {!! Form::select('rarity_id', $rarities, $feature->rarity_id, ['class' => 'form-control']) !!}
-            </div>
+        <div class="col-md-6 form-group">
+            {!! Form::label('Rarity') !!}
+            {!! Form::select('rarity_id', $rarities, $feature->rarity_id, ['class' => 'form-control']) !!}
         </div>
     </div>
 
     <div class="form-group">
         {!! Form::label('World Page Image (Optional)') !!} {!! add_help('This image is used only on the world information pages.') !!}
-        <div>{!! Form::file('image') !!}</div>
+        <div class="custom-file">
+            {!! Form::label('image', 'Choose file...', ['class' => 'custom-file-label']) !!}
+            {!! Form::file('image', ['class' => 'custom-file-input']) !!}
+        </div>
         <div class="text-muted">Recommended size: 200px x 200px</div>
         @if ($feature->has_image)
             <div class="form-check">
@@ -45,23 +44,17 @@
     </div>
 
     <div class="row">
-        <div class="col-md-4">
-            <div class="form-group">
-                {!! Form::label('Trait Category (Optional)') !!}
-                {!! Form::select('feature_category_id', $categories, $feature->feature_category_id, ['class' => 'form-control']) !!}
-            </div>
+        <div class="col-md-4 form-group">
+            {!! Form::label('Trait Category (Optional)') !!}
+            {!! Form::select('feature_category_id', $categories, $feature->feature_category_id, ['class' => 'form-control']) !!}
         </div>
-        <div class="col-md-4">
-            <div class="form-group">
-                {!! Form::label('Species Restriction (Optional)') !!}
-                {!! Form::select('species_id', $specieses, $feature->species_id, ['class' => 'form-control', 'id' => 'species']) !!}
-            </div>
+        <div class="col-md-4 form-group">
+            {!! Form::label('Species Restriction (Optional)') !!}
+            {!! Form::select('species_id', $specieses, $feature->species_id, ['class' => 'form-control', 'id' => 'species']) !!}
         </div>
-        <div class="col-md-4">
-            <div class="form-group" id="subtypes">
-                {!! Form::label('Subtype (Optional)') !!} {!! add_help('This is cosmetic and does not limit choice of traits in selections.') !!}
-                {!! Form::select('subtype_id', $subtypes, $feature->subtype_id, ['class' => 'form-control', 'id' => 'subtype']) !!}
-            </div>
+        <div class="col-md-4 form-group" id="subtypes">
+            {!! Form::label('Subtype (Optional)') !!} {!! add_help('This is cosmetic and does not limit choice of traits in selections.') !!}
+            {!! Form::select('subtype_id', $subtypes, $feature->subtype_id, ['class' => 'form-control', 'id' => 'subtype']) !!}
         </div>
     </div>
     <div class="form-group">
