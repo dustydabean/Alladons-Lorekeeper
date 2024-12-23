@@ -667,7 +667,7 @@ class WorldController extends Controller {
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getCharacterGenerations(Request $request) {
-        $query = CharacterGeneration::query();
+        $query = CharacterGeneration::query()->orderByRaw('LENGTH(name) ASC');
         $data = $request->only(['name']);
         if (isset($data['name'])) {
             $query->where('name', 'LIKE', '%'.$data['name'].'%');

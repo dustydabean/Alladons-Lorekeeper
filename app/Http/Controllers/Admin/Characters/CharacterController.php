@@ -55,7 +55,7 @@ class CharacterController extends Controller {
             'userOptions'      => User::query()->orderBy('name')->pluck('name', 'id')->toArray(),
             'rarities'         => ['0' => 'Select Rarity'] + Rarity::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'specieses'        => ['0' => 'Select Species'] + Species::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'generations'      => [null => 'Select Generation'] + CharacterGeneration::orderBy('name')->pluck('name', 'id')->toArray(),
+            'generations'      => [null => 'Select Generation'] + CharacterGeneration::orderByRaw('LENGTH(name) ASC')->orderBy('name')->pluck('name', 'id')->toArray(),
             'pedigrees'        => [null => 'Select Pedigree Tag'] + CharacterPedigree::orderBy('name')->pluck('name', 'id')->toArray(),
             'subtypes'         => ['0' => 'Pick a Species First'],
             'features'         => Feature::getDropdownItems(1),
@@ -105,7 +105,7 @@ class CharacterController extends Controller {
     public function postCreateCharacter(Request $request, CharacterManager $service) {
         $request->validate(Character::$createRules);
         $data = $request->only([
-            'user_id', 'owner_url', 'character_category_id', 'number', 'slug', 
+            'user_id', 'owner_url', 'character_category_id', 'number', 'slug',
             'description', 'is_visible', 'is_giftable', 'is_tradeable', 'is_sellable',
             'sale_value', 'transferrable_at', 'use_cropper',
             'x0', 'x1', 'y0', 'y1',
@@ -376,7 +376,7 @@ class CharacterController extends Controller {
      */
     public function postCharacterSettings(Request $request, CharacterManager $service, $slug) {
         $data = $request->only([
-            'is_visible', 
+            'is_visible',
         ]);
         $this->character = Character::where('slug', $slug)->first();
         if (!$this->character) {
