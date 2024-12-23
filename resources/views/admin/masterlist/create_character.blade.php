@@ -392,7 +392,7 @@
             $('#advanced_lineage').on('click', function(e) {
                 e.preventDefault();
             });
-            
+        });    
         $("#subtype").selectize({
             maxItems: {{ config('lorekeeper.extensions.multiple_subtype_limit') }},
         });
