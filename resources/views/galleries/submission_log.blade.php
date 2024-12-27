@@ -124,7 +124,7 @@
                             <div class="row mb-2">
                                 @foreach ($submission->data['currencyData'] as $key => $data)
                                     <div class="col-md-3 text-center">
-                                        @if (isset($data))
+                                        @if (isset($data) && isset(config('lorekeeper.group_currency_form')[$key]))
                                             <strong>{{ config('lorekeeper.group_currency_form')[$key]['name'] }}:</strong><br />
                                             @if (config('lorekeeper.group_currency_form')[$key]['type'] == 'choice')
                                                 @if (isset(config('lorekeeper.group_currency_form')[$key]['multiple']) && config('lorekeeper.group_currency_form')[$key]['multiple'] == 'true')
