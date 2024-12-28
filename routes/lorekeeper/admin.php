@@ -11,7 +11,7 @@
 
 Route::get('/', 'HomeController@getIndex');
 
-Route::get('logs', 'HomeController@getLogs');
+Route::get('admin-logs', 'HomeController@getLogs');
 Route::group(['middleware' => 'admin'], function () {
     Route::get('staff-reward-settings', 'HomeController@getStaffRewardSettings');
     Route::post('staff-reward-settings/{key}', 'HomeController@postEditStaffRewardSetting');
@@ -74,6 +74,13 @@ Route::group(['prefix' => 'files', 'middleware' => 'power:edit_site_settings'], 
     Route::post('folder/create', 'FileController@postCreateFolder');
     Route::post('folder/delete', 'FileController@postDeleteFolder');
     Route::post('folder/rename', 'FileController@postRenameFolder');
+});
+
+// LOG VIEWER
+Route::group(['prefix' => 'logs', 'middleware' => 'power:edit_site_settings'], function () {
+    Route::get('/', 'LogController@getIndex');
+    Route::get('/{name}', 'LogController@getLog');
+    Route::post('/delete', 'LogController@postDeleteLog');
 });
 
 // SITE IMAGES
@@ -313,6 +320,7 @@ Route::group(['prefix' => 'masterlist', 'namespace' => 'Characters', 'middleware
     Route::post('create-myo', 'CharacterController@postCreateMyo');
 
     Route::get('check-subtype', 'CharacterController@getCreateCharacterMyoSubtype');
+    Route::get('get-warnings', 'CharacterController@getContentWarnings');
 });
 Route::group(['prefix' => 'character', 'namespace' => 'Characters', 'middleware' => 'power:edit_inventories'], function () {
     Route::post('{slug}/grant', 'GrantController@postCharacterCurrency');

@@ -36,7 +36,7 @@ class UserService extends Service {
      *
      * @param array $data
      *
-     * @return \App\Models\User\User
+     * @return User
      */
     public function createUser($data) {
         // If the rank is not given, create a user with the lowest existing rank.
@@ -111,7 +111,7 @@ class UserService extends Service {
      *
      * @param array $data
      *
-     * @return \App\Models\User\User
+     * @return User
      */
     public function updateUser($data) {
         $user = User::find($data['id']);
@@ -128,8 +128,8 @@ class UserService extends Service {
     /**
      * Updates the user's password.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param array $data
+     * @param User  $user
      *
      * @return bool
      */
@@ -158,8 +158,8 @@ class UserService extends Service {
     /**
      * Updates the user's email and resends a verification email.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param array $data
+     * @param User  $user
      *
      * @return bool
      */
@@ -275,17 +275,39 @@ class UserService extends Service {
     }
 
     /**
-     * Updates the user's avatar.
+     * Updates user's warning visibility setting.
      *
-     * @param \App\Models\User\User $user
-     * @param mixed                 $avatar
-     *
-     * @return bool
+     * @param mixed $data
+     * @param mixed $user
      */
-    public function updateAvatar($avatar, $user) {
+    public function updateContentWarningVisibility($data, $user) {
         DB::beginTransaction();
 
         try {
+            $user->settings->content_warning_visibility = $data;
+            $user->settings->save();
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Updates the user's avatar.
+     *
+     * @param User  $user
+     * @param mixed $data
+     *
+     * @return bool
+     */
+    public function updateAvatar($data, $user) {
+        DB::beginTransaction();
+
+        try {
+            $avatar = $data['avatar'];
             if (!$avatar) {
                 throw new \Exception('Please upload a file.');
             }
@@ -308,7 +330,13 @@ class UserService extends Service {
                     throw new \Exception('Failed to move file.');
                 }
             } else {
-                if (!Image::make($avatar)->resize(150, 150)->save(public_path('images/avatars/'.$filename))) {
+                // crop image first
+                $cropWidth = $data['x1'] - $data['x0'];
+                $cropHeight = $data['y1'] - $data['y0'];
+
+                $image = Image::make($avatar);
+                $image->crop($cropWidth, $cropHeight, $data['x0'], $data['y0']);
+                if (!$image->resize(150, 150)->save(public_path('images/avatars/'.$filename))) {
                     throw new \Exception('Failed to process avatar.');
                 }
             }
@@ -327,8 +355,8 @@ class UserService extends Service {
     /**
      * Updates a user's username.
      *
-     * @param string                $username
-     * @param \App\Models\User\User $user
+     * @param string $username
+     * @param User   $user
      *
      * @return bool
      */
@@ -388,9 +416,9 @@ class UserService extends Service {
     /**
      * Bans a user.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
-     * @param \App\Models\User\User $staff
+     * @param array $data
+     * @param User  $user
+     * @param User  $staff
      *
      * @return bool
      */
@@ -476,8 +504,8 @@ class UserService extends Service {
     /**
      * Unbans a user.
      *
-     * @param \App\Models\User\User $user
-     * @param \App\Models\User\User $staff
+     * @param User $user
+     * @param User $staff
      *
      * @return bool
      */
@@ -510,9 +538,9 @@ class UserService extends Service {
     /**
      * Deactivates a user.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
-     * @param \App\Models\User\User $staff
+     * @param array $data
+     * @param User  $user
+     * @param User  $staff
      *
      * @return bool
      */
@@ -606,8 +634,8 @@ class UserService extends Service {
     /**
      * Reactivates a user account.
      *
-     * @param \App\Models\User\User $user
-     * @param \App\Models\User\User $staff
+     * @param User $user
+     * @param User $staff
      *
      * @return bool
      */

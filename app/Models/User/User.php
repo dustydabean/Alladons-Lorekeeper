@@ -36,7 +36,7 @@ class User extends Authenticatable implements MustVerifyEmail {
      */
     protected $fillable = [
         'name', 'alias', 'rank_id', 'email', 'email_verified_at', 'password', 'is_news_unread', 'is_banned', 'has_alias', 'avatar', 'is_sales_unread', 'birthday',
-        'is_deactivated', 'deactivater_id',
+        'is_deactivated', 'deactivater_id', 'content_warning_visibility',
     ];
 
     /**
@@ -448,7 +448,7 @@ class User extends Authenticatable implements MustVerifyEmail {
      */
     public function getcheckBirthdayAttribute() {
         $bday = $this->birthday;
-        if (!$bday || $bday->diffInYears(carbon::now()) < 13) {
+        if (!$bday || $bday->diffInYears(Carbon::now()) < 13) {
             return false;
         } else {
             return true;
@@ -660,7 +660,7 @@ class User extends Authenticatable implements MustVerifyEmail {
      * @return \Illuminate\Pagination\LengthAwarePaginator
      */
     public function getSubmissions($user = null) {
-        return Submission::with('user')->with('prompt')->viewable($user ? $user : null)->where('user_id', $this->id)->orderBy('id', 'DESC')->paginate(30);
+        return Submission::with('user')->with('prompt')->viewable($user ? $user : null)->where('user_id', $this->id)->orderBy('id', 'DESC');
     }
 
     /**
@@ -669,7 +669,7 @@ class User extends Authenticatable implements MustVerifyEmail {
      *
      * @param mixed $character
      *
-     * @return \App\Models\Character\CharacterBookmark
+     * @return CharacterBookmark
      */
     public function hasBookmarked($character) {
         return CharacterBookmark::where('user_id', $this->id)->where('character_id', $character->id)->first();

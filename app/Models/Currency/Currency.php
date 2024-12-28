@@ -51,6 +51,19 @@ class Currency extends Model {
 
     /**********************************************************************************************
 
+        RELATIONSHIPS
+
+    **********************************************************************************************/
+
+    /**
+     * Get the conversion options for the currency.
+     */
+    public function conversions() {
+        return $this->hasMany(CurrencyConversion::class, 'currency_id');
+    }
+
+    /**********************************************************************************************
+
         ACCESSORS
 
     **********************************************************************************************/
@@ -79,7 +92,7 @@ class Currency extends Model {
      * @return string
      */
     public function getCurrencyImageFileNameAttribute() {
-        return $this->hash.$this->id.'-image.png';
+        return $this->id.'-'.$this->hash.'-image.png';
     }
 
     /**
@@ -88,7 +101,7 @@ class Currency extends Model {
      * @return string
      */
     public function getCurrencyIconFileNameAttribute() {
-        return $this->hash.$this->id.'-icon.png';
+        return $this->id.'-'.$this->hash.'-icon.png';
     }
 
     /**
