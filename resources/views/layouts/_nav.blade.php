@@ -14,7 +14,7 @@
                     @if (Auth::check() && Auth::user()->is_news_unread && Config::get('lorekeeper.extensions.navbar_news_notif'))
                         <a class="nav-link d-flex text-warning" href="{{ url('news') }}"><strong>News</strong><i class="fas fa-bell"></i></a>
                     @else
-                        <a class="nav-link" href="{{ url('news') }}">News<i class="fas fa-newspaper"></i></a>
+                        <a class="nav-link" href="{{ url('news') }}"><i class="fas fa-newspaper"></i> News</a>
                     @endif
                 </li>
                 @if(Auth::check() && Auth::user()->is_dev_logs_unread && Auth::user()->settings->dev_log_notif && Config::get('lorekeeper.extensions.navbar_news_notif'))
@@ -26,22 +26,22 @@
                     @if (Auth::check() && Auth::user()->is_sales_unread && Config::get('lorekeeper.extensions.navbar_news_notif'))
                         <a class="nav-link d-flex text-warning" href="{{ url('sales') }}"><strong>Sales</strong><i class="fas fa-bell"></i></a>
                     @else
-                        <a class="nav-link" href="{{ url('sales') }}">Sales</a>
+                        <a class="nav-link" href="{{ url('sales') }}"><i class="fas fa-money-bill-wave-alt"></i> Sales</a>
                     @endif
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url('masterlist') }}">Masterlist</a>
+                    <a class="nav-link" href="{{ url('masterlist') }}"><i class="fas fa-list-alt"></i> Masterlist</a>
                 </li>
                 
                 <li class="nav-item dropdown">
                     <a id="loreDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                        World
+                    <i class="fas fa-book"></i> World
                     </a>
 
                     <div class="dropdown-menu" aria-labelledby="loreDropdown">
                         <a class="dropdown-item" href="{{ url('world') }}">
-                            Encyclopedia
+                        Encyclopedia
                         </a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="{{ url('users') }}">
@@ -53,13 +53,13 @@
                     </div>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url('gallery') }}">Gallery<i class="fas fa-paint-brush"></i></a>
+                    <a class="nav-link" href="{{ url('gallery') }}"><i class="fas fa-paint-brush"></i> Gallery</a>
                 </li>
 
                 <li class="nav-item dropdown">
                     <a id="loreDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                        Help
-                    <i class="fas fa-question-circle"></i></a>
+                    <i class="fas fa-question-circle"></i> Help
+                    </a>
 
                     <div class="dropdown-menu" aria-labelledby="loreDropdown">
                         <a class="dropdown-item" href="{{ url('faq') }}">
