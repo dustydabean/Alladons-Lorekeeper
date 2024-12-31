@@ -14,7 +14,7 @@
                     @if (Auth::check() && Auth::user()->is_news_unread && Config::get('lorekeeper.extensions.navbar_news_notif'))
                         <a class="nav-link d-flex text-warning" href="{{ url('news') }}"><strong>News</strong><i class="fas fa-bell"></i></a>
                     @else
-                        <a class="nav-link" href="{{ url('news') }}">News</a>
+                        <a class="nav-link" href="{{ url('news') }}">News<i class="fas fa-newspaper"></i></a>
                     @endif
                 </li>
                 @if(Auth::check() && Auth::user()->is_dev_logs_unread && Auth::user()->settings->dev_log_notif && Config::get('lorekeeper.extensions.navbar_news_notif'))
@@ -53,13 +53,13 @@
                     </div>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url('gallery') }}">Gallery</a>
+                    <a class="nav-link" href="{{ url('gallery') }}">Gallery<i class="fas fa-paint-brush"></i></a>
                 </li>
 
                 <li class="nav-item dropdown">
                     <a id="loreDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                         Help
-                    </a>
+                    <i class="fas fa-question-circle"></i></a>
 
                     <div class="dropdown-menu" aria-labelledby="loreDropdown">
                         <a class="dropdown-item" href="{{ url('faq') }}">
