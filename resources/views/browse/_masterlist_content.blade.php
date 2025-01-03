@@ -80,11 +80,11 @@
             </div>
             <hr />
             <div class="masterlist-search-field">
-                {!! Form::label('sale_value_min', 'Resale Minimum ($): ') !!}
+                {!! Form::label('sale_value_min', 'Resale Minimum (£): ') !!}
                 {!! Form::text('sale_value_min', Request::get('sale_value_min'), ['class' => 'form-control mr-2', 'style' => 'width: 250px']) !!}
             </div>
             <div class="masterlist-search-field">
-                {!! Form::label('sale_value_max', 'Resale Maximum ($): ') !!}
+                {!! Form::label('sale_value_max', 'Resale Maximum (£): ') !!}
                 {!! Form::text('sale_value_max', Request::get('sale_value_max'), ['class' => 'form-control mr-2', 'style' => 'width: 250px']) !!}
             </div>
             @if (!$isMyo)
