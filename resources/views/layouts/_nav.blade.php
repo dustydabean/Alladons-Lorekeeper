@@ -41,7 +41,10 @@
 
                     <div class="dropdown-menu" aria-labelledby="loreDropdown">
                         <a class="dropdown-item" href="{{ url('world') }}">
-                        Encyclopedia
+                            Information
+                        </a>
+                        <a class="dropdown-item" href="{{ url('world/universaltraits') }}">
+                            Mutations
                         </a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="{{ url('users') }}">

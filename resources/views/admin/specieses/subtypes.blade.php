@@ -7,7 +7,7 @@
 @section('admin-content')
     {!! breadcrumbs(['Admin Panel' => 'admin', 'Subtypes' => 'admin/data/subtypes']) !!}
 
-    <h1>Subtypes</h1>
+    <h1>Species Contents</h1>
 
     <p>Subtypes are optional categories that can be added to species. Characters require a species, but do not require a subtype. Note that the sort order here reflects the sort order under the species name as well.</p>
 
