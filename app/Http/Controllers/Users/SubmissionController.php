@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Users;
 use App\Facades\Settings;
 use App\Http\Controllers\Controller;
 use App\Models\Character\Character;
+use App\Models\Criteria\Criterion;
 use App\Models\Currency\Currency;
 use App\Models\Gallery\GalleryCollaborator;
 use App\Models\Gallery\GallerySubmission;
 use App\Models\Item\Item;
 use App\Models\Item\ItemCategory;
 use App\Models\Prompt\Prompt;
+use App\Models\Prompt\PromptCriterion;
 use App\Models\Raffle\Raffle;
 use App\Models\Submission\Submission;
 use App\Models\User\User;
@@ -87,18 +89,8 @@ class SubmissionController extends Controller {
     public function getNewSubmission(Request $request) {
         $closed = !Settings::get('is_prompts_open');
         $inventory = UserItem::with('item')->whereNull('deleted_at')->where('count', '>', '0')->where('user_id', Auth::user()->id)->get();
-
-        if (config('lorekeeper.settings.allow_gallery_submissions_on_prompts')) {
-            $collaboratorIds = GalleryCollaborator::where('user_id', Auth::user()->id)->where('has_approved', 1)->pluck('gallery_submission_id')->toArray();
-
-            $gallerySubmissions = GallerySubmission::where('is_visible', true)->where('user_id', Auth::user()->id)->orWhereIn('id', $collaboratorIds)->orderBy('id', 'DESC')->get()->pluck('title', 'id');
-
-            $gallerySubmissions = $gallerySubmissions->map(function ($item, $key) {
-                return '"'.$item.'" by '.Auth::user()->name;
-            });
-        } else {
-            $gallerySubmissions = [];
-        }
+        $prompt = $request->all()['prompt_id'] ?? null;
+        $promptCriteria = $prompt ? PromptCriterion::where('prompt_id', $prompt)->pluck('criterion_id')->toArray() : null;
 
         return view('home.create_submission', [
             'closed'  => $closed,
@@ -116,6 +108,7 @@ class SubmissionController extends Controller {
             'page'                   => 'submission',
             'expanded_rewards'       => config('lorekeeper.extensions.character_reward_expansion.expanded'),
             'userGallerySubmissions' => $gallerySubmissions,
+            'criteria'            => $prompt ? Criterion::active()->whereIn('id', $promptCriteria)->orderBy('name')->pluck('name', 'id') : null,
         ]));
     }
 
@@ -161,6 +154,7 @@ class SubmissionController extends Controller {
             'selectedInventory'      => isset($submission->data['user']) ? parseAssetData($submission->data['user']) : null,
             'count'                  => Submission::where('prompt_id', $submission->prompt_id)->where('status', 'Approved')->where('user_id', $submission->user_id)->count(),
             'userGallerySubmissions' => $gallerySubmissions,
+            'criteria'            => $prompt ? Criterion::active()->whereIn('id', $promptCriteria)->orderBy('name')->pluck('name', 'id') : null,
         ]));
     }
 
@@ -232,7 +226,7 @@ class SubmissionController extends Controller {
             $request->only([
                 'url', 'prompt_id', 'comments', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity',
                 'rewardable_type', 'rewardable_id', 'quantity', 'stack_id', 'stack_quantity', 'currency_id', 'currency_quantity',
-                'gallery_submission_id', 'character_notify_owner',
+                'gallery_submission_id', 'character_notify_owner', 'criterion_id', 'criterion',
             ]),
             Auth::user(),
             false,
@@ -277,13 +271,13 @@ class SubmissionController extends Controller {
         if ($submit && $service->editSubmission($submission, $request->only([
             'url', 'prompt_id', 'comments', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity',
             'rewardable_type', 'rewardable_id', 'quantity', 'stack_id', 'stack_quantity', 'currency_id', 'currency_quantity',
-            'gallery_submission_id', 'character_notify_owner',
+            'gallery_submission_id', 'character_notify_owner', 'criterion_id', 'criterion',
         ]), Auth::user(), false, $submit)) {
             flash('Draft submitted successfully.')->success();
         } elseif ($service->editSubmission($submission, $request->only([
             'url', 'prompt_id', 'comments', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity',
             'rewardable_type', 'rewardable_id', 'quantity', 'stack_id', 'stack_quantity', 'currency_id', 'currency_quantity',
-            'gallery_submission_id',
+            'gallery_submission_id', 'criterion_id', 'criterion',
         ]), Auth::user())) {
             flash('Draft saved successfully.')->success();
 

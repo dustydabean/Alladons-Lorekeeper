@@ -478,6 +478,41 @@ return [
         'url'     => 'gallery/view/{submission_id}',
     ],
 
+    // FRIEND_REQUEST_SENT
+    516 => [
+        'name'    => 'Friend Request Sent',
+        'message' => '<a href="{sender_url}">{sender}</a> has sent you a friend request. (<a href="{url}">View Request.</a>)',
+        'url'     => 'friends/requests',
+    ],
+
+    // FRIEND_REQUEST_ACCEPTED
+    517 => [
+        'name'    => 'Friend Request Accepted',
+        'message' => '<a href="{sender_url}">{sender}</a> has accepted your friend request. (<a href="{url}">View Friend List.</a>)',
+        'url'     => 'friends',
+    ],
+
+    // GIFT_SUBMISSION_RECEIVED
+    1002 => [
+        'name'    => 'Gift Submission Received',
+        'message' => 'Your character (<a href="{character_url}">{character}</a>) has been included in a submission by <a href="{sender_url}">{sender}</a>. (<a href="{url}">View Submission</a>)',
+        'url'     => 'submissions/view/{submission_id}',
+    ],
+
+    // GIFT_CLAIM_RECEIVED
+    1003 => [
+        'name'    => 'Gift Claim Received',
+        'message' => 'Your character (<a href="{character_url}">{character}</a>) has been included in a claim by <a href="{sender_url}">{sender}</a>. (<a href="{url}">View Claim</a>)',
+        'url'     => 'claims/view/{submission_id}',
+    ],
+
+    // GIFT_SUBMISSION_ALERT
+    1004 => [
+        'name'    => 'Gift Submission Alert',
+        'message' => 'Your character (<a href="{character_url}">{character_name}</a>) has {count} submissions by other users. (<a href="{url}">View {character_name}’s Submissions</a>)',
+        'url'     => '{character_url}/submissions',
+    ],
+
     // PAIRING_APPROVED
     1300 => [
         'name'    => 'Pairing Approved',
@@ -504,40 +539,5 @@ return [
         'name'    => 'Pairings Cancelled',
         'message' => 'The pairing of <a href="{character_1_url}">{character_1_slug}</a> and <a href="{character_2_url}">{character_2_slug}</a> has been cancelled.',
         'url'     => '',
-    ],
-
-    // GIFT_SUBMISSION_RECEIVED
-    1002 => [
-        'name'    => 'Gift Submission Received',
-        'message' => 'Your character (<a href="{character_url}">{character}</a>) has been included in a submission by <a href="{sender_url}">{sender}</a>. (<a href="{url}">View Submission</a>)',
-        'url'     => 'submissions/view/{submission_id}',
-    ],
-
-    // GIFT_CLAIM_RECEIVED
-    1003 => [
-        'name'    => 'Gift Claim Received',
-        'message' => 'Your character (<a href="{character_url}">{character}</a>) has been included in a claim by <a href="{sender_url}">{sender}</a>. (<a href="{url}">View Claim</a>)',
-        'url'     => 'claims/view/{submission_id}',
-    ],
-
-    // GIFT_SUBMISSION_ALERT
-    1004 => [
-        'name'    => 'Gift Submission Alert',
-        'message' => 'Your character (<a href="{character_url}">{character_name}</a>) has {count} submissions by other users. (<a href="{url}">View {character_name}’s Submissions</a>)',
-        'url'     => '{character_url}/submissions',
-    ],
-
-    // FRIEND_REQUEST_SENT
-    516 => [
-        'name'    => 'Friend Request Sent',
-        'message' => '<a href="{sender_url}">{sender}</a> has sent you a friend request. (<a href="{url}">View Request.</a>)',
-        'url'     => 'friends/requests',
-    ],
-
-    // FRIEND_REQUEST_ACCEPTED
-    517 => [
-        'name'    => 'Friend Request Accepted',
-        'message' => '<a href="{sender_url}">{sender}</a> has accepted your friend request. (<a href="{url}">View Friend List.</a>)',
-        'url'     => 'friends',
     ],
 ];

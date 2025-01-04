@@ -59,6 +59,16 @@
     {!! Form::textarea('comments', isset($submission->comments) ? $submission->comments : old('comments') ?? Request::get('comments'), ['class' => 'form-control']) !!}
 </div>
 
+@if (!$isClaim)
+    <div id="criterion-section" class="{{ Request::get('prompt_id') ? '' : 'hide' }}">
+        <h2 class="mt-5">Criteria Rewards <button class="btn  btn-outline-info float-right add-calc" type="button">Add Criterion</a></h2>
+        <p>Criteria can be used in addition to or in replacment of rewards. They take input on what you are turning in for the prompt in order to calculate your final reward.</p>
+        <p>Criteria may populate in with pre-selected minimum requirements for this prompt. </p>
+        <div id="criteria"></div>
+        <div class="mb-4"></div>
+    </div>
+@endif
+
 @if ($submission->prompt_id)
     <div class="mb-3">
         @include('home._prompt', ['prompt' => $submission->prompt, 'staffView' => false])
@@ -175,6 +185,12 @@
 @endif
 
 {!! Form::close() !!}
+
+<div id="copy-calc" class="card p-3 mb-2 pl-0 hide">
+    @if (isset($criteria))
+        @include('criteria._criterion_selector', ['criteria' => $criteria])
+    @endif
+</div>
 
 @include('widgets._character_select', ['characterCurrencies' => $characterCurrencies, 'showLootTables' => false])
 @if ($isClaim)

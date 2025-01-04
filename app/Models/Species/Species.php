@@ -22,6 +22,7 @@ class Species extends Model {
      * @var string
      */
     protected $table = 'specieses';
+
     /**
      * Validation rules for creation.
      *

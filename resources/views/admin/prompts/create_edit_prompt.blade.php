@@ -98,12 +98,53 @@
     <p>You can add loot tables containing any kind of currencies (both user- and character-attached), but be sure to keep track of which are being distributed! Character-only currencies cannot be given to users.</p>
     @include('widgets._loot_select', ['loots' => $prompt->rewards, 'showLootTables' => true, 'showRaffles' => true])
 
+    <h3 class="mt-5">Criteria Rewards <button class="btn btn-primary float-right add-calc" type="button">+ Criterion</button></h3>
+    <p>
+        Criteria can be used in addition to or in replacment of rewards. They can be created under the "criterion" section of the admin panel,
+        and allow for dynamic reward amounts to be generated based on user / admin selected criteria like the type of art, or the number of words.
+    </p>
+    <div id="criteria">
+        @foreach ($prompt->criteria as $criterion)
+            <div class="card p-3 mb-2 pl-0">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <a class="col-1 p-0" data-toggle="collapse" href="#collapsable-{{ $criterion->id }}">
+                        <i class="fas fa-angle-down" style="font-size: 24px"></i>
+                    </a>
+                    <div class="flex-grow-1 mr-2">
+                        {!! Form::select('criterion_id[]', $criteria, $criterion->criterion_id, ['class' => 'form-control criterion-select', 'placeholder' => 'Select a Criterion to set Minimum Requirements']) !!}
+                    </div>
+                    <div>
+                        <button class="btn btn-danger delete-calc" type="button"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+                <div id="collapsable-{{ $criterion->id }}" class="form collapse">
+                    @include('criteria._minimum_requirements', ['criterion' => $criterion->criterion, 'minRequirements' => $criterion->minRequirements, 'id' => $criterion->criterion_id])
+                </div>
+            </div>
+        @endforeach
+    </div>
+
+
     <div class="text-right">
         {!! Form::submit($prompt->id ? 'Edit' : 'Create', ['class' => 'btn btn-primary']) !!}
     </div>
 
     {!! Form::close() !!}
 
+    <div id="copy-calc" class="card p-3 mb-2 pl-0 hide">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <a class="col-1 p-0" data-toggle="collapse" href="#collapsable-">
+                <i class="fas fa-angle-down" style="font-size: 24px"></i>
+            </a>
+            <div class="flex-grow-1 mr-2">
+                {!! Form::select('criterion_id[]', $criteria, null, ['class' => 'form-control criterion-select', 'placeholder' => 'Select a Criterion to set Minimum Requirements']) !!}
+            </div>
+            <div>
+                <button class="btn btn-danger delete-calc" type="button"><i class="fas fa-trash"></i></button>
+            </div>
+        </div>
+        <div id="collapsable-" class="form collapse">Select a criterion to populate this area.</div>
+    </div>
     @include('widgets._loot_select_row', ['showLootTables' => true, 'showRaffles' => true])
 
     @if ($prompt->id)

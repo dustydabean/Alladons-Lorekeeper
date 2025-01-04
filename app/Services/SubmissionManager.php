@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Facades\Notifications;
 use App\Facades\Settings;
 use App\Models\Character\Character;
+use App\Models\Criteria\Criterion;
 use App\Models\Currency\Currency;
 use App\Models\Item\Item;
 use App\Models\Loot\LootTable;
@@ -87,6 +88,7 @@ class SubmissionManager extends Service {
                 'status'    => $isDraft ? 'Draft' : 'Pending',
                 'comments'  => $data['comments'],
                 'data'      => null,
+                'criterion' => $data['criterion'] ?? null,
             ] + ($isClaim ? [] : [
                 'prompt_id' => $prompt->id,
             ]));
@@ -149,13 +151,26 @@ class SubmissionManager extends Service {
                 $prompt = null;
             }
 
-            // First, return all items and currency applied.
-            // Also, as this is an edit, delete all attached characters to be re-applied later.
-            $this->removeAttachments($submission);
-            SubmissionCharacter::where('submission_id', $submission->id)->delete();
+            $withCriteriaSelected = isset($data['criterion']) ? array_filter($data['criterion'], function ($obj) {
+                return isset($obj['id']);
+            }) : [];
+            if (count($withCriteriaSelected) > 0) {
+                $data['criterion'] = $withCriteriaSelected;
+            } else {
+                $data['criterion'] = null;
+            }
 
-            if ($isSubmit) {
-                $submission->update(['status' => 'Pending']);
+            // The character identification comes in both the slug field and as character IDs
+            // that key the reward ID/quantity arrays.
+            // We'll need to match characters to the rewards for them.
+            // First, check if the characters are accessible to begin with.
+            if (isset($data['slug'])) {
+                $characters = Character::myo(0)->visible()->whereIn('slug', $data['slug'])->get();
+                if (count($characters) != count($data['slug'])) {
+                    throw new \Exception('One or more of the selected characters do not exist.');
+                }
+            } else {
+                $characters = [];
             }
 
             // Then, re-attach everything fresh.
@@ -172,6 +187,7 @@ class SubmissionManager extends Service {
                 'data'          => json_encode([
                     'user'          => Arr::only(getDataReadyAssets($userAssets), ['user_items', 'currencies']),
                     'rewards'       => getDataReadyAssets($promptRewards),
+                    'criterion' => $data['criterion'] ?? null,
                 ] + (config('lorekeeper.settings.allow_gallery_submissions_on_prompts') ? ['gallery_submission_id' => $data['gallery_submission_id'] ?? null] : [])),
             ] + ($isClaim ? [] : ['prompt_id' => $prompt->id]));
 
@@ -423,6 +439,18 @@ class SubmissionManager extends Service {
                 throw new \Exception('Failed to distribute rewards to user.');
             }
 
+            // Distribute currency from criteria
+            $service = new CurrencyManager;
+
+            if (isset($data['criterion'])) {
+                foreach ($data['criterion'] as $key => $criterionData) {
+                    $criterion = Criterion::where('id', $criterionData['id'])->first();
+                    if (!$service->creditCurrency($user, $submission->user, $promptLogType, $promptData['data'], $criterion->currency, $criterion->calculateReward($criterionData))) {
+                        throw new \Exception('Failed to distribute criterion rewards to user.');
+                    }
+                }
+            }
+
             // Retrieve all reward IDs for characters
             $currencyIds = [];
             $itemIds = [];
@@ -501,6 +529,7 @@ class SubmissionManager extends Service {
                     'user'                  => $addonData,
                     'rewards'               => getDataReadyAssets($rewards),
                     'gallery_submission_id' => $submission->data['gallery_submission_id'] ?? null,
+                    'criterion' => $data['criterion'] ?? null,
                 ]), // list of rewards
             ]);
 

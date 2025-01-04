@@ -87,7 +87,6 @@ class GalleryController extends Controller {
         return view('admin.galleries.submissions_currency_index', [
             'submissions' => $submissions->paginate(10)->appends($request->query()),
             'galleries'   => ['' => 'Any Gallery'] + Gallery::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'currency'    => Currency::find(Settings::get('group_currency')),
         ]);
     }
 
