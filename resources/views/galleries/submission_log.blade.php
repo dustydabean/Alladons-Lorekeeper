@@ -25,28 +25,37 @@
                         @if ($submission->status == 'Accepted')
                             @if (!$submission->is_valued)
                                 @if (Auth::user()->hasPower('manage_submissions'))
-                                    {!! Form::open(['url' => 'admin/gallery/edit/' . $submission->id . '/value']) !!}
+                                    {!! Form::open(['url' => 'admin/gallery/edit/'.$submission->id.'/value']) !!}
                                     @if (isset($submission->data['criterion']))
-                                        <p>Adjust the criteria submitted and other options as needed for what the submitter, collaborators, and/or participants, should receive.</p>
-
+                                        <p>
+                                            Adjust the criteria submitted and other options as needed for what the submitter, collaborators, and/or participants, should receive.
+                                        </p>
+                                    
                                         <h2 class="mt-5">Criteria Rewards</h2>
                                         @foreach ($submission->data['criterion'] as $key => $criterionData)
                                             <div class="card p-3 mb-2">
-                                                @php $criterion = \App\Models\Criteria\Criterion::where('id', $criterionData['id'])->first() @endphp
-                                                <h3>{!! $criterion->displayName !!}</h3>
-                                                {!! Form::hidden('criterion[' . $key . '][id]', $criterionData['id']) !!}
-                                                @include('criteria._minimum_requirements', [
-                                                    'criterion' => $criterion,
-                                                    'values' => $criterionData,
-                                                    'minRequirements' => $submission->gallery->criteria->where('criterion_id', $criterionData['id'])->first()->minRequirements,
-                                                    'title' => 'Selections',
-                                                    'limitByMinReq' => true,
-                                                    'id' => $key,
-                                                ])
+                                                @php 
+                                                    $criterion = \App\Models\Criteria\Criterion::where('id', $criterionData['id'])->first() 
+                                                @endphp
+                                                <h3>
+                                                    {!! $criterion->displayName !!}
+                                                </h3>
+                                                {!! Form::hidden('criterion['.$key.'][id]', $criterionData['id']) !!}
+                                                @include('criteria._minimum_requirements', 
+                                                    [
+                                                        'criterion' => $criterion,
+                                                        'values' => $criterionData,
+                                                        'minRequirements' => $submission->gallery->criteria->where('criterion_id', $criterionData['id'])->first()->minRequirements, 
+                                                        'title' => 'Selections', 
+                                                        'limitByMinReq' => true, 'id' => $key, 
+                                                        'criterion_currency' => isset($criterionData['criterion_currency_id']) ? $criterionData['criterion_currency_id'] : $criterion->currency_id
+                                                    ])
                                             </div>
                                         @endforeach
                                     @else
-                                        <p>This submission didn't have any criteria specified for rewards. Hitting submit will confirm this and clear it from the queue.</p>
+                                        <p>
+                                            This submission didn't have any criteria specified for rewards. Hitting submit will confirm this and clear it from the queue.
+                                        </p>
                                     @endif
                                     <div class="form-group">
                                         {!! Form::checkbox('ineligible', 1, false, ['class' => 'form-check-input', 'data-toggle' => 'toggle', 'data-onstyle' => 'danger']) !!}
@@ -60,41 +69,46 @@
                                     <p>This submission hasn't been evaluated yet. You'll receive a notification once it has!</p>
                                 @endif
                             @else
-                                @if (isset($submission->data['staff']))
-                                    <p><strong>Processed By:</strong> {!! App\Models\User\User::find($submission->data['staff'])->displayName !!}</p>
+                                @if (isset($submission->data['staff']))<p>
+                                    <strong>Processed By:</strong> {!! App\Models\User\User::find($submission->data['staff'])->displayName !!}
+                                </p>
                                 @endif
                                 @if (isset($submission->data['ineligible']) && $submission->data['ineligible'] == 1)
                                     <p>This submission has been evaluated as ineligible for rewards.</p>
                                 @else
                                     @if (isset($totals) && count($totals) > 0)
-                                        @foreach ($totals as $total)
+                                        @foreach($totals as $total)
                                             <h5>{{ $total['name'] }} Criterion</h5>
                                             <div class="row">
                                                 @if (!$submission->collaborators->count() || $submission->collaborators->where('user_id', $submission->user_id)->first() == null)
                                                     <div class="col-md-4">
-                                                        {!! $submission->user->displayName !!}: {!! $total['currency']->display($total['value'] / ($collaboratorsCount ?? 1)) !!}
+                                                    {!! $submission->user->displayName !!}: {!! $total['currency']->display($total['value'] / ($collaboratorsCount ?? 1)) !!}
                                                     </div>
                                                 @endif
                                                 @if ($submission->collaborators->count())
                                                     <div class="col-md-4">
-                                                        @foreach ($submission->collaborators as $collaborator)
+                                                        @foreach($submission->collaborators as $collaborator)
                                                             {!! $collaborator->user->displayName !!} ({{ $collaborator->data }}): {!! $total['currency']->display($total['value'] / ($collaboratorsCount ?? 1)) !!}
-                                                            <br />
+                                                            <br/>
                                                         @endforeach
                                                     </div>
                                                 @endif
                                             </div>
                                         @endforeach
                                     @else
-                                        <p>This submission didn't have any criteria specified for rewards</p>
+                                        <p>
+                                            This submission didn't have any criteria specified for rewards.
+                                        </p>
                                     @endif
                                 @endif
                             @endif
                         @else
-                            <p>This submission is not eligible for currency awards{{ $submission->status == 'Pending' ? ' yet-- it must be accepted first' : '' }}.</p>
+                            <p>
+                                This submission is not eligible for currency awards{{ $submission->status == 'Pending' ? ' yet-- it must be accepted first' : '' }}.
+                            </p>
                         @endif
-                        @if (isset($totals) && count($totals) > 0)
-                            <hr />
+                        @if(isset($totals) && count($totals) > 0)
+                            <hr/>
                             <div id="totals">
                                 @include('galleries._submission_totals', ['totals' => $totals, 'collaboratorsCount' => $collaboratorsCount])
                             </div>
@@ -120,7 +134,7 @@
             </div>
         </div>
         @if (Auth::user()->hasPower('manage_submissions') && $submission->collaboratorApproved)
-            <div class="col-md-5">
+            <div class="col-12 col-md-5">
                 <div class="card mb-4">
                     <div class="card-header">
                         <h5>[Admin] Vote Info</h5>

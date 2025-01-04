@@ -1,7 +1,12 @@
 @if ($criterion)
-    <p>{{ $criterion->summary }}{!! $criterion->is_guide_active ? ' - <a href="' . url('/criteria/guide/' . $criterion->id) . '">Go To Guide</a>' : '' !!}</p>
+    <p>
+        {{ $criterion->summary }}{!! $criterion->is_guide_active ? ' - <a href="' . url('/criteria/guide/' . $criterion->id) . '">Go To Guide</a>' : '' !!}
+    </p>
 
-    @php $finalValues = $values ?? $minRequirements @endphp
+    @php 
+        $finalValues = $values ?? $minRequirements 
+    @endphp
+
     <div id="calc-{{ isset($id) ? $id : $criterion->id }}" class="ml-5 steps">
         <h5>
             {{ isset($title) ? $title : 'Minimum Requirements' }}
@@ -9,7 +14,9 @@
         </h5>
         @foreach ($criterion->steps->where('is_active', 1) as $step)
             <div class="form-group">
-                <div>{!! Form::label($step->name) !!} {!! $step->summary ? add_help($step->summary) : '' !!}</div>
+                <div>
+                    {!! Form::label($step->name) !!} {!! $step->summary ? add_help($step->summary) : '' !!}
+                </div>
                 @if ($step->type === 'input')
                     {!! Form::number('criterion[' . (isset($id) ? $id : $criterion->id) . '][' . $step->id . ']', $finalValues[$step->id] ?? null, ['class' => 'form-control', 'min' => isset($limitByMinReq) ? $minRequirements[$step->id] ?? null : null]) !!}
                 @elseif($step->type === 'options')

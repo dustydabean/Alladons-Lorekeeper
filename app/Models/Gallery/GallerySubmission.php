@@ -184,10 +184,6 @@ class GallerySubmission extends Model {
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeRequiresAward($query) {
-        if (!Settings::get('gallery_submissions_reward_currency')) {
-            return $query->whereNull('id');
-        }
-
         return $query->where('status', 'Accepted')->whereIn('gallery_id', Gallery::has('criteria')->pluck('id')->toArray());
     }
 

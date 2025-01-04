@@ -39,13 +39,6 @@ class UserSettings extends Model {
      */
     public $primaryKey = 'user_id';
 
-    /**
-     * The primary key of the model.
-     *
-     * @var string
-     */
-    public $primaryKey = 'user_id';
-
     /**********************************************************************************************
 
         RELATIONS
