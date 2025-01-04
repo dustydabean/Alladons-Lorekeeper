@@ -24,7 +24,7 @@
         @endif
         @if (count($species->subtypes))
             <div>
-                <strong>Subtypes: </strong>
+                <strong>Species Contents: </strong>
                 @foreach ($species->subtypes as $count => $subtype)
                     {!! $subtype->displayName !!}{{ $count < $species->subtypes->count() - 1 ? ', ' : '' }}
                 @endforeach

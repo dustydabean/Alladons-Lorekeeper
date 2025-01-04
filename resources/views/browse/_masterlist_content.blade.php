@@ -9,25 +9,31 @@
             {!! Form::label('poucher_code', 'Poucher Code: ', ['class' => 'mr-2']) !!}
             {!! Form::text('poucher_code', Request::get('poucher_code'), ['class' => 'form-control']) !!}
         </div>
-        <div class="form-group mb-3 mr-1">
+        <!--<div class="form-group mb-3 mr-1">
             {!! Form::select('rarity_id', $rarities, Request::get('rarity_id'), ['class' => 'form-control mr-2']) !!}
-        </div>
-        <div class="form-group mb-3">
+        </div>-->
+        <!--<div class="form-group mb-3">
             {!! Form::select('species_id', $specieses, Request::get('species_id'), ['class' => 'form-control']) !!}
-        </div>
+        </div>-->
     </div>
     <div class="text-right mb-3"><a href="#advancedSearch" class="btn btn-sm btn-outline-info" data-toggle="collapse">Show Advanced Search Options <i class="fas fa-caret-down"></i></a></div>
     <div class="card mb-3 collapse" id="advancedSearch">
         <div class="card-body masterlist-advanced-search">
             @if (!$isMyo)
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             {!! Form::label('character_category_id', 'Category: ') !!}
                             {!! Form::select('character_category_id', $categories, Request::get('character_category_id'), ['class' => 'form-control']) !!}
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            {!! Form::label('rarity_id', 'Mutation Points: ') !!}
+                            {!! Form::select('rarity_id', $rarities, Request::get('rarity_id'), ['class' => 'form-control mr-2']) !!}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
                         <div class="form-group">
                             {!! Form::label('subtype_ids[]', 'Species Subtype: ') !!}
                             {!! add_help('Search for characters that have <strong>' . (config('lorekeeper.extensions.exclusionary_search') ? 'all' : 'any') . '</strong> of the selected subtypes.') !!}
@@ -74,11 +80,11 @@
             </div>
             <hr />
             <div class="masterlist-search-field">
-                {!! Form::label('sale_value_min', 'Resale Minimum ($): ') !!}
+                {!! Form::label('sale_value_min', 'Resale Minimum (£): ') !!}
                 {!! Form::text('sale_value_min', Request::get('sale_value_min'), ['class' => 'form-control mr-2', 'style' => 'width: 250px']) !!}
             </div>
             <div class="masterlist-search-field">
-                {!! Form::label('sale_value_max', 'Resale Maximum ($): ') !!}
+                {!! Form::label('sale_value_max', 'Resale Maximum (£): ') !!}
                 {!! Form::text('sale_value_max', Request::get('sale_value_max'), ['class' => 'form-control mr-2', 'style' => 'width: 250px']) !!}
             </div>
             @if (!$isMyo)

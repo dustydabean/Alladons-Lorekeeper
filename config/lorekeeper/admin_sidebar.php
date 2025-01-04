@@ -159,7 +159,7 @@ return [
                 'url'  => 'admin/data/galleries',
             ],
             [
-                'name' => 'Character Categories',
+                'name' => 'Species Categories',
                 'url'  => 'admin/data/character-categories',
             ],
             [
@@ -167,7 +167,7 @@ return [
                 'url'  => 'admin/data/sublists',
             ],
             [
-                'name' => 'Rarities',
+                'name' => 'Mutation Points',
                 'url'  => 'admin/data/rarities',
             ],
             [
@@ -175,11 +175,11 @@ return [
                 'url'  => 'admin/data/species',
             ],
             [
-                'name' => 'Subtypes',
+                'name' => 'Species Contents',
                 'url'  => 'admin/data/subtypes',
             ],
             [
-                'name' => 'Traits',
+                'name' => 'Mutations',
                 'url'  => 'admin/data/traits',
             ],
             [

@@ -11,7 +11,7 @@
 
     @if (!$isMyo && !count($categories))
 
-        <div class="alert alert-danger">Creating characters requires at least one <a href="{{ url('admin/data/character-categories') }}">character category</a> to be created first, as character categories are used to generate the character code.</div>
+        <div class="alert alert-danger">Creating characters requires at least one <a href="{{ url('admin/data/character-categories') }}">species category</a> to be created first, as character categories are used to generate the character code.</div>
     @else
         {!! Form::open(['url' => 'admin/masterlist/create-' . ($isMyo ? 'myo' : 'character'), 'files' => true]) !!}
 
@@ -43,7 +43,7 @@
         @if (!$isMyo)
             <div class="row">
                 <div class="col-md-6 form-group">
-                    {!! Form::label('Character Category') !!}
+                    {!! Form::label('Species Category') !!}
                     <select name="character_category_id" id="category" class="form-control" placeholder="Select Category">
                         <option value="" data-code="">Select Category</option>
                         @foreach ($categories as $category)

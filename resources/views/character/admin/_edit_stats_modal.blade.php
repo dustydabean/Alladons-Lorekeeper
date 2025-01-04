@@ -8,7 +8,7 @@
     <div class="row">
         <div class="col-md-6">
             <div class="form-group">
-                {!! Form::label('Character Category') !!}
+                {!! Form::label('Species Category') !!}
                 {!! Form::select('character_category_id', $categories, $character->category->id, ['class' => 'form-control']) !!}
             </div>
         </div>
