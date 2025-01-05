@@ -1218,6 +1218,8 @@ class CharacterManager extends Service {
 
         try {
             $ids = array_reverse(explode(',', $data['sort']));
+            $folders = array_reverse($data['folder_ids']);
+
             $characters = Character::myo(0)->whereIn('id', $ids)->where('user_id', $user->id)->where('is_visible', 1)->orderBy(DB::raw('FIELD(id, '.implode(',', $ids).')'))->get();
 
             if (count($characters) != count($ids)) {
@@ -1227,6 +1229,11 @@ class CharacterManager extends Service {
             $count = 0;
             foreach ($characters as $character) {
                 $character->sort = $count;
+                if ($folders[$count] == 'None') {
+                    $character->folder_id = null;
+                } else {
+                    $character->folder_id = $folders[$count];
+                }
                 $character->save();
                 $count++;
             }
@@ -2003,6 +2010,11 @@ class CharacterManager extends Service {
      * @param string    $logType
      */
     public function moveCharacter($character, $recipient, $data, $cooldown = -1, $logType = null) {
+        if ($character->folder_id) {
+            $character->folder_id = null;
+            $character->save();
+        }
+        
         $sender = $character->user;
         if (!$sender) {
             $sender = $character->owner_url;

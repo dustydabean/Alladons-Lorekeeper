@@ -34,6 +34,7 @@ class Character extends Model {
         'is_gift_art_allowed', 'is_gift_writing_allowed', 'is_trading', 'sort',
         'is_myo_slot', 'name', 'trade_id', 'is_links_open', 'owner_url', 'poucher_code',
         'nickname', 'pedigree_id', 'pedigree_descriptor', 'generation_id', 'birthdate', 'poucher_code',
+        'folder_id',
     ];
 
     /**
@@ -244,6 +245,14 @@ class Character extends Model {
     */
     public function generation() {
         return $this->belongsTo(CharacterGeneration::class, 'generation_id');
+    }
+
+    /**
+     * Gets which folder the character currently resides in.
+     */
+    public function folder()
+    {
+        return $this->belongsTo(CharacterFolder::class, 'folder_id');
     }
 
     /**********************************************************************************************

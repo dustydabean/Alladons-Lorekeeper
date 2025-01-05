@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Users;
 use App\Http\Controllers\Controller;
 use App\Models\Character\Character;
 use App\Models\Character\CharacterImage;
+use App\Models\Character\CharacterFolder;
 use App\Models\Character\Sublist;
 use App\Models\Collection\CollectionCategory;
 use App\Models\Currency\Currency;
@@ -135,8 +136,49 @@ class UserController extends Controller {
             $query->visible();
         }
 
+        $query = $query->orderBy('sort', 'DESC')->get()
+        // group query folder, getting the name from the id
+        ->groupBy(function($item) {
+            return $item->folder ? $item->folder->name : 'Unsorted';
+        });
+
         return view('user.characters', [
             'user'       => $this->user,
+            'characters' => $query,
+        ]);
+    }
+
+    /**
+     * Shows a user's character folder.
+     *
+     * @param  string  $name
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getUserCharacterFolder($name, $folder)
+    {
+        $folder = CharacterFolder::where('name', $folder)->where('user_id', $this->user->id)->first();
+        $query = Character::myo(0)->where('user_id', $this->user->id)->where('folder_id', $folder->id);
+        $imageQuery = CharacterImage::images(Auth::check() ? Auth::user() : null)->with('features')->with('rarity')->with('species')->with('features');
+
+        if($sublists = Sublist::where('show_main', 0)->get())
+        $subCategories = []; $subSpecies = [];
+        {   foreach($sublists as $sublist)
+            {
+                $subCategories = array_merge($subCategories, $sublist->categories->pluck('id')->toArray());
+                $subSpecies = array_merge($subSpecies, $sublist->species->pluck('id')->toArray());
+            }
+        }
+
+        $query->whereNotIn('character_category_id', $subCategories);
+        $imageQuery->whereNotIn('species_id', $subSpecies);
+
+        $query->whereIn('id', $imageQuery->pluck('character_id'));
+
+        if(!Auth::check() || !(Auth::check() && Auth::user()->hasPower('manage_characters'))) $query->visible();
+
+        return view('user.character_folder', [
+            'user' => $this->user,
+            'folder' => $folder,
             'characters' => $query->orderBy('sort', 'DESC')->get(),
         ]);
     }

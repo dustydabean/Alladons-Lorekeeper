@@ -34,6 +34,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Settings;
+use App\Models\Character\CharacterFolder;
 
 class User extends Authenticatable implements MustVerifyEmail {
     use Commenter, Notifiable, TwoFactorAuthenticatable;
@@ -265,6 +266,14 @@ class User extends Authenticatable implements MustVerifyEmail {
     public function getFriendsAttribute() {
         // return this has many where initiator_id matches this id or where recipient_id matches this id
         return UserFriend::where('recipient_approved', 1)->where('initiator_id', $this->id)->orWhere('recipient_id', $this->id)->get();
+    }
+
+    /**
+     * gets all the user's character folders
+     */
+    public function folders()
+    {
+        return $this->hasMany(CharacterFolder::class);
     }
 
     /**********************************************************************************************
