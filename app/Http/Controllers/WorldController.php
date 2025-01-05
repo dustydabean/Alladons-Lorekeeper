@@ -14,8 +14,6 @@ use App\Models\Item\Item;
 use App\Models\Item\ItemCategory;
 use App\Models\Pet\Pet;
 use App\Models\Pet\PetCategory;
-use App\Models\Prompt\Prompt;
-use App\Models\Prompt\PromptCategory;
 use App\Models\Rarity;
 use App\Models\Recipe\Recipe;
 use App\Models\Shop\Shop;
@@ -684,19 +682,17 @@ class WorldController extends Controller {
     /**
      * Shows the items page.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getRecipes(Request $request)
-    {
+    public function getRecipes(Request $request) {
         $query = Recipe::query();
         $data = $request->only(['name', 'sort']);
-        if(isset($data['name']))
+        if (isset($data['name'])) {
             $query->where('name', 'LIKE', '%'.$data['name'].'%');
+        }
 
-        if(isset($data['sort']))
-        {
-            switch($data['sort']) {
+        if (isset($data['sort'])) {
+            switch ($data['sort']) {
                 case 'alpha':
                     $query->sortAlphabetical();
                     break;
@@ -713,8 +709,9 @@ class WorldController extends Controller {
                     $query->sortNeedsUnlocking();
                     break;
             }
+        } else {
+            $query->sortNewest();
         }
-        else $query->sortNewest();
 
         return view('world.recipes.recipes', [
             'recipes' => $query->paginate(20)->appends($request->query()),
@@ -724,18 +721,20 @@ class WorldController extends Controller {
     /**
      * Shows an individual recipe;ss page.
      *
-     * @param  int  $id
+     * @param int $id
+     *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getRecipe($id)
-    {
+    public function getRecipe($id) {
         $recipe = Recipe::where('id', $id)->first();
-        if(!$recipe) abort(404);
+        if (!$recipe) {
+            abort(404);
+        }
 
         return view('world.recipes._recipe_page', [
-            'recipe' => $recipe,
-            'imageUrl' => $recipe->imageUrl,
-            'name' => $recipe->displayName,
+            'recipe'      => $recipe,
+            'imageUrl'    => $recipe->imageUrl,
+            'name'        => $recipe->displayName,
             'description' => $recipe->parsed_description,
         ]);
     }

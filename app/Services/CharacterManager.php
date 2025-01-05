@@ -11,13 +11,13 @@ use App\Models\Character\CharacterFeature;
 use App\Models\Character\CharacterGeneration;
 use App\Models\Character\CharacterImage;
 use App\Models\Character\CharacterImageSubtype;
+use App\Models\Character\CharacterLineage;
 use App\Models\Character\CharacterPedigree;
 use App\Models\Character\CharacterProfileCustomValue;
 use App\Models\Character\CharacterTransfer;
-use App\Models\Character\CharacterLineage;
+use App\Models\Rarity;
 use App\Models\Sales\SalesCharacter;
 use App\Models\Species\Subtype;
-use App\Models\Rarity;
 use App\Models\User\User;
 use App\Models\User\UserPet;
 use Auth;
@@ -779,7 +779,7 @@ class CharacterManager extends Service {
             }
 
             $new['generation'] = isset($generation) ? $generation->name : 'No Generation';
-            $new['pedigree'] = isset($pedigree) ? $pedigree->name.' '.$data['pedigree_descriptor']: 'No Pedigree Name';
+            $new['pedigree'] = isset($pedigree) ? $pedigree->name.' '.$data['pedigree_descriptor'] : 'No Pedigree Name';
             $new['nickname'] = $data['nickname'] ?? 'No Nickname';
             $new['birthdate'] = $data['birthdate'] ?? 'Birthdate Unknown';
             $new['poucher_code'] = $data['poucher_code'] ?? 'No Poucher Code';

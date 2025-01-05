@@ -2,8 +2,8 @@
 
 namespace App\Models\Prompt;
 
-use App\Models\Model;
 use App\Models\Criteria\Criterion;
+use App\Models\Model;
 
 class PromptCriterion extends Model {
     /**

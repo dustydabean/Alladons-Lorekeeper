@@ -170,7 +170,7 @@ class SubmissionController extends Controller {
             'selectedInventory'      => isset($submission->data['user']) ? parseAssetData($submission->data['user']) : null,
             'count'                  => Submission::where('prompt_id', $submission->prompt_id)->where('status', 'Approved')->where('user_id', $submission->user_id)->count(),
             'userGallerySubmissions' => $gallerySubmissions,
-            'criteria'            => $prompt ? Criterion::active()->whereIn('id', $promptCriteria)->orderBy('name')->pluck('name', 'id') : null,
+            'criteria'               => $prompt ? Criterion::active()->whereIn('id', $promptCriteria)->orderBy('name')->pluck('name', 'id') : null,
         ]));
     }
 
@@ -192,19 +192,18 @@ class SubmissionController extends Controller {
     /**
      * Shows character gift art/writing permissions.
      *
-     * @param mixed $id
+     * @param mixed $slug
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getCharacterPermissions($slug)
-    {
+    public function getCharacterPermissions($slug) {
         $character = Character::visible()->where('slug', $slug)->first();
         $allowArt = $character->is_gift_art_allowed;
         $allowWriting = $character->is_gift_writing_allowed;
 
         return view('home._character_gift_permissions', [
-            'character' => $character,
-            'allowArt' => $allowArt,
+            'character'    => $character,
+            'allowArt'     => $allowArt,
             'allowWriting' => $allowWriting,
         ]);
     }
@@ -435,7 +434,7 @@ class SubmissionController extends Controller {
             'currencies'             => Currency::where('is_user_owned', 1)->orderBy('name')->pluck('name', 'id'),
             'raffles'                => Raffle::where('rolled_at', null)->where('is_active', 1)->orderBy('name')->pluck('name', 'id'),
             'page'                   => 'submission',
-            'recipes'=> Recipe::orderBy('name')->pluck('name', 'id'),
+            'recipes'                => Recipe::orderBy('name')->pluck('name', 'id'),
             'expanded_rewards'       => config('lorekeeper.extensions.character_reward_expansion.expanded'),
             'userGallerySubmissions' => [],
         ]));
@@ -470,7 +469,7 @@ class SubmissionController extends Controller {
             'inventory'              => $inventory,
             'raffles'                => Raffle::where('rolled_at', null)->where('is_active', 1)->orderBy('name')->pluck('name', 'id'),
             'page'                   => 'submission',
-            'recipes'=> Recipe::orderBy('name')->pluck('name', 'id'),
+            'recipes'                => Recipe::orderBy('name')->pluck('name', 'id'),
             'expanded_rewards'       => config('lorekeeper.extensions.character_reward_expansion.expanded'),
             'selectedInventory'      => isset($submission->data['user']) ? parseAssetData($submission->data['user']) : null,
             'userGallerySubmissions' => [],
@@ -487,7 +486,7 @@ class SubmissionController extends Controller {
      */
     public function postNewClaim(Request $request, SubmissionManager $service, $draft = false) {
         $request->validate(Submission::$createRules);
-        if ($submission = $service->createSubmission($request->only(['url', 'comments', 'stack_id', 'stack_quantity', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity', 'rewardable_type', 'rewardable_id', 'quantity', 'currency_id', 'currency_quantity','character_notify_owner',]), Auth::user(), true, $draft)) {
+        if ($submission = $service->createSubmission($request->only(['url', 'comments', 'stack_id', 'stack_quantity', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity', 'rewardable_type', 'rewardable_id', 'quantity', 'currency_id', 'currency_quantity', 'character_notify_owner']), Auth::user(), true, $draft)) {
             if ($submission->status == 'Draft') {
                 flash('Draft created successfully.')->success();
 

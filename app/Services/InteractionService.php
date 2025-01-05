@@ -9,8 +9,7 @@ use Carbon\Carbon;
 use DB;
 use Notifications;
 
-class InteractionService extends Service
-{
+class InteractionService extends Service {
     /*
     |--------------------------------------------------------------------------
     | Interaction Service
@@ -23,8 +22,7 @@ class InteractionService extends Service
     /**
      * Sends a friend request to a user.
      */
-    public function sendFriendRequest(User $initiator, User $recipient)
-    {
+    public function sendFriendRequest(User $initiator, User $recipient) {
         DB::beginTransaction();
 
         try {
@@ -69,12 +67,10 @@ class InteractionService extends Service
      * @param mixed $request_id
      * @param mixed $accept
      */
-    public function editFriendRequest($request_id, $accept)
-    {
+    public function editFriendRequest($request_id, $accept) {
         DB::beginTransaction();
 
         try {
-
             // find pending request
             $friend_request = UserFriend::find($request_id);
             if (!$friend_request) {
@@ -109,12 +105,10 @@ class InteractionService extends Service
      *
      * @param mixed $id
      */
-    public function removeFriend($id)
-    {
+    public function removeFriend($id) {
         DB::beginTransaction();
 
         try {
-
             // find pending request
             $friend = UserFriend::find($id);
             if (!$friend) {
@@ -138,12 +132,10 @@ class InteractionService extends Service
      * @param mixed $user
      * @param mixed $blocked
      */
-    public function blockUser($user, $blocked)
-    {
+    public function blockUser($user, $blocked) {
         DB::beginTransaction();
 
         try {
-
             // check if they are already blocked
             if ($blocked->isBlocked($user)) {
                 // delete userblock record
@@ -151,8 +143,7 @@ class InteractionService extends Service
                 $userblock->delete();
             } else {
                 // remove any friend requests / friendships
-                $friend_request = UserFriend::
-                    where('initiator_id', $user->id)->where('recipient_id', $blocked->id)
+                $friend_request = UserFriend::where('initiator_id', $user->id)->where('recipient_id', $blocked->id)
                     ->orWhere('initiator_id', $blocked->id)->where('recipient_id', $user->id)->first();
                 if ($friend_request) {
                     $friend_request->delete();

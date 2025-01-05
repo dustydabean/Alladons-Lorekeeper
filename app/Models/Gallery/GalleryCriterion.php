@@ -2,8 +2,8 @@
 
 namespace App\Models\Gallery;
 
-use App\Models\Model;
 use App\Models\Criteria\Criterion;
+use App\Models\Model;
 
 class GalleryCriterion extends Model {
     /**

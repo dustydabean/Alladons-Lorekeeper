@@ -254,7 +254,7 @@ class GalleryController extends Controller {
         ]);
     }
 
-     /**
+    /**
      * Gets updated totals for a given submission.
      *
      * @param int $id

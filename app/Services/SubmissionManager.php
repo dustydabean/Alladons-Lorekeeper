@@ -101,8 +101,8 @@ class SubmissionManager extends Service {
 
             $submission->update([
                 'data' => json_encode([
-                    'user'    => Arr::only(getDataReadyAssets($userAssets), ['user_items', 'currencies']),
-                    'rewards' => getDataReadyAssets($promptRewards),
+                    'user'      => Arr::only(getDataReadyAssets($userAssets), ['user_items', 'currencies']),
+                    'rewards'   => getDataReadyAssets($promptRewards),
                     'criterion' => $data['criterion'] ?? null,
                 ] + (config('lorekeeper.settings.allow_gallery_submissions_on_prompts') ? ['gallery_submission_id' => $data['gallery_submission_id'] ?? null] : [])),
             ]);
@@ -189,7 +189,7 @@ class SubmissionManager extends Service {
                 'data'          => json_encode([
                     'user'          => Arr::only(getDataReadyAssets($userAssets), ['user_items', 'currencies']),
                     'rewards'       => getDataReadyAssets($promptRewards),
-                    'criterion' => $data['criterion'] ?? null,
+                    'criterion'     => $data['criterion'] ?? null,
                 ] + (config('lorekeeper.settings.allow_gallery_submissions_on_prompts') ? ['gallery_submission_id' => $data['gallery_submission_id'] ?? null] : [])),
             ] + ($isClaim ? [] : ['prompt_id' => $prompt->id]));
 
@@ -505,7 +505,7 @@ class SubmissionManager extends Service {
                     'character_id'  => $c->id,
                     'submission_id' => $submission->id,
                     'data'          => json_encode(getDataReadyAssets($assets)),
-                    'notify_owner' => isset($data['character_notify_owner']) && $data['character_notify_owner'][$c->id] ? $data['character_notify_owner'][$c->id] : 0,
+                    'notify_owner'  => isset($data['character_notify_owner']) && $data['character_notify_owner'][$c->id] ? $data['character_notify_owner'][$c->id] : 0,
                 ]);
             }
 
@@ -536,7 +536,7 @@ class SubmissionManager extends Service {
                     'rewards'               => getDataReadyAssets($rewards),
                     'criterion'             => $data['criterion'] ?? null,
                     'gallery_submission_id' => $submission->data['gallery_submission_id'] ?? null,
-                    'criterion' => $data['criterion'] ?? null,
+                    'criterion'             => $data['criterion'] ?? null,
                 ]), // list of rewards
             ]);
 
@@ -552,16 +552,16 @@ class SubmissionManager extends Service {
             // Get included characters that are set to notify
             $notifiableCharacter = $submission->characters->where('notify_owner', true);
 
-            if($notifiableCharacter->count()) {
+            if ($notifiableCharacter->count()) {
                 // Send a notification to included characters' owners now that the submission is accepted
                 // but not for the submitting user's own characters
-                foreach($notifiableCharacter as $character) {
-                    if($character->character->user->id != $submission->user->id) {
+                foreach ($notifiableCharacter as $character) {
+                    if ($character->character->user->id != $submission->user->id) {
                         Notifications::create($submission->prompt_id ? 'GIFT_SUBMISSION_RECEIVED' : 'GIFT_CLAIM_RECEIVED', $character->character->user, [
-                            'sender' => $submission->user->name,
-                            'sender_url' => $submission->user->url,
+                            'sender'        => $submission->user->name,
+                            'sender_url'    => $submission->user->url,
                             'character_url' => $character->character->url,
-                            'character' => isset($character->character->name) ? $character->character->fullName : $character->character->slug,
+                            'character'     => isset($character->character->name) ? $character->character->fullName : $character->character->slug,
                             'submission_id' => $submission->id,
                         ]);
                     }
@@ -710,7 +710,7 @@ class SubmissionManager extends Service {
                             }
                             $reward = Recipe::find($data['rewardable_id'][$key]);
                             if (!$reward->needs_unlocking) {
-                                throw new \Exception("Invalid recipe selected.");
+                                throw new \Exception('Invalid recipe selected.');
                             }
                             break;
                     }
@@ -883,7 +883,7 @@ class SubmissionManager extends Service {
                 'character_id'  => $c->id,
                 'submission_id' => $submission->id,
                 'data'          => json_encode(getDataReadyAssets($assets)),
-                'notify_owner' => isset($data['character_notify_owner']) && $data['character_notify_owner'][$c->id] ? $data['character_notify_owner'][$c->id] : 0,
+                'notify_owner'  => isset($data['character_notify_owner']) && $data['character_notify_owner'][$c->id] ? $data['character_notify_owner'][$c->id] : 0,
             ]);
         }
 

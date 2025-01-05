@@ -25,13 +25,6 @@ class Pairing extends Model {
     protected $table = 'pairings';
 
     /**
-     * Whether the model contains timestamps to be saved and updated.
-     *
-     * @var string
-     */
-    public $timestamps = true;
-
-    /**
      * Dates on the model to convert to Carbon instances.
      *
      * @var array
@@ -39,6 +32,13 @@ class Pairing extends Model {
     protected $casts = [
         'created_at' => 'datetime',
     ];
+
+    /**
+     * Whether the model contains timestamps to be saved and updated.
+     *
+     * @var string
+     */
+    public $timestamps = true;
 
     /**
      * Validation rules for pairing creation.

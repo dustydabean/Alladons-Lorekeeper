@@ -97,8 +97,8 @@ Route::group(['prefix' => 'logs', 'middleware' => 'power:edit_site_settings'], f
     Route::post('/delete', 'LogController@postDeleteLog');
 });
 
-# SITE IMAGES
-Route::group(['prefix' => 'images', 'middleware' => 'power:edit_site_settings'], function() {
+// SITE IMAGES
+Route::group(['prefix' => 'images', 'middleware' => 'power:edit_site_settings'], function () {
     Route::get('/', 'FileController@getSiteImages');
 
     Route::post('upload/css', 'FileController@postUploadCss');
@@ -244,7 +244,7 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('pets/levels/edit/{level_id}/pets/add', 'PetController@postAddPetToLevel');
     Route::post('pets/levels/edit/{level_id}/pets/edit/{id}', 'PetController@postEditPetLevel');
 
-    # RECIPES
+    // RECIPES
     Route::get('recipes', 'RecipeController@getRecipeIndex');
     Route::get('recipes/create', 'RecipeController@getCreateRecipe');
     Route::get('recipes/edit/{id}', 'RecipeController@getEditRecipe');
@@ -410,7 +410,7 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('faq/edit/{id?}', 'FaqController@postCreateEditFaqQuestion');
     Route::post('faq/delete/{id}', 'FaqController@postDeleteFaqQuestion');
 
-    # SCAVENGER HUNTS
+    // SCAVENGER HUNTS
     Route::get('hunts', 'HuntController@getHuntIndex');
     Route::get('hunts/create', 'HuntController@getCreateHunt');
     Route::get('hunts/edit/{id}', 'HuntController@getEditHunt');

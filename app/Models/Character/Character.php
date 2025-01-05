@@ -403,7 +403,7 @@ class Character extends Model {
 
         return $tag.' <i>'.$this->pedigree_descriptor.'</i>';
     }
-    
+
     /**
      * Gets the character's page's URL.
      *

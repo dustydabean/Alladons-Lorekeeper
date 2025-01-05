@@ -287,6 +287,69 @@ class BrowseController extends Controller {
     }
 
     /**
+     * Shows the frequently asked questions page.
+     *
+     * @param mixed|null $id
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getFaq(Request $request, $id = null) {
+        $tags = config('lorekeeper.faq');
+        // tags is an array of names, make it so their key is their name also
+        $tags = array_combine($tags, $tags);
+        $tags = array_map(function ($tag) {
+            return ucwords($tag);
+        }, $tags);
+        ksort($tags);
+
+        return view('browse.faq', [
+            'id'   => $id ?? null,
+            'faqs' => Faq::visible(Auth::check() ? Auth::user() : null)->orderBy('created_at', 'DESC')->get(),
+            'tags' => $tags,
+        ]);
+    }
+
+    /**
+     * Returns a single FAQ question in modal.
+     *
+     * @param mixed $id
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getFaqQuestion($id) {
+        $faq = Faq::visible(Auth::check() ? Auth::user() : null)->find($id);
+
+        return view('browse._faq_modal', [
+            'faq' => $faq,
+        ]);
+    }
+
+    /**
+     * Returns query for the FAQ page.
+     */
+    public function getFaqSearch(Request $request) {
+        $tags = $request->get('tags') ?? [];
+        $content = $request->get('content') ?? null;
+
+        return view('browse._faq_content', [
+            'faqs' => Faq::visible(Auth::check() ? Auth::user() : null)->where(function ($query) use ($tags, $content) {
+                if ($tags) {
+                    // the query must contain ALL tags that are selected
+                    foreach ($tags as $tag) {
+                        // json decode the tag column
+                        $query->whereJsonContains('tags', $tag);
+                    }
+                }
+                if ($content) {
+                    $query->where(function ($query) use ($content) {
+                        $query->where('question', 'LIKE', '%'.$content.'%')->orWhere('answer', 'LIKE', '%'.$content.'%');
+                    });
+                }
+            })->orderBy('created_at', 'DESC')->get(),
+        ]);
+    }
+
+    /**
      * Handles character search/filtering.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
@@ -549,68 +612,5 @@ class BrowseController extends Controller {
         $query->visible(Auth::user() ?? null);
 
         return $query;
-    }
-
-    /**
-     * Shows the frequently asked questions page.
-     *
-     * @param mixed|null $id
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
-    public function getFaq(Request $request, $id = null) {
-        $tags = config('lorekeeper.faq');
-        // tags is an array of names, make it so their key is their name also
-        $tags = array_combine($tags, $tags);
-        $tags = array_map(function ($tag) {
-            return ucwords($tag);
-        }, $tags);
-        ksort($tags);
-
-        return view('browse.faq', [
-            'id'   => $id ?? null,
-            'faqs' => Faq::visible(Auth::check() ? Auth::user() : null)->orderBy('created_at', 'DESC')->get(),
-            'tags' => $tags,
-        ]);
-    }
-
-    /**
-     * Returns a single FAQ question in modal.
-     *
-     * @param mixed $id
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
-    public function getFaqQuestion($id) {
-        $faq = Faq::visible(Auth::check() ? Auth::user() : null)->find($id);
-
-        return view('browse._faq_modal', [
-            'faq' => $faq,
-        ]);
-    }
-
-    /**
-     * Returns query for the FAQ page.
-     */
-    public function getFaqSearch(Request $request) {
-        $tags = $request->get('tags') ?? [];
-        $content = $request->get('content') ?? null;
-
-        return view('browse._faq_content', [
-            'faqs' => Faq::visible(Auth::check() ? Auth::user() : null)->where(function ($query) use ($tags, $content) {
-                if ($tags) {
-                    // the query must contain ALL tags that are selected
-                    foreach ($tags as $tag) {
-                        // json decode the tag column
-                        $query->whereJsonContains('tags', $tag);
-                    }
-                }
-                if ($content) {
-                    $query->where(function ($query) use ($content) {
-                        $query->where('question', 'LIKE', '%'.$content.'%')->orWhere('answer', 'LIKE', '%'.$content.'%');
-                    });
-                }
-            })->orderBy('created_at', 'DESC')->get(),
-        ]);
     }
 }

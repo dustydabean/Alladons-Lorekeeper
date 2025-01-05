@@ -122,7 +122,7 @@ return [
             ],
             [
                 'name' => 'Recipe Grants',
-                'url' => 'admin/grants/recipes'
+                'url'  => 'admin/grants/recipes',
             ],
         ],
     ],
@@ -236,7 +236,7 @@ return [
             ],
             [
                 'name' => 'Scavenger Hunts',
-                'url' => 'admin/data/hunts',
+                'url'  => 'admin/data/hunts',
             ],
             [
                 'name' => 'Criteria Rewards',
@@ -244,7 +244,7 @@ return [
             ],
             [
                 'name' => 'Recipes',
-                'url' => 'admin/data/recipes'
+                'url'  => 'admin/data/recipes',
             ],
         ],
     ],
@@ -289,6 +289,6 @@ return [
                 'name' => 'Log Viewer',
                 'url'  => 'admin/logs',
             ],
-        ]
+        ],
     ],
 ];

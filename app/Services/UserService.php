@@ -397,7 +397,10 @@ class UserService extends Service {
     }
 
     /**
-     * Updates or creates a user's staff profile
+     * Updates or creates a user's staff profile.
+     *
+     * @param mixed $data
+     * @param mixed $user
      */
     public function updateStaffProfile($data, $user) {
         DB::beginTransaction();
@@ -469,10 +472,10 @@ class UserService extends Service {
     }
 
     /**
-    * Updates a user's username.
+     * Updates a user's username.
      *
-     * @param string                $username
-     * @param \App\Models\User\User $user
+     * @param string $username
+     * @param User   $user
      */
     public function updateUsername($username, $user) {
         DB::beginTransaction();

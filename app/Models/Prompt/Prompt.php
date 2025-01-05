@@ -4,7 +4,6 @@ namespace App\Models\Prompt;
 
 use App\Models\Model;
 use Carbon\Carbon;
-use DB;
 
 class Prompt extends Model {
     /**

@@ -5,8 +5,7 @@ namespace App\Models\User;
 use App\Models\Model;
 use Carbon\Carbon;
 
-class UserFriend extends Model
-{
+class UserFriend extends Model {
     /**
      * The attributes that are mass assignable.
      *
@@ -22,7 +21,7 @@ class UserFriend extends Model
      * @var array
      */
     protected $casts = [
-        'created_at' => 'datetime',
+        'created_at'  => 'datetime',
         'accepted_at' => 'datetime',
     ];
 
@@ -35,16 +34,14 @@ class UserFriend extends Model
     /**
      * Get the user who created the friendship.
      */
-    public function initiator()
-    {
+    public function initiator() {
         return $this->belongsTo('App\Models\User\User', 'initiator_id');
     }
 
     /**
      * Get the user who is blocked.
      */
-    public function recipient()
-    {
+    public function recipient() {
         return $this->belongsTo('App\Models\User\User', 'recipient_id');
     }
 
@@ -59,8 +56,7 @@ class UserFriend extends Model
      *
      * @param mixed $id
      */
-    public function other($id)
-    {
+    public function other($id) {
         if ($this->initiator_id == $id) {
             return $this->recipient;
         } else {

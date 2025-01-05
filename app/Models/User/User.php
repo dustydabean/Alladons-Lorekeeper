@@ -223,8 +223,7 @@ class User extends Authenticatable implements MustVerifyEmail {
     /**
      * Get the user's items.
      */
-    public function recipes()
-    {
+    public function recipes() {
         return $this->belongsToMany('App\Models\Recipe\Recipe', 'user_recipes')->withPivot('id');
     }
 
@@ -263,8 +262,7 @@ class User extends Authenticatable implements MustVerifyEmail {
     /**
      * Gets all of the user's friends.
      */
-    public function getFriendsAttribute()
-    {
+    public function getFriendsAttribute() {
         // return this has many where initiator_id matches this id or where recipient_id matches this id
         return UserFriend::where('recipient_approved', 1)->where('initiator_id', $this->id)->orWhere('recipient_id', $this->id)->get();
     }
@@ -685,19 +683,22 @@ class User extends Authenticatable implements MustVerifyEmail {
     /**
      * Get the user's recipe logs.
      *
-     * @param  int  $limit
-     * @return \Illuminate\Support\Collection|\Illuminate\Pagination\LengthAwarePaginator
+     * @param int $limit
+     *
+     * @return \Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Support\Collection
      */
-    public function getRecipeLogs($limit = 10)
-    {
+    public function getRecipeLogs($limit = 10) {
         $user = $this;
-        $query = UserRecipeLog::with('recipe')->where(function($query) use ($user) {
+        $query = UserRecipeLog::with('recipe')->where(function ($query) use ($user) {
             $query->with('sender')->where('sender_id', $user->id)->whereNotIn('log_type', ['Staff Grant', 'Prompt Rewards', 'Claim Rewards']);
-        })->orWhere(function($query) use ($user) {
+        })->orWhere(function ($query) use ($user) {
             $query->with('recipient')->where('recipient_id', $user->id)->where('log_type', '!=', 'Staff Removal');
         })->orderBy('id', 'DESC');
-        if($limit) return $query->take($limit)->get();
-        else return $query->paginate(30);
+        if ($limit) {
+            return $query->take($limit)->get();
+        } else {
+            return $query->paginate(30);
+        }
     }
 
     /**
@@ -910,8 +911,7 @@ class User extends Authenticatable implements MustVerifyEmail {
      *
      * @param mixed $user
      */
-    public function isBlocked($user)
-    {
+    public function isBlocked($user) {
         return UserBlock::where('user_id', $user->id)->where('blocked_id', $this->id)->exists();
     }
 
@@ -920,8 +920,7 @@ class User extends Authenticatable implements MustVerifyEmail {
      *
      * @param mixed $user
      */
-    public function isFriendsWith($user)
-    {
+    public function isFriendsWith($user) {
         // check both initiator_id, recipient_id for this user and the other user
         return UserFriend::where('recipient_approved', 1)
             ->where('initiator_id', $this->id)->where('recipient_id', $user->id)
@@ -933,8 +932,7 @@ class User extends Authenticatable implements MustVerifyEmail {
      *
      * @param mixed $user
      */
-    public function isPendingFriendsWith($user)
-    {
+    public function isPendingFriendsWith($user) {
         // check both initiator_id, recipient_id for this user and the other user
         if ($this->isFriendsWith($user)) {
             return false;
@@ -948,8 +946,7 @@ class User extends Authenticatable implements MustVerifyEmail {
     /**
      * gets userOptions for the user divided by friends and all.
      */
-    public function getUserOptionsAttribute()
-    {
+    public function getUserOptionsAttribute() {
         $userOptions = [];
         $friends = [];
         foreach ($this->friends as $friend) {
@@ -969,37 +966,44 @@ class User extends Authenticatable implements MustVerifyEmail {
     }
 
     /**
-     * Checks if the user has the named recipe
+     * Checks if the user has the named recipe.
+     *
+     * @param mixed $recipe_id
      *
      * @return bool
      */
-    public function hasRecipe($recipe_id)
-    {
+    public function hasRecipe($recipe_id) {
         $recipe = Recipe::find($recipe_id);
         $user_has = $this->recipes->contains($recipe);
         $default = !$recipe->needs_unlocking;
+
         return $default ? true : $user_has;
     }
 
-
     /**
      * Returned recipes listed that are owned
-     * Reversal simply
+     * Reversal simply.
+     *
+     * @param mixed $ids
+     * @param mixed $reverse
      *
      * @return object
      */
-    public function ownedRecipes($ids, $reverse = false)
-    {
-        $recipes = Recipe::find($ids); $recipeCollection = [];
-        foreach($recipes as $recipe)
-        {
-            if($reverse) {
-                if(!$this->recipes->contains($recipe)) $recipeCollection[] = $recipe;
-            }
-            else {
-                if($this->recipes->contains($recipe)) $recipeCollection[] = $recipe;
+    public function ownedRecipes($ids, $reverse = false) {
+        $recipes = Recipe::find($ids);
+        $recipeCollection = [];
+        foreach ($recipes as $recipe) {
+            if ($reverse) {
+                if (!$this->recipes->contains($recipe)) {
+                    $recipeCollection[] = $recipe;
+                }
+            } else {
+                if ($this->recipes->contains($recipe)) {
+                    $recipeCollection[] = $recipe;
+                }
             }
         }
+
         return $recipeCollection;
     }
 }
