@@ -15,8 +15,8 @@ use App\Models\Pet\PetVariantDropData;
 use App\Models\User\UserPet;
 use App\Services\PetDropService;
 use App\Services\PetService;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PetController extends Controller {
     /*

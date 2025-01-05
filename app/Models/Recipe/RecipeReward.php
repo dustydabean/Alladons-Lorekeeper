@@ -2,10 +2,10 @@
 
 namespace App\Models\Recipe;
 
-use App\Models\Model;
-use App\Models\Item\Item;
 use App\Models\Currency\Currency;
+use App\Models\Item\Item;
 use App\Models\Loot\LootTable;
+use App\Models\Model;
 
 class RecipeReward extends Model {
     /**

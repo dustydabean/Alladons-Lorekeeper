@@ -2,9 +2,9 @@
 
 namespace App\Models\Recipe;
 
-use App\Models\Model;
-use App\Models\Item\Item;
 use App\Models\Currency\Currency;
+use App\Models\Item\Item;
+use App\Models\Model;
 
 class RecipeLimit extends Model {
     /**

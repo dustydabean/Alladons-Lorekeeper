@@ -2,12 +2,12 @@
 
 namespace App\Services;
 
+use App\Facades\Notifications;
 use App\Models\User\User;
 use App\Models\User\UserBlock;
 use App\Models\User\UserFriend;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use App\Facades\Notifications;
 
 class InteractionService extends Service {
     /*

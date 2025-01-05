@@ -2,11 +2,10 @@
 
 namespace App\Models\Recipe;
 
-use Illuminate\Support\Facades\App;
 use App\Models\Currency\Currency;
-use App\Models\Model;
 use App\Models\Item\Item;
 use App\Models\Item\ItemCategory;
+use App\Models\Model;
 
 class RecipeIngredient extends Model {
     /**

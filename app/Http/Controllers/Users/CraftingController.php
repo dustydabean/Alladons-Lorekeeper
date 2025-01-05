@@ -9,8 +9,8 @@ use App\Models\Recipe\Recipe;
 use App\Models\User\User;
 use App\Models\User\UserItem;
 use App\Services\RecipeManager;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CraftingController extends Controller {
     /*

@@ -2,13 +2,13 @@
 
 namespace App\Console\Commands;
 
+use App\Facades\Notifications;
 use App\Models\Character\Character;
 use App\Models\Submission\Submission;
 use App\Models\Submission\SubmissionCharacter;
 use App\Models\User\User;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
-use App\Facades\Notifications;
+use Illuminate\Support\Facades\DB;
 
 class SendInitialGiftAlerts extends Command {
     /**

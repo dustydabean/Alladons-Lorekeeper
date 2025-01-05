@@ -10,8 +10,8 @@ use App\Models\Pairing\Pairing;
 use App\Models\User\User;
 use App\Models\User\UserItem;
 use App\Services\PairingManager;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PairingController extends Controller {
     /**

@@ -2,13 +2,13 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Support\Facades\App;
 use App\Models\Rank\Rank;
 use App\Models\User\User;
 use App\Models\User\UserAlias;
 use App\Services\UserService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\App;
 
 class SetupAdminUser extends Command {
     /**

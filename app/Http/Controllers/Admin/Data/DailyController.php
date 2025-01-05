@@ -9,8 +9,8 @@ use App\Models\Item\Item;
 use App\Models\Loot\LootTable;
 use App\Models\Raffle\Raffle;
 use App\Services\DailyService;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DailyController extends Controller {
     /*

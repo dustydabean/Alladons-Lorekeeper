@@ -8,8 +8,8 @@ use App\Models\ScavengerHunt\HuntParticipant;
 use App\Models\ScavengerHunt\HuntTarget;
 use App\Models\ScavengerHunt\ScavengerHunt;
 use App\Services\HuntService;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class HuntController extends Controller {
     /*

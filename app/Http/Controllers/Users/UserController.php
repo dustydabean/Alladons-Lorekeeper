@@ -24,8 +24,8 @@ use App\Models\User\UserPet;
 use App\Models\User\UserUpdateLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\View;
 
 class UserController extends Controller {
     /*

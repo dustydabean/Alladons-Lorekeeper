@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Facades\Notifications;
 use App\Models\Recipe\Recipe;
 use App\Models\Recipe\RecipeIngredient;
 use App\Models\Recipe\RecipeLimit;
@@ -9,7 +10,6 @@ use App\Models\User\User;
 use App\Models\User\UserRecipe;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use App\Facades\Notifications;
 
 class RecipeService extends Service {
     /*

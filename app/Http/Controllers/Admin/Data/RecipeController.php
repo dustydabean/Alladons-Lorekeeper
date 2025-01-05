@@ -10,8 +10,8 @@ use App\Models\Loot\LootTable;
 use App\Models\Raffle\Raffle;
 use App\Models\Recipe\Recipe;
 use App\Services\RecipeService;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RecipeController extends Controller {
     /*
