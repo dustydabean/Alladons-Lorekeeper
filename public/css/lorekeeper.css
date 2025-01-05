@@ -825,3 +825,8 @@ tr.accountbound {
 .content-warning:hover {
     filter: none;
 }
+
+/* RECIPES ***************************************************************************************/
+.recipe-image {
+    width: 150px;
+}

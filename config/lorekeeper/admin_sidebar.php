@@ -120,6 +120,10 @@ return [
                 'name' => 'Pet Grants',
                 'url'  => 'admin/grants/pets',
             ],
+            [
+                'name' => 'Recipe Grants',
+                'url' => 'admin/grants/recipes'
+            ],
         ],
     ],
     'Masterlist' => [
@@ -237,6 +241,10 @@ return [
             [
                 'name' => 'Criteria Rewards',
                 'url'  => 'admin/data/criteria',
+            ],
+            [
+                'name' => 'Recipes',
+                'url' => 'admin/data/recipes'
             ],
         ],
     ],

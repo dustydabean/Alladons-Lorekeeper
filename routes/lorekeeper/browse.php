@@ -80,6 +80,7 @@ Route::group(['prefix' => 'user', 'namespace' => 'Users'], function () {
     Route::get('{name}/submissions', 'UserController@getUserSubmissions');
 
     Route::get('{name}/collection-logs', 'UserController@getUserCollectionLogs');
+    Route::get('{name}/recipe-logs', 'UserController@getUserRecipeLogs');
 });
 
 // STAFF TEAM
@@ -148,6 +149,8 @@ Route::group(['prefix' => 'world'], function () {
     Route::get('character-categories', 'WorldController@getCharacterCategories');
     Route::get('character-pedigrees', 'WorldController@getCharacterPedigrees');
     Route::get('character-generations', 'WorldController@getCharacterGenerations');
+    Route::get('recipes', 'WorldController@getRecipes');
+    Route::get('recipes/{id}', 'WorldController@getRecipe');
 
     Route::get('collections', 'WorldController@getCollections');
     Route::get('collections/{id}', 'WorldController@getCollection');

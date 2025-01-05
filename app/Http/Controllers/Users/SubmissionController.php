@@ -14,6 +14,7 @@ use App\Models\Item\ItemCategory;
 use App\Models\Prompt\Prompt;
 use App\Models\Prompt\PromptCriterion;
 use App\Models\Raffle\Raffle;
+use App\Models\Recipe\Recipe;
 use App\Models\Submission\Submission;
 use App\Models\User\User;
 use App\Models\User\UserItem;
@@ -434,6 +435,7 @@ class SubmissionController extends Controller {
             'currencies'             => Currency::where('is_user_owned', 1)->orderBy('name')->pluck('name', 'id'),
             'raffles'                => Raffle::where('rolled_at', null)->where('is_active', 1)->orderBy('name')->pluck('name', 'id'),
             'page'                   => 'submission',
+            'recipes'=> Recipe::orderBy('name')->pluck('name', 'id'),
             'expanded_rewards'       => config('lorekeeper.extensions.character_reward_expansion.expanded'),
             'userGallerySubmissions' => [],
         ]));
@@ -468,6 +470,7 @@ class SubmissionController extends Controller {
             'inventory'              => $inventory,
             'raffles'                => Raffle::where('rolled_at', null)->where('is_active', 1)->orderBy('name')->pluck('name', 'id'),
             'page'                   => 'submission',
+            'recipes'=> Recipe::orderBy('name')->pluck('name', 'id'),
             'expanded_rewards'       => config('lorekeeper.extensions.character_reward_expansion.expanded'),
             'selectedInventory'      => isset($submission->data['user']) ? parseAssetData($submission->data['user']) : null,
             'userGallerySubmissions' => [],
