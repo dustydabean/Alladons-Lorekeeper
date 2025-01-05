@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\Faq;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class FaqService extends Service {

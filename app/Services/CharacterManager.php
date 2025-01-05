@@ -20,17 +20,17 @@ use App\Models\Sales\SalesCharacter;
 use App\Models\Species\Subtype;
 use App\Models\User\User;
 use App\Models\User\UserPet;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use Config;
-use DB;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Arr;
-use Image;
+use Intervention\Image\Facades\Image;
 use League\ColorExtractor\Color;
 use League\ColorExtractor\ColorExtractor;
 use League\ColorExtractor\Palette;
-use Notifications;
-use Settings;
+use App\Facades\Notifications;
+use App\Facades\Settings;
 
 class CharacterManager extends Service {
     /*

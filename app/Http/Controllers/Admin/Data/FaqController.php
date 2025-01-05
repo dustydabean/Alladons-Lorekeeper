@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Admin\Data;
 use App\Http\Controllers\Controller;
 use App\Models\Faq;
 use App\Services\FaqService;
-use Auth;
-use Config;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Http\Request;
 
 class FaqController extends Controller {

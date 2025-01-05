@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin\Data;
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
 use App\Services\ActivityService;
-use Config;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Http\Request;
 
 class ActivityController extends Controller {

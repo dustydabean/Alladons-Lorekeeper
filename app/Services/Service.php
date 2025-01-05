@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App;
+use Illuminate\Support\Facades\App;
 use App\Models\AdminLog;
 use App\Models\Currency\Currency;
 use Illuminate\Support\Facades\Auth;

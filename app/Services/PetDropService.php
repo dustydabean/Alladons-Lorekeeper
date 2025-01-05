@@ -11,7 +11,7 @@ use App\Models\Pet\PetDropData;
 use App\Models\Pet\PetVariantDropData;
 use App\Models\User\UserPet;
 use Carbon\Carbon;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class PetDropService extends Service {
     /*

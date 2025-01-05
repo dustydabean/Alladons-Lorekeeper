@@ -10,7 +10,7 @@ use App\Models\Item\ItemCategory;
 use App\Models\User\User;
 use App\Models\User\UserItem;
 use App\Services\CollectionManager;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class CollectionController extends Controller {

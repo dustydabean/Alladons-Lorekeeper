@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\Item\Item;
 use App\Models\User\User;
 use Carbon\Carbon;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class HuntManager extends Service {
     /*

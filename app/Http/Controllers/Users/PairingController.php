@@ -10,7 +10,7 @@ use App\Models\Pairing\Pairing;
 use App\Models\User\User;
 use App\Models\User\UserItem;
 use App\Services\PairingManager;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class PairingController extends Controller {

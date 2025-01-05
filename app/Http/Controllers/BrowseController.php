@@ -14,9 +14,9 @@ use App\Models\Rarity;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
 use App\Models\User\User;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use Settings;
+use App\Facades\Settings;
 
 class BrowseController extends Controller {
     /*

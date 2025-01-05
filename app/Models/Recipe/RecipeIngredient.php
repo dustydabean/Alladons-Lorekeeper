@@ -2,8 +2,11 @@
 
 namespace App\Models\Recipe;
 
-use App;
+use Illuminate\Support\Facades\App;
+use App\Models\Currency\Currency;
 use App\Models\Model;
+use App\Models\Item\Item;
+use App\Models\Item\ItemCategory;
 
 class RecipeIngredient extends Model {
     /**
@@ -56,7 +59,7 @@ class RecipeIngredient extends Model {
      * Get the associated recipe.
      */
     public function recipe() {
-        return $this->belongsTo('App\Models\Recipe\Recipe');
+        return $this->belongsTo(Recipe::class);
     }
 
     /**********************************************************************************************
@@ -82,15 +85,15 @@ class RecipeIngredient extends Model {
     public function getIngredientAttribute() {
         switch ($this->ingredient_type) {
             case 'Item':
-                return App\Models\Item\Item::where('id', $this->data[0])->get()[0];
+                return Item::where('id', $this->data[0])->get()[0];
             case 'MultiItem':
-                return App\Models\Item\Item::whereIn('id', $this->data)->get();
+                return Item::whereIn('id', $this->data)->get();
             case 'Category':
-                return App\Models\Item\ItemCategory::where('id', $this->data[0])->get()[0];
+                return ItemCategory::where('id', $this->data[0])->get()[0];
             case 'MultiCategory':
-                return App\Models\Item\ItemCategory::whereIn('id', $this->data)->get();
+                return ItemCategory::whereIn('id', $this->data)->get();
             case 'Currency':
-                return App\Models\Currency\Currency::where('id', $this->data[0])->get()[0];
+                return Currency::where('id', $this->data[0])->get()[0];
         }
 
         return null;

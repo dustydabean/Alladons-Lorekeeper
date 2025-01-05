@@ -492,6 +492,13 @@ return [
         'url'     => 'friends',
     ],
 
+    // RECIPE_GRANT
+    600 => [
+        'name'    => 'Recipe Grant',
+        'message' => 'You have received a staff grant of the crafting recipe {recipe_name} from <a href="{sender_url}">{sender_name}</a>. (<a href="{url}">View Unlocked Recipes</a>)',
+        'url'     => 'crafting',
+    ],
+
     // GIFT_SUBMISSION_RECEIVED
     1002 => [
         'name'    => 'Gift Submission Received',
@@ -539,12 +546,5 @@ return [
         'name'    => 'Pairings Cancelled',
         'message' => 'The pairing of <a href="{character_1_url}">{character_1_slug}</a> and <a href="{character_2_url}">{character_2_slug}</a> has been cancelled.',
         'url'     => '',
-    ],
-
-    // RECIPE_GRANT
-    600 => [
-        'name'    => 'Recipe Grant',
-        'message' => 'You have received a staff grant of the crafting recipe {recipe_name} from <a href="{sender_url}">{sender_name}</a>. (<a href="{url}">View Unlocked Recipes</a>)',
-        'url'     => 'crafting',
     ],
 ];

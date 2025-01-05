@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Fortify\Fortify;
-use Route;
+use Illuminate\Support\Facades\Route;
 
 class FortifyServiceProvider extends ServiceProvider {
     /**

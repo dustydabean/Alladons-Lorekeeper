@@ -15,7 +15,7 @@ use App\Models\User\User;
 use App\Services\GalleryManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use View;
+use Illuminate\Support\Facades\View;
 
 class GalleryController extends Controller {
     /*

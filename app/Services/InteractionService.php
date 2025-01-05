@@ -6,8 +6,8 @@ use App\Models\User\User;
 use App\Models\User\UserBlock;
 use App\Models\User\UserFriend;
 use Carbon\Carbon;
-use DB;
-use Notifications;
+use Illuminate\Support\Facades\DB;
+use App\Facades\Notifications;
 
 class InteractionService extends Service {
     /*

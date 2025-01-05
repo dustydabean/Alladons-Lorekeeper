@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\Character\CharacterFolder;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class FolderManager extends Service {
     /**

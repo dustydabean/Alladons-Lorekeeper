@@ -16,7 +16,7 @@ use App\Models\User\User;
 use App\Models\User\UserCharacterLog;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Notifications;
+use App\Facades\Notifications;
 
 class Character extends Model {
     use SoftDeletes;

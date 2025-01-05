@@ -8,7 +8,7 @@ use App\Models\User\User;
 use App\Models\User\UserCurrency;
 use App\Models\User\UserItem;
 use App\Models\User\UserRecipe;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class RecipeManager extends Service {
     /**********************************************************************************************

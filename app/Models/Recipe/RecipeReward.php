@@ -3,6 +3,9 @@
 namespace App\Models\Recipe;
 
 use App\Models\Model;
+use App\Models\Item\Item;
+use App\Models\Currency\Currency;
+use App\Models\Loot\LootTable;
 
 class RecipeReward extends Model {
     /**
@@ -55,14 +58,14 @@ class RecipeReward extends Model {
     public function reward() {
         switch ($this->rewardable_type) {
             case 'Item':
-                return $this->belongsTo('App\Models\Item\Item', 'rewardable_id');
+                return $this->belongsTo(Item::class, 'rewardable_id');
             case 'Currency':
-                return $this->belongsTo('App\Models\Currency\Currency', 'rewardable_id');
+                return $this->belongsTo(Currency::class, 'rewardable_id');
             case 'LootTable':
-                return $this->belongsTo('App\Models\Loot\LootTable', 'rewardable_id');
+                return $this->belongsTo(LootTable::class, 'rewardable_id');
             case 'None':
                 // Laravel requires a relationship instance to be returned (cannot return null), so returning one that doesn't exist here.
-                return $this->belongsTo('App\Models\Recipe\RecipeRewards', 'rewardable_id', 'recipe_id')->whereNull('recipe_id');
+                return $this->belongsTo(self::class, 'rewardable_id', 'recipe_id')->whereNull('recipe_id');
         }
 
         return null;

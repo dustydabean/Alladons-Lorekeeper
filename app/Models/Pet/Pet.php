@@ -4,7 +4,7 @@ namespace App\Models\Pet;
 
 use App\Models\Model;
 use App\Models\User\UserPet;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class Pet extends Model {
     /**

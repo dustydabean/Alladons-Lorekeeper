@@ -8,7 +8,7 @@ use App\Models\Item\Item;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
 use App\Services\Service;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class PairingService extends Service {
     /*

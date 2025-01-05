@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\ScavengerHunt\HuntParticipant;
 use App\Models\ScavengerHunt\HuntTarget;
 use App\Models\ScavengerHunt\ScavengerHunt;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class HuntService extends Service {
     /*

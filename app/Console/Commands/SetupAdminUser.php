@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App;
+use Illuminate\Support\Facades\App;
 use App\Models\Rank\Rank;
 use App\Models\User\User;
 use App\Models\User\UserAlias;

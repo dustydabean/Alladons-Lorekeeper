@@ -8,11 +8,11 @@ use App\Models\Pet\PetDrop;
 use App\Models\User\User;
 use App\Models\User\UserItem;
 use App\Models\User\UserPet;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Arr;
-use Notifications;
+use App\Facades\Notifications;
 
 class PetManager extends Service {
     /*

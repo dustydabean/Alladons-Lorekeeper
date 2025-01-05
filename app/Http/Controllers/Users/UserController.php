@@ -25,7 +25,7 @@ use App\Models\User\UserUpdateLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
-use Route;
+use Illuminate\Support\Facades\Route;
 
 class UserController extends Controller {
     /*

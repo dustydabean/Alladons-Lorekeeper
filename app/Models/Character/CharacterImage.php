@@ -7,10 +7,10 @@ use App\Models\Rarity;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
 use App\Models\User\User;
-use File;
+use Illuminate\Support\Facades\File;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Image;
-use Settings;
+use Intervention\Image\Facades\Image;
+use App\Facades\Settings;
 
 class CharacterImage extends Model {
     use SoftDeletes;

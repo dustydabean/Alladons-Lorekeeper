@@ -3,7 +3,7 @@
 namespace App\Models\Collection;
 
 use App\Models\Model;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class Collection extends Model {
     /**

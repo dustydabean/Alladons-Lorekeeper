@@ -8,7 +8,7 @@ use App\Models\Item\Item;
 use App\Models\Item\ItemTag;
 use App\Models\Pairing\Pairing;
 use App\Services\PairingManager;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class PairingController extends Controller {

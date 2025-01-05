@@ -8,7 +8,7 @@ use App\Models\Collection\CollectionIngredient;
 use App\Models\User\User;
 use App\Models\User\UserCollection;
 use Carbon\Carbon;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class CollectionService extends Service {
     /*

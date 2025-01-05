@@ -6,7 +6,7 @@ use App\Models\Item\Item;
 use App\Models\Recipe\Recipe;
 use App\Services\InventoryManager;
 use App\Services\Service;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class RecipeService extends Service {
     /*

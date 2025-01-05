@@ -6,7 +6,7 @@ use App\Models\ScavengerHunt\HuntParticipant;
 use App\Models\ScavengerHunt\HuntTarget;
 use App\Models\ScavengerHunt\ScavengerHunt;
 use App\Services\HuntManager;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class HuntController extends Controller {

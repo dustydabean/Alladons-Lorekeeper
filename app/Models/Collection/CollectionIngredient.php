@@ -2,7 +2,7 @@
 
 namespace App\Models\Collection;
 
-use App;
+use Illuminate\Support\Facades\App;
 use App\Models\Model;
 
 class CollectionIngredient extends Model {

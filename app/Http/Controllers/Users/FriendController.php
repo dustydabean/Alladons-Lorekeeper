@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User\User;
 use App\Models\User\UserFriend;
 use App\Services\InteractionService;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class FriendController extends Controller {

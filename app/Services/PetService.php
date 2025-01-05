@@ -9,7 +9,7 @@ use App\Models\Pet\PetLevel;
 use App\Models\Pet\PetVariant;
 use App\Models\User\UserPet;
 use App\Models\User\UserPetLevel;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class PetService extends Service {
     /*

@@ -26,7 +26,7 @@ use App\Services\InventoryManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
-use Route;
+use Illuminate\Support\Facades\Route;
 
 class CharacterController extends Controller {
     /*

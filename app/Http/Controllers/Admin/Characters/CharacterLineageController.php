@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Character\Character;
 use App\Models\Character\CharacterLineageBlacklist;
 use App\Services\CharacterManager;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class CharacterLineageController extends Controller {

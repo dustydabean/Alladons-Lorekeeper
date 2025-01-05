@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Daily\Daily;
 use App\Models\Daily\DailyTimer;
 use App\Services\DailyManager;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class DailyController extends Controller {

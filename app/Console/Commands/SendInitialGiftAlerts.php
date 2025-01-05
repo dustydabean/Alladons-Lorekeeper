@@ -6,9 +6,9 @@ use App\Models\Character\Character;
 use App\Models\Submission\Submission;
 use App\Models\Submission\SubmissionCharacter;
 use App\Models\User\User;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Command;
-use Notifications;
+use App\Facades\Notifications;
 
 class SendInitialGiftAlerts extends Command {
     /**

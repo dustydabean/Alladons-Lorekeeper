@@ -3,6 +3,7 @@
 namespace App\Models\Recipe;
 
 use App\Models\Model;
+use App\Models\User\User;
 
 class Recipe extends Model {
     /**
@@ -55,18 +56,18 @@ class Recipe extends Model {
      * Get the recipe's ingredients.
      */
     public function ingredients() {
-        return $this->hasMany('App\Models\Recipe\RecipeIngredient');
+        return $this->hasMany(RecipeIngredient::class);
     }
 
     /**
      * Get the users who have this recipe.
      */
     public function users() {
-        return $this->belongsToMany('App\Models\User\User', 'user_recipes')->withPivot('id');
+        return $this->belongsToMany(User::class, 'user_recipes')->withPivot('id');
     }
 
     public function limits() {
-        return $this->hasMany('App\Models\Recipe\RecipeLimit');
+        return $this->hasMany(RecipeLimit::class);
     }
 
     /**********************************************************************************************
