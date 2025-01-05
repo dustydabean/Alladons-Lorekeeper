@@ -5,6 +5,7 @@ namespace App\Models\User;
 use App\Models\Character\Character;
 use App\Models\Character\CharacterBookmark;
 use App\Models\Character\CharacterDesignUpdate;
+use App\Models\Character\CharacterFolder;
 use App\Models\Character\CharacterImageCreator;
 use App\Models\Character\CharacterTransfer;
 use App\Models\Collection\Collection;
@@ -34,7 +35,6 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Settings;
-use App\Models\Character\CharacterFolder;
 
 class User extends Authenticatable implements MustVerifyEmail {
     use Commenter, Notifiable, TwoFactorAuthenticatable;
@@ -269,10 +269,9 @@ class User extends Authenticatable implements MustVerifyEmail {
     }
 
     /**
-     * gets all the user's character folders
+     * gets all the user's character folders.
      */
-    public function folders()
-    {
+    public function folders() {
         return $this->hasMany(CharacterFolder::class);
     }
 

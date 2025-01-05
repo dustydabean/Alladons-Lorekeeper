@@ -250,8 +250,7 @@ class Character extends Model {
     /**
      * Gets which folder the character currently resides in.
      */
-    public function folder()
-    {
+    public function folder() {
         return $this->belongsTo(CharacterFolder::class, 'folder_id');
     }
 

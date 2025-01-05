@@ -2014,7 +2014,7 @@ class CharacterManager extends Service {
             $character->folder_id = null;
             $character->save();
         }
-        
+
         $sender = $character->user;
         if (!$sender) {
             $sender = $character->owner_url;
