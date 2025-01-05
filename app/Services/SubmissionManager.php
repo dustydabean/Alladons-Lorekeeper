@@ -102,6 +102,7 @@ class SubmissionManager extends Service {
                 'data' => json_encode([
                     'user'    => Arr::only(getDataReadyAssets($userAssets), ['user_items', 'currencies']),
                     'rewards' => getDataReadyAssets($promptRewards),
+                    'criterion' => $data['criterion'] ?? null,
                 ] + (config('lorekeeper.settings.allow_gallery_submissions_on_prompts') ? ['gallery_submission_id' => $data['gallery_submission_id'] ?? null] : [])),
             ]);
 
@@ -248,6 +249,7 @@ class SubmissionManager extends Service {
                     'data'                  => json_encode([
                         'user'                  => $userAssets,
                         'rewards'               => getDataReadyAssets($promptRewards),
+                        'criterion'             => $assets['criterion'] ?? null,
                         'gallery_submission_id' => $submission->data['gallery_submission_id'] ?? null,
                     ]), // list of rewards and addons
                 ]);
@@ -265,6 +267,7 @@ class SubmissionManager extends Service {
                     'data'       => json_encode([
                         'user'                  => $userAssets,
                         'rewards'               => getDataReadyAssets($promptRewards),
+                        'criterion'             => $assets['criterion'] ?? null,
                         'gallery_submission_id' => $submission->data['gallery_submission_id'] ?? null,
                     ]), // list of rewards and addons
                 ]);
@@ -434,21 +437,23 @@ class SubmissionManager extends Service {
                 'data' => 'Received rewards for '.($submission->prompt_id ? 'submission' : 'claim').' (<a href="'.$submission->viewUrl.'">#'.$submission->id.'</a>)',
             ];
 
-            // Distribute user rewards
-            if (!$rewards = fillUserAssets($rewards, $user, $submission->user, $promptLogType, $promptData)) {
-                throw new \Exception('Failed to distribute rewards to user.');
-            }
-
             // Distribute currency from criteria
-            $service = new CurrencyManager;
-
             if (isset($data['criterion'])) {
                 foreach ($data['criterion'] as $key => $criterionData) {
                     $criterion = Criterion::where('id', $criterionData['id'])->first();
-                    if (!$service->creditCurrency($user, $submission->user, $promptLogType, $promptData['data'], $criterion->currency, $criterion->calculateReward($criterionData))) {
-                        throw new \Exception('Failed to distribute criterion rewards to user.');
+                    if (isset($criterionData['criterion_currency_id'])) {
+                        $criterion_currency = Currency::find($criterionData['criterion_currency_id']);
+                    } else {
+                        $criterion_currency = $criterion->currency;
                     }
+
+                    addAsset($rewards, $criterion_currency, $criterion->calculateReward($criterionData));
                 }
+            }
+
+            // Distribute user rewards
+            if (!$rewards = fillUserAssets($rewards, $user, $submission->user, $promptLogType, $promptData)) {
+                throw new \Exception('Failed to distribute rewards to user.');
             }
 
             // Retrieve all reward IDs for characters
@@ -528,6 +533,7 @@ class SubmissionManager extends Service {
                 'data'                  => json_encode([
                     'user'                  => $addonData,
                     'rewards'               => getDataReadyAssets($rewards),
+                    'criterion'             => $data['criterion'] ?? null,
                     'gallery_submission_id' => $submission->data['gallery_submission_id'] ?? null,
                     'criterion' => $data['criterion'] ?? null,
                 ]), // list of rewards

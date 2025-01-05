@@ -45,6 +45,12 @@
                 'Whether or not users can submit to this gallery. Admins can submit regardless of this setting. Does not override global setting. Leave this on for time-limited galleries; users wll not be able to submit outside of the start and end times regardless of this setting, but will not be able to submit at all if this is off.',
             ) !!}
         </div>
+        @if (Settings::get('gallery_submissions_reward_currency'))
+            <div class="col-md form-group">
+                {!! Form::checkbox('currency_enabled', 1, $gallery->currency_enabled, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
+                {!! Form::label('currency_enabled', 'Enable Currency Rewards', ['class' => 'form-check-label ml-3']) !!} {!! add_help('Whether or not submissions to this gallery are eligible for rewards of group currency.') !!}
+            </div>
+        @endif
         <div class="col-md">
             <div class="form-group">
                 {!! Form::checkbox('prompt_selection', 1, $gallery->prompt_selection, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
@@ -76,7 +82,12 @@
         </div>
     </div>
 
-    <h3 class="mt-5">Criteria Rewards <button class="btn btn-primary float-right add-calc" type="button">+ Criterion</button></h3>
+    @include('criteria._default_selector', ['type' => 'gallery'])
+
+    <h3 class="mt-5">
+        Criteria Rewards
+        <button class="btn btn-primary float-right add-calc" type="button">+ Criterion</a>
+    </h3>
     <p>
         Criteria can be used to reward users with currency for the art they submit. They can be created under the "criterion" section of the admin panel,
         and allow for dynamic reward amounts to be generated based on user / admin selected criteria like the type of art, or the number of words.
@@ -96,7 +107,13 @@
                     </div>
                 </div>
                 <div id="collapsable-{{ $criterion->id }}" class="form collapse">
-                    @include('criteria._minimum_requirements', ['criterion' => $criterion->criterion, 'minRequirements' => $criterion->minRequirements, 'id' => $criterion->criterion_id])
+                    @include('criteria._minimum_requirements', [
+                        'criterion' => $criterion->criterion,
+                        'minRequirements' => $criterion->minRequirements,
+                        'id' => $criterion->criterion_id,
+                        'isAdmin' => true,
+                        'criterion_currency' => isset($criterion->criterion_currency_id) ? $criterion->criterion_currency_id : $criterion->criterion->currency_id,
+                    ])
                 </div>
             </div>
         @endforeach
@@ -173,7 +190,7 @@
                 }
             }
 
-            $('.criterion-select').on('change', loadForm)
+            $('.criterion-select').on('change', loadForm);
         });
     </script>
 @endsection

@@ -1,18 +1,17 @@
 <?php
 
-namespace App\Models\Gallery;
+namespace App\Models\Criteria;
 
 use App\Models\Model;
-use App\Models\Criteria\Criterion;
 
-class GalleryCriterion extends Model {
+class DefaultCriteria extends Model {
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'gallery_id', 'criterion_id', 'min_requirements', 'criterion_currency_id',
+        'criteriondefault_id', 'criterion_id', 'min_requirements', 'criterion_currency_id',
     ];
 
     /**
@@ -20,7 +19,7 @@ class GalleryCriterion extends Model {
      *
      * @var string
      */
-    protected $table = 'gallery_criteria';
+    protected $table = 'default_criteria';
 
     /**
      * Validation rules for creation.
@@ -42,28 +41,7 @@ class GalleryCriterion extends Model {
 
     /**********************************************************************************************
 
-        RELATIONS
-
-    **********************************************************************************************/
-
-    /**
-     * Get the gallery attached to this criterion.
-     */
-    public function gallery() {
-        return $this->belongsTo(Gallery::class, 'gallery_id');
-    }
-
-    /**
-     * Get the criterion attached to this prompt.
-     */
-    public function criterion() {
-        return $this->belongsTo(Criterion::class, 'criterion_id');
-    }
-
-    /**********************************************************************************************
-
          ACCESSORS
-
      **********************************************************************************************/
 
     /**
@@ -73,5 +51,24 @@ class GalleryCriterion extends Model {
      */
     public function getMinRequirementsAttribute() {
         return json_decode($this->attributes['min_requirements'], true);
+    }
+
+    /**********************************************************************************************
+
+        RELATIONS
+    **********************************************************************************************/
+
+    /**
+     * Get the prompt attached to this criterion.
+     */
+    public function default() {
+        return $this->belongsTo(CriterionDefault::class, 'criteriondefault_id');
+    }
+
+    /**
+     * Get the criterion attached to this prompt.
+     */
+    public function criterion() {
+        return $this->belongsTo(Criterion::class, 'criterion_id');
     }
 }

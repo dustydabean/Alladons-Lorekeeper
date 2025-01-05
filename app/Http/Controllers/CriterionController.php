@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Criteria\Criterion;
+use App\Models\Currency\Currency;
 use App\Models\Gallery\GalleryCriterion;
 use App\Models\Prompt\PromptCriterion;
 use Illuminate\Http\Request;
@@ -61,11 +62,12 @@ class CriterionController extends Controller {
         }
 
         return view('criteria._minimum_requirements', [
-            'criterion'       => Criterion::where('id', $id)->first(),
-            'minRequirements' => isset($entityCriteria) ? $entityCriteria->minRequirements : null,
-            'title'           => isset($entityCriteria) ? 'Criterion Options' : null,
-            'limitByMinReq'   => isset($entityCriteria) ? true : null,
-            'id'              => $form_id,
+            'criterion'          => Criterion::where('id', $id)->first(),
+            'minRequirements'    => isset($entityCriteria) ? $entityCriteria->minRequirements : null,
+            'title'              => isset($entityCriteria) ? 'Criterion Options' : null,
+            'limitByMinReq'      => isset($entityCriteria) ? true : null,
+            'id'                 => $form_id,
+            'criterion_currency' => $entityCriteria->criterion_currency_id ?? $entityCriteria->criterion->currency_id,
         ]);
     }
 
@@ -102,6 +104,12 @@ class CriterionController extends Controller {
         $stepData = $request->except('_token');
         $criterion = Criterion::where('id', $id)->first();
 
-        return $criterion->currency->display($criterion->calculateReward($stepData));
+        if (isset($stepData['criterion_currency']) && $stepData['criterion_currency']) {
+            $currencyval = Currency::find($stepData['criterion_currency'])->display($criterion->calculateReward($stepData));
+        } else {
+            $currencyval = $criterion->currency->display($criterion->calculateReward($stepData));
+        }
+
+        return $currencyval;
     }
 }

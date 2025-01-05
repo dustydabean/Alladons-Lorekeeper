@@ -48,7 +48,7 @@ class GalleryService extends Service {
 
             $gallery = Gallery::create($data);
 
-            (new CriterionService)->populateCriteria(Arr::only($data, ['criterion_id', 'criterion']), $gallery, GalleryCriterion::class);
+            (new CriterionService)->populateCriteria(Arr::only($data, ['criterion_id', 'criterion', 'criterion_currency_id', 'default_criteria']), $gallery, GalleryCriterion::class);
 
             if (!$this->logAdminAction($user, 'Created Gallery', 'Created '.$gallery->displayName)) {
                 throw new \Exception('Failed to log admin action.');
@@ -102,7 +102,7 @@ class GalleryService extends Service {
 
             $gallery->update($data);
 
-            (new CriterionService)->populateCriteria(Arr::only($data, ['criterion_id', 'criterion']), $gallery, GalleryCriterion::class);
+            (new CriterionService)->populateCriteria(Arr::only($data, ['criterion_id', 'criterion', 'criterion_currency_id', 'default_criteria']), $gallery, GalleryCriterion::class);
 
             return $this->commitReturn($gallery);
         } catch (\Exception $e) {

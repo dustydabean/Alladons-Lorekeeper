@@ -24,7 +24,8 @@
             The {{ $isClaim ? 'claim' : 'submission' }} queue is currently closed. You cannot make a new {{ $isClaim ? 'claim' : 'submission' }} at this time.
         </div>
     @else
-        @include('home._submission_form', ['submission' => $submission, 'userGallerySubmissions' => $userGallerySubmissions])
+        @include('home._submission_form', ['submission' => $submission, 'criteria' => $isClaim ? null : $criteria, 'isClaim' => $isClaim, 'userGallerySubmissions' => $userGallerySubmissions])
+
         <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
 
@@ -173,7 +174,7 @@
                     }
                 }
 
-                $('.criterion-select').on('change', loadForm)
+                $('.criterion-select').on('change', loadForm);
             });
         </script>
     @endif

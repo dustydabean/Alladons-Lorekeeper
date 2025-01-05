@@ -12,7 +12,7 @@ class PromptCriterion extends Model {
      * @var array
      */
     protected $fillable = [
-        'prompt_id', 'criterion_id', 'min_requirements',
+        'prompt_id', 'criterion_id', 'min_requirements', 'criterion_currency_id',
     ];
 
     /**
