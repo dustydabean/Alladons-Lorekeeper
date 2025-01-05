@@ -57,5 +57,4 @@
     @else
         <p>No reports found.</p>
     @endif
-
 @endsection

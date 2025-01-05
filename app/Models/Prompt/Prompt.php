@@ -4,6 +4,7 @@ namespace App\Models\Prompt;
 
 use App\Models\Model;
 use Carbon\Carbon;
+use DB;
 
 class Prompt extends Model {
     /**
@@ -79,6 +80,13 @@ class Prompt extends Model {
      */
     public function rewards() {
         return $this->hasMany(PromptReward::class, 'prompt_id');
+    }
+
+    /**
+     * Get the criteria attached to this prompt.
+     */
+    public function criteria() {
+        return $this->hasMany(PromptCriterion::class, 'prompt_id');
     }
 
     /**********************************************************************************************

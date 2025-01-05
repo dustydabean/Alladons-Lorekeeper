@@ -26,6 +26,7 @@ class PromptReward extends Model {
      * @var string
      */
     protected $table = 'prompt_rewards';
+
     /**
      * Validation rules for creation.
      *

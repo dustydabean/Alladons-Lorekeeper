@@ -184,11 +184,7 @@ class GallerySubmission extends Model {
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeRequiresAward($query) {
-        if (!Settings::get('gallery_submissions_reward_currency')) {
-            return $query->whereNull('id');
-        }
-
-        return $query->where('status', 'Accepted')->whereIn('gallery_id', Gallery::where('currency_enabled', 1)->pluck('id')->toArray());
+        return $query->where('status', 'Accepted')->whereIn('gallery_id', Gallery::has('criteria')->pluck('id')->toArray());
     }
 
     /**
@@ -369,8 +365,6 @@ class GallerySubmission extends Model {
      * @return string
      */
     public function getPrefixAttribute() {
-        $currencyName = Currency::find(Settings::get('group_currency'))->abbreviation ? Currency::find(Settings::get('group_currency'))->abbreviation : Currency::find(Settings::get('group_currency'))->name;
-
         $prefixList = [];
         if ($this->promptSubmissions->count()) {
             foreach ($this->prompts as $prompt) {

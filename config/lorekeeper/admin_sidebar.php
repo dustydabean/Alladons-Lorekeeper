@@ -234,6 +234,10 @@ return [
                 'name' => 'Scavenger Hunts',
                 'url' => 'admin/data/hunts',
             ],
+            [
+                'name' => 'Criteria Rewards',
+                'url'  => 'admin/data/criteria',
+            ],
         ],
     ],
     'Raffles'    => [

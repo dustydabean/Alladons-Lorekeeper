@@ -20,6 +20,7 @@ class PromptCategory extends Model {
      * @var string
      */
     protected $table = 'prompt_categories';
+
     /**
      * Validation rules for creation.
      *
