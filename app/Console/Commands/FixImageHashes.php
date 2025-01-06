@@ -63,7 +63,7 @@ class FixImageHashes extends Command {
             $this->line('Updating images...');
             foreach ($images as $image) {
                 $oldName = $image->hash.$image->id.'-image.png';
-                $oldIconName = $image->hash.$image->id.'-icon.png'; //Moving this here, will not be used unless currency icon
+                $oldIconName = $image->hash.$image->id.'-icon.png'; // Moving this here, will not be used unless currency icon
                 $image->hash = randomString(10);
                 // Any service works, I can't use the abstract one
                 if (
