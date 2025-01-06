@@ -413,7 +413,7 @@ class DesignUpdateManager extends Service {
 
                 // Skip the feature if the rarity is too high.
                 // Comment out this check if rarities should have more berth for traits choice.
-                //if($features[$featureId]->rarity->sort > $rarity->sort) continue;
+                // if($features[$featureId]->rarity->sort > $rarity->sort) continue;
 
                 // Skip the feature if it's not the correct species.
                 if ($features[$featureId]->species_id && $features[$featureId]->species_id != $species->id) {
