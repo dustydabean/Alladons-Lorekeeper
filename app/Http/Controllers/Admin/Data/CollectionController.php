@@ -11,8 +11,8 @@ use App\Models\Item\ItemCategory;
 use App\Models\Loot\LootTable;
 use App\Models\Raffle\Raffle;
 use App\Services\CollectionService;
-use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CollectionController extends Controller {
     /*

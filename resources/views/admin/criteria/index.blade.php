@@ -6,11 +6,16 @@
 
 @section('admin-content')
     {!! breadcrumbs(['Admin Panel' => 'admin', 'Criteria' => 'admin/data/criteria']) !!}
+    <div class="text-right mb-3">
+        <a class="btn btn-primary" href="{{ url('admin/data/criteria/create') }}"><i class="fas fa-plus"></i> Create Criterion</a>
+        <a class="btn btn-secondary" href="{{ url('admin/data/criteria-defaults') }}"><i class="fas fa-folder"></i> Default Criteria</a>
+    </div>
     <p>
         These are currency criteria rewards that can be used with prompts, claims, and gallery submissions in-place of static reward amounts.
     </p>
+    <h2 class="mt-5">Criteria Rewards
+    </h2>
 
-    <h2 class="mt-5">Criteria Rewards <a href="{{ url('admin/data/criteria/create') }}" class="btn btn-primary float-right"><i class="fas fa-plus"></i> Create Criterion</a></h2>
     <p>Drag and Drop the cards to re-order your steps. Steps that are inactive will not be shown or included in the final calculation.</p>
     <div>
         @foreach ($criteria as $criterion)
@@ -36,8 +41,6 @@
         @endforeach
     </div>
 @endsection
-
-
 
 @section('scripts')
     @parent

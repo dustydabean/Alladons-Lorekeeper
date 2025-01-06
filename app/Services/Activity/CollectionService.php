@@ -5,7 +5,7 @@ namespace App\Services\Activity;
 use App\Models\Collection\Collection;
 use App\Services\CollectionService as CollectionManager;
 use App\Services\Service;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class CollectionService extends Service {
     /**

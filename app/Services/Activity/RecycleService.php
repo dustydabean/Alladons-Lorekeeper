@@ -10,8 +10,8 @@ use App\Models\Raffle\Raffle;
 use App\Models\User\UserItem;
 use App\Services\InventoryManager;
 use App\Services\Service;
-use Auth;
-use DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class RecycleService extends Service {
     /**

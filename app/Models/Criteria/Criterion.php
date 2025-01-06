@@ -2,8 +2,8 @@
 
 namespace App\Models\Criteria;
 
-use App\Models\Model;
 use App\Models\Currency\Currency;
+use App\Models\Model;
 
 class Criterion extends Model {
     /**
@@ -159,7 +159,7 @@ class Criterion extends Model {
         return $total;
     }
 
-    private function ceil_plus(float $value, int $precision = null): float {
+    private function ceil_plus(float $value, ?int $precision = null): float {
         if ($precision === null) {
             return (float) ceil($value);
         }
@@ -169,7 +169,7 @@ class Criterion extends Model {
         return round($reg, $precision, $reg > 0 ? PHP_ROUND_HALF_DOWN : PHP_ROUND_HALF_UP);
     }
 
-    private function floor_plus(float $value, int $precision = null): float {
+    private function floor_plus(float $value, ?int $precision = null): float {
         if ($precision === null) {
             return (float) floor($value);
         }

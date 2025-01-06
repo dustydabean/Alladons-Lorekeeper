@@ -97,8 +97,8 @@ Route::group(['prefix' => 'logs', 'middleware' => 'power:edit_site_settings'], f
     Route::post('/delete', 'LogController@postDeleteLog');
 });
 
-# SITE IMAGES
-Route::group(['prefix' => 'images', 'middleware' => 'power:edit_site_settings'], function() {
+// SITE IMAGES
+Route::group(['prefix' => 'images', 'middleware' => 'power:edit_site_settings'], function () {
     Route::get('/', 'FileController@getSiteImages');
 
     Route::post('upload/css', 'FileController@postUploadCss');
@@ -243,6 +243,15 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::get('pets/levels/edit/{level_id}/pets/edit/{id}', 'PetController@getEditPetLevel');
     Route::post('pets/levels/edit/{level_id}/pets/add', 'PetController@postAddPetToLevel');
     Route::post('pets/levels/edit/{level_id}/pets/edit/{id}', 'PetController@postEditPetLevel');
+
+    // RECIPES
+    Route::get('recipes', 'RecipeController@getRecipeIndex');
+    Route::get('recipes/create', 'RecipeController@getCreateRecipe');
+    Route::get('recipes/edit/{id}', 'RecipeController@getEditRecipe');
+    Route::get('recipes/delete/{id}', 'RecipeController@getDeleteRecipe');
+    Route::post('recipes/create', 'RecipeController@postCreateEditRecipe');
+    Route::post('recipes/edit/{id?}', 'RecipeController@postCreateEditRecipe');
+    Route::post('recipes/delete/{id}', 'RecipeController@postDeleteRecipe');
 
     // SHOPS
     Route::get('shops', 'ShopController@getIndex');
@@ -401,7 +410,7 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('faq/edit/{id?}', 'FaqController@postCreateEditFaqQuestion');
     Route::post('faq/delete/{id}', 'FaqController@postDeleteFaqQuestion');
 
-    # SCAVENGER HUNTS
+    // SCAVENGER HUNTS
     Route::get('hunts', 'HuntController@getHuntIndex');
     Route::get('hunts/create', 'HuntController@getCreateHunt');
     Route::get('hunts/edit/{id}', 'HuntController@getEditHunt');
@@ -437,6 +446,14 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('criteria/step/{step_id}/option/{id}', 'CriterionController@postCreateEditCriterionOption');
     Route::get('criteria/option/delete/{id}', 'CriterionController@getDeleteCriterionOption');
     Route::post('criteria/option/delete/{id}', 'CriterionController@postDeleteCriterionOption');
+
+    Route::get('criteria-defaults', 'CriterionController@getDefaultIndex');
+    Route::get('criteria-defaults/create', 'CriterionController@getCreateEditCriterionDefault');
+    Route::post('criteria-defaults/create', 'CriterionController@postCreateEditCriterionDefault');
+    Route::get('criteria-defaults/edit/{id}', 'CriterionController@getCreateEditCriterionDefault');
+    Route::post('criteria-defaults/edit/{id}', 'CriterionController@postCreateEditCriterionDefault');
+    Route::get('criteria-defaults/delete/{id}', 'CriterionController@getDeleteCriterionDefault');
+    Route::post('criteria-defaults/delete/{id}', 'CriterionController@postDeleteCriterionDefault');
 });
 
 // PAGES
@@ -505,6 +522,9 @@ Route::group(['prefix' => 'grants', 'namespace' => 'Users', 'middleware' => 'pow
     Route::get('pets/evolutions/{id}', 'GrantController@getPetEvolutions');
 
     Route::get('item-search', 'GrantController@getItemSearch');
+
+    Route::get('recipes', 'GrantController@getRecipes');
+    Route::post('recipes', 'GrantController@postRecipes');
 });
 
 // PETS

@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\ThemeEditor;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class ThemeEditorManager extends Service {
     /*

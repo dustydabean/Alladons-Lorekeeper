@@ -2,8 +2,8 @@
 
 namespace App\Models\Gallery;
 
-use App\Models\Model;
 use App\Models\Criteria\Criterion;
+use App\Models\Model;
 
 class GalleryCriterion extends Model {
     /**
@@ -12,7 +12,7 @@ class GalleryCriterion extends Model {
      * @var array
      */
     protected $fillable = [
-        'gallery_id', 'criterion_id', 'min_requirements',
+        'gallery_id', 'criterion_id', 'min_requirements', 'criterion_currency_id',
     ];
 
     /**

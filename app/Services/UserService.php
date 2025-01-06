@@ -14,13 +14,13 @@ use App\Models\Trade;
 use App\Models\User\StaffProfile;
 use App\Models\User\User;
 use App\Models\User\UserUpdateLog;
-use Auth;
 use Carbon\Carbon;
-use DB;
-use File;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Image;
+use Intervention\Image\Facades\Image;
 use Laravel\Fortify\Contracts\TwoFactorAuthenticationProvider;
 
 class UserService extends Service {
@@ -397,7 +397,10 @@ class UserService extends Service {
     }
 
     /**
-     * Updates or creates a user's staff profile
+     * Updates or creates a user's staff profile.
+     *
+     * @param mixed $data
+     * @param mixed $user
      */
     public function updateStaffProfile($data, $user) {
         DB::beginTransaction();
@@ -469,10 +472,10 @@ class UserService extends Service {
     }
 
     /**
-    * Updates a user's username.
+     * Updates a user's username.
      *
-     * @param string                $username
-     * @param \App\Models\User\User $user
+     * @param string $username
+     * @param User   $user
      */
     public function updateUsername($username, $user) {
         DB::beginTransaction();

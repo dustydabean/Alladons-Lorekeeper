@@ -165,6 +165,7 @@ class Notification extends Model {
     public const GALLERY_SUBMISSION_PARTICIPANT = 515;
     public const FRIEND_REQUEST_SENT = 516;
     public const FRIEND_REQUEST_ACCEPTED = 517;
+    public const RECIPE_GRANT = 600; // Draginraptor - Crafting
     public const GIFT_SUBMISSION_RECEIVED = 1002;
     public const GIFT_CLAIM_RECEIVED = 1003;
     public const GIFT_SUBMISSION_ALERT = 1004;

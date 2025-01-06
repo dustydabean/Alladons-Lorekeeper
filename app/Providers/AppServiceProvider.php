@@ -4,13 +4,13 @@ namespace App\Providers;
 
 use App\Models\Theme;
 use App\Providers\Socialite\ToyhouseProvider;
-use Auth;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
-use View;
 
 class AppServiceProvider extends ServiceProvider {
     /**

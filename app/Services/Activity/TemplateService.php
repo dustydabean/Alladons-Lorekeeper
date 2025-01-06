@@ -3,7 +3,7 @@
 namespace App\Services\Activity;
 
 use App\Services\Service;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class TemplateService extends Service {
     /**

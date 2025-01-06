@@ -8,8 +8,8 @@ use App\Models\Item\Item;
 use App\Models\Item\ItemTag;
 use App\Models\Pairing\Pairing;
 use App\Services\PairingManager;
-use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PairingController extends Controller {
     /**

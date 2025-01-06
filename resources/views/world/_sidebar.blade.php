@@ -26,4 +26,8 @@
         <div class="sidebar-item"><a href="{{ url('world/collections') }}" class="{{ set_active('world/collections*') }}">Collections</a></div>
         <div class="sidebar-item"><a href="{{ url('world/collection-categories') }}" class="{{ set_active('world/collection-categories*') }}">Collection Categories</a></div>
     </li>
+    <li class="sidebar-section">
+        <div class="sidebar-section-header">Recipes</div>
+        <div class="sidebar-item"><a href="{{ url('world/recipes') }}" class="{{ set_active('world/recipes*') }}">All Recipes</a></div>
+    </li>
 </ul>

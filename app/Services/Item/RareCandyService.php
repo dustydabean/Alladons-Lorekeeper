@@ -4,7 +4,7 @@ namespace App\Services\Item;
 
 use App\Models\Item\Item;
 use App\Services\Service;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class RareCandyService extends Service {
     /*

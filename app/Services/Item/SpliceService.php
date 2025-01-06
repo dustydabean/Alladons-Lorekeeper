@@ -6,7 +6,7 @@ use App\Models\Item\Item;
 use App\Models\Pet\Pet;
 use App\Models\Pet\PetVariant;
 use App\Services\Service;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class SpliceService extends Service {
     /*

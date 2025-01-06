@@ -3,7 +3,7 @@
 namespace App\Models\Pet;
 
 use App\Models\Model;
-use File;
+use Illuminate\Support\Facades\File;
 
 class PetEvolution extends Model {
     /**

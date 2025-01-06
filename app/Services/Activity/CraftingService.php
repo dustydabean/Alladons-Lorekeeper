@@ -10,7 +10,7 @@ use App\Services\CurrencyManager;
 use App\Services\InventoryManager;
 use App\Services\RecipeManager;
 use App\Services\Service;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class CraftingService extends Service {
     /**

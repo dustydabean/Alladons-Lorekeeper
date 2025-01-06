@@ -2,8 +2,8 @@
 
 namespace App\Models\Prompt;
 
-use App\Models\Model;
 use App\Models\Criteria\Criterion;
+use App\Models\Model;
 
 class PromptCriterion extends Model {
     /**
@@ -12,7 +12,7 @@ class PromptCriterion extends Model {
      * @var array
      */
     protected $fillable = [
-        'prompt_id', 'criterion_id', 'min_requirements',
+        'prompt_id', 'criterion_id', 'min_requirements', 'criterion_currency_id',
     ];
 
     /**

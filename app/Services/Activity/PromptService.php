@@ -7,7 +7,7 @@ use App\Models\Item\Item;
 use App\Models\Prompt\Prompt;
 use App\Services\Service;
 use App\Services\SubmissionManager;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class PromptService extends Service {
     /**

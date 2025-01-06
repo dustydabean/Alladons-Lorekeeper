@@ -2,8 +2,8 @@
 
 namespace App\Models\Collection;
 
-use App;
 use App\Models\Model;
+use Illuminate\Support\Facades\App;
 
 class CollectionIngredient extends Model {
     /**

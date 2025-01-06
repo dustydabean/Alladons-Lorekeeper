@@ -5,8 +5,8 @@ namespace App\Services;
 use App\Models\Daily\Daily;
 use App\Models\Daily\DailyReward;
 use App\Models\Daily\DailyWheel;
-use DB;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 
 class DailyService extends Service {
     /*

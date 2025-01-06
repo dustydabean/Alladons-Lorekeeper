@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Facades\Notifications;
 use App\Models\Character\Character;
 use App\Models\Feature\Feature;
 use App\Models\Item\Item;
@@ -13,10 +14,9 @@ use App\Models\Species\Subtype;
 use App\Models\User\User;
 use App\Models\User\UserItem;
 use Carbon\Carbon;
-use DB;
 use Illuminate\Support\Arr;
-use Log;
-use Notifications;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PairingManager extends Service {
     /*

@@ -7,7 +7,7 @@ use App\Models\Currency\Currency;
 use App\Models\User\User;
 use App\Models\User\UserCollection;
 use App\Models\User\UserItem;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class CollectionManager extends Service {
     /**********************************************************************************************

@@ -492,6 +492,13 @@ return [
         'url'     => 'friends',
     ],
 
+    // RECIPE_GRANT
+    600 => [
+        'name'    => 'Recipe Grant',
+        'message' => 'You have received a staff grant of the crafting recipe {recipe_name} from <a href="{sender_url}">{sender_name}</a>. (<a href="{url}">View Unlocked Recipes</a>)',
+        'url'     => 'crafting',
+    ],
+
     // GIFT_SUBMISSION_RECEIVED
     1002 => [
         'name'    => 'Gift Submission Received',
