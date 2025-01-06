@@ -141,6 +141,7 @@ class SubmissionController extends Controller {
             abort(404);
         }
 
+        $prompt = $submission->prompt_id ? Prompt::find($submission->prompt_id) : null;
         $promptCriteria = PromptCriterion::where('prompt_id', $submission->prompt_id)->pluck('criterion_id')->toArray();
 
         if (config('lorekeeper.settings.allow_gallery_submissions_on_prompts')) {
@@ -281,7 +282,7 @@ class SubmissionController extends Controller {
         if (!$submission) {
             abort(404);
         }
-
+        
         $request->validate(Submission::$updateRules);
         if ($submit && $service->editSubmission($submission, $request->only([
             'url', 'prompt_id', 'comments', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity',

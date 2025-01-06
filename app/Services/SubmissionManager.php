@@ -162,17 +162,13 @@ class SubmissionManager extends Service {
                 $data['criterion'] = null;
             }
 
-            // The character identification comes in both the slug field and as character IDs
-            // that key the reward ID/quantity arrays.
-            // We'll need to match characters to the rewards for them.
-            // First, check if the characters are accessible to begin with.
-            if (isset($data['slug'])) {
-                $characters = Character::myo(0)->visible()->whereIn('slug', $data['slug'])->get();
-                if (count($characters) != count($data['slug'])) {
-                    throw new \Exception('One or more of the selected characters do not exist.');
-                }
-            } else {
-                $characters = [];
+            // First, return all items and currency applied.
+            // Also, as this is an edit, delete all attached characters to be re-applied later.
+            $this->removeAttachments($submission);
+            SubmissionCharacter::where('submission_id', $submission->id)->delete();
+
+            if ($isSubmit) {
+                $submission->update(['status' => 'Pending']);
             }
 
             // Then, re-attach everything fresh.
