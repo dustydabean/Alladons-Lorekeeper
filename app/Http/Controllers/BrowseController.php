@@ -32,7 +32,7 @@ class BrowseController extends Controller {
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getUsers(Request $request) {
-        $query = User::visible()->join('ranks', 'users.rank_id', '=', 'ranks.id')->select('ranks.name AS rank_name', 'users.*');
+        $query = User::visible()->with('primaryAlias')->join('ranks', 'users.rank_id', '=', 'ranks.id')->select('ranks.name AS rank_name', 'users.*');
         $sort = $request->only(['sort']);
 
         if ($request->get('name')) {
@@ -106,7 +106,7 @@ class BrowseController extends Controller {
             'canView' => $canView,
             'privacy' => $privacy,
             'key'     => $key,
-            'users'   => $canView ? User::where('is_deactivated', 1)->orderBy('users.name')->paginate(30)->appends($request->query()) : null,
+            'users'   => $canView ? User::where('is_deactivated', 1)->with('primaryAlias', 'settings')->orderBy('users.name')->paginate(30)->appends($request->query()) : null,
         ]);
     }
 
@@ -137,7 +137,7 @@ class BrowseController extends Controller {
             'canView' => $canView,
             'privacy' => $privacy,
             'key'     => $key,
-            'users'   => $canView ? User::where('is_banned', 1)->orderBy('users.name')->paginate(30)->appends($request->query()) : null,
+            'users'   => $canView ? User::where('is_banned', 1)->with('primaryAlias', 'settings')->orderBy('users.name')->paginate(30)->appends($request->query()) : null,
         ]);
     }
 
@@ -147,8 +147,8 @@ class BrowseController extends Controller {
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getCharacters(Request $request) {
-        $query = Character::with('user.rank')->with('image.features')->with('rarity')->with('image.species')->myo(0);
-        $imageQuery = CharacterImage::images(Auth::check() ? Auth::user() : null)->with('features')->with('rarity')->with('species')->with('features');
+        $query = Character::with('user.rank', 'image.features', 'rarity', 'image.species', 'image.rarity')->myo(0);
+        $imageQuery = CharacterImage::images(Auth::check() ? Auth::user() : null)->with('features', 'rarity', 'species', 'features');
 
         if ($sublists = Sublist::where('show_main', 0)->get()) {
             $subCategories = [];
@@ -328,9 +328,9 @@ class BrowseController extends Controller {
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getMyos(Request $request) {
-        $query = Character::with('user.rank')->with('image.features')->with('rarity')->with('image.species')->myo(1);
+        $query = Character::with('user.rank', 'image.features', 'rarity', 'image.species', 'image.rarity')->myo(1);
 
-        $imageQuery = CharacterImage::images(Auth::check() ? Auth::user() : null)->with('features')->with('rarity')->with('species')->with('features');
+        $imageQuery = CharacterImage::images(Auth::check() ? Auth::user() : null)->with('features', 'rarity', 'species', 'features');
 
         if ($request->get('name')) {
             $query->where(function ($query) use ($request) {
@@ -459,8 +459,8 @@ class BrowseController extends Controller {
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getSublist(Request $request, $key) {
-        $query = Character::with('user.rank')->with('image.features')->with('rarity')->with('image.species')->myo(0);
-        $imageQuery = CharacterImage::with('features')->with('rarity')->with('species')->with('features');
+        $query = Character::with('user.rank', 'image.features', 'rarity', 'image.species', 'image.rarity')->myo(0);
+        $imageQuery = CharacterImage::with('features', 'rarity', 'species', 'features');
 
         $sublist = Sublist::where('key', $key)->first();
         if (!$sublist) {
