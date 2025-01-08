@@ -28,7 +28,9 @@
                 @endif
                 @if ($submission->user->id == Auth::user()->id || Auth::user()->hasPower('manage_submissions'))
                     <a class="btn btn-outline-primary" href="/gallery/queue/{{ $submission->id }}" data-toggle="tooltip" title="View Log Details"><i class="fas fa-clipboard-list"></i></a>
-                    <a class="btn btn-outline-primary" href="/gallery/edit/{{ $submission->id }}"><i class="fas fa-edit"></i> Edit</a>
+                    @if ($submission->status != 'Rejected')
+                        <a class="btn btn-outline-primary" href="/gallery/edit/{{ $submission->id }}"><i class="fas fa-edit"></i> Edit</a>
+                    @endif
                 @endif
                 {!! Form::close() !!}
             @endif

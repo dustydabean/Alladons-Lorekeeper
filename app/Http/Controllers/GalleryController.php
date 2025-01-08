@@ -301,7 +301,7 @@ class GalleryController extends Controller {
             abort(404);
         }
         $submission = GallerySubmission::find($id);
-        if (!$submission) {
+        if (!$submission || $submission->status == 'Rejected') {
             abort(404);
         }
         $isMod = Auth::user()->hasPower('manage_submissions');

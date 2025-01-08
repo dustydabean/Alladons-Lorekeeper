@@ -189,6 +189,10 @@ class GalleryManager extends Service {
                 throw new \Exception("You can't edit this submission.");
             }
 
+            if ($submission->status == 'Rejected') {
+                throw new \Exception('This submission has been rejected and cannot be edited.');
+            }
+
             // Check that there is text and/or an image, including if there is an existing image (via the existence of a hash)
             if ((!isset($data['image']) && !isset($submission->hash)) && !$data['text']) {
                 throw new \Exception('Please submit either text or an image.');
