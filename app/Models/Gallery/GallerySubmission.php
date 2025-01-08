@@ -480,7 +480,7 @@ class GallerySubmission extends Model {
     public function getPromptSubmissionsAttribute() {
         // Only returns submissions which are viewable to everyone,
         // but given that this is for the sake of public display, that's fine
-        return Submission::viewable()->whereNotNull('prompt_id')->where('url', $this->url)->get();
+        return Submission::viewable()->whereNotNull('prompt_id')->where('url', 'like', '%'.request()->getHost().'/gallery/view/'.$this->id)->get();
     }
 
     /**
