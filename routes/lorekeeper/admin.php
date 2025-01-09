@@ -253,9 +253,11 @@ Route::group(['prefix' => 'pages', 'middleware' => 'power:edit_pages'], function
     Route::get('create', 'PageController@getCreatePage');
     Route::get('edit/{id}', 'PageController@getEditPage');
     Route::get('delete/{id}', 'PageController@getDeletePage');
+    Route::get('regen/{id}', 'PageController@getRegenPage');
     Route::post('create', 'PageController@postCreateEditPage');
     Route::post('edit/{id?}', 'PageController@postCreateEditPage');
     Route::post('delete/{id}', 'PageController@postDeletePage');
+    Route::post('regen/{id}', 'PageController@postRegenPage');
 });
 
 // NEWS
@@ -264,9 +266,11 @@ Route::group(['prefix' => 'news', 'middleware' => 'power:manage_news'], function
     Route::get('create', 'NewsController@getCreateNews');
     Route::get('edit/{id}', 'NewsController@getEditNews');
     Route::get('delete/{id}', 'NewsController@getDeleteNews');
+    Route::get('regen/{id}', 'NewsController@getRegenNews');
     Route::post('create', 'NewsController@postCreateEditNews');
     Route::post('edit/{id?}', 'NewsController@postCreateEditNews');
     Route::post('delete/{id}', 'NewsController@postDeleteNews');
+    Route::post('regen/{id}', 'NewsController@postRegenNews');
 });
 
 // SALES
