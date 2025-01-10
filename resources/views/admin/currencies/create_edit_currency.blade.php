@@ -151,6 +151,11 @@
         </div>
     @endif
 
+    <div class="form-group">
+        {!! Form::checkbox('is_visible', 1, $currency->id ? $currency->is_visible : 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
+        {!! Form::label('is_visible', 'Is Visible', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If turned off, the currency will not be visible in the currencies list or available for selection in search. Permissioned staff will still be able to see them, however.') !!}
+    </div>
+
     <div class="text-right">
         {!! Form::submit($currency->id ? 'Edit' : 'Create', ['class' => 'btn btn-primary']) !!}
     </div>

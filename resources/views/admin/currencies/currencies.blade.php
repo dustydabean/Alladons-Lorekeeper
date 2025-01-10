@@ -43,7 +43,11 @@
                 <div class="logs-table-row">
                     <div class="row flex-wrap">
                         <div class="col-12 col-md-3">
-                            <div class="logs-table-cell">{{ $currency->name }} @if ($currency->abbreviation)
+                            <div class="logs-table-cell">
+                                @if (!$currency->is_visible)
+                                    <i class="fas fa-eye-slash mr-1"></i>
+                                @endif
+                                {{ $currency->name }} @if ($currency->abbreviation)
                                     ({{ $currency->abbreviation }})
                                 @endif
                             </div>

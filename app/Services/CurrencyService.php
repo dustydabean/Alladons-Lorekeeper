@@ -447,6 +447,10 @@ class CurrencyService extends Service {
             $data['allow_character_to_user'] = 0;
         }
 
+        if (!isset($data['is_visible'])) {
+            $data['is_visible'] = 0;
+        }
+
         $data['sort_user'] = $data['sort_character'] = 0;
 
         // Process the checkbox fields

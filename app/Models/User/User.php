@@ -495,7 +495,7 @@ class User extends Authenticatable implements MustVerifyEmail {
 
         $owned = UserCurrency::where('user_id', $this->id)->pluck('quantity', 'currency_id')->toArray();
 
-        $currencies = Currency::where('is_user_owned', 1);
+        $currencies = Currency::visible()->where('is_user_owned', 1);
         if ($showAll) {
             $currencies->where(function ($query) use ($owned) {
                 $query->where('is_displayed', 1)->orWhereIn('id', array_keys($owned));

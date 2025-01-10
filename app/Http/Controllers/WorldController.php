@@ -104,7 +104,7 @@ class WorldController extends Controller {
         }
 
         return view('world.currencies', [
-            'currencies' => $query->orderBy('name')->orderBy('id')->paginate(20)->appends($request->query()),
+            'currencies' => $query->visible(Auth::user() ?? null)->orderBy('name')->orderBy('id')->paginate(20)->appends($request->query()),
             'categories' => ['withoutOption' => 'Without Category'] + CurrencyCategory::visible(Auth::user() ?? null)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
         ]);
     }

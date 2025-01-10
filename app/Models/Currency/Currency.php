@@ -14,7 +14,7 @@ class Currency extends Model {
         'is_user_owned', 'is_character_owned', 'currency_category_id',
         'name', 'abbreviation', 'description', 'parsed_description', 'sort_user', 'sort_character',
         'is_displayed', 'allow_user_to_user', 'allow_user_to_character', 'allow_character_to_user',
-        'has_icon', 'has_image', 'hash',
+        'has_icon', 'has_image', 'hash', 'is_visible',
     ];
 
     /**
@@ -115,6 +115,22 @@ class Currency extends Model {
      */
     public function scopeSortOldest($query) {
         return $query->orderBy('id');
+    }
+
+    /**
+     * Scope a query to show only visible currencies.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param mixed|null                            $user
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeVisible($query, $user = null) {
+        if ($user && $user->hasPower('edit_data')) {
+            return $query;
+        }
+
+        return $query->where('is_visible', 1);
     }
 
     /**********************************************************************************************

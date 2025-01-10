@@ -5,7 +5,11 @@
     @endif
     <div class="{{ $currency->has_image ? 'col-md-9' : 'col-12' }}">
         <x-admin-edit title="Currency" :object="$currency" />
-        <h3>{{ $currency->name }} @if ($currency->abbreviation)
+        <h3>
+            @if (!$currency->is_visible)
+                <i class="fas fa-eye-slash mr-1"></i>
+            @endif
+            {{ $currency->name }} @if ($currency->abbreviation)
                 ({{ $currency->abbreviation }})
             @endif
         </h3>
