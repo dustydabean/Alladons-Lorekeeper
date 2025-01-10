@@ -191,6 +191,7 @@ class CurrencyController extends Controller {
 
         return view('admin.currencies.create_edit_currency', [
             'currency'   => $currency,
+            'categories' => CurrencyCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'currencies' => Currency::where('id', '!=', $id)->get()->sortBy('name')->pluck('name', 'id'),
         ]);
     }
