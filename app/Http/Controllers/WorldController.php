@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Character\CharacterCategory;
 use App\Models\Currency\Currency;
+use App\Models\Currency\CurrencyCategory;
 use App\Models\Feature\Feature;
 use App\Models\Feature\FeatureCategory;
 use App\Models\Item\Item;
@@ -38,19 +39,73 @@ class WorldController extends Controller {
     }
 
     /**
+     * Shows the currency categories page.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCurrencyCategories(Request $request) {
+        $query = CurrencyCategory::query();
+        $name = $request->get('name');
+        if ($name) {
+            $query->where('name', 'LIKE', '%'.$name.'%');
+        }
+
+        return view('world.currency_categories', [
+            'categories' => $query->visible(Auth::user() ?? null)->orderBy('sort', 'DESC')->orderBy('id')->paginate(20)->appends($request->query()),
+        ]);
+    }
+
+    /**
      * Shows the currency page.
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getCurrencies(Request $request) {
-        $query = Currency::query();
-        $name = $request->get('name');
-        if ($name) {
-            $query->where('name', 'LIKE', '%'.$name.'%')->orWhere('abbreviation', 'LIKE', '%'.$name.'%');
+        $query = Currency::query()->with('category')->where(function ($query) {
+            $query->whereHas('category', function ($query) {
+                $query->where('is_visible', 1);
+            })->orWhereNull('currency_category_id');
+        });
+
+        $data = $request->only(['currency_category_id', 'name', 'sort']);
+        if (isset($data['name'])) {
+            $query->where(function ($query) use ($data) {
+                $query->where('name', 'LIKE', '%'.$data['name'].'%')->orWhere('abbreviation', 'LIKE', '%'.$data['name'].'%');
+            });
+        }
+        if (isset($data['currency_category_id'])) {
+            if ($data['currency_category_id'] == 'withoutOption') {
+                $query->whereNull('currency_category_id');
+            } else {
+                $query->where('currency_category_id', $data['currency_category_id']);
+            }
+        }
+
+        if (isset($data['sort'])) {
+            switch ($data['sort']) {
+                case 'alpha':
+                    $query->sortAlphabetical();
+                    break;
+                case 'alpha-reverse':
+                    $query->sortAlphabetical(true);
+                    break;
+                case 'category':
+                    $query->sortCategory();
+                    break;
+                case 'newest':
+                    $query->sortNewest();
+                    break;
+                case 'oldest':
+                    $query->sortOldest();
+                    break;
+            }
+        } else {
+            $query->sortCategory();
         }
 
         return view('world.currencies', [
             'currencies' => $query->orderBy('name')->orderBy('id')->paginate(20)->appends($request->query()),
+            'categories' => ['withoutOption' => 'Without Category'] + CurrencyCategory::visible(Auth::user() ?? null)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
         ]);
     }
 

@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Admin Routes
@@ -105,7 +107,16 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('galleries/sort', 'GalleryController@postSortGallery');
 
     // CURRENCIES
-    Route::get('currencies', 'CurrencyController@getIndex');
+    Route::get('currency-categories', 'CurrencyController@getIndex');
+    Route::get('currency-categories/create', 'CurrencyController@getCreateCurrencyCategory');
+    Route::get('currency-categories/edit/{id}', 'CurrencyController@getEditCurrencyCategory');
+    Route::get('currency-categories/delete/{id}', 'CurrencyController@getDeleteCurrencyCategory');
+    Route::post('currency-categories/create', 'CurrencyController@postCreateEditCurrencyCategory');
+    Route::post('currency-categories/edit/{id?}', 'CurrencyController@postCreateEditCurrencyCategory');
+    Route::post('currency-categories/delete/{id}', 'CurrencyController@postDeleteCurrencyCategory');
+    Route::post('currency-categories/sort', 'CurrencyController@postSortCurrencyCategory');
+
+    Route::get('currencies', 'CurrencyController@getCurrencyIndex');
     Route::get('currencies/sort', 'CurrencyController@getSort');
     Route::get('currencies/create', 'CurrencyController@getCreateCurrency');
     Route::get('currencies/edit/{id}', 'CurrencyController@getEditCurrency');

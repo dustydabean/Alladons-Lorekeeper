@@ -17,17 +17,21 @@
 
     <h3>Basic Information</h3>
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="form-group">
                 {!! Form::label('Currency Name') !!}
                 {!! Form::text('name', $currency->name, ['class' => 'form-control']) !!}
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="form-group">
                 {!! Form::label('Abbreviation (Optional)') !!} {!! add_help('This will be used to denote the currency if an icon is not provided. If an abbreviation is not given, the currency\'s full name will be used.') !!}
                 {!! Form::text('abbreviation', $currency->abbreviation, ['class' => 'form-control']) !!}
             </div>
+        </div>
+        <div class="col-md-4 form-group">
+            {!! Form::label('Currency Category (Optional)') !!}
+            {!! Form::select('currency_category_id', $categories, $currency->currency_category_id, ['class' => 'form-control', 'placeholder' => 'No category']) !!}
         </div>
     </div>
 

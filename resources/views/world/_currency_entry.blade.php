@@ -9,6 +9,17 @@
                 ({{ $currency->abbreviation }})
             @endif
         </h3>
+        @if (isset($currency->category) && $currency->category)
+            <div>
+                <strong>Category:</strong>
+                @if (!$currency->category->is_visible)
+                    <i class="fas fa-eye-slash mx-1 text-danger"></i>
+                @endif
+                <a href="{!! $currency->category->url !!}">
+                    {!! $currency->category->name !!}
+                </a>
+            </div>
+        @endif
         <div><strong>Displays as:</strong> {!! $currency->display(0) !!}</div>
         <div><strong>Held by:</strong> <?php echo ucfirst(implode(' and ', ($currency->is_user_owned ? ['users'] : []) + ($currency->is_character_owned ? ['characters'] : []))); ?></div>
         @if ($currency->conversions()->count())

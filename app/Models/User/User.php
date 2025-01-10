@@ -7,6 +7,7 @@ use App\Models\Character\CharacterBookmark;
 use App\Models\Character\CharacterImageCreator;
 use App\Models\Comment\CommentLike;
 use App\Models\Currency\Currency;
+use App\Models\Currency\CurrencyCategory;
 use App\Models\Currency\CurrencyLog;
 use App\Models\Gallery\GalleryCollaborator;
 use App\Models\Gallery\GalleryFavorite;
@@ -499,6 +500,12 @@ class User extends Authenticatable implements MustVerifyEmail {
             $currencies->where(function ($query) use ($owned) {
                 $query->where('is_displayed', 1)->orWhereIn('id', array_keys($owned));
             });
+
+            $categories = CurrencyCategory::visible()->orderBy('sort', 'DESC')->get();
+
+            if ($categories->count()) {
+                $currencies->orderByRaw('FIELD(currency_category_id,'.implode(',', $categories->pluck('id')->toArray()).')');
+            }
         } else {
             $currencies = $currencies->where('is_displayed', 1);
         }
@@ -507,6 +514,16 @@ class User extends Authenticatable implements MustVerifyEmail {
 
         foreach ($currencies as $currency) {
             $currency->quantity = $owned[$currency->id] ?? 0;
+        }
+
+        if ($showAll) {
+            $currencies = $currencies->groupBy(function ($currency) use ($categories) {
+                if (!$currency->category) {
+                    return 'Miscellaneous';
+                }
+
+                return $categories->where('id', $currency->currency_category_id)->first()->name;
+            });
         }
 
         return $currencies;
