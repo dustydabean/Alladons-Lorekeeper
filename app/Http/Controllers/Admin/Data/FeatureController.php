@@ -11,6 +11,7 @@ use App\Models\Feature\Feature;
 use App\Models\Rarity;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
+use App\Models\Feature\FeatureExample;
 
 use App\Services\FeatureService;
 
@@ -23,13 +24,13 @@ class FeatureController extends Controller
     | Admin / Feature Controller
     |--------------------------------------------------------------------------
     |
-    | Handles creation/editing of character feature categories and features 
+    | Handles creation/editing of character feature categories and features
     | (AKA traits, which is a reserved keyword in PHP and thus can't be used).
     |
     */
 
     /**********************************************************************************************
-    
+
         FEATURE CATEGORIES
 
     **********************************************************************************************/
@@ -45,7 +46,7 @@ class FeatureController extends Controller
             'categories' => FeatureCategory::orderBy('sort', 'DESC')->get()
         ]);
     }
-    
+
     /**
      * Shows the create feature category page.
      *
@@ -57,7 +58,7 @@ class FeatureController extends Controller
             'category' => new FeatureCategory
         ]);
     }
-    
+
     /**
      * Shows the edit feature category page.
      *
@@ -99,7 +100,7 @@ class FeatureController extends Controller
         }
         return redirect()->back();
     }
-    
+
     /**
      * Gets the feature category deletion modal.
      *
@@ -152,7 +153,7 @@ class FeatureController extends Controller
     }
 
     /**********************************************************************************************
-    
+
         FEATURES
 
     **********************************************************************************************/
@@ -167,15 +168,15 @@ class FeatureController extends Controller
     {
         $query = Feature::query();
         $data = $request->only(['rarity_id', 'feature_category_id', 'species_id', 'name']);
-        if(isset($data['rarity_id']) && $data['rarity_id'] != 'none') 
+        if(isset($data['rarity_id']) && $data['rarity_id'] != 'none')
             $query->where('rarity_id', $data['rarity_id']);
-        if(isset($data['feature_category_id']) && $data['feature_category_id'] != 'none') 
+        if(isset($data['feature_category_id']) && $data['feature_category_id'] != 'none')
             $query->where('feature_category_id', $data['feature_category_id']);
-        if(isset($data['species_id']) && $data['species_id'] != 'none') 
+        if(isset($data['species_id']) && $data['species_id'] != 'none')
             $query->where('species_id', $data['species_id']);
-        if(isset($data['subtype_id']) && $data['subtype_id'] != 'none') 
+        if(isset($data['subtype_id']) && $data['subtype_id'] != 'none')
             $query->where('subtype_id', $data['subtype_id']);
-        if(isset($data['name'])) 
+        if(isset($data['name']))
             $query->where('name', 'LIKE', '%'.$data['name'].'%');
         return view('admin.features.features', [
             'features' => $query->paginate(20)->appends($request->query()),
@@ -185,7 +186,7 @@ class FeatureController extends Controller
             'categories' => ['none' => 'Any Category'] + FeatureCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray()
         ]);
     }
-    
+
     /**
      * Shows the create feature page.
      *
@@ -201,7 +202,7 @@ class FeatureController extends Controller
             'categories' => ['none' => 'No category'] + FeatureCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray()
         ]);
     }
-    
+
     /**
      * Shows the edit feature page.
      *
@@ -233,7 +234,7 @@ class FeatureController extends Controller
     {
         $id ? $request->validate(Feature::$updateRules) : $request->validate(Feature::$createRules);
         $data = $request->only([
-            'name', 'species_id', 'subtype_id', 'rarity_id', 'feature_category_id', 'description', 'image', 'remove_image','example_image', 'remove_example_image','example_summary'
+            'name', 'species_id', 'subtype_id', 'rarity_id', 'feature_category_id', 'description', 'image', 'remove_image'
         ]);
         if($id && $service->updateFeature(Feature::find($id), $data, Auth::user())) {
             flash('Trait updated successfully.')->success();
@@ -247,7 +248,7 @@ class FeatureController extends Controller
         }
         return redirect()->back();
     }
-    
+
     /**
      * Gets the feature deletion modal.
      *
@@ -280,5 +281,103 @@ class FeatureController extends Controller
             foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
         }
         return redirect()->to('admin/data/traits');
+    }
+
+    /**********************************************************************************************
+
+        EXAMPLE IMAGES
+
+    **********************************************************************************************/
+
+
+    /**
+     * get create/edit example
+     */
+    public function getFeatureExamples($feature_id) {
+        $feature = Feature::findOrFail($feature_id);
+        return view('admin.features.feature_examples', [
+            'feature'      => $feature,
+            'examples'     => $feature->exampleImages
+        ]);
+    }
+
+    /**
+     * get create/edit example
+     */
+    public function getCreateEditFeatureExample($feature_id, $id = null) {
+        return view('admin.features._create_edit_example', [
+            'feature'      => Feature::find($feature_id),
+            'example'     => $id ? FeatureExample::find($id) : new FeatureExample,
+        ]);
+    }
+
+   /**
+     * post create/edit example
+     */
+    public function postCreateEditExample(Request $request, FeatureService $service, $feature_id, $id = null) {
+        $data = $request->only(['summary','image']);
+        if ($id && $service->editFeatureExample(FeatureExample::findOrFail($id), $data)) {
+            flash('Example image edited successfully.')->success();
+        } elseif (!$id && $service->createFeatureExample(Feature::find($feature_id), $data)) {
+            flash('Example image created successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
+    }
+
+    /**
+     * Gets the feature deletion modal.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getDeleteFeatureExample($id)
+    {
+        $example = FeatureExample::find($id);
+        return view('admin.features._delete_example', [
+            'example' => $example,
+            'feature' => $example->feature,
+        ]);
+    }
+
+
+    /**
+     * Deletes a feature.
+     *
+     * @param  \Illuminate\Http\Request     $request
+     * @param  App\Services\FeatureService  $service
+     * @param  int                          $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postDeleteFeatureExample(Request $request, FeatureService $service, $id)
+    {
+        if($id && $service->deleteFeatureExample(FeatureExample::find($id))) {
+            flash('Example deleted successfully.')->success();
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back();
+    }
+
+    /**
+     * Sort a trait's examples
+     *
+     * @param mixed $id
+     */
+    public function postSortFeatureExamples(Request $request, FeatureService $service, $feature_id) {
+        if ($service->sortFeatureExamples($request->get('sort'), Feature::find($feature_id))) {
+            flash('Example order updated successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
     }
 }

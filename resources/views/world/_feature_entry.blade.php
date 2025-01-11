@@ -2,16 +2,48 @@
     @if ($feature->has_image)
         <div class="col-md-3 world-entry-image">
             <a href="{{ $feature->imageUrl }}" data-lightbox="entry" data-title="{{ $feature->name }}"><img src="{{ $feature->imageUrl }}" class="world-entry-image" alt="{{ $feature->name }}" style="max-height:30em;" /></a>
-            @if ($feature->has_example_image)
+            @if ($feature->exampleImages->count() == 1)
                 <div class="text-center">
-                <hr>
+                    <hr>
                     <h5>Example</h5>
-                    <a href="{{ $feature->exampleImageUrl }}" data-lightbox="entry" data-title="{{ $feature->name . ' example' }}"><img src="{{ $feature->exampleImageUrl }}" class="world-entry-image" alt="{{ $feature->name . ' example' }}"
-                            style="max-height:10em;" /></a>
-                    @if ($feature->example_summary)
+                    <a href="{{ $feature->singleExample->imageUrl }}" data-lightbox="entry" data-title="{{ $feature->name . ' example' }}"><img src="{{ $feature->singleExample->imageUrl }}" class="world-entry-image"
+                            alt="{{ $feature->name . ' example' }}" style="max-height:10em;" /></a>
+                    @if ($feature->singleExample->summary)
                         <br>
-                        {{ $feature->example_summary }}
+                        {{ $feature->singleExample->summary }}
                     @endif
+                </div>
+            @elseif($feature->exampleImages->count() > 1)
+                <div class="text-center">
+                    <hr>
+                    <h5>Examples</h5>
+                    <div class="row justify-content-center">
+                        <div id="example-carousel-{{ $feature->id }}" class="carousel slide" data-ride="carousel">
+                            <ol class="carousel-indicators">
+                                @foreach ($feature->exampleImages as $example)
+                                    <li data-target="#example-carousel-{{ $feature->id }}" data-slide-to="{{ $loop->index }}" class="{{ $loop->first ? 'active' : '' }}"></li>
+                                @endforeach
+                            </ol>
+                            <div class="carousel-inner">
+                                @foreach ($feature->exampleImages as $example)
+                                    <div class="carousel-item {{ $loop->first ? 'active' : '' }}">
+                                        <a href="{{ $example->imageUrl }}" data-lightbox="entry" data-title="{{ $feature->name . ' example' }}"><img class="d-block w-100" style="max-width: 14em;" src="{{ $example->imageUrl }}"></a>
+                                        @if ($example->summary)
+                                            {{ $example->summary }}
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                            <a class="carousel-control-prev" href="#example-carousel-{{ $feature->id }}" role="button" data-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="sr-only">Previous</span>
+                            </a>
+                            <a class="carousel-control-next" href="#example-carousel-{{ $feature->id }}" role="button" data-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="sr-only">Next</span>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             @endif
         </div>

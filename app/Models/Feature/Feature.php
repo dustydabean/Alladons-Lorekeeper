@@ -40,7 +40,6 @@ class Feature extends Model
         'name' => 'required|unique:features|between:3,100',
         'description' => 'nullable',
         'image' => 'mimes:png',
-        'example_image' => 'mimes:png',
     ];
 
     /**
@@ -56,7 +55,6 @@ class Feature extends Model
         'name' => 'required|between:3,100',
         'description' => 'nullable',
         'image' => 'mimes:png',
-        'example_image' => 'mimes:png',
     ];
 
     /**********************************************************************************************
@@ -95,6 +93,20 @@ class Feature extends Model
     public function category()
     {
         return $this->belongsTo('App\Models\Feature\FeatureCategory', 'feature_category_id');
+    }
+
+        /**
+     * Get the example images.
+     */
+    public function exampleImages() {
+        return $this->hasMany('App\Models\Feature\FeatureExample', 'feature_id')->orderBy('sort', 'DESC');
+    }
+
+    /**
+     * Get the FIRST example image (if only 1)
+     */
+    public function singleExample() {
+        return $this->hasOne('App\Models\Feature\FeatureExample', 'feature_id');
     }
 
     /**********************************************************************************************

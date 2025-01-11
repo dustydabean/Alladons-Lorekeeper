@@ -9,6 +9,7 @@
 
     <h1>{{ $feature->id ? 'Edit' : 'Create' }} Trait
         @if ($feature->id)
+        <a href="{{ url('admin/data/traits/examples/'.$feature->id) }}" class="btn btn-secondary float-right">Manage Examples</a>
             <a href="#" class="btn btn-danger float-right delete-feature-button">Delete Trait</a>
         @endif
     </h1>
@@ -42,24 +43,6 @@
                 {!! Form::label('remove_image', 'Remove current image', ['class' => 'form-check-label']) !!}
             </div>
         @endif
-    </div>
-
-    <div class="row">
-        <div class="col-md-6 form-group">
-            {!! Form::label('Example Image (Optional)') !!} {!! add_help('This image is used only on the world information pages. This image should be supplied as an additional example image for the trait, and isn\'t the main image.') !!}
-            <div>{!! Form::file('example_image') !!}</div>
-            <div class="text-muted">Recommended size: 200px x 200px</div>
-            @if ($feature->has_example_image)
-                <div class="form-check">
-                    {!! Form::checkbox('remove_example_image', 1, false, ['class' => 'form-check-input']) !!}
-                    {!! Form::label('remove_example_image', 'Remove current example image', ['class' => 'form-check-label']) !!}
-                </div>
-            @endif
-        </div>
-        <div class="col-md-6 form-group">
-            {!! Form::label('Example Summary (Optional)') !!} {!! add_help('This is a short blurb that shows up under the example image. HTML cannot be used here.') !!}
-            {!! Form::text('example_summary', $feature->example_summary, ['class' => 'form-control', 'maxLength' => 250]) !!}
-        </div>
     </div>
 
     <div class="row">
