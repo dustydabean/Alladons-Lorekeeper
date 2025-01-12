@@ -12,7 +12,7 @@
     </h1>
 
     <h3>Currencies</h3>
-    @foreach ($user->getCurrencies(true, Auth::user() ?? null) as $category => $currencies)
+    @foreach ($user->getCurrencies(true, true, Auth::user() ?? null) as $category => $currencies)
         <div class="card mb-2">
             @if ($currencies->first()->category)
                 <div class="card-header">
