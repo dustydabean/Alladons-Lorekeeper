@@ -263,7 +263,7 @@ class CharacterManager extends Service {
         if (config('lorekeeper.settings.masterlist_image_dimension') != 0) {
             if ($image->width() > $image->height()) {
                 // Landscape
-                if (config('lorekeeper.settings.masterlist_image_dimension_target') == 'short') {
+                if (config('lorekeeper.settings.masterlist_image_dimension_target') == 'shorter') {
                     $image->resize(null, config('lorekeeper.settings.masterlist_image_dimension'), function ($constraint) {
                         $constraint->aspectRatio();
                         $constraint->upsize();
@@ -276,7 +276,7 @@ class CharacterManager extends Service {
                 }
             } else {
                 // Portrait
-                if (config('lorekeeper.settings.masterlist_image_dimension_target') == 'short') {
+                if (config('lorekeeper.settings.masterlist_image_dimension_target') == 'shorter') {
                     $image->resize(config('lorekeeper.settings.masterlist_image_dimension'), null, function ($constraint) {
                         $constraint->aspectRatio();
                         $constraint->upsize();
