@@ -177,8 +177,8 @@ class GallerySubmission extends Model {
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeCollaboratorApproved($query) {
-        return $query->whereHas('collaborators', function ($query) {
-            $query->where('has_approved', 1);
+        return $query->whereDoesntHave('collaborators', function ($query) {
+            $query->where('has_approved', 0);
         })->orWhereDoesntHave('collaborators');
     }
 
