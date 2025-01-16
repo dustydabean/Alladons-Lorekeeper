@@ -99,7 +99,7 @@
                                         <strong>Purchaseable At:</strong>
                                     </p>
                                     <div class="row">
-                                        @foreach ($item->shops as $shop)
+                                        @foreach ($item->shops(Auth::user() ?? null) as $shop)
                                             <div class="col">
                                                 <a href="{{ $shop->url }}">
                                                     {{ $shop->name }}

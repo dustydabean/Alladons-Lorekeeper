@@ -117,7 +117,7 @@
                                                         <strong>Purchaseable At:</strong>
                                                     </p>
                                                     <div class="row">
-                                                        @foreach ($item->shops as $shop)
+                                                        @foreach ($item->shops(Auth::user() ?? null) as $shop)
                                                             <span class="badge" style="font-size:95%; margin:5px;">
                                                                 <a href="{{ $shop->url }}">
                                                                     {{ $shop->name }}
