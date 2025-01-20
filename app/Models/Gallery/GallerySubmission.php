@@ -36,6 +36,16 @@ class GallerySubmission extends Model {
     protected $table = 'gallery_submissions';
 
     /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'data'      => 'array',
+        'vote_data' => 'array',
+    ];
+
+    /**
      * The relationships that should always be loaded.
      *
      * @var array
@@ -349,15 +359,6 @@ class GallerySubmission extends Model {
     }
 
     /**
-     * Get the data attribute as an associative array.
-     *
-     * @return array
-     */
-    public function getDataAttribute() {
-        return json_decode($this->attributes['data'], true);
-    }
-
-    /**
      * Get the title of the submission, with prefix.
      *
      * @return string
@@ -542,7 +543,7 @@ class GallerySubmission extends Model {
      * @return array
      */
     public function getVoteData($withUsers = 0) {
-        $voteData['raw'] = json_decode($this->attributes['vote_data'], true);
+        $voteData['raw'] = $this->vote_data;
 
         // Only query users if necessary, and condense to one query per submission
         if ($withUsers) {

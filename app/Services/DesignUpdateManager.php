@@ -339,10 +339,10 @@ class DesignUpdateManager extends Service {
             }
 
             $request->has_addons = 1;
-            $request->data = json_encode([
+            $request->data = [
                 'user'      => Arr::only(getDataReadyAssets($userAssets), ['user_items', 'currencies']),
                 'character' => Arr::only(getDataReadyAssets($characterAssets), ['currencies']),
-            ]);
+            ];
             $request->save();
 
             return $this->commitReturn(true);
@@ -995,7 +995,7 @@ class DesignUpdateManager extends Service {
                     break;
             }
 
-            $voteData = (isset($request->vote_data) ? collect(json_decode($request->vote_data, true)) : collect([]));
+            $voteData = (isset($request->vote_data) ? collect($request->vote_data, true) : collect([]));
             $voteData->get($user->id) ? $voteData->pull($user->id) : null;
             $voteData->put($user->id, $vote);
             $request->vote_data = $voteData->toJson();
