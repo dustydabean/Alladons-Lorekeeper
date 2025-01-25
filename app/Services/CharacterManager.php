@@ -12,10 +12,12 @@ use App\Models\Character\CharacterDesignUpdate;
 use App\Models\Character\CharacterFeature;
 use App\Models\Character\CharacterImage;
 use App\Models\Character\CharacterImageSubtype;
+use App\Models\Character\CharacterLog;
 use App\Models\Character\CharacterTransfer;
 use App\Models\Sales\SalesCharacter;
 use App\Models\Species\Subtype;
 use App\Models\User\User;
+use App\Models\User\UserCharacterLog;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
@@ -512,26 +514,33 @@ class CharacterManager extends Service {
      * @return bool
      */
     public function createLog($senderId, $senderUrl, $recipientId, $recipientUrl, $characterId, $type, $data, $logType, $isUpdate = false, $oldData = null, $newData = null) {
-        return DB::table($logType == 'character' ? 'character_log' : 'user_character_log')->insert(
-            [
-                'sender_id'     => $senderId,
-                'sender_url'    => $senderUrl,
-                'recipient_id'  => $recipientId,
-                'recipient_url' => $recipientUrl,
-                'character_id'  => $characterId,
-                'log'           => $type.($data ? ' ('.$data.')' : ''),
-                'log_type'      => $type,
-                'data'          => $data,
-                'created_at'    => Carbon::now(),
-                'updated_at'    => Carbon::now(),
-            ] + ($logType == 'character' ?
-                [
+        $log = null;
+        
+        $shared = [
+            'sender_id'     => $senderId,
+            'sender_url'    => $senderUrl,
+            'recipient_id'  => $recipientId,
+            'recipient_url' => $recipientUrl,
+            'character_id'  => $characterId,
+            'log'           => $type.($data ? ' ('.$data.')' : ''),
+            'log_type'      => $type,
+            'data'          => $data,
+        ];
+        
+        if ($logType == 'character') {
+            $log = CharacterLog::create(
+                $shared + [
                     'change_log' => $isUpdate ? [
                         'old' => $oldData,
                         'new' => $newData,
                     ] : null,
-                ] : [])
-        );
+                ]
+            );
+        } else {
+            $log = UserCharacterLog::create($shared);
+        }
+
+        return $log;
     }
 
     /**
