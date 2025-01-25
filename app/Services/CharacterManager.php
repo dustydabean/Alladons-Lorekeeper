@@ -515,7 +515,7 @@ class CharacterManager extends Service {
      */
     public function createLog($senderId, $senderUrl, $recipientId, $recipientUrl, $characterId, $type, $data, $logType, $isUpdate = false, $oldData = null, $newData = null) {
         $log = null;
-        
+
         $shared = [
             'sender_id'     => $senderId,
             'sender_url'    => $senderUrl,
@@ -526,7 +526,7 @@ class CharacterManager extends Service {
             'log_type'      => $type,
             'data'          => $data,
         ];
-        
+
         if ($logType == 'character') {
             $log = CharacterLog::create(
                 $shared + [
