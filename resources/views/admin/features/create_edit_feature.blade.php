@@ -9,6 +9,7 @@
 
     <h1>{{ $feature->id ? 'Edit' : 'Create' }} Trait
         @if ($feature->id)
+        <a href="{{ url('admin/data/traits/examples/'.$feature->id) }}" class="btn btn-secondary float-right">Manage Examples</a>
             <a href="#" class="btn btn-danger float-right delete-feature-button">Delete Trait</a>
         @endif
     </h1>

@@ -15,7 +15,7 @@ class Feature extends Model {
      * @var array
      */
     protected $fillable = [
-        'feature_category_id', 'species_id', 'subtype_id', 'rarity_id', 'name', 'has_image', 'description', 'parsed_description', 'is_visible', 'hash',
+        'feature_category_id', 'species_id', 'subtype_id', 'rarity_id', 'name', 'has_image', 'description', 'parsed_description', 'is_visible', 'hash', 'has_example_image','example_hash','example_summary',
         'mut_level', 'mut_type', 'is_locked',
     ];
 
@@ -91,6 +91,20 @@ class Feature extends Model {
      */
     public function category() {
         return $this->belongsTo(FeatureCategory::class, 'feature_category_id');
+    }
+
+        /**
+     * Get the example images.
+     */
+    public function exampleImages() {
+        return $this->hasMany('App\Models\Feature\FeatureExample', 'feature_id')->orderBy('sort', 'DESC');
+    }
+
+    /**
+     * Get the FIRST example image (if only 1)
+     */
+    public function singleExample() {
+        return $this->hasOne('App\Models\Feature\FeatureExample', 'feature_id');
     }
 
     /**********************************************************************************************
@@ -269,6 +283,27 @@ class Feature extends Model {
         }
 
         return asset($this->imageDirectory.'/'.$this->imageFileName);
+    }
+
+    /**
+     * Gets the file name of the model's example image.
+     *
+     * @return string
+     */
+    public function getExampleImageFileNameAttribute()
+    {
+        return $this->example_hash.$this->id.'-example-image.png';
+    }
+
+    /**
+     * Gets the URL of the model's example image.
+     *
+     * @return string
+     */
+    public function getExampleImageUrlAttribute()
+    {
+        if (!$this->has_example_image) return null;
+        return asset($this->imageDirectory . '/' . $this->exampleImageFileName);
     }
 
     /**
