@@ -80,6 +80,8 @@
     @endif
 
     @include('feed::links')
+
+    @yield('head')
 </head>
 
 <body>
