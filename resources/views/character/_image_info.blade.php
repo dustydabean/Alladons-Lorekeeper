@@ -73,7 +73,7 @@
                     @if (count($image->subtypes))
                         <div class="row no-gutters">
                             <div class="col-lg-4 col-5">
-                                <h5>Subtype{{ count($image->subtypes) > 1 ? 's' : '' }}</h5>
+                                <h5>Content{{ count($image->subtypes) > 1 ? 's' : '' }}</h5>
                             </div>
                             <div class="col-lg-8 col-7 pl-1">
                                 {!! $image->displaySubtypes() !!}
