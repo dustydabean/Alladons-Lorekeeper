@@ -284,6 +284,19 @@ class User extends Authenticatable implements MustVerifyEmail {
     }
 
     /**
+     * Checks if the user has an email.
+     *
+     * @return bool
+     */
+    public function getHasEmailAttribute() {
+        if (!config('lorekeeper.settings.require_email')) {
+            return true;
+        }
+
+        return $this->attributes['email'] && $this->attributes['email_verified_at'];
+    }
+
+    /**
      * Checks if the user has an admin rank.
      *
      * @return bool

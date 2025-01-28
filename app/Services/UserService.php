@@ -279,12 +279,37 @@ class UserService extends Service {
      *
      * @param mixed $data
      * @param mixed $user
+     *
+     * @return bool
      */
     public function updateContentWarningVisibility($data, $user) {
         DB::beginTransaction();
 
         try {
             $user->settings->content_warning_visibility = $data;
+            $user->settings->save();
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Updates user's profile comment setting.
+     *
+     * @param mixed $data
+     * @param mixed $user
+     *
+     * @return bool
+     */
+    public function updateProfileCommentSetting($data, $user) {
+        DB::beginTransaction();
+
+        try {
+            $user->settings->allow_profile_comments = $data ?? 0;
             $user->settings->save();
 
             return $this->commitReturn(true);

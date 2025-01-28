@@ -52,7 +52,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Alias Requirement
+    | Alias | Email Requirement
     |--------------------------------------------------------------------------
     |
     | Whether or not users are required to link an off-site account to access
@@ -62,8 +62,13 @@ return [
     | (e.g. ownership checking for characters only associated with an off-site account)
     | will still work provided users link the relevant alias(es).
     |
+    | The email option functions as a fallback for users who register with an off-site provider.
+    | If they do not have an email associated with their off-site account, they will be prompted to
+    | provide one on registration / login / site interaction (if this setting is enabled).
+    |
     */
     'require_alias'                                     => 1,
+    'require_email'                                     => 1,
 
     /*
     |--------------------------------------------------------------------------
