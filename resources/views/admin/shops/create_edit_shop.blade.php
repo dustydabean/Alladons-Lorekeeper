@@ -69,7 +69,7 @@
     <div class="form-group coupon-row {{ $shop->use_coupons ? '' : 'hide' }}">
         {!! Form::label('allowed_coupons', 'Allowed Coupon(s)', ['class' => 'form-check-label']) !!}
         <p>Leave blank to allow ALL coupons.</p>
-        {!! Form::select('allowed_coupons[]', $coupons, json_decode($shop->allowed_coupons, 1), ['multiple', 'class' => 'form-check-label', 'placeholder' => 'Select Coupons', 'id' => 'allowed_coupons']) !!}
+        {!! Form::select('allowed_coupons[]', $coupons, $shop->allowed_coupons, ['multiple', 'class' => 'form-check-label', 'placeholder' => 'Select Coupons', 'id' => 'allowed_coupons']) !!}
     </div>
 
     <div class="form-group">
