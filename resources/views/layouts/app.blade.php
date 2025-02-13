@@ -146,6 +146,12 @@
         @yield('scripts')
         @include('layouts._pagination_js')
         <script>
+            $(document).on('focusin', function(e) {
+                if ($(e.target).closest(".tox-tinymce, .tox-tinymce-aux, .moxman-window, .tam-assetmanager-root").length) {
+                    e.stopImmediatePropagation();
+                }
+            });
+
             $(function() {
                 $('[data-toggle="tooltip"]').tooltip({
                     html: true
