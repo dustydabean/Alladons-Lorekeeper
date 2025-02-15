@@ -225,6 +225,7 @@
 @section('scripts')
     @parent
     @include('widgets._datetimepicker_js')
+    @include('js._tinymce_wysiwyg')
     <script>
         $('.selectize').selectize();
 
@@ -244,8 +245,8 @@
         function deleteStock(id) {
             loadModal("{{ url('admin/data/shops/stock/delete') }}/" + id, 'Delete Stock');
         }
-        $(document).ready(function() {
 
+        $(document).ready(function() {
             $('#use_coupons').change(function() {
                 if ($(this).is(':checked')) {
                     $('.coupon-row').removeClass('hide');
