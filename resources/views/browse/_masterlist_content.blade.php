@@ -35,7 +35,7 @@
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            {!! Form::label('subtype_ids[]', 'Species Subtype: ') !!}
+                            {!! Form::label('subtype_ids[]', 'Species Content: ') !!}
                             {!! add_help('Search for characters that have <strong>' . (config('lorekeeper.extensions.exclusionary_search') ? 'all' : 'any') . '</strong> of the selected subtypes.') !!}
                             {!! Form::select('subtype_ids[]', $subtypes, Request::get('subtype_ids'), ['class' => 'form-control userselectize', 'multiple']) !!}
                         </div>

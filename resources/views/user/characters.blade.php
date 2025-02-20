@@ -11,5 +11,5 @@
         {!! $user->displayName !!}'s Alladons
     </h1>
 
-    @include('user._characters', ['characters' => $characters, 'myo' => false, 'owner' => true, 'userpage_exts' => true])
+    @include('user._characters', ['characters' => $characters, 'myo' => false, 'owner' => true, 'userpage_exts' => true, 'folders' => true])
 @endsection

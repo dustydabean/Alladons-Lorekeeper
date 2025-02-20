@@ -10,7 +10,7 @@ use App\Models\Loot\LootTable;
 use App\Models\Raffle\Raffle;
 use Carbon\Carbon;
 use Datetime;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class DailyManager extends Service {
     /*

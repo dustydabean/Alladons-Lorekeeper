@@ -12,6 +12,9 @@
         @if ($showRaffles)
             var $raffleSelect = $('#lootRowData').find('.raffle-select');
         @endif
+        @if (isset($showRecipes) && $showRecipes)
+            var $recipeSelect = $('#lootRowData').find('.recipe-select');
+        @endif
         @if(isset($showThemes) && $showThemes)
             else if (val == 'Theme') $clone = $themeSelect.clone();
         @endif
@@ -42,8 +45,11 @@
             @if ($showRaffles)
                 else if (val == 'Raffle') $clone = $raffleSelect.clone();
             @endif
-            @if(isset($showThemes) && $showThemes)
+            @if (isset($showThemes) && $showThemes)
                 else if (val == 'Theme') $clone = $themeSelect.clone();
+            @endif
+            @if (isset($showRecipes) && $showRecipes)
+                else if (val == 'Recipe') $clone = $recipeSelect.clone();
             @endif
 
             $cell.html('');
@@ -66,6 +72,12 @@
                 @if ($showRaffles)
                     else if (val == 'Raffle') $clone = $raffleSelect.clone();
                 @endif
+                @if (isset($showThemes) && $showThemes)
+                    else if (val == 'Theme') $clone = $themeSelect.clone();
+                @endif
+                @if (isset($showRecipes) && $showRecipes)
+                    else if (val == 'Recipe') $clone = $recipeSelect.clone();
+                @endif
 
                 $cell.html('');
                 $cell.append($clone);
@@ -79,6 +91,5 @@
                 $(this).parent().parent().remove();
             });
         }
-
     });
 </script>

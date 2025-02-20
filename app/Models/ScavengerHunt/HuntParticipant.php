@@ -2,22 +2,19 @@
 
 namespace App\Models\ScavengerHunt;
 
-use Config;
-use DB;
-use Carbon\Carbon;
 use App\Models\Model;
+use Carbon\Carbon;
 
-class HuntParticipant extends Model
-{
+class HuntParticipant extends Model {
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'hunt_id', 'user_id', 
+        'hunt_id', 'user_id',
         'target_1', 'target_2', 'target_3', 'target_4', 'target_5',
-        'target_6', 'target_7', 'target_8', 'target_9', 'target_10'
+        'target_6', 'target_7', 'target_8', 'target_9', 'target_10',
     ];
 
     /**
@@ -53,13 +50,13 @@ class HuntParticipant extends Model
     public $timestamps = true;
 
     /**********************************************************************************************
-    
+
         SCOPES
 
     **********************************************************************************************/
 
     /**********************************************************************************************
-    
+
         RELATIONS
 
     **********************************************************************************************/
@@ -67,32 +64,29 @@ class HuntParticipant extends Model
     /**
      * Get the participating user.
      */
-    public function user() 
-    {
+    public function user() {
         return $this->belongsTo('App\Models\User\User', 'user_id');
     }
-    
+
     /**
      * Get the hunt being participated in.
      */
-    public function hunt() 
-    {
+    public function hunt() {
         return $this->belongsTo('App\Models\ScavengerHunt\ScavengerHunt', 'hunt_id');
     }
 
     /**********************************************************************************************
-    
+
         ACCESSORS
 
     **********************************************************************************************/
-    
+
     /**
      * Get the item data that will be added to the stack as a record of its source.
      *
      * @return string
      */
-    public function getItemDataAttribute()
-    {
+    public function getItemDataAttribute() {
         return 'Claimed from '.$this->hunt->displayLink.' by '.$this->user->displayName.'.';
     }
 
@@ -101,16 +95,15 @@ class HuntParticipant extends Model
      *
      * @return int
      */
-    public function getTargetsCountAttribute()
-    {
+    public function getTargetsCountAttribute() {
         $found = 0;
-        foreach([$this['target_1'], $this['target_2'], $this['target_3'], $this['target_4'], $this['target_5'],
-        $this['target_6'], $this['target_7'], $this['target_8'], $this['target_9'], $this['target_10']] as $timestamp) {
-            if(isset($timestamp)) {
+        foreach ([$this['target_1'], $this['target_2'], $this['target_3'], $this['target_4'], $this['target_5'],
+            $this['target_6'], $this['target_7'], $this['target_8'], $this['target_9'], $this['target_10']] as $timestamp) {
+            if (isset($timestamp)) {
                 $found += 1;
             }
         }
+
         return $found;
     }
-
 }

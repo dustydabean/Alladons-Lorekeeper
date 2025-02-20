@@ -6,11 +6,11 @@ use App\Facades\Settings;
 use App\Http\Controllers\Controller;
 use App\Models\Character\Character;
 use App\Models\Character\CharacterCategory;
-use App\Models\Character\CharacterLineageBlacklist;
-use App\Models\Character\CharacterImage;
-use App\Models\Character\CharacterTransfer;
 use App\Models\Character\CharacterGeneration;
+use App\Models\Character\CharacterImage;
+use App\Models\Character\CharacterLineageBlacklist;
 use App\Models\Character\CharacterPedigree;
+use App\Models\Character\CharacterTransfer;
 use App\Models\Feature\Feature;
 use App\Models\Rarity;
 use App\Models\Species\Species;
@@ -71,12 +71,12 @@ class CharacterController extends Controller {
      */
     public function getCreateMyo() {
         return view('admin.masterlist.create_character', [
-            'userOptions' => User::query()->orderBy('name')->pluck('name', 'id')->toArray(),
-            'rarities'    => ['0' => 'Select Rarity'] + Rarity::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'specieses'   => ['0' => 'Select Species'] + Species::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'subtypes'    => [],
-            'features'    => Feature::getDropdownItems(1),
-            'isMyo'       => true,
+            'userOptions'      => User::query()->orderBy('name')->pluck('name', 'id')->toArray(),
+            'rarities'         => ['0' => 'Select Rarity'] + Rarity::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'specieses'        => ['0' => 'Select Species'] + Species::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'subtypes'         => [],
+            'features'         => Feature::getDropdownItems(1),
+            'isMyo'            => true,
             'characterOptions' => CharacterLineageBlacklist::getAncestorOptions(),
         ]);
     }
@@ -181,7 +181,7 @@ class CharacterController extends Controller {
             'categories'  => CharacterCategory::orderBy('sort')->pluck('name', 'id')->toArray(),
             'userOptions' => User::query()->orderBy('name')->pluck('name', 'id')->toArray(),
             'number'      => format_masterlist_number($this->character->number, config('lorekeeper.settings.character_number_digits')),
-            'rarities'  => ['0' => 'Select Rarity'] + Rarity::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'rarities'    => ['0' => 'Select Rarity'] + Rarity::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'isMyo'       => false,
         ]);
     }

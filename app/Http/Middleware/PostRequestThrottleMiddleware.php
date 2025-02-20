@@ -18,6 +18,7 @@ class PostRequestThrottleMiddleware {
     public function handle(Request $request, Closure $next): Response {
         $allowedRoutes = [
             'admin/*',
+            'criteria/*',
         ];
         if ($request->isMethod('get') || $request->is(...$allowedRoutes)) {
             return $next($request);

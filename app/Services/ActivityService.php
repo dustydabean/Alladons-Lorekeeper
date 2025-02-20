@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\Activity;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class ActivityService extends Service {
     /*

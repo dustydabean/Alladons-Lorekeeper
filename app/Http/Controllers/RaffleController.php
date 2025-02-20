@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Raffle\Raffle;
 use App\Models\Raffle\RaffleGroup;
 use Illuminate\Support\Facades\Auth;
-use Request;
+use Illuminate\Support\Facades\Request;
 
 class RaffleController extends Controller {
     /*

@@ -96,6 +96,12 @@ Route::group(['prefix' => 'characters', 'namespace' => 'Users'], function () {
     Route::get('/', 'CharacterController@getIndex');
     Route::post('sort', 'CharacterController@postSortCharacters');
 
+    Route::get('folder/create', 'CharacterController@getCreateFolder');
+    Route::get('folder/edit/{id}', 'CharacterController@getEditFolder');
+    Route::post('folder/create', 'CharacterController@postCreateEditFolder');
+    Route::post('folder/edit/{id}', 'CharacterController@postCreateEditFolder');
+    Route::post('folder/delete/{id}', 'CharacterController@postDeleteFolder');
+
     Route::post('{slug}/pets/sort', 'CharacterController@postSortCharacterPets');
 
     Route::get('transfers/{type}', 'CharacterController@getTransfers');
@@ -134,6 +140,12 @@ Route::group(['prefix' => 'trades', 'namespace' => 'Users'], function () {
     Route::post('{id}/confirm-trade', 'TradeController@postConfirmTrade');
     Route::get('{id}/cancel-trade', 'TradeController@getCancelTrade');
     Route::post('{id}/cancel-trade', 'TradeController@postCancelTrade');
+});
+
+Route::group(['prefix' => 'crafting', 'namespace' => 'Users'], function () {
+    Route::get('/', 'CraftingController@getIndex');
+    Route::get('craft/{id}', 'CraftingController@getCraftRecipe');
+    Route::post('craft/{id}', 'CraftingController@postCraftRecipe');
 });
 
 /**************************************************************************************************
@@ -196,6 +208,7 @@ Route::group(['prefix' => 'gallery'], function () {
     Route::get('submit/character/{slug}', 'GalleryController@getCharacterInfo');
     Route::get('edit/{id}', 'GalleryController@getEditGallerySubmission');
     Route::get('queue/{id}', 'GalleryController@getSubmissionLog');
+    Route::post('queue/totals/{id}', 'GalleryController@postSubmissionTotals');
     Route::post('submit', 'GalleryController@postCreateEditGallerySubmission');
     Route::post('edit/{id}', 'GalleryController@postCreateEditGallerySubmission');
 
@@ -300,7 +313,7 @@ Route::group(['prefix' => 'activities'], function () {
     Scavenger Hunts
 **************************************************************************************************/
 
-Route::group(['prefix' => 'hunts'], function() {
+Route::group(['prefix' => 'hunts'], function () {
     Route::get('{id}', 'HuntController@getHunt');
     Route::get('targets/{pageId}', 'HuntController@getTarget');
     Route::post('targets/claim', 'HuntController@postClaimTarget');
@@ -337,4 +350,16 @@ Route::group(['prefix' => 'friends', 'namespace' => 'Users'], function () {
     Route::post('remove/{id}', 'FriendController@postRemoveFriend');
     // block friend
     Route::post('block/{id}', 'FriendController@postBlockUser');
+});
+
+/**************************************************************************************************
+    Criteria
+**************************************************************************************************/
+Route::group(['prefix' => 'criteria'], function () {
+    Route::get('{entity}/{id}', 'CriterionController@getCriterionSelector')->where('entity', 'prompt|gallery');
+    Route::get('{entity}/{id}/{entity_id}/{form_id}', 'CriterionController@getCriterionForm')->where('entity', 'prompt|gallery');
+    Route::get('{id}', 'CriterionController@getCriterionFormLimited');
+    Route::post('rewards/{id}', 'CriterionController@postCriterionRewards');
+
+    Route::get('guide/{id}', 'CriterionController@getCriterionGuide');
 });

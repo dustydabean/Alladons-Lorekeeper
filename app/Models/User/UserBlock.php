@@ -5,8 +5,7 @@ namespace App\Models\User;
 use App\Models\Model;
 use Carbon\Carbon;
 
-class UserBlock extends Model
-{
+class UserBlock extends Model {
     /**
      * The attributes that are mass assignable.
      *
@@ -22,7 +21,7 @@ class UserBlock extends Model
      * @var array
      */
     protected $casts = [
-        'created_at' => 'datetime',
+        'created_at'  => 'datetime',
         'accepted_at' => 'datetime',
     ];
 
@@ -35,16 +34,14 @@ class UserBlock extends Model
     /**
      * Get the user who created the block.
      */
-    public function user()
-    {
+    public function user() {
         return $this->belongsTo('App\Models\User\User');
     }
 
     /**
      * Get the user who is blocked.
      */
-    public function blocked()
-    {
+    public function blocked() {
         return $this->belongsTo('App\Models\User\User', 'blocked_id');
     }
 }

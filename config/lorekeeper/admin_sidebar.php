@@ -120,6 +120,10 @@ return [
                 'name' => 'Pet Grants',
                 'url'  => 'admin/grants/pets',
             ],
+            [
+                'name' => 'Recipe Grants',
+                'url'  => 'admin/grants/recipes',
+            ],
         ],
     ],
     'Masterlist' => [
@@ -232,7 +236,15 @@ return [
             ],
             [
                 'name' => 'Scavenger Hunts',
-                'url' => 'admin/data/hunts',
+                'url'  => 'admin/data/hunts',
+            ],
+            [
+                'name' => 'Criteria Rewards',
+                'url'  => 'admin/data/criteria',
+            ],
+            [
+                'name' => 'Recipes',
+                'url'  => 'admin/data/recipes',
             ],
         ],
     ],
@@ -277,6 +289,6 @@ return [
                 'name' => 'Log Viewer',
                 'url'  => 'admin/logs',
             ],
-        ]
+        ],
     ],
 ];

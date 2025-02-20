@@ -104,12 +104,12 @@ class CharacterImageController extends Controller {
         $image = CharacterImage::find($id);
 
         return view('character.admin._edit_features_modal', [
-            'image'     => $image,
-            'specieses' => ['0' => 'Select Species'] + Species::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'subtypes'  => Subtype::where('species_id', '=', $image->species_id)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'image'       => $image,
+            'specieses'   => ['0' => 'Select Species'] + Species::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'subtypes'    => Subtype::where('species_id', '=', $image->species_id)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'generations' => [null => 'Select Generation'] + CharacterGeneration::query()->orderByRaw('LENGTH(name) ASC')->orderBy('name')->pluck('name', 'id')->toArray(),
             'pedigrees'   => [null => 'Select Pedigree Tag'] + CharacterPedigree::query()->orderBy('name', 'desc')->pluck('name', 'id')->toArray(),
-            'features'  => Feature::getDropdownItems(1),
+            'features'    => Feature::getDropdownItems(1),
         ]);
     }
 
@@ -123,8 +123,8 @@ class CharacterImageController extends Controller {
      */
     public function postEditImageFeatures(Request $request, CharacterManager $service, $id) {
         $data = $request->only(['species_id', 'subtype_ids', 'feature_id', 'feature_data', 'sex',
-        'nickname', 'birthdate', 'poucher_code',
-        'generation_id', 'pedigree_id', 'pedigree_descriptor',]);
+            'nickname', 'birthdate', 'poucher_code',
+            'generation_id', 'pedigree_id', 'pedigree_descriptor', ]);
         $image = CharacterImage::find($id);
         if (!$image) {
             abort(404);

@@ -11,7 +11,7 @@ use App\Services\CharacterManager;
 use App\Services\DesignUpdateManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Route;
+use Illuminate\Support\Facades\Route;
 
 class MyoController extends Controller {
     /*

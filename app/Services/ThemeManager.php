@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\Theme;
 use App\Models\User\User;
 use App\Models\User\UserTheme;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class ThemeManager extends Service {
     /*

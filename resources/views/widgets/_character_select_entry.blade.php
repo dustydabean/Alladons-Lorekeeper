@@ -25,7 +25,7 @@
                     {!! Form::label('slug[]', 'Character Code') !!}
                     {!! Form::select('slug[]', $characters, $character->character ? $character->character->slug : $character->slug, ['class' => 'form-control character-code', 'placeholder' => 'Select Character']) !!}
                 </div>
-                @if(isset($submission))
+                @if (isset($submission))
                     <div class="form-group gift-notifs">
                         <h4>Notify Owner?</h4>
                         <div class="row">

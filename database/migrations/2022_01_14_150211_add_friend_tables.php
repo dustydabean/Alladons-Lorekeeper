@@ -4,13 +4,11 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddFriendTables extends Migration
-{
+class AddFriendTables extends Migration {
     /**
      * Run the migrations.
      */
-    public function up()
-    {
+    public function up() {
         //
         Schema::create('user_friends', function (Blueprint $table) {
             $table->id();
@@ -31,8 +29,7 @@ class AddFriendTables extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down()
-    {
+    public function down() {
         Schema::dropIfExists('user_friends');
         Schema::dropIfExists('user_blocks');
     }

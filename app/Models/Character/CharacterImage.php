@@ -2,15 +2,15 @@
 
 namespace App\Models\Character;
 
+use App\Facades\Settings;
 use App\Models\Model;
 use App\Models\Rarity;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
 use App\Models\User\User;
-use File;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Image;
-use Settings;
+use Illuminate\Support\Facades\File;
+use Intervention\Image\Facades\Image;
 
 class CharacterImage extends Model {
     use SoftDeletes;

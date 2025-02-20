@@ -5,13 +5,16 @@ namespace App\Http\Controllers\Users;
 use App\Facades\Settings;
 use App\Http\Controllers\Controller;
 use App\Models\Character\Character;
+use App\Models\Criteria\Criterion;
 use App\Models\Currency\Currency;
 use App\Models\Gallery\GalleryCollaborator;
 use App\Models\Gallery\GallerySubmission;
 use App\Models\Item\Item;
 use App\Models\Item\ItemCategory;
 use App\Models\Prompt\Prompt;
+use App\Models\Prompt\PromptCriterion;
 use App\Models\Raffle\Raffle;
+use App\Models\Recipe\Recipe;
 use App\Models\Submission\Submission;
 use App\Models\User\User;
 use App\Models\User\UserItem;
@@ -88,6 +91,9 @@ class SubmissionController extends Controller {
         $closed = !Settings::get('is_prompts_open');
         $inventory = UserItem::with('item')->whereNull('deleted_at')->where('count', '>', '0')->where('user_id', Auth::user()->id)->get();
 
+        $prompt = $request->all()['prompt_id'] ?? null;
+        $promptCriteria = $prompt ? PromptCriterion::where('prompt_id', $prompt)->pluck('criterion_id')->toArray() : null;
+
         if (config('lorekeeper.settings.allow_gallery_submissions_on_prompts')) {
             $collaboratorIds = GalleryCollaborator::where('user_id', Auth::user()->id)->where('has_approved', 1)->pluck('gallery_submission_id')->toArray();
 
@@ -115,6 +121,7 @@ class SubmissionController extends Controller {
             'inventory'              => $inventory,
             'page'                   => 'submission',
             'expanded_rewards'       => config('lorekeeper.extensions.character_reward_expansion.expanded'),
+            'criteria'               => $prompt ? Criterion::active()->whereIn('id', $promptCriteria)->orderBy('name')->pluck('name', 'id') : null,
             'userGallerySubmissions' => $gallerySubmissions,
         ]));
     }
@@ -133,6 +140,9 @@ class SubmissionController extends Controller {
         if (!$submission) {
             abort(404);
         }
+
+        $prompt = $submission->prompt_id ? Prompt::find($submission->prompt_id) : null;
+        $promptCriteria = PromptCriterion::where('prompt_id', $submission->prompt_id)->pluck('criterion_id')->toArray();
 
         if (config('lorekeeper.settings.allow_gallery_submissions_on_prompts')) {
             $gallerySubmissions = GallerySubmission::where('user_id', Auth::user()->id)->where('status', 'Accepted')->orderBy('id', 'DESC')->get()->pluck('title', 'id');
@@ -161,6 +171,7 @@ class SubmissionController extends Controller {
             'selectedInventory'      => isset($submission->data['user']) ? parseAssetData($submission->data['user']) : null,
             'count'                  => Submission::where('prompt_id', $submission->prompt_id)->where('status', 'Approved')->where('user_id', $submission->user_id)->count(),
             'userGallerySubmissions' => $gallerySubmissions,
+            'criteria'               => $prompt ? Criterion::active()->whereIn('id', $promptCriteria)->orderBy('name')->pluck('name', 'id') : null,
         ]));
     }
 
@@ -182,19 +193,18 @@ class SubmissionController extends Controller {
     /**
      * Shows character gift art/writing permissions.
      *
-     * @param mixed $id
+     * @param mixed $slug
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getCharacterPermissions($slug)
-    {
+    public function getCharacterPermissions($slug) {
         $character = Character::visible()->where('slug', $slug)->first();
         $allowArt = $character->is_gift_art_allowed;
         $allowWriting = $character->is_gift_writing_allowed;
 
         return view('home._character_gift_permissions', [
-            'character' => $character,
-            'allowArt' => $allowArt,
+            'character'    => $character,
+            'allowArt'     => $allowArt,
             'allowWriting' => $allowWriting,
         ]);
     }
@@ -232,7 +242,7 @@ class SubmissionController extends Controller {
             $request->only([
                 'url', 'prompt_id', 'comments', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity',
                 'rewardable_type', 'rewardable_id', 'quantity', 'stack_id', 'stack_quantity', 'currency_id', 'currency_quantity',
-                'gallery_submission_id', 'character_notify_owner',
+                'gallery_submission_id', 'character_notify_owner', 'criterion_id', 'criterion',
             ]),
             Auth::user(),
             false,
@@ -272,18 +282,18 @@ class SubmissionController extends Controller {
         if (!$submission) {
             abort(404);
         }
-
+        
         $request->validate(Submission::$updateRules);
         if ($submit && $service->editSubmission($submission, $request->only([
             'url', 'prompt_id', 'comments', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity',
             'rewardable_type', 'rewardable_id', 'quantity', 'stack_id', 'stack_quantity', 'currency_id', 'currency_quantity',
-            'gallery_submission_id', 'character_notify_owner',
+            'gallery_submission_id', 'character_notify_owner', 'criterion_id', 'criterion',
         ]), Auth::user(), false, $submit)) {
             flash('Draft submitted successfully.')->success();
         } elseif ($service->editSubmission($submission, $request->only([
             'url', 'prompt_id', 'comments', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity',
             'rewardable_type', 'rewardable_id', 'quantity', 'stack_id', 'stack_quantity', 'currency_id', 'currency_quantity',
-            'gallery_submission_id',
+            'gallery_submission_id', 'character_notify_owner', 'criterion_id', 'criterion',
         ]), Auth::user())) {
             flash('Draft saved successfully.')->success();
 
@@ -425,6 +435,7 @@ class SubmissionController extends Controller {
             'currencies'             => Currency::where('is_user_owned', 1)->orderBy('name')->pluck('name', 'id'),
             'raffles'                => Raffle::where('rolled_at', null)->where('is_active', 1)->orderBy('name')->pluck('name', 'id'),
             'page'                   => 'submission',
+            'recipes'                => Recipe::orderBy('name')->pluck('name', 'id'),
             'expanded_rewards'       => config('lorekeeper.extensions.character_reward_expansion.expanded'),
             'userGallerySubmissions' => [],
         ]));
@@ -459,6 +470,7 @@ class SubmissionController extends Controller {
             'inventory'              => $inventory,
             'raffles'                => Raffle::where('rolled_at', null)->where('is_active', 1)->orderBy('name')->pluck('name', 'id'),
             'page'                   => 'submission',
+            'recipes'                => Recipe::orderBy('name')->pluck('name', 'id'),
             'expanded_rewards'       => config('lorekeeper.extensions.character_reward_expansion.expanded'),
             'selectedInventory'      => isset($submission->data['user']) ? parseAssetData($submission->data['user']) : null,
             'userGallerySubmissions' => [],
@@ -475,7 +487,7 @@ class SubmissionController extends Controller {
      */
     public function postNewClaim(Request $request, SubmissionManager $service, $draft = false) {
         $request->validate(Submission::$createRules);
-        if ($submission = $service->createSubmission($request->only(['url', 'comments', 'stack_id', 'stack_quantity', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity', 'rewardable_type', 'rewardable_id', 'quantity', 'currency_id', 'currency_quantity','character_notify_owner',]), Auth::user(), true, $draft)) {
+        if ($submission = $service->createSubmission($request->only(['url', 'comments', 'stack_id', 'stack_quantity', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity', 'rewardable_type', 'rewardable_id', 'quantity', 'currency_id', 'currency_quantity', 'character_notify_owner']), Auth::user(), true, $draft)) {
             if ($submission->status == 'Draft') {
                 flash('Draft created successfully.')->success();
 
@@ -512,11 +524,11 @@ class SubmissionController extends Controller {
         }
 
         $request->validate(Submission::$createRules);
-        if ($submit && $service->editSubmission($submission, $request->only(['url', 'comments', 'stack_id', 'stack_quantity', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity', 'rewardable_type', 'rewardable_id', 'quantity', 'currency_id', 'currency_quantity']), Auth::user(), true, $submit)) {
+        if ($submit && $service->editSubmission($submission, $request->only(['url', 'comments', 'stack_id', 'stack_quantity', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity', 'rewardable_type', 'rewardable_id', 'quantity', 'currency_id', 'currency_quantity', 'character_notify_owner']), Auth::user(), true, $submit)) {
             flash('Draft submitted successfully.')->success();
 
             return redirect()->to('claims/draft/'.$submission->id);
-        } elseif ($service->editSubmission($submission, $request->only(['url', 'comments', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity', 'rewardable_type', 'rewardable_id', 'quantity', 'stack_id', 'stack_quantity', 'currency_id', 'currency_quantity']), Auth::user(), true)) {
+        } elseif ($service->editSubmission($submission, $request->only(['url', 'comments', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity', 'rewardable_type', 'rewardable_id', 'quantity', 'stack_id', 'stack_quantity', 'currency_id', 'currency_quantity', 'character_notify_owner']), Auth::user(), true)) {
             flash('Draft saved successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {

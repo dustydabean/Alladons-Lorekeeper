@@ -175,6 +175,9 @@
                             <a class="dropdown-item" href="{{ url(__('dailies.dailies')) }}">
                             {{__('dailies.dailies')}}
                             </a>
+                            <a class="dropdown-item" href="{{ url('crafting') }}">
+                                Crafting
+                            </a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{{ url('submissions') }}">
                                 Prompt Submissions

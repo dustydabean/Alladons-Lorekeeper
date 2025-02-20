@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Facades\Notifications;
+use App\Facades\Settings;
 use App\Models\Character\Character;
 use App\Models\Character\CharacterBookmark;
 use App\Models\Character\CharacterCategory;
@@ -11,26 +13,24 @@ use App\Models\Character\CharacterFeature;
 use App\Models\Character\CharacterGeneration;
 use App\Models\Character\CharacterImage;
 use App\Models\Character\CharacterImageSubtype;
+use App\Models\Character\CharacterLineage;
 use App\Models\Character\CharacterPedigree;
 use App\Models\Character\CharacterProfileCustomValue;
 use App\Models\Character\CharacterTransfer;
-use App\Models\Character\CharacterLineage;
+use App\Models\Rarity;
 use App\Models\Sales\SalesCharacter;
 use App\Models\Species\Subtype;
-use App\Models\Rarity;
 use App\Models\User\User;
 use App\Models\User\UserPet;
-use Auth;
 use Carbon\Carbon;
-use Config;
-use DB;
 use Illuminate\Support\Arr;
-use Image;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
+use Intervention\Image\Facades\Image;
 use League\ColorExtractor\Color;
 use League\ColorExtractor\ColorExtractor;
 use League\ColorExtractor\Palette;
-use Notifications;
-use Settings;
 
 class CharacterManager extends Service {
     /*
@@ -779,7 +779,7 @@ class CharacterManager extends Service {
             }
 
             $new['generation'] = isset($generation) ? $generation->name : 'No Generation';
-            $new['pedigree'] = isset($pedigree) ? $pedigree->name.' '.$data['pedigree_descriptor']: 'No Pedigree Name';
+            $new['pedigree'] = isset($pedigree) ? $pedigree->name.' '.$data['pedigree_descriptor'] : 'No Pedigree Name';
             $new['nickname'] = $data['nickname'] ?? 'No Nickname';
             $new['birthdate'] = $data['birthdate'] ?? 'Birthdate Unknown';
             $new['poucher_code'] = $data['poucher_code'] ?? 'No Poucher Code';
@@ -1218,6 +1218,8 @@ class CharacterManager extends Service {
 
         try {
             $ids = array_reverse(explode(',', $data['sort']));
+            $folders = array_reverse($data['folder_ids']);
+
             $characters = Character::myo(0)->whereIn('id', $ids)->where('user_id', $user->id)->where('is_visible', 1)->orderBy(DB::raw('FIELD(id, '.implode(',', $ids).')'))->get();
 
             if (count($characters) != count($ids)) {
@@ -1227,6 +1229,11 @@ class CharacterManager extends Service {
             $count = 0;
             foreach ($characters as $character) {
                 $character->sort = $count;
+                if ($folders[$count] == 'None') {
+                    $character->folder_id = null;
+                } else {
+                    $character->folder_id = $folders[$count];
+                }
                 $character->save();
                 $count++;
             }
@@ -2003,6 +2010,11 @@ class CharacterManager extends Service {
      * @param string    $logType
      */
     public function moveCharacter($character, $recipient, $data, $cooldown = -1, $logType = null) {
+        if ($character->folder_id) {
+            $character->folder_id = null;
+            $character->save();
+        }
+
         $sender = $character->user;
         if (!$sender) {
             $sender = $character->owner_url;

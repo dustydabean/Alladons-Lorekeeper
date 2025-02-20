@@ -11,58 +11,6 @@
 */
 
 /**
- * Calculates amount of group currency a submission should be awarded
- * based on form input. Corresponds to the GroupCurrencyForm configured in
- * app/Forms.
- *
- * @param array $data
- *
- * @return int
- */
-function calculateGroupCurrency($data) {
-    // Sets a starting point for the total so that numbers can be added to it.
-    // Don't change this!
-    $total = 0;
-
-    // You'll need the names of the form fields you specified both in the form config and above.
-    // You can get a particular field's value with $data['form_name'], for instance, $data['art_finish']
-
-    // This differentiates how values are calculated depending on the type of content being submitted.
-    $pieceType = collect($data['piece_type'])->flip();
-
-    // For instance, if the user selected that the submission has a visual art component,
-    // these actions will be performed:
-    if ($pieceType->has('art')) {
-        // This adds values to the total!
-        $total += ($data['art_finish'] + $data['art_type']);
-        // This multiplies each option selected in the "bonus" form field by
-        // the result from the "art type" field, and adds it to the total.
-        if (isset($data['art_bonus'])) {
-            foreach ((array) $data['art_bonus'] as $bonus) {
-                $total += (round($bonus) * $data['art_type']);
-            }
-        }
-    }
-
-    // Likewise for if the user selected that the submission has a written component:
-    if ($pieceType->has('lit')) {
-        // This divides the word count by 100, rounds the result, and then multiplies it by one--
-        // so, effectively, for every 100 words, 1 of the currency is awarded.
-        // You can adjust these numbers as you see fit.
-        $total += (round($data['word_count'] / 100) * 1);
-    }
-
-    // And if it has a crafted or other physical object component:
-    if ($pieceType->has('craft')) {
-        // This just adds 4! You can adjust this as you desire.
-        $total += 4;
-    }
-
-    // Hands the resulting total off. Don't change this!
-    return $total;
-}
-
-/**
  * Gets the asset keys for an array depending on whether the
  * assets being managed are owned by a user or character.
  *
@@ -72,7 +20,7 @@ function calculateGroupCurrency($data) {
  */
 function getAssetKeys($isCharacter = false) {
     if (!$isCharacter) {
-        return ['items', 'currencies', 'pets', 'pet_variants', 'raffle_tickets', 'loot_tables', 'user_items', 'characters'];
+        return ['items', 'currencies', 'pets', 'pet_variants', 'raffle_tickets', 'loot_tables', 'user_items', 'characters', 'recipes'];
     } else {
         return ['currencies', 'items', 'character_items', 'loot_tables'];
     }
@@ -148,6 +96,14 @@ function getAssetModelString($type, $namespaced = true) {
                 return '\App\Models\Character\Character';
             } else {
                 return 'Character';
+            }
+            break;
+
+        case 'recipes':
+            if ($namespaced) {
+                return '\App\Models\Recipe\Recipe';
+            } else {
+                return 'Recipe';
             }
             break;
 
@@ -458,6 +414,13 @@ function fillUserAssets($assets, $sender, $recipient, $logType, $data) {
             $service = new App\Services\ThemeManager;
             foreach ($contents as $asset) {
                 if (!$service->creditTheme($recipient, $asset['asset'])) {
+                    return false;
+                }
+            }
+        } elseif ($key == 'recipes' && count($contents)) {
+            $service = new App\Services\RecipeService;
+            foreach ($contents as $asset) {
+                if (!$service->creditRecipe($sender, $recipient, null, $logType, $data, $asset['asset'])) {
                     return false;
                 }
             }

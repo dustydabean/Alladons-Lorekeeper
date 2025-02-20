@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use File;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
 
 class UpdatePets extends Command {

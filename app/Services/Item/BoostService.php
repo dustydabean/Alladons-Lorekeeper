@@ -5,7 +5,7 @@ namespace App\Services\Item;
 use App\Models\Item\Item;
 use App\Models\Rarity;
 use App\Services\Service;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class BoostService extends Service {
     /*

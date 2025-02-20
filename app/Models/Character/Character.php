@@ -2,6 +2,7 @@
 
 namespace App\Models\Character;
 
+use App\Facades\Notifications;
 use App\Models\Currency\Currency;
 use App\Models\Currency\CurrencyLog;
 use App\Models\Gallery\GalleryCharacter;
@@ -16,7 +17,6 @@ use App\Models\User\User;
 use App\Models\User\UserCharacterLog;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Notifications;
 
 class Character extends Model {
     use SoftDeletes;
@@ -34,6 +34,7 @@ class Character extends Model {
         'is_gift_art_allowed', 'is_gift_writing_allowed', 'is_trading', 'sort',
         'is_myo_slot', 'name', 'trade_id', 'is_links_open', 'owner_url', 'poucher_code',
         'nickname', 'pedigree_id', 'pedigree_descriptor', 'generation_id', 'birthdate', 'poucher_code',
+        'folder_id',
     ];
 
     /**
@@ -246,6 +247,13 @@ class Character extends Model {
         return $this->belongsTo(CharacterGeneration::class, 'generation_id');
     }
 
+    /**
+     * Gets which folder the character currently resides in.
+     */
+    public function folder() {
+        return $this->belongsTo(CharacterFolder::class, 'folder_id');
+    }
+
     /**********************************************************************************************
 
         SCOPES
@@ -403,7 +411,7 @@ class Character extends Model {
 
         return $tag.' <i>'.$this->pedigree_descriptor.'</i>';
     }
-    
+
     /**
      * Gets the character's page's URL.
      *

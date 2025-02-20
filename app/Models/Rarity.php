@@ -19,6 +19,7 @@ class Rarity extends Model {
      * @var string
      */
     protected $table = 'rarities';
+
     /**
      * Validation rules for creation.
      *

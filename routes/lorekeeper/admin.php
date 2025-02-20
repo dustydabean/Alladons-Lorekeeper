@@ -97,8 +97,8 @@ Route::group(['prefix' => 'logs', 'middleware' => 'power:edit_site_settings'], f
     Route::post('/delete', 'LogController@postDeleteLog');
 });
 
-# SITE IMAGES
-Route::group(['prefix' => 'images', 'middleware' => 'power:edit_site_settings'], function() {
+// SITE IMAGES
+Route::group(['prefix' => 'images', 'middleware' => 'power:edit_site_settings'], function () {
     Route::get('/', 'FileController@getSiteImages');
 
     Route::post('upload/css', 'FileController@postUploadCss');
@@ -244,6 +244,15 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('pets/levels/edit/{level_id}/pets/add', 'PetController@postAddPetToLevel');
     Route::post('pets/levels/edit/{level_id}/pets/edit/{id}', 'PetController@postEditPetLevel');
 
+    // RECIPES
+    Route::get('recipes', 'RecipeController@getRecipeIndex');
+    Route::get('recipes/create', 'RecipeController@getCreateRecipe');
+    Route::get('recipes/edit/{id}', 'RecipeController@getEditRecipe');
+    Route::get('recipes/delete/{id}', 'RecipeController@getDeleteRecipe');
+    Route::post('recipes/create', 'RecipeController@postCreateEditRecipe');
+    Route::post('recipes/edit/{id?}', 'RecipeController@postCreateEditRecipe');
+    Route::post('recipes/delete/{id}', 'RecipeController@postDeleteRecipe');
+
     // SHOPS
     Route::get('shops', 'ShopController@getIndex');
     Route::get('shops/create', 'ShopController@getCreateShop');
@@ -296,6 +305,15 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('traits/create', 'FeatureController@postCreateEditFeature');
     Route::post('traits/edit/{id?}', 'FeatureController@postCreateEditFeature');
     Route::post('traits/delete/{id}', 'FeatureController@postDeleteFeature');
+
+    Route::get('traits/examples/{feature_id}', 'FeatureController@getFeatureExamples');
+    Route::get('traits/examples/{feature_id}/create', 'FeatureController@getCreateEditFeatureExample');
+    Route::get('traits/examples/{feature_id}/edit/{id}', 'FeatureController@getCreateEditFeatureExample');
+    Route::post('traits/examples/{feature_id}/create', 'FeatureController@postCreateEditExample');
+    Route::post('traits/examples/{feature_id}/edit/{id}', 'FeatureController@postCreateEditExample');
+    Route::get('traits/examples/delete/{id}', 'FeatureController@getDeleteFeatureExample');
+    Route::post('traits/examples/delete/{id}', 'FeatureController@postDeleteFeatureExample');
+    Route::post('traits/examples/{feature_id}/sort', 'FeatureController@postSortFeatureExamples');
 
     // CHARACTER CATEGORIES
     Route::get('character-categories', 'CharacterCategoryController@getIndex');
@@ -401,7 +419,7 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('faq/edit/{id?}', 'FaqController@postCreateEditFaqQuestion');
     Route::post('faq/delete/{id}', 'FaqController@postDeleteFaqQuestion');
 
-    # SCAVENGER HUNTS
+    // SCAVENGER HUNTS
     Route::get('hunts', 'HuntController@getHuntIndex');
     Route::get('hunts/create', 'HuntController@getCreateHunt');
     Route::get('hunts/edit/{id}', 'HuntController@getEditHunt');
@@ -416,6 +434,35 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('hunts/targets/edit/{id}', 'HuntController@postCreateEditHuntTarget');
     Route::get('hunts/targets/delete/{id}', 'HuntController@getDeleteHuntTarget');
     Route::post('hunts/targets/delete/{id}', 'HuntController@postDeleteHuntTarget');
+
+    // Criteria
+    Route::get('criteria', 'CriterionController@getIndex');
+    Route::get('criteria/create', 'CriterionController@getCreateEditCriterion');
+    Route::post('criteria/create', 'CriterionController@postCreateEditCriterion');
+    Route::get('criteria/edit/{id}', 'CriterionController@getCreateEditCriterion');
+    Route::post('criteria/edit/{id}', 'CriterionController@postCreateEditCriterion');
+    Route::get('criteria/{id}/step', 'CriterionController@getCreateEditCriterionStep');
+    Route::get('criteria/{id}/step/{step_id}', 'CriterionController@getCreateEditCriterionStep');
+    Route::post('criteria/{id}/step', 'CriterionController@postCreateEditCriterionStep');
+    Route::post('criteria/{id}/step/{step_id}', 'CriterionController@postCreateEditCriterionStep');
+    Route::get('criteria/delete/{id}', 'CriterionController@getDeleteCriterion');
+    Route::post('criteria/delete/{id}', 'CriterionController@postDeleteCriterion');
+    Route::get('criteria/step/delete/{step_id}', 'CriterionController@getDeleteCriterionStep');
+    Route::post('criteria/step/delete/{id}', 'CriterionController@postDeleteCriterionStep');
+    Route::get('criteria/step/{step_id}/option/{id}', 'CriterionController@getCreateEditCriterionOption');
+    Route::get('criteria/step/{step_id}/option', 'CriterionController@getCreateEditCriterionOption');
+    Route::post('criteria/step/{step_id}/option', 'CriterionController@postCreateEditCriterionOption');
+    Route::post('criteria/step/{step_id}/option/{id}', 'CriterionController@postCreateEditCriterionOption');
+    Route::get('criteria/option/delete/{id}', 'CriterionController@getDeleteCriterionOption');
+    Route::post('criteria/option/delete/{id}', 'CriterionController@postDeleteCriterionOption');
+
+    Route::get('criteria-defaults', 'CriterionController@getDefaultIndex');
+    Route::get('criteria-defaults/create', 'CriterionController@getCreateEditCriterionDefault');
+    Route::post('criteria-defaults/create', 'CriterionController@postCreateEditCriterionDefault');
+    Route::get('criteria-defaults/edit/{id}', 'CriterionController@getCreateEditCriterionDefault');
+    Route::post('criteria-defaults/edit/{id}', 'CriterionController@postCreateEditCriterionDefault');
+    Route::get('criteria-defaults/delete/{id}', 'CriterionController@getDeleteCriterionDefault');
+    Route::post('criteria-defaults/delete/{id}', 'CriterionController@postDeleteCriterionDefault');
 });
 
 // PAGES
@@ -484,6 +531,9 @@ Route::group(['prefix' => 'grants', 'namespace' => 'Users', 'middleware' => 'pow
     Route::get('pets/evolutions/{id}', 'GrantController@getPetEvolutions');
 
     Route::get('item-search', 'GrantController@getItemSearch');
+
+    Route::get('recipes', 'GrantController@getRecipes');
+    Route::post('recipes', 'GrantController@postRecipes');
 });
 
 // PETS
