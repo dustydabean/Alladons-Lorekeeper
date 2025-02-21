@@ -6,7 +6,7 @@
 </div>
 <div class="row">
     <div class="col-lg-3 col-4">
-        <h5>Rarity</h5>
+        <h5>Mut Tier</h5>
     </div>
     <div class="col-lg-8 col-md-6 col-8">{!! $character->image->rarity_id ? $character->image->rarity->displayName : 'None' !!}</div>
 </div>
