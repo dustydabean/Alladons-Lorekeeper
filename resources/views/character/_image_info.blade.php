@@ -275,7 +275,7 @@
 
                     <div class="row no-gutters mb-2">
                         <div class="col-lg-4 col-4">
-                            <h5>Design</h5>
+                            <h5>Adopt/PA(s)</h5>
                         </div>
                         <div class="col-lg-8 col-8">
                             @foreach ($image->designers as $designer)
@@ -285,7 +285,7 @@
                     </div>
                     <div class="row no-gutters">
                         <div class="col-lg-4 col-4">
-                            <h5>Art</h5>
+                            <h5>PA(s)</h5>
                         </div>
                         <div class="col-lg-8 col-8">
                             @foreach ($image->artists as $artist)
