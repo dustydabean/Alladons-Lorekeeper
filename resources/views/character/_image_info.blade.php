@@ -58,7 +58,7 @@
                 </div>
                 @if (!$image->character->is_myo_slot && !$image->is_valid)
                     <div class="alert alert-danger">
-                        This version of this character is outdated, and only noted here for recordkeeping purposes. Do not use as an official reference.
+                        This design is de-registered and is no longer apart of the Alladon Community. They are included in the masterlist for record purposes, heritage purposes, and for any slots this design may still have unused in the community. This design may not be reinstated as an alladon and has lost it's monetary value as an alladon design.
                     </div>
                 @endif
 
