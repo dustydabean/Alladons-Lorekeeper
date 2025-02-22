@@ -69,11 +69,11 @@
 
                     <h6>
                         <div class="mb-2">
-                            Design:
+                            Adopt/PA(s):
                             @foreach ($character->image->designers as $designer)
                                 {!! $designer->displayLink() !!}{{ !$loop->last ? ', ' : '' }}
                             @endforeach ・
-                            Art:
+                            AUA(s):
                             @foreach ($character->image->artists as $artist)
                                 {!! $artist->displayLink() !!}{{ !$loop->last ? ', ' : '' }}
                             @endforeach
