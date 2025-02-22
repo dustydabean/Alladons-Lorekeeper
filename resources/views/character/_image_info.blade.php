@@ -285,7 +285,7 @@
                     </div>
                     <div class="row no-gutters">
                         <div class="col-lg-4 col-4">
-                            <h5>PA(s)</h5>
+                            <h5>AUA(s)</h5>
                         </div>
                         <div class="col-lg-8 col-8">
                             @foreach ($image->artists as $artist)
