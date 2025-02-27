@@ -115,6 +115,9 @@ class AddSiteSettings extends Command {
 
         $this->addSiteSetting('allow_blocked_transfers', 1, '0: Users cannot send to users they have been blocked by, 1: Unrestricted.');
 
+        # Genetics
+        $this->addSiteSetting('genome_default_visibility', 0, '0: Genomes are hidden by default. 1: Only the most dominant genes are visible by default. 2: Genomes are fully visible by default.');
+
         $this->line("\nSite settings up to date!");
     }
 

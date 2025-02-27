@@ -254,6 +254,14 @@ class Character extends Model {
         return $this->belongsTo(CharacterFolder::class, 'folder_id');
     }
 
+    /**
+     * Get the character's genomes.
+     */
+    public function genomes()
+    {
+        return $this->hasMany(CharacterGenome::class, 'character_id');
+    }
+
     /**********************************************************************************************
 
         SCOPES

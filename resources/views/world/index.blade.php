@@ -37,6 +37,7 @@
                     @endif
                     <li class="list-group-item"><a href="{{ url('world/trait-categories') }}">Mutation Categories</a></li>
                     <li class="list-group-item"><a href="{{ url('world/rarities') }}">Mutation Points</a></li>
+                    <li class="list-group-item"><a href="{{ url('world/genetics') }}">Genetics</a></li>
                     <!--<li class="list-group-item"><a href="{{ url('world/traits') }}">All Mutations</a></li>-->
                 </ul>
             </div>

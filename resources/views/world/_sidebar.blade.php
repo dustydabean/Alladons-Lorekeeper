@@ -17,6 +17,7 @@
         <div class="sidebar-item"><a href="{{ url('world/trait-categories') }}" class="{{ set_active('world/trait-categories*') }}">Mutation Categories</a></div>
         <div class="sidebar-item"><a href="{{ url('world/rarities') }}" class="{{ set_active('world/rarities*') }}">Mutation Points</a></div>
         <div class="sidebar-item"><a href="{{ url('world/traits') }}" class="{{ set_active('world/traits*') }}">All Mutations</a></div>
+        <div class="sidebar-item"><a href="{{ url('world/genetics') }}" class="{{ set_active('world/genetics*') }}">Genetics</a></div>
     </li>
     <li class="sidebar-section">
         <div class="sidebar-section-header">Items</div>

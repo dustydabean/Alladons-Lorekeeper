@@ -56,4 +56,10 @@ return [
         'text_color'       => '#ffffff',
         'background_color' => '#6D18A7',
     ],
+
+    'gene_reveal' => [
+        'name' => 'Gene Reveal',
+        'text_color' => '#ffffff',
+        'background_color' => '#A8CE5E'
+    ],
 ];

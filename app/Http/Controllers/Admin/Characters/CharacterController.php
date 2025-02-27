@@ -12,6 +12,9 @@ use App\Models\Character\CharacterLineageBlacklist;
 use App\Models\Character\CharacterPedigree;
 use App\Models\Character\CharacterTransfer;
 use App\Models\Character\CharacterTransformation as Transformation;
+use App\Models\Character\CharacterGenome;
+use App\Models\Genetics\Loci;
+use App\Models\Genetics\LociAllele;
 use App\Models\Feature\Feature;
 use App\Models\Rarity;
 use App\Models\Species\Species;
@@ -59,6 +62,7 @@ class CharacterController extends Controller {
             'pedigrees'        => [null => 'Select Pedigree Tag'] + CharacterPedigree::orderBy('name')->pluck('name', 'id')->toArray(),
             'subtypes'         => ['0' => 'Pick a Species First'],
             'transformations' => ['0' => 'Select Transformation'] + Transformation::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'genes' => ['0' => 'Select Gene Group'] + Loci::orderBy('sort', 'desc')->pluck('name', 'id')->toArray(),
             'features'         => Feature::getDropdownItems(1),
             'isMyo'            => false,
             'characterOptions' => CharacterLineageBlacklist::getAncestorOptions(),
@@ -77,6 +81,7 @@ class CharacterController extends Controller {
             'specieses'        => ['0' => 'Select Species'] + Species::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'subtypes'         => [],
             'transformations' => ['0' => 'Select Transformation'] + Transformation::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'genes' => ['0' => 'Select Gene Group'] + Loci::orderBy('sort', 'desc')->pluck('name', 'id')->toArray(),
             'features'         => Feature::getDropdownItems(1),
             'isMyo'            => true,
             'characterOptions' => CharacterLineageBlacklist::getAncestorOptions(),
@@ -94,6 +99,22 @@ class CharacterController extends Controller {
         return view('admin.masterlist._create_character_subtype', [
             'subtypes' => Subtype::where('species_id', '=', $species)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'isMyo'    => $request->input('myo'),
+        ]);
+    }
+
+    /**
+     * Gets the genes for character creation.
+     *
+     * @param  Request  $request
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCreateCharacterMyoGenes(Request $request) {
+        $loci = Loci::where('id', $request->input('loci'))->first();
+        $alleles = $loci->getAlleles();
+        return view('admin.masterlist._create_character_genetics', [
+            'loci' => $loci,
+            'alleles' => $alleles,
+            'isMyo' => $request->input('myo'),
         ]);
     }
 
@@ -130,6 +151,8 @@ class CharacterController extends Controller {
             'sex', 'parent_1_id', 'parent_2_id',
             'generation_id', 'pedigree_id', 'pedigree_descriptor',
             'nickname', 'birthdate', 'poucher_code', 'transformation_id',
+            'gene_id', 'gene_allele_id', 'gene_numeric_data', 'gene_gradient_data',
+            'genome_visibility',
         ]);
         if ($character = $service->createCharacter($data, Auth::user())) {
             flash('Character created successfully.')->success();
@@ -163,6 +186,8 @@ class CharacterController extends Controller {
             'species_id', 'subtype_ids', 'rarity_id', 'feature_id', 'feature_data', 'transformation_id',
             'image', 'thumbnail',
             'parent_1_id', 'parent_2_id',
+            'gene_id', 'gene_allele_id', 'gene_numeric_data', 'gene_gradient_data',
+            'genome_visibility',
         ]);
         if ($character = $service->createCharacter($data, Auth::user(), true)) {
             flash('MYO slot created successfully.')->success();
@@ -281,6 +306,311 @@ class CharacterController extends Controller {
             }
         }
 
+        return redirect()->back()->withInput();
+    }
+
+     /**
+     * Shows the create character genome modal.
+     *
+     * @param  string  $slug
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCreateCharacterGenome($slug)
+    {
+        $this->character = Character::where('slug', $slug)->first();
+        if(!$this->character) abort(404);
+        return $this->getCreateGenome(false);
+    }
+
+    /**
+     * Shows the edit character genome modal.
+     *
+     * @param  string  $slug
+     * @param  int     $gid
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getEditCharacterGenome($slug, $gid)
+    {
+        $this->character = Character::where('slug', $slug)->first();
+        if(!$this->character) abort(404);
+        return $this->getEditGenome($gid, false);
+    }
+
+    /**
+     * Shows the create myo genome modal.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCreateMyoGenome($id)
+    {
+        $this->character = Character::where('is_myo_slot', 1)->where('id', $id)->first();
+        if(!$this->character) abort(404);
+        return $this->getCreateGenome(true);
+    }
+
+    /**
+     * Shows the edit myo genome modal.
+     *
+     * @param  int  $id
+     * @param  int  $gid
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getEditMyoGenome($id, $gid)
+    {
+        $this->character = Character::where('is_myo_slot', 1)->where('id', $id)->first();
+        if(!$this->character) abort(404);
+        return $this->getEditGenome($gid, true);
+    }
+
+    /**
+     * Shows the create genome modal.
+     *
+     * @param  int  $isMyo
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    private function getCreateGenome($isMyo) {
+        if(!Auth::user()->hasPower("view_hidden_genetics")) abort(404);
+        if(!$this->character) abort(404);
+        return view('character.admin._edit_genes_modal', [
+            'character' => $this->character,
+            'genome' => new CharacterGenome,
+            'genes' => Loci::orderBy('sort')->pluck('name', 'id')->toArray(),
+            'isMyo' => $isMyo,
+        ]);
+    }
+
+    /**
+     * Shows the edit genome modal.
+     *
+     * @param  int  $id
+     * @param  int  $isMyo
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    private function getEditGenome($id, $isMyo) {
+        if(!Auth::user()->hasPower("view_hidden_genetics")) abort(404);
+        if(!$this->character) abort(404);
+        $this->genome = $this->character->genomes->where('id', $id)->first();
+        if(!$this->genome) abort(404);
+        return view('character.admin._edit_genes_modal', [
+            'character' => $this->character,
+            'genome' => $this->genome,
+            'genes' => Loci::orderBy('sort')->pluck('name', 'id')->toArray(),
+            'isMyo' => $isMyo,
+        ]);
+    }
+
+    /**
+     * Edits a character's genome.
+     *
+     * @param  \Illuminate\Http\Request       $request
+     * @param  App\Services\CharacterManager  $service
+     * @param  string                         $slug
+     * @param  int                            $gid
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postEditCharacterGenome(Request $request, CharacterManager $service, $slug, $gid)
+    {
+        if(!Auth::user()->hasPower("view_hidden_genetics")) abort(404);
+        $data = $request->only([
+            'gene_id', 'gene_allele_id', 'gene_gradient_data', 'gene_numeric_data',
+            'genome_visibility',
+        ]);
+        $this->character = Character::where('slug', $slug)->first();
+        if(!$this->character) abort(404);
+        $this->genome = CharacterGenome::where('character_id', $this->character->id)->where('id', $gid)->first();
+        if(!$this->genome) abort(404);
+        if ($service->updateCharacterGenome($data, $this->character, $this->genome, Auth::user())) {
+            flash('Character genome updated successfully.')->success();
+            return redirect()->to($this->character->url);
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back()->withInput();
+    }
+
+    /**
+     * Edits a myo's genome.
+     *
+     * @param  \Illuminate\Http\Request       $request
+     * @param  App\Services\CharacterManager  $service
+     * @param  int                            $id
+     * @param  int                            $gid
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postEditMyoGenome(Request $request, CharacterManager $service, $id, $gid)
+    {
+        if(!Auth::user()->hasPower("view_hidden_genetics")) abort(404);
+        $data = $request->only([
+            'gene_id', 'gene_allele_id', 'gene_gradient_data', 'gene_numeric_data',
+            'genome_visibility',
+        ]);
+        $this->character = Character::where('id', $id)->first();
+        if(!$this->character || !$this->character->is_myo_slot) abort(404);
+        $this->genome = CharacterGenome::where('character_id', $id)->where('id', $gid)->first();
+        if(!$this->genome) abort(404);
+        if ($service->updateCharacterGenome($data, $this->character, $this->genome, Auth::user())) {
+            flash('Character genome updated successfully.')->success();
+            return redirect()->to($this->character->url);
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back()->withInput();
+    }
+
+    /**
+     * Creates a character genome.
+     *
+     * @param  \Illuminate\Http\Request       $request
+     * @param  App\Services\CharacterManager  $service
+     * @param  string                         $slug
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postCreateCharacterGenome(Request $request, CharacterManager $service, $slug)
+    {
+        if(!Auth::user()->hasPower("view_hidden_genetics")) abort(404);
+        $data = $request->only([
+            'gene_id', 'gene_allele_id', 'gene_gradient_data', 'gene_numeric_data',
+            'genome_visibility',
+        ]);
+        $this->character = Character::where('slug', $slug)->first();
+        if(!$this->character) abort(404);
+        if ($service->updateCharacterGenome($data, $this->character, null, Auth::user())) {
+            flash('Character genome created successfully.')->success();
+            return redirect()->to($this->character->url);
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back()->withInput();
+    }
+
+    /**
+     * Creates a myo's genome.
+     *
+     * @param  \Illuminate\Http\Request       $request
+     * @param  App\Services\CharacterManager  $service
+     * @param  int                            $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postCreateMyoGenome(Request $request, CharacterManager $service, $id)
+    {
+        if(!Auth::user()->hasPower("view_hidden_genetics")) abort(404);
+        $data = $request->only([
+            'gene_id', 'gene_allele_id', 'gene_gradient_data', 'gene_numeric_data',
+            'genome_visibility',
+        ]);
+        $this->character = Character::where('id', $id)->first();
+        if(!$this->character || !$this->character->is_myo_slot) abort(404);
+        if ($service->updateCharacterGenome($data, $this->character, null, Auth::user())) {
+            flash('Character genome created successfully.')->success();
+            return redirect()->to($this->character->url);
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
+        return redirect()->back()->withInput();
+    }
+
+    /**
+     * Shows the delete character genome modal.
+     *
+     * @param  string  $slug
+     * @param  int     $gid
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getDeleteCharacterGenome($slug, $id)
+    {
+        $this->character = Character::where('slug', $slug)->first();
+        if(!$this->character) abort(404);
+        return $this->getDeleteGenome($id, false);
+    }
+
+    /**
+     * Shows the delete myo genome modal.
+     *
+     * @param  int  $id
+     * @param  int  $gid
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getDeleteMyoGenome($id, $gid)
+    {
+        $this->character = Character::where('is_myo_slot', 1)->where('id', $id)->first();
+        if(!$this->character) abort(404);
+        return $this->getDeleteGenome($gid, true);
+    }
+
+    /**
+     * Shows the delete character/myo genome modal.
+     *
+     * @param  int   $id
+     * @param  bool  $id
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    private function getDeleteGenome($id, $isMyo) {
+        if(!Auth::user()->hasPower("view_hidden_genetics")) abort(404);
+        if(!$this->character) abort(404);
+        $this->genome = $this->character->genomes->where('id', $id)->first();
+        if(!$this->genome) abort(404);
+        return view('character.admin._delete_genome_modal', [
+            'character' => $this->character,
+            'genome' => $this->genome,
+            'isMyo' => $isMyo,
+        ]);
+    }
+
+    /**
+     * Deletes a character's genome.
+     *
+     * @param  \Illuminate\Http\Request       $request
+     * @param  App\Services\CharacterManager  $service
+     * @param  string                         $slug
+     * @param  int                            $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postDeleteCharacterGenome(Request $request, CharacterManager $service, $slug, $id)
+    {
+        $this->character = Character::where('slug', $slug)->first();
+        return $this->postDeleteGenome($request, $service, $id);
+    }
+
+    /**
+     * Deletes a myo's genome.
+     *
+     * @param  \Illuminate\Http\Request       $request
+     * @param  App\Services\CharacterManager  $service
+     * @param  int                            $id
+     * @param  int                            $gid
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postDeleteMyoGenome(Request $request, CharacterManager $service, $id, $gid)
+    {
+        $this->character = Character::where('is_myo_slot', 1)->where('id', $id)->first();
+        return $this->postDeleteGenome($request, $service, $gid);
+    }
+
+    /**
+     * Deletes a genome.
+     *
+     * @param  \Illuminate\Http\Request       $request
+     * @param  App\Services\CharacterManager  $service
+     * @param  int                            $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    private function postDeleteGenome(Request $request, CharacterManager $service, $id) {
+        if(!Auth::user()->hasPower("view_hidden_genetics")) abort(404);
+        if(!$this->character) abort(404);
+        $this->genome = $this->character->genomes->where('id', $id)->first();
+        if(!$this->genome) abort(404);
+        if ($service->deleteCharacterGenome($this->character, $this->genome, Auth::user())) {
+            flash('Character genome deleted successfully.')->success();
+            return redirect()->to($this->character->url);
+        }
+        else {
+            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
+        }
         return redirect()->back()->withInput();
     }
 

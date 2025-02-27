@@ -106,6 +106,36 @@ Route::group(['prefix' => 'images', 'middleware' => 'power:edit_site_settings'],
     Route::post('reset', 'FileController@postResetFile');
 });
 
+// GENETICS
+Route::group(['prefix' => 'genetics', 'namespace' => 'Data', 'middleware' => ['power:view_hidden_genetics']], function() {
+    // GENETIC DATA
+    Route::middleware(['power:edit_data'])->group(function() {
+        Route::get('genes', 'GeneticsController@getIndex');
+        Route::get('sort', 'GeneticsController@getSortIndex');
+        Route::get('create', 'GeneticsController@getCreateLoci');
+        Route::get('edit/{id}', 'GeneticsController@getEditLoci');
+        Route::get('delete/{id}', 'GeneticsController@getDeleteLoci');
+        Route::get('delete-allele/{id}', 'GeneticsController@getDeleteAllele');
+
+        Route::post('sort', 'GeneticsController@postSortLoci');
+        Route::post('create', 'GeneticsController@postCreateEditLoci');
+        Route::post('edit/{id}', 'GeneticsController@postCreateEditLoci');
+        Route::post('delete/{id}', 'GeneticsController@postDeleteLoci');
+        Route::post('delete-allele/{id}', 'GeneticsController@postDeleteAllele');
+    });
+
+    // ROLLERS & SUCH
+    Route::middleware(['power:manage_characters'])->group(function() {
+        Route::get('roller', 'GeneticsController@getBreedingRoller');
+        Route::get('fetch-genomes', 'GeneticsController@getCharacterGenomes');
+        Route::get('preview-breeding', 'GeneticsController@getPossibleChildGenomes');
+        Route::get('logs', 'GeneticsController@getBreedingLogs');
+        Route::get('logs/breeding/{id}', 'GeneticsController@getBreedingLog');
+
+        Route::post('roll-litter', 'GeneticsController@postBreedingRoll');
+    });
+});
+
 // DATA
 Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:edit_data'], function () {
     // GALLERIES
@@ -311,6 +341,7 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::get('traits/edit/{id}', 'FeatureController@getEditFeature');
     Route::get('traits/delete/{id}', 'FeatureController@getDeleteFeature');
     Route::get('traits/check-subtype', 'FeatureController@getCreateEditFeatureSubtype');
+    Route::get('check-genes', 'CharacterController@getCreateCharacterMyoGenes');
     Route::post('traits/create', 'FeatureController@postCreateEditFeature');
     Route::post('traits/edit/{id?}', 'FeatureController@postCreateEditFeature');
     Route::post('traits/delete/{id}', 'FeatureController@postDeleteFeature');
@@ -636,6 +667,14 @@ Route::group(['prefix' => 'character', 'namespace' => 'Characters', 'middleware'
 
     Route::post('{slug}/transfer', 'CharacterController@postTransfer');
 
+    // GENOMES
+    Route::get('{slug}/genome/create', 'CharacterController@getCreateCharacterGenome');
+    Route::post('{slug}/genome/create', 'CharacterController@postCreateCharacterGenome');
+    Route::get('{slug}/genome/{id}', 'CharacterController@getEditCharacterGenome');
+    Route::post('{slug}/genome/{id}', 'CharacterController@postEditCharacterGenome');
+    Route::get('{slug}/genome/{id}/delete', 'CharacterController@getDeleteCharacterGenome');
+    Route::post('{slug}/genome/{id}/delete', 'CharacterController@postDeleteCharacterGenome');
+
     // LINEAGE
     Route::get('{slug}/lineage', 'CharacterLineageController@getEditCharacterLineage');
     Route::post('{slug}/lineage', 'CharacterLineageController@postEditCharacterLineage');
@@ -658,6 +697,14 @@ Route::group(['prefix' => 'myo', 'namespace' => 'Characters', 'middleware' => 'p
     Route::post('{id}/settings', 'CharacterController@postMyoSettings');
 
     Route::post('{id}/transfer', 'CharacterController@postMyoTransfer');
+
+    // GENOMES
+    Route::get('{id}/genome/create', 'CharacterController@getCreateMyoGenome');
+    Route::post('{id}/genome/create', 'CharacterController@postCreateMyoGenome');
+    Route::get('{id}/genome/{gid}', 'CharacterController@getEditMyoGenome');
+    Route::post('{id}/genome/{gid}', 'CharacterController@postEditMyoGenome');
+    Route::get('{id}/genome/{gid}/delete', 'CharacterController@getDeleteMyoGenome');
+    Route::post('{id}/genome/{gid}/delete', 'CharacterController@postDeleteMyoGenome');
 
     // LINEAGE
     Route::get('{id}/lineage', 'CharacterLineageController@getEditMyoLineage');
