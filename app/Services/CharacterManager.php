@@ -17,6 +17,7 @@ use App\Models\Character\CharacterLineage;
 use App\Models\Character\CharacterPedigree;
 use App\Models\Character\CharacterProfileCustomValue;
 use App\Models\Character\CharacterTransfer;
+use App\Models\Character\CharacterTransformation as Transformation;
 use App\Models\Rarity;
 use App\Models\Sales\SalesCharacter;
 use App\Models\Species\Subtype;
@@ -721,6 +722,7 @@ class CharacterManager extends Service {
             $old['nickname'] = $image->character->nickname ?? 'No Nickname';
             $old['birthdate'] = $image->character->birthdate ?? 'Birthdate Unknown';
             $old['poucher_code'] = $image->character->poucher_code ?? 'No Poucher Code';
+            $old['transformation'] = $image->transformation_id ? $image->transformation->displayName : null;
 
             // Clear old features
             $image->features()->delete();
@@ -748,6 +750,7 @@ class CharacterManager extends Service {
                 }
             }
             $image->sex = $data['sex'];
+            $image->transformation_id = $data['transformation_id'] ?? null;
             $image->save();
 
             // Update Character Stats
@@ -765,6 +768,7 @@ class CharacterManager extends Service {
             $new['subtypes'] = count($image->subtypes) ? $image->displaySubtypes() : null;
             $new['rarity'] = $image->rarity_id ? $image->rarity->displayName : null;
             $new['sex'] = $image->sex ? $image->sex : null;
+            $new['transformation'] = $image->transformation_id ? $image->transformation->displayName : null;
 
             if (isset($data['generation_id']) && $data['generation_id']) {
                 $generation = CharacterGeneration::find($data['generation_id']);
@@ -2153,6 +2157,7 @@ class CharacterManager extends Service {
                 $data['nickname'] = isset($data['nickname']) && $data['nickname'] ? $data['nickname'] : null;
                 $data['birthdate'] = isset($data['birthdate']) && $data['birthdate'] ? $data['birthdate'] : null;
                 $data['poucher_code'] = isset($data['poucher_code']) && $data['poucher_code'] ? $data['poucher_code'] : null;
+                $data['transformation_id'] = isset($data['transformation_id']) && $data['transformation_id'] ? $data['transformation_id'] : null;
             }
 
             $characterData = Arr::only($data, [
@@ -2206,6 +2211,7 @@ class CharacterManager extends Service {
             if ($isMyo) {
                 $data['species_id'] = isset($data['species_id']) && $data['species_id'] ? $data['species_id'] : null;
                 $data['rarity_id'] = isset($data['rarity_id']) && $data['rarity_id'] ? $data['rarity_id'] : null;
+                $data['transformation_id'] = isset($data['transformation_id']) && $data['transformation_id'] ? $data['transformation_id'] : null;
 
                 // Use default images for MYO slots without an image provided
                 if (!isset($data['image'])) {
@@ -2218,7 +2224,7 @@ class CharacterManager extends Service {
                 }
             }
             $imageData = Arr::only($data, [
-                'species_id', 'rarity_id', 'use_cropper',
+                'species_id', 'rarity_id', 'use_cropper', 'transformation_id',
                 'x0', 'x1', 'y0', 'y1', 'content_warnings',
             ]);
             $imageData['use_cropper'] = isset($data['use_cropper']);

@@ -7,6 +7,7 @@ use App\Models\Character\CharacterGeneration;
 use App\Models\Character\CharacterPedigree;
 use App\Models\Collection\Collection;
 use App\Models\Collection\CollectionCategory;
+use App\Models\Character\CharacterTransformation as Transformation;
 use App\Models\Currency\Currency;
 use App\Models\Feature\Feature;
 use App\Models\Feature\FeatureCategory;
@@ -111,6 +112,23 @@ class WorldController extends Controller {
 
         return view('world.subtypes', [
             'subtypes' => $query->with('species')->visible(Auth::user() ?? null)->orderBy('sort', 'DESC')->orderBy('id')->paginate(20)->appends($request->query()),
+        ]);
+    }
+
+    /**
+     * Shows the Transformations page.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getTransformations(Request $request) {
+        $query = Transformation::query();
+        $name = $request->get('name');
+        if ($name) {
+            $query->where('name', 'LIKE', '%'.$name.'%');
+        }
+
+        return view('world.transformations', [
+            'transformations' => $query->orderBy('sort', 'DESC')->paginate(20)->appends($request->query()),
         ]);
     }
 

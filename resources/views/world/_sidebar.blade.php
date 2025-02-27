@@ -6,6 +6,7 @@
         <div class="sidebar-item"><a href="{{ url('world/subtypes') }}" class="{{ set_active('world/subtypes*') }}">Species Content</a></div>
         <div class="sidebar-item"><a href="{{ url('world/character-categories') }}" class="{{ set_active('world/character-categories*') }}">Species Categories</a></div>
         <div class="sidebar-item"><a href="{{ url('world/character-pedigrees') }}" class="{{ set_active('world/character-pedigrees*') }}">Character Pedigrees</a></div>
+        <div class="sidebar-item"><a href="{{ url('world/transformations') }}" class="{{ set_active('world/transformations*') }}">Transformations</a></div>
         <!--<div class="sidebar-item"><a href="{{ url('world/character-generations') }}" class="{{ set_active('world/character-generations*') }}">Character Generations</a></div>-->
     </li>
     <li class="sidebar-section">

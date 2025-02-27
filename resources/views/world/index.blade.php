@@ -21,6 +21,7 @@
                     <li class="list-group-item"><a href="{{ url('world/character-categories') }}">Species Categories</a></li>
                     <li class="list-group-item"><a href="{{ url('world/character-pedigrees') }}">Alladon Pedigrees</a></li>
                     <!--<li class="list-group-item"><a href="{{ url('world/character-generations') }}">Character Generations</a></li>-->
+                    <li class="list-group-item"><a href="{{ url('world/transformations') }}">Transformations</a></li>
                 </ul>
             </div>
         </div>

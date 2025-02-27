@@ -11,6 +11,7 @@ use App\Models\Character\CharacterImage;
 use App\Models\Character\CharacterLineageBlacklist;
 use App\Models\Character\CharacterPedigree;
 use App\Models\Character\CharacterTransfer;
+use App\Models\Character\CharacterTransformation as Transformation;
 use App\Models\Feature\Feature;
 use App\Models\Rarity;
 use App\Models\Species\Species;
@@ -57,6 +58,7 @@ class CharacterController extends Controller {
             'generations'      => [null => 'Select Generation'] + CharacterGeneration::orderByRaw('LENGTH(name) ASC')->orderBy('name')->pluck('name', 'id')->toArray(),
             'pedigrees'        => [null => 'Select Pedigree Tag'] + CharacterPedigree::orderBy('name')->pluck('name', 'id')->toArray(),
             'subtypes'         => ['0' => 'Pick a Species First'],
+            'transformations' => ['0' => 'Select Transformation'] + Transformation::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'features'         => Feature::getDropdownItems(1),
             'isMyo'            => false,
             'characterOptions' => CharacterLineageBlacklist::getAncestorOptions(),
@@ -74,6 +76,7 @@ class CharacterController extends Controller {
             'rarities'         => ['0' => 'Select Rarity'] + Rarity::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'specieses'        => ['0' => 'Select Species'] + Species::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'subtypes'         => [],
+            'transformations' => ['0' => 'Select Transformation'] + Transformation::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'features'         => Feature::getDropdownItems(1),
             'isMyo'            => true,
             'characterOptions' => CharacterLineageBlacklist::getAncestorOptions(),
@@ -91,6 +94,18 @@ class CharacterController extends Controller {
         return view('admin.masterlist._create_character_subtype', [
             'subtypes' => Subtype::where('species_id', '=', $species)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'isMyo'    => $request->input('myo'),
+        ]);
+    }
+
+    /**
+     * Shows the edit image transformation portion of the modal.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCreateCharacterMyoTransformation(Request $request) {
+        return view('admin.masterlist._create_character_Transformation', [
+            'transformations' => ['0' => 'Select Transformation'] + Transformation::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'isMyo'           => $request->input('myo'),
         ]);
     }
 
@@ -114,7 +129,7 @@ class CharacterController extends Controller {
             'image', 'thumbnail', 'image_description', 'content_warnings',
             'sex', 'parent_1_id', 'parent_2_id',
             'generation_id', 'pedigree_id', 'pedigree_descriptor',
-            'nickname', 'birthdate', 'poucher_code',
+            'nickname', 'birthdate', 'poucher_code', 'transformation_id',
         ]);
         if ($character = $service->createCharacter($data, Auth::user())) {
             flash('Character created successfully.')->success();
@@ -145,7 +160,7 @@ class CharacterController extends Controller {
             'x0', 'x1', 'y0', 'y1',
             'designer_id', 'designer_url',
             'artist_id', 'artist_url',
-            'species_id', 'subtype_ids', 'rarity_id', 'feature_id', 'feature_data',
+            'species_id', 'subtype_ids', 'rarity_id', 'feature_id', 'feature_data', 'transformation_id',
             'image', 'thumbnail',
             'parent_1_id', 'parent_2_id',
         ]);

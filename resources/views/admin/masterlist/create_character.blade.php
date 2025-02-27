@@ -249,6 +249,11 @@
         </div>
         @if (!$isMyo)
             <div class="form-group">
+                {!! Form::label('Transformation (Optional)') !!} {!! add_help('This will make the image have the selected transformation id.') !!}
+                {!! Form::select('transformation_id', $transformations, null, ['class' => 'form-control']) !!}
+            </div>
+
+            <div class="form-group">
                 {!! Form::label('Image Notes (Optional)') !!} {!! add_help('This section is for making additional notes about the image.') !!}
                 {!! Form::textarea('image_description', old('image_description'), ['class' => 'form-control wysiwyg']) !!}
             </div>

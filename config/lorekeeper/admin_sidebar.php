@@ -191,6 +191,10 @@ return [
                 'url'  => 'admin/data/traits',
             ],
             [
+                'name' => 'Transformations',
+                'url'  => 'admin/data/transformations',
+            ],
+            [
                 'name' => 'Shops',
                 'url'  => 'admin/data/shops',
             ],

@@ -80,6 +80,18 @@
                             </div>
                         </div>
                     @endif
+                    @if ($image->transformation_id && ($image->transformation_id > 0))
+                        <div class="row no-gutters">
+                            <div class="col-lg-4 col-5">
+                                <h5>Form {!! add_help('The main image is always the active image') !!}</h5>
+                            </div>
+                            <div class="col-lg-8 col-7 pl-1">
+                                <a href="{{ $image->transformation->url }}">
+                                    {!! $image->transformation->displayName !!}
+                                </a>
+                            </div>
+                        </div>
+                    @endif
                     <div class="row">
                         <div class="col-lg-4 col-md-6 col-4">
                             <h5>Poucher Code</h5>

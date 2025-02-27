@@ -8,6 +8,7 @@ use App\Models\Character\CharacterDesignUpdate;
 use App\Models\Character\CharacterFeature;
 use App\Models\Character\CharacterImage;
 use App\Models\Character\CharacterImageSubtype;
+use App\Models\Character\CharacterTransformation as Transformation;
 use App\Models\Currency\Currency;
 use App\Models\Feature\Feature;
 use App\Models\Rarity;
@@ -68,6 +69,7 @@ class DesignUpdateManager extends Service {
                 'rarity_id'     => $character->image->rarity_id,
                 'species_id'    => $character->image->species_id,
                 'subtype_ids'   => $character->image->subtypes()->pluck('subtype_id'),
+                'transformation_id' => $character->image->transformation_id,
             ];
 
             $request = CharacterDesignUpdate::create($data);
@@ -397,7 +399,11 @@ class DesignUpdateManager extends Service {
                     }
                 }
             }
-
+            if (isset($data['transformation_id']) && $data['transformation_id']) {
+                $transformation = ($request->character->is_myo_slot && $request->character->image->transformation_id) ? $request->character->image->transformation : Transformation::find($data['transformation_id']);
+            } else {
+                $transformation = null;
+            }
             if (!$rarity) {
                 throw new \Exception('Invalid rarity selected.');
             }
@@ -435,6 +441,7 @@ class DesignUpdateManager extends Service {
             $request->rarity_id = $rarity->id;
             $request->subtype_ids = $subtypes ?? null;
             $request->has_features = 1;
+            $request->transformation_id = $transformation ? $transformation->id : null;
             $request->save();
 
             return $this->commitReturn(true);
@@ -593,6 +600,7 @@ class DesignUpdateManager extends Service {
                 'species_id'         => $request->species_id,
                 'rarity_id'          => $request->rarity_id,
                 'sort'               => 0,
+                'transformation_id' => ($request->character->is_myo_slot && isset($request->character->image->transformation_id)) ? $request->character->image->transformation_id : $request->transformation_id,
             ]);
 
             // do subtype stuff
