@@ -133,7 +133,7 @@ Route::group(['prefix' => 'trades', 'namespace' => 'Users'], function () {
     Route::post('listings/create', 'TradeController@postCreateListing');
     Route::get('listings/{id}', 'TradeController@getListing')->where('id', '[0-9]+');
     Route::post('listings/{id}/expire', 'TradeController@postExpireListing')->where('id', '[0-9]+');
-    
+
     Route::get('{status}', 'TradeController@getIndex')->where('status', 'open|pending|completed|rejected|canceled');
     Route::get('create', 'TradeController@getCreateTrade');
     Route::get('{id}/edit', 'TradeController@getEditTrade')->where('id', '[0-9]+');
@@ -286,7 +286,7 @@ Route::group(['prefix' => 'designs', 'namespace' => 'Characters'], function () {
     Route::post('{id}/cancel', 'DesignController@postCancel');
 });
 
-Route::group(['prefix' => 'event-tracking'], function() {
+Route::group(['prefix' => 'event-tracking'], function () {
     Route::post('team/{id}', 'EventController@postJoinTeam');
 });
 

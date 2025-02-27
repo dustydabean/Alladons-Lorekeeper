@@ -76,7 +76,7 @@ class AddSiteSettings extends Command {
         $this->addSiteSetting('group_currency', 1, 'ID of the group currency to award from gallery submissions (if enabled).');
 
         $this->addSiteSetting('default_theme', 0, 'ID of the default theme users should see. 0: Disabled, shows default lorekeeper. This setting is overwritten by the users theme setting.');
-        
+
         $this->addSiteSetting('trade_listing_duration', 14, 'Number of days a trade listing is displayed for.');
 
         $this->addSiteSetting('event_currency', 1, 'ID of the currency used for events.');
@@ -115,7 +115,7 @@ class AddSiteSettings extends Command {
 
         $this->addSiteSetting('allow_blocked_transfers', 1, '0: Users cannot send to users they have been blocked by, 1: Unrestricted.');
 
-        # Genetics
+        // Genetics
         $this->addSiteSetting('genome_default_visibility', 0, '0: Genomes are hidden by default. 1: Only the most dominant genes are visible by default. 2: Genomes are fully visible by default.');
 
         $this->line("\nSite settings up to date!");

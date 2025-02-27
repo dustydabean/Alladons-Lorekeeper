@@ -4,19 +4,15 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateLociCategories extends Migration
-{
+class CreateLociCategories extends Migration {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
-    {
+    public function up() {
         Schema::create('locis', function (Blueprint $table) {
             $table->id();
             $table->string('name', 25)->unique();
-            $table->enum('type', ["gene", "gradient", "numeric"])->default("gene");
+            $table->enum('type', ['gene', 'gradient', 'numeric'])->default('gene');
             $table->unsignedTinyInteger('length')->default(2);
             $table->unsignedTinyInteger('chromosome')->nullable()->default(null);
         });
@@ -24,11 +20,8 @@ class CreateLociCategories extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
-    {
+    public function down() {
         Schema::dropIfExists('locis');
     }
 }

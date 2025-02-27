@@ -4,9 +4,7 @@ namespace App\Models\Character;
 
 use App\Models\Model;
 
-class CharacterBreedingLogRelation extends Model
-{
-
+class CharacterBreedingLogRelation extends Model {
     /**
      * The attributes that are mass assignable.
      *
@@ -32,24 +30,21 @@ class CharacterBreedingLogRelation extends Model
     /**
      * Get the character associated with this record.
      */
-    public function character()
-    {
+    public function character() {
         return $this->belongsTo('App\Models\Character\Character');
     }
 
     /**
      * Get the character associated with this record.
      */
-    public function twin()
-    {
+    public function twin() {
         return $this->belongsTo('App\Models\Character\Character', 'twin_id');
     }
 
     /**
      * Get the breeding log associated with this record.
      */
-    public function log()
-    {
+    public function log() {
         return $this->belongsTo('App\Models\Character\CharacterBreedingLog', 'log_id');
     }
 }

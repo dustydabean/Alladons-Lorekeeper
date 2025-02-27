@@ -107,9 +107,9 @@ Route::group(['prefix' => 'images', 'middleware' => 'power:edit_site_settings'],
 });
 
 // GENETICS
-Route::group(['prefix' => 'genetics', 'namespace' => 'Data', 'middleware' => ['power:view_hidden_genetics']], function() {
+Route::group(['prefix' => 'genetics', 'namespace' => 'Data', 'middleware' => ['power:view_hidden_genetics']], function () {
     // GENETIC DATA
-    Route::middleware(['power:edit_data'])->group(function() {
+    Route::middleware(['power:edit_data'])->group(function () {
         Route::get('genes', 'GeneticsController@getIndex');
         Route::get('sort', 'GeneticsController@getSortIndex');
         Route::get('create', 'GeneticsController@getCreateLoci');
@@ -125,7 +125,7 @@ Route::group(['prefix' => 'genetics', 'namespace' => 'Data', 'middleware' => ['p
     });
 
     // ROLLERS & SUCH
-    Route::middleware(['power:manage_characters'])->group(function() {
+    Route::middleware(['power:manage_characters'])->group(function () {
         Route::get('roller', 'GeneticsController@getBreedingRoller');
         Route::get('fetch-genomes', 'GeneticsController@getCharacterGenomes');
         Route::get('preview-breeding', 'GeneticsController@getPossibleChildGenomes');
@@ -582,7 +582,7 @@ Route::group(['prefix' => 'pets', 'middleware' => 'power:edit_inventories'], fun
 });
 
 // EVENT SETTINGS
-Route::group(['prefix' => 'event-settings', 'middleware' => 'power:edit_inventories'], function() {
+Route::group(['prefix' => 'event-settings', 'middleware' => 'power:edit_inventories'], function () {
     Route::get('/', 'EventController@getEventSettings');
     Route::get('clear', 'EventController@getClearEventCurrency');
     Route::post('clear', 'EventController@postClearEventCurrency');

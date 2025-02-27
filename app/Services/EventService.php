@@ -1,14 +1,13 @@
-<?php namespace App\Services;
+<?php
+
+namespace App\Services;
 
 use App\Facades\Settings;
 use App\Models\EventTeam;
 use App\Models\User\UserCurrency;
-use App\Services\Service;
-
 use Illuminate\Support\Facades\DB;
 
-class EventService extends Service
-{
+class EventService extends Service {
     /*
     |--------------------------------------------------------------------------
     | Event Service
@@ -25,25 +24,25 @@ class EventService extends Service
      *
      * @return string
      */
-    public function clearEventCurrency($user)
-    {
+    public function clearEventCurrency($user) {
         DB::beginTransaction();
 
         try {
-            if(UserCurrency::where('currency_id', Settings::get('event_currency'))->exists()) {
+            if (UserCurrency::where('currency_id', Settings::get('event_currency'))->exists()) {
                 UserCurrency::where('currency_id', Settings::get('event_currency'))->update(['quantity' => 0]);
             } else {
                 throw new \Exception('No event currency exists to be cleared!');
             }
 
-            if(EventTeam::where('score', '>', 0)->exists()) {
+            if (EventTeam::where('score', '>', 0)->exists()) {
                 EventTeam::where('score', '>', 0)->update(['score' => 0]);
             }
 
             return $this->commitReturn(true);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
+
         return $this->rollbackReturn(false);
     }
 
@@ -55,8 +54,7 @@ class EventService extends Service
      *
      * @return string
      */
-    public function updateTeams($data, $user)
-    {
+    public function updateTeams($data, $user) {
         DB::beginTransaction();
 
         try {
@@ -64,24 +62,26 @@ class EventService extends Service
             // no information has been provided, e.g. if all
             // teams are being removed. Setting this indicates
             // as much and will allow removals, etc to proceed.
-            if(!isset($data['name'])) {
+            if (!isset($data['name'])) {
                 $data['name'] = [];
             }
 
             // Set up access to a service for image handling
             $service = (new CurrencyService);
 
-            if(EventTeam::all()->count()) {
+            if (EventTeam::all()->count()) {
                 // Delete only removed teams
-                foreach(EventTeam::all() as $team) {
-                    if(!array_has($data['name'], $team->id)) {
-                        if(Settings::get('event_teams')) throw new \Exception('Teams cannot be deleted while enabled/an event is ongoing!');
+                foreach (EventTeam::all() as $team) {
+                    if (!array_has($data['name'], $team->id)) {
+                        if (Settings::get('event_teams')) {
+                            throw new \Exception('Teams cannot be deleted while enabled/an event is ongoing!');
+                        }
 
-                        if($team->has_image) {
+                        if ($team->has_image) {
                             $service->deleteImage($team->imagePath, $team->imageFileName);
                         }
 
-                        if($team->members->count()) {
+                        if ($team->members->count()) {
                             $team->members()->update(['team_id' => null]);
                         }
 
@@ -90,23 +90,27 @@ class EventService extends Service
                 }
             }
 
-            if(isset($data['name'])) {
-                foreach($data['name'] as $key=>$teamName) {
-                    if($teamName == null) throw new \Exception('Team name is required.');
-                    if(EventTeam::where('name', $teamName)->where('id', '!=', $key)->exists()) throw new \Exception('A team with this name already exists.');
+            if (isset($data['name'])) {
+                foreach ($data['name'] as $key=>$teamName) {
+                    if ($teamName == null) {
+                        throw new \Exception('Team name is required.');
+                    }
+                    if (EventTeam::where('name', $teamName)->where('id', '!=', $key)->exists()) {
+                        throw new \Exception('A team with this name already exists.');
+                    }
 
-                    if(EventTeam::where('id', $key)->exists()) {
+                    if (EventTeam::where('id', $key)->exists()) {
                         $team = EventTeam::where('id', $key)->first();
-                        if(!$team) {
+                        if (!$team) {
                             throw new \Exception('Failed to find team.');
                         }
 
                         $team->update([
-                            'name' => $teamName,
+                            'name'  => $teamName,
                             'score' => $data['score'][$key],
                         ]);
 
-                        if(isset($data['image'][$key])) {
+                        if (isset($data['image'][$key])) {
                             $team->update(['has_image' => 1]);
                             $service->handleImage($data['image'][$key], $team->imagePath, $team->imageFileName);
                         } elseif (isset($data['remove_image'][$key]) && $data['remove_image'][$key]) {
@@ -118,9 +122,11 @@ class EventService extends Service
                             'name' => $teamName,
                         ]);
 
-                        if(!$team) throw new \Exception('Failed to create team.');
+                        if (!$team) {
+                            throw new \Exception('Failed to create team.');
+                        }
 
-                        if(isset($data['image'][$key])) {
+                        if (isset($data['image'][$key])) {
                             $team->update(['has_image' => 1]);
                             $service->handleImage($data['image'][$key], $team->imagePath, $team->imageFileName);
                         }
@@ -129,9 +135,10 @@ class EventService extends Service
             }
 
             return $this->commitReturn(true);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->setError('error', $e->getMessage());
         }
+
         return $this->rollbackReturn(false);
     }
 }

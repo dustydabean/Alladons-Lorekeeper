@@ -2,14 +2,9 @@
 
 namespace App\Models\Character;
 
-use Config;
-use DB;
 use App\Models\Model;
-use App\Models\Character\CharacterCategory;
 
-class CharacterGenomeGene extends Model
-{
-
+class CharacterGenomeGene extends Model {
     /**
      * The attributes that are mass assignable.
      *
@@ -35,24 +30,21 @@ class CharacterGenomeGene extends Model
     /**
      * Get the image associated with this record.
      */
-    public function genome()
-    {
+    public function genome() {
         return $this->belongsTo('App\Models\Character\CharacterGenome');
     }
 
     /**
      * Get the image associated with this record.
      */
-    public function allele()
-    {
+    public function allele() {
         return $this->belongsTo('App\Models\Genetics\LociAllele', 'loci_allele_id');
     }
 
     /**
      * Get the image associated with this record.
      */
-    public function loci()
-    {
+    public function loci() {
         return $this->belongsTo('App\Models\Genetics\Loci');
     }
 }

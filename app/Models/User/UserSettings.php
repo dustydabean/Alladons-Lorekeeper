@@ -56,8 +56,7 @@ class UserSettings extends Model {
     /**
      * Get the team this set of settings belongs to.
      */
-    public function team()
-    {
+    public function team() {
         return $this->belongsTo(EventTeam::class, 'team_id');
     }
 }

@@ -4,8 +4,7 @@ namespace App\Models\Feature;
 
 use App\Models\Model;
 
-class FeatureExample extends Model
-{
+class FeatureExample extends Model {
     /**
      * The attributes that are mass assignable.
      *
@@ -47,10 +46,9 @@ class FeatureExample extends Model
      **********************************************************************************************/
 
     /**
-     * Get the feature the image belongs to
+     * Get the feature the image belongs to.
      */
-    public function feature()
-    {
+    public function feature() {
         return $this->belongsTo('App\Models\Feature\Feature', 'feature_id');
     }
 
@@ -65,8 +63,7 @@ class FeatureExample extends Model
      *
      * @return string
      */
-    public function getImageDirectoryAttribute()
-    {
+    public function getImageDirectoryAttribute() {
         return 'images/data/traits/examples';
     }
 
@@ -75,10 +72,8 @@ class FeatureExample extends Model
      *
      * @return string
      */
-    public function getImageFileNameAttribute()
-    {
-
-        return $this->feature_id . '-' . $this->id . '-' . $this->hash . '.png';
+    public function getImageFileNameAttribute() {
+        return $this->feature_id.'-'.$this->id.'-'.$this->hash.'.png';
     }
 
     /**
@@ -86,8 +81,7 @@ class FeatureExample extends Model
      *
      * @return string
      */
-    public function getImagePathAttribute()
-    {
+    public function getImagePathAttribute() {
         return public_path($this->imageDirectory);
     }
 
@@ -96,9 +90,7 @@ class FeatureExample extends Model
      *
      * @return string
      */
-    public function getImageUrlAttribute()
-    {
-        return asset($this->imageDirectory . '/' . $this->imageFileName);
+    public function getImageUrlAttribute() {
+        return asset($this->imageDirectory.'/'.$this->imageFileName);
     }
-
 }

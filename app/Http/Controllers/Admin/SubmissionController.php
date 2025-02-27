@@ -14,8 +14,6 @@ use App\Models\Submission\Submission;
 use App\Services\SubmissionManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
-use Config;
 
 class SubmissionController extends Controller {
     /**
@@ -64,7 +62,7 @@ class SubmissionController extends Controller {
         $submission = Submission::whereNotNull('prompt_id')->where('id', $id)->where('status', '!=', 'Draft')->first();
         $inventory = isset($submission->data['user']) ? parseAssetData($submission->data['user']) : null;
         $prompt = Prompt::where('id', $submission->prompt_id)->first();
-        
+
         if (!$submission) {
             abort(404);
         }
@@ -76,7 +74,7 @@ class SubmissionController extends Controller {
         $count['Month'] = Submission::submitted($prompt->id, $submission->user_id)->where('created_at', '>=', now()->startOfMonth())->count();
         $count['Year'] = Submission::submitted($prompt->id, $submission->user_id)->where('created_at', '>=', now()->startOfYear())->count();
 
-        if($prompt->limit_character) {
+        if ($prompt->limit_character) {
             $limit = $prompt->limit * Character::visible()->where('is_myo_slot', 0)->where('user_id', $submission->user_id)->count();
         } else {
             $limit = $prompt->limit;
@@ -97,9 +95,9 @@ class SubmissionController extends Controller {
             'tables'              => LootTable::orderBy('name')->pluck('name', 'id'),
             'recipes'             => Recipe::orderBy('name')->pluck('name', 'id'),
             'raffles'             => Raffle::where('rolled_at', null)->where('is_active', 1)->orderBy('name')->pluck('name', 'id'),
-            'count' => $count,
-            'prompt' => $prompt,
-            'limit' => $limit,
+            'count'               => $count,
+            'prompt'              => $prompt,
+            'limit'               => $limit,
         ] : []));
     }
 

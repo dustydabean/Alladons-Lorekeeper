@@ -257,8 +257,7 @@ class Character extends Model {
     /**
      * Get the character's genomes.
      */
-    public function genomes()
-    {
+    public function genomes() {
         return $this->hasMany(CharacterGenome::class, 'character_id');
     }
 

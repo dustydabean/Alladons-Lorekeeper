@@ -1,18 +1,14 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-class AddTermsLinkToTrades extends Migration
-{
+class AddTermsLinkToTrades extends Migration {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
-    {
+    public function up() {
         Schema::table('trades', function (Blueprint $table) {
             // Add a column to the trades table for storing link to proof of terms.
             $table->string('terms_link', 200)->nullable()->default(null);
@@ -21,11 +17,8 @@ class AddTermsLinkToTrades extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
-    {
+    public function down() {
         Schema::table('trades', function (Blueprint $table) {
             //
             $table->dropColumn('terms_link');

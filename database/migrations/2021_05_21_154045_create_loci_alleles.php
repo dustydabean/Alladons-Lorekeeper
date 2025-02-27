@@ -4,15 +4,11 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateLociAlleles extends Migration
-{
+class CreateLociAlleles extends Migration {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
-    {
+    public function up() {
         Schema::create('loci_alleles', function (Blueprint $table) {
             $table->id();
             $table->foreignId('loci_id')->constrained();
@@ -23,11 +19,8 @@ class CreateLociAlleles extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
-    {
+    public function down() {
         Schema::dropIfExists('loci_alleles');
     }
 }

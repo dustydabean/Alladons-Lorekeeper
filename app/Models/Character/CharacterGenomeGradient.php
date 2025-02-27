@@ -2,14 +2,9 @@
 
 namespace App\Models\Character;
 
-use Config;
-use DB;
 use App\Models\Model;
-use App\Models\Character\CharacterCategory;
 
-class CharacterGenomeGradient extends Model
-{
-
+class CharacterGenomeGradient extends Model {
     /**
      * The attributes that are mass assignable.
      *
@@ -35,16 +30,14 @@ class CharacterGenomeGradient extends Model
     /**
      * Get the genome associated with this record.
      */
-    public function genome()
-    {
+    public function genome() {
         return $this->belongsTo('App\Models\Character\CharacterGenome');
     }
 
     /**
      * Get the loci associated with this record.
      */
-    public function loci()
-    {
+    public function loci() {
         return $this->belongsTo('App\Models\Genetics\Loci');
     }
 
@@ -57,18 +50,19 @@ class CharacterGenomeGradient extends Model
     /**
      * Gets the numeric value of this gene (number of "+" genes).
      */
-    public function getDisplayValueAttribute()
-    {
-        return substr_count($this->value, "1");
+    public function getDisplayValueAttribute() {
+        return substr_count($this->value, '1');
     }
 
     /**
      * Turns binary into human readable string of "+" and "-".
      */
-    public function getDisplayGenomeAttribute()
-    {
-        $string = preg_replace(["/1/", "/0/"], ["+", "-"], $this->value);
-        while(strlen($string) < $this->loci->length) $string.="-";
+    public function getDisplayGenomeAttribute() {
+        $string = preg_replace(['/1/', '/0/'], ['+', '-'], $this->value);
+        while (strlen($string) < $this->loci->length) {
+            $string .= '-';
+        }
+
         return $string;
     }
 }

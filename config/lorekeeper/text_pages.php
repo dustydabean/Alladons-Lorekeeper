@@ -30,7 +30,7 @@ return [
     ],
     'event-tracker' => [
         'title' => 'Event Tracker',
-        'text' => 'This page will have information on the current event, to be displayed alongside information on a global event score. It does not need to be viewable, as it is automatically embedded into the event tracking page.'
+        'text'  => 'This page will have information on the current event, to be displayed alongside information on a global event score. It does not need to be viewable, as it is automatically embedded into the event tracking page.',
     ],
 
 ];

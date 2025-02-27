@@ -5,11 +5,10 @@ namespace App\Http\Controllers\Admin\Data;
 use App\Http\Controllers\Controller;
 use App\Models\Feature\Feature;
 use App\Models\Feature\FeatureCategory;
+use App\Models\Feature\FeatureExample;
 use App\Models\Rarity;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
-use App\Models\Feature\FeatureExample;
-
 use App\Services\FeatureService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -374,39 +373,47 @@ class FeatureController extends Controller {
         ]);
     }
 
-/**********************************************************************************************
+    /**********************************************************************************************
 
-        EXAMPLE IMAGES
+            EXAMPLE IMAGES
 
-    **********************************************************************************************/
-
+        **********************************************************************************************/
 
     /**
-     * get create/edit example
+     * get create/edit example.
+     *
+     * @param mixed $feature_id
      */
     public function getFeatureExamples($feature_id) {
         $feature = Feature::findOrFail($feature_id);
+
         return view('admin.features.feature_examples', [
             'feature'      => $feature,
-            'examples'     => $feature->exampleImages
+            'examples'     => $feature->exampleImages,
         ]);
     }
 
     /**
-     * get create/edit example
+     * get create/edit example.
+     *
+     * @param mixed      $feature_id
+     * @param mixed|null $id
      */
     public function getCreateEditFeatureExample($feature_id, $id = null) {
         return view('admin.features._create_edit_example', [
             'feature'      => Feature::find($feature_id),
-            'example'     => $id ? FeatureExample::find($id) : new FeatureExample,
+            'example'      => $id ? FeatureExample::find($id) : new FeatureExample,
         ]);
     }
 
-   /**
-     * post create/edit example
+    /**
+     * post create/edit example.
+     *
+     * @param mixed      $feature_id
+     * @param mixed|null $id
      */
     public function postCreateEditExample(Request $request, FeatureService $service, $feature_id, $id = null) {
-        $data = $request->only(['summary','image']);
+        $data = $request->only(['summary', 'image']);
         if ($id && $service->editFeatureExample(FeatureExample::findOrFail($id), $data)) {
             flash('Example image edited successfully.')->success();
         } elseif (!$id && $service->createFeatureExample(Feature::find($feature_id), $data)) {
@@ -423,42 +430,43 @@ class FeatureController extends Controller {
     /**
      * Gets the feature deletion modal.
      *
-     * @param  int  $id
+     * @param int $id
+     *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getDeleteFeatureExample($id)
-    {
+    public function getDeleteFeatureExample($id) {
         $example = FeatureExample::find($id);
+
         return view('admin.features._delete_example', [
             'example' => $example,
             'feature' => $example->feature,
         ]);
     }
 
-
     /**
      * Deletes a feature.
      *
-     * @param  \Illuminate\Http\Request     $request
-     * @param  App\Services\FeatureService  $service
-     * @param  int                          $id
+     * @param App\Services\FeatureService $service
+     * @param int                         $id
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postDeleteFeatureExample(Request $request, FeatureService $service, $id)
-    {
-        if($id && $service->deleteFeatureExample(FeatureExample::find($id))) {
+    public function postDeleteFeatureExample(Request $request, FeatureService $service, $id) {
+        if ($id && $service->deleteFeatureExample(FeatureExample::find($id))) {
             flash('Example deleted successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
         }
-        else {
-            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
-        }
+
         return redirect()->back();
     }
 
     /**
-     * Sort a trait's examples
+     * Sort a trait's examples.
      *
-     * @param mixed $id
+     * @param mixed $feature_id
      */
     public function postSortFeatureExamples(Request $request, FeatureService $service, $feature_id) {
         if ($service->sortFeatureExamples($request->get('sort'), Feature::find($feature_id))) {
@@ -471,5 +479,4 @@ class FeatureController extends Controller {
 
         return redirect()->back();
     }
-
 }

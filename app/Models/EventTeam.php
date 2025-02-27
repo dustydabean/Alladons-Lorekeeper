@@ -3,11 +3,9 @@
 namespace App\Models;
 
 use App\Facades\Settings;
-use App\Models\Model;
 use App\Models\User\UserSettings;
 
-class EventTeam extends Model
-{
+class EventTeam extends Model {
     /**
      * The attributes that are mass assignable.
      *
@@ -30,7 +28,7 @@ class EventTeam extends Model
      * @var array
      */
     public static $validationRules = [
-        'name.*' => 'required|between:3,100',
+        'name.*'  => 'required|between:3,100',
         'image.*' => 'nullable|mimes:png,jpeg,jpg',
     ];
 
@@ -43,8 +41,7 @@ class EventTeam extends Model
     /**
      * Get members of this team.
      */
-    public function members()
-    {
+    public function members() {
         return $this->hasMany(UserSettings::class, 'team_id');
     }
 
@@ -59,8 +56,7 @@ class EventTeam extends Model
      *
      * @return string
      */
-    public function getDisplayNameAttribute()
-    {
+    public function getDisplayNameAttribute() {
         return '<strong>'.$this->name.'</strong>';
     }
 
@@ -69,8 +65,7 @@ class EventTeam extends Model
      *
      * @return string
      */
-    public function getImageDirectoryAttribute()
-    {
+    public function getImageDirectoryAttribute() {
         return 'images/events/teams';
     }
 
@@ -79,9 +74,8 @@ class EventTeam extends Model
      *
      * @return string
      */
-    public function getImageFileNameAttribute()
-    {
-        return $this->id . '-image.png';
+    public function getImageFileNameAttribute() {
+        return $this->id.'-image.png';
     }
 
     /**
@@ -89,8 +83,7 @@ class EventTeam extends Model
      *
      * @return string
      */
-    public function getImagePathAttribute()
-    {
+    public function getImagePathAttribute() {
         return public_path($this->imageDirectory);
     }
 
@@ -99,10 +92,12 @@ class EventTeam extends Model
      *
      * @return string
      */
-    public function getImageUrlAttribute()
-    {
-        if (!$this->has_image) return null;
-        return asset($this->imageDirectory . '/' . $this->ImageFileName);
+    public function getImageUrlAttribute() {
+        if (!$this->has_image) {
+            return null;
+        }
+
+        return asset($this->imageDirectory.'/'.$this->ImageFileName);
     }
 
     /**
@@ -110,11 +105,11 @@ class EventTeam extends Model
      *
      * @return int
      */
-    public function getWeightedScoreAttribute()
-    {
-        if(Settings::get('event_weighting') && $this->members->count()) {
+    public function getWeightedScoreAttribute() {
+        if (Settings::get('event_weighting') && $this->members->count()) {
             return $this->score / $this->members->count();
         }
+
         return $this->score;
     }
 }

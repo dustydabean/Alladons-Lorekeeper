@@ -11,7 +11,6 @@ use App\Models\User\User;
 use App\Models\User\UserCurrency;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Config;
 use Settings;
 
 class CurrencyManager extends Service {
@@ -280,25 +279,28 @@ class CurrencyManager extends Service {
                     $record = UserCurrency::create(['user_id' => $recipient->id, 'currency_id' => $currency->id, 'quantity' => $quantity]);
                 }
 
-                if($currency->id == Settings::get('event_currency') && $recipient->id != Settings::get('admin_user')) {
+                if ($currency->id == Settings::get('event_currency') && $recipient->id != Settings::get('admin_user')) {
                     // If global event score tracking is enabled, and the currency is the current event currency, credit the same amount to the admin user for global tracking
-                    if(Settings::get('event_global_score')) {
+                    if (Settings::get('event_global_score')) {
                         $adminRecord = UserCurrency::where('user_id', Settings::get('admin_user'))->where('currency_id', $currency->id)->first();
-                        if($adminRecord) {
+                        if ($adminRecord) {
                             // Laravel doesn't support composite primary keys, so directly updating the DB row here
-                            DB::table('user_currencies')->where('user_id',  Settings::get('admin_user'))->where('currency_id', $currency->id)->update(['quantity' => $adminRecord->quantity + $quantity]);
-                        }
-                        else {
+                            DB::table('user_currencies')->where('user_id', Settings::get('admin_user'))->where('currency_id', $currency->id)->update(['quantity' => $adminRecord->quantity + $quantity]);
+                        } else {
                             $adminRecord = UserCurrency::create(['user_id' =>  Settings::get('admin_user'), 'currency_id' => $currency->id, 'quantity' => $quantity]);
                         }
                     }
 
                     // Likewise for if teams are enabled
-                    if(Settings::get('event_teams')) {
-                        if(!isset($recipient->settings->team_id)) throw new \Exception('This user is not currently part of a team!');
+                    if (Settings::get('event_teams')) {
+                        if (!isset($recipient->settings->team_id)) {
+                            throw new \Exception('This user is not currently part of a team!');
+                        }
 
                         $team = EventTeam::where('id', $recipient->settings->team_id)->first();
-                        if(!$team) throw new \Exception('Invalid event team selected.');
+                        if (!$team) {
+                            throw new \Exception('Invalid event team selected.');
+                        }
 
                         $team->update(['score' => $team->score + $quantity]);
                     }

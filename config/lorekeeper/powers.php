@@ -68,7 +68,7 @@ return [
         'description' => 'Allow rank to comment on sales in preview mode.',
     ],
     'view_hidden_genetics' => [
-        'name' => 'View Hidden Genetics',
-        'description' => 'Allow rank to view genes & genomes that have their data hidden to regular users.'
+        'name'        => 'View Hidden Genetics',
+        'description' => 'Allow rank to view genes & genomes that have their data hidden to regular users.',
     ],
 ];

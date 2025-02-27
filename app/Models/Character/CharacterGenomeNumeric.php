@@ -2,14 +2,9 @@
 
 namespace App\Models\Character;
 
-use Config;
-use DB;
 use App\Models\Model;
-use App\Models\Character\CharacterCategory;
 
-class CharacterGenomeNumeric extends Model
-{
-
+class CharacterGenomeNumeric extends Model {
     /**
      * The attributes that are mass assignable.
      *
@@ -35,16 +30,14 @@ class CharacterGenomeNumeric extends Model
     /**
      * Get the genome associated with this record.
      */
-    public function genome()
-    {
+    public function genome() {
         return $this->belongsTo('App\Models\Character\CharacterGenome');
     }
 
     /**
      * Get the loci associated with this record.
      */
-    public function loci()
-    {
+    public function loci() {
         return $this->belongsTo('App\Models\Genetics\Loci');
     }
 
@@ -53,6 +46,7 @@ class CharacterGenomeNumeric extends Model
      */
     public function getEstValueAttribute() {
         $frag = $this->loci->length / 3;
-        return ($this->value <= $frag) ? "0-" . ceil($frag) : (($this->value <= ceil($frag * 2)) ? floor($frag)."-".ceil($frag * 2) : floor($frag * 2).$this->loci->length);
+
+        return ($this->value <= $frag) ? '0-'.ceil($frag) : (($this->value <= ceil($frag * 2)) ? floor($frag).'-'.ceil($frag * 2) : floor($frag * 2).$this->loci->length);
     }
 }

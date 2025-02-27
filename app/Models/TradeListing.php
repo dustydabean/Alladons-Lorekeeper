@@ -2,18 +2,11 @@
 
 namespace App\Models;
 
-use Config;
-use DB;
-use Carbon\Carbon;
-use Settings;
-
 use App\Models\Character\Character;
 use App\Traits\Commentable;
+use Carbon\Carbon;
 
-use App\Models\Model;
-
-class TradeListing extends Model
-{
+class TradeListing extends Model {
     use Commentable;
 
     /**
@@ -22,7 +15,7 @@ class TradeListing extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id', 'comments', 'contact', 'data', 'expires_at', 'title'
+        'user_id', 'comments', 'contact', 'data', 'expires_at', 'title',
     ];
 
     /**
@@ -54,10 +47,10 @@ class TradeListing extends Model
      * @var array
      */
     public static $createRules = [
-        'title' => 'nullable|between:3,50',
-        'comments' => 'nullable',
-        'contact' => 'required',
-        'seeking_etc' => 'nullable|between:3,100',
+        'title'        => 'nullable|between:3,50',
+        'comments'     => 'nullable',
+        'contact'      => 'required',
+        'seeking_etc'  => 'nullable|between:3,100',
         'offering_etc' => 'nullable|between:3,100',
     ];
 
@@ -67,10 +60,10 @@ class TradeListing extends Model
      * @var array
      */
     public static $updateRules = [
-        'title' => 'nullable|between:3,50',
-        'comments' => 'nullable',
-        'contact' => 'required',
-        'seeking_etc' => 'nullable|between:3,100',
+        'title'        => 'nullable|between:3,50',
+        'comments'     => 'nullable',
+        'contact'      => 'required',
+        'seeking_etc'  => 'nullable|between:3,100',
         'offering_etc' => 'nullable|between:3,100',
     ];
 
@@ -83,8 +76,7 @@ class TradeListing extends Model
     /**
      * Get the user who posted the trade listing.
      */
-    public function user()
-    {
+    public function user() {
         return $this->belongsTo('App\Models\User\User', 'user_id');
     }
 
@@ -97,33 +89,31 @@ class TradeListing extends Model
     /**
      * Scope a query to only include active trade listings.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeActive($query)
-    {
-        return $query->where(function($query) {
-                $query->where('expires_at', '>', Carbon::now())->orWhere(function($query) {
-                    $query->where('expires_at', '>=', Carbon::now());
-                });
+    public function scopeActive($query) {
+        return $query->where(function ($query) {
+            $query->where('expires_at', '>', Carbon::now())->orWhere(function ($query) {
+                $query->where('expires_at', '>=', Carbon::now());
+            });
         });
-
     }
 
     /**
      * Scope a query to only include active trade listings.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeExpired($query)
-    {
-        return $query->where(function($query) {
-                $query->where('expires_at', '<', Carbon::now())->orWhere(function($query) {
-                    $query->where('expires_at', '<=', Carbon::now());
-                });
+    public function scopeExpired($query) {
+        return $query->where(function ($query) {
+            $query->where('expires_at', '<', Carbon::now())->orWhere(function ($query) {
+                $query->where('expires_at', '<=', Carbon::now());
+            });
         });
-
     }
 
     /**********************************************************************************************
@@ -137,10 +127,12 @@ class TradeListing extends Model
      *
      * @return string
      */
-    public function getDisplayNameAttribute()
-    {
-        if($this->title == null) return $this->user->displayName .'\'s <a href="'. $this->url. '">Trade Listing</a> (#' . $this->id .')';
-        else return '<a href="'.$this->url.'" data-toggle="tooltip" title="'.$this->user->name.'\'s trade listing.">'.$this->title.'</a> (Trade Listing #' . $this->id .')';
+    public function getDisplayNameAttribute() {
+        if ($this->title == null) {
+            return $this->user->displayName.'\'s <a href="'.$this->url.'">Trade Listing</a> (#'.$this->id.')';
+        } else {
+            return '<a href="'.$this->url.'" data-toggle="tooltip" title="'.$this->user->name.'\'s trade listing.">'.$this->title.'</a> (Trade Listing #'.$this->id.')';
+        }
     }
 
     /**
@@ -148,10 +140,12 @@ class TradeListing extends Model
      *
      * @return string
      */
-    public function getDisplayNameShortAttribute()
-    {
-        if($this->title == null) return $this->user->displayName .'\'s <a href="'. $this->url. '">Trade Listing</a> (#' . $this->id .')';
-        else return '<a href="'.$this->url.'" data-toggle="tooltip" title="'.$this->user->name.'\'s trade listing.">'.$this->title.'</a>';
+    public function getDisplayNameShortAttribute() {
+        if ($this->title == null) {
+            return $this->user->displayName.'\'s <a href="'.$this->url.'">Trade Listing</a> (#'.$this->id.')';
+        } else {
+            return '<a href="'.$this->url.'" data-toggle="tooltip" title="'.$this->user->name.'\'s trade listing.">'.$this->title.'</a>';
+        }
     }
 
     /**
@@ -159,9 +153,10 @@ class TradeListing extends Model
      *
      * @return bool
      */
-    public function getIsActiveAttribute()
-    {
-        if($this->expires_at >= Carbon::now()) return true;
+    public function getIsActiveAttribute() {
+        if ($this->expires_at >= Carbon::now()) {
+            return true;
+        }
 
         return false;
     }
@@ -171,8 +166,7 @@ class TradeListing extends Model
      *
      * @return array
      */
-    public function getDataAttribute()
-    {
+    public function getDataAttribute() {
         return json_decode($this->attributes['data'], true);
     }
 
@@ -181,8 +175,7 @@ class TradeListing extends Model
      *
      * @return string
      */
-    public function getUrlAttribute()
-    {
+    public function getUrlAttribute() {
         return url('trades/listings/'.$this->id);
     }
 
@@ -197,45 +190,47 @@ class TradeListing extends Model
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getCharacterData()
-    {
+    public function getCharacterData() {
         return Character::with('user')->whereIn('id', $this->getCharacters($this->user))->get();
     }
 
     /**
      * Gets the inventory of the user for selection.
      *
+     * @param mixed $user
+     *
      * @return array
      */
-    public function getInventory($user)
-    {
+    public function getInventory($user) {
         return $this->data && isset($this->data['user']['user_items']) ? $this->data['user']['user_items'] : [];
+
         return $inventory;
     }
 
     /**
      * Gets the currencies of the given user for selection.
      *
-     * @param  \App\Models\User\User $user
+     * @param User\User $user
+     *
      * @return array
      */
-    public function getCurrencies($user)
-    {
+    public function getCurrencies($user) {
         return $this->data && isset($this->data['user']) && isset($this->data['user']['currencies']) ? $this->data['user']['currencies'] : [];
     }
 
     /**
      * Gets the characters of the given user for selection.
      *
-     * @param  \App\Models\User\User $user
+     * @param User\User $user
+     *
      * @return array
      */
-    public function getCharacters($user)
-    {
-
+    public function getCharacters($user) {
         $characters = $this->data && isset($this->data['user']) && isset($this->data['user']['characters']) ? $this->data['user']['characters'] : [];
-        if($characters) $characters = array_keys($characters);
+        if ($characters) {
+            $characters = array_keys($characters);
+        }
+
         return $characters;
     }
-
 }

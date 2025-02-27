@@ -4,10 +4,10 @@ namespace App\Services;
 
 use App\Models\Feature\Feature;
 use App\Models\Feature\FeatureCategory;
+use App\Models\Feature\FeatureExample;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
 use Illuminate\Support\Facades\DB;
-use App\Models\Feature\FeatureExample;
 
 class FeatureService extends Service {
     /*
@@ -356,6 +356,136 @@ class FeatureService extends Service {
         return $this->rollbackReturn(false);
     }
 
+    /**********************************************************************************************
+
+    EXAMPLES
+
+     **********************************************************************************************/
+
+    /**
+     * Creates a new example.
+     *
+     * @param mixed $feature
+     * @param mixed $data
+     */
+    public function createFeatureExample($feature, $data) {
+        DB::beginTransaction();
+
+        try {
+            if (!$feature) {
+                abort(404);
+            }
+
+            $image = null;
+            if (isset($data['image']) && $data['image']) {
+                $image = $data['image'];
+                $data['hash'] = randomString(10);
+                unset($data['image']);
+            }
+
+            $data['feature_id'] = $feature->id;
+
+            $example = FeatureExample::create($data);
+
+            if ($image) {
+                $this->handleImage($image, $example->imagePath, $example->imageFileName);
+            } else {
+                throw new \Exception('Please upload an image to the example.');
+            }
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Edits the variants on a border.
+     *
+     * @param mixed $data
+     * @param mixed $example
+     */
+    public function editFeatureExample($example, $data) {
+        DB::beginTransaction();
+
+        try {
+            if (!$example) {
+                abort(404);
+            }
+
+            $image = null;
+            if (isset($data['image']) && $data['image']) {
+                $image = $data['image'];
+                $data['hash'] = randomString(10);
+            }
+
+            $example->update($data);
+
+            if (isset($data['image'])) {
+                if ($image) {
+                    $this->handleImage($image, $example->imagePath, $example->imageFileName);
+                }
+
+                unset($data['image']);
+            }
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Deletes an example image.
+     *
+     * @param mixed $example
+     *
+     * @return bool
+     */
+    public function deleteFeatureExample($example) {
+        DB::beginTransaction();
+
+        try {
+            $this->deleteImage($example->imagePath, $example->imageFileName);
+            $example->delete();
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Sort a trait's examples.
+     *
+     * @param mixed $data
+     * @param mixed $feature
+     */
+    public function sortFeatureExamples($data, $feature) {
+        DB::beginTransaction();
+
+        try {
+            // explode the sort array and reverse it since the order is inverted
+            $sort = array_reverse(explode(',', $data));
+
+            foreach ($sort as $key => $s) {
+                FeatureExample::where('feature_id', $feature->id)->where('id', $s)->update(['sort' => $key]);
+            }
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
     /**
      * Handle category data.
      *
@@ -417,132 +547,5 @@ class FeatureService extends Service {
         }
 
         return $data;
-    }
-
-    /**********************************************************************************************
-
-    EXAMPLES
-
-     **********************************************************************************************/
-
-    /**
-     * Creates a new example
-     */
-    public function createFeatureExample($feature, $data)
-    {
-        DB::beginTransaction();
-
-        try {
-            if (!$feature) {
-                abort(404);
-            }
-
-            $image = null;
-            if (isset($data['image']) && $data['image']) {
-                $image = $data['image'];
-                $data['hash'] = randomString(10);
-                unset($data['image']);
-            }
-
-            $data['feature_id'] = $feature->id;
-
-            $example = FeatureExample::create($data);
-
-            if ($image) {
-                $this->handleImage($image, $example->imagePath, $example->imageFileName);
-            } else {
-                throw new \Exception("Please upload an image to the example.");
-            }
-
-            return $this->commitReturn(true);
-        } catch (\Exception $e) {
-            $this->setError('error', $e->getMessage());
-        }
-
-        return $this->rollbackReturn(false);
-    }
-
-    /**
-     * Edits the variants on a border.
-     *
-     * @param mixed $variant
-     * @param mixed $data
-     * @param mixed $type
-     */
-    public function editFeatureExample($example, $data)
-    {
-        DB::beginTransaction();
-
-        try {
-            if (!$example) {
-                abort(404);
-            }
-
-            $image = null;
-            if (isset($data['image']) && $data['image']) {
-                $image = $data['image'];
-                $data['hash'] = randomString(10);
-            }
-
-            $example->update($data);
-
-            if (isset($data['image'])) {
-                if ($image) {
-                    $this->handleImage($image, $example->imagePath, $example->imageFileName);
-                }
-
-                unset($data['image']);
-            }
-
-            return $this->commitReturn(true);
-        } catch (\Exception $e) {
-            $this->setError('error', $e->getMessage());
-        }
-
-        return $this->rollbackReturn(false);
-    }
-
-    /**
-     * Deletes an example image.
-     *
-     * @param  \App\Models\Feature\Feature  $feature
-     * @return bool
-     */
-    public function deleteFeatureExample($example)
-    {
-        DB::beginTransaction();
-
-        try {
-            $this->deleteImage($example->imagePath, $example->imageFileName);
-            $example->delete();
-
-            return $this->commitReturn(true);
-        } catch (\Exception $e) {
-            $this->setError('error', $e->getMessage());
-        }
-        return $this->rollbackReturn(false);
-    }
-
-    /**
-     * Sort a trait's examples
-     */
-    public function sortFeatureExamples($data, $feature)
-    {
-        DB::beginTransaction();
-
-        try {
-            // explode the sort array and reverse it since the order is inverted
-            $sort = array_reverse(explode(',', $data));
-
-            foreach ($sort as $key => $s) {
-                FeatureExample::where('feature_id', $feature->id)->where('id', $s)->update(['sort' => $key]);
-            }
-
-            return $this->commitReturn(true);
-        } catch (\Exception $e) {
-            $this->setError('error', $e->getMessage());
-        }
-
-        return $this->rollbackReturn(false);
     }
 }

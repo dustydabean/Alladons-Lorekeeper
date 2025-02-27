@@ -4,15 +4,11 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCharacterGenomeGenes extends Migration
-{
+class CreateCharacterGenomeGenes extends Migration {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
-    {
+    public function up() {
         Schema::create('character_genome_genes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('character_genome_id')->constrained();
@@ -36,11 +32,8 @@ class CreateCharacterGenomeGenes extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
-    {
+    public function down() {
         Schema::dropIfExists('character_genome_genes');
         Schema::dropIfExists('character_genome_gradients');
         Schema::dropIfExists('character_genome_numerics');

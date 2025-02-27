@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Character\CharacterCategory;
 use App\Models\Character\CharacterGeneration;
 use App\Models\Character\CharacterPedigree;
+use App\Models\Character\CharacterTransformation as Transformation;
 use App\Models\Collection\Collection;
 use App\Models\Collection\CollectionCategory;
-use App\Models\Character\CharacterTransformation as Transformation;
 use App\Models\Currency\Currency;
 use App\Models\Feature\Feature;
 use App\Models\Feature\FeatureCategory;
@@ -80,29 +80,34 @@ class WorldController extends Controller {
         ]);
     }
 
-     /**
+    /**
      * Shows the genetics page.
+     *
      * @todo allow people to search for genetics based on the name of alleles in the group?
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getGenetics(Request $request)
-    {
+    public function getGenetics(Request $request) {
         $query = Loci::query();
-        if (!(Auth::user() && Auth::user()->hasPower('view_hidden_genetics'))) $query->visible();
+        if (!(Auth::user() && Auth::user()->hasPower('view_hidden_genetics'))) {
+            $query->visible();
+        }
 
         $data = $request->only([
             'name',
             'variant',
         ]);
 
-        if(isset($data['variant']) && $data['variant'] != 'none') $query->where('type', $data['variant']);
-        if(isset($data['name']) && $data['name'] != '') $query->where('name', 'LIKE', '%'.$data['name'].'%');
+        if (isset($data['variant']) && $data['variant'] != 'none') {
+            $query->where('type', $data['variant']);
+        }
+        if (isset($data['name']) && $data['name'] != '') {
+            $query->where('name', 'LIKE', '%'.$data['name'].'%');
+        }
 
         return view('world.genetics', [
             'genetics' => $query->orderBy('sort', 'DESC')->paginate(20)->appends($request->query()),
-            'options' => [0 => "Any Type", 'gene' => "Standard", 'gradient' => "Gradient", 'numeric' => "Numeric"],
+            'options'  => [0 => 'Any Type', 'gene' => 'Standard', 'gradient' => 'Gradient', 'numeric' => 'Numeric'],
         ]);
     }
 

@@ -142,7 +142,7 @@ class CommentController extends Controller {
                 $listing = TradeListing::find($comment->commentable_id);
                 $recipient = $listing->user;
                 $post = 'your trade listing';
-                $link = $listing->url . '/#comment-' . $comment->getKey();
+                $link = $listing->url.'/#comment-'.$comment->getKey();
                 break;
             case 'App\Models\Gallery\GallerySubmission':
                 $submission = GallerySubmission::find($comment->commentable_id);

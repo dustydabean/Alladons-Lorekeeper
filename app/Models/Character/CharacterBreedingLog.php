@@ -4,9 +4,7 @@ namespace App\Models\Character;
 
 use App\Models\Model;
 
-class CharacterBreedingLog extends Model
-{
-
+class CharacterBreedingLog extends Model {
     /**
      * The attributes that are mass assignable.
      *
@@ -49,32 +47,28 @@ class CharacterBreedingLog extends Model
     /**
      * Get the image associated with this record.
      */
-    public function loggedCharacters()
-    {
+    public function loggedCharacters() {
         return $this->hasMany('App\Models\Character\CharacterBreedingLogRelation', 'log_id');
     }
 
     /**
      * Get the image associated with this record.
      */
-    public function parents()
-    {
+    public function parents() {
         return $this->loggedCharacters()->where('is_parent', true);
     }
 
     /**
      * Get the image associated with this record.
      */
-    public function children()
-    {
+    public function children() {
         return $this->loggedCharacters()->where('is_parent', false);
     }
 
     /**
-     * Get the user associated with this record. (Staff member who rolled it.)
+     * Get the user associated with this record. (Staff member who rolled it.).
      */
-    public function user()
-    {
+    public function user() {
         return $this->belongsTo('App\Models\User\User');
     }
 }

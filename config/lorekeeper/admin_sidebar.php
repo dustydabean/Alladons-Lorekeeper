@@ -126,7 +126,7 @@ return [
             ],
             [
                 'name' => 'Event Settings',
-                'url' => 'admin/event-settings',
+                'url'  => 'admin/event-settings',
             ],
         ],
     ],
@@ -261,17 +261,17 @@ return [
         'links' => [
             [
                 'name' => 'Gene Groups',
-                'url' => 'admin/genetics/genes',
+                'url'  => 'admin/genetics/genes',
             ],
             [
                 'name' => 'Breeding Roller',
-                'url' => 'admin/genetics/roller',
+                'url'  => 'admin/genetics/roller',
             ],
             [
                 'name' => 'Breeding Logs',
-                'url' => 'admin/genetics/logs',
+                'url'  => 'admin/genetics/logs',
             ],
-        ]
+        ],
     ],
     'Raffles'    => [
         'power' => 'manage_raffles',

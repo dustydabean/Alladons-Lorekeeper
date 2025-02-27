@@ -2,16 +2,9 @@
 
 namespace App\Models\Genetics;
 
-use Config;
-use DB;
 use App\Models\Model;
-use App\Models\Feature\FeatureCategory;
-use App\Models\Species\Species;
-use App\Models\Rarity;
-use Illuminate\Validation\Rule;
 
-class LociAllele extends Model
-{
+class LociAllele extends Model {
     /**
      * The attributes that are mass assignable.
      *
@@ -38,8 +31,7 @@ class LociAllele extends Model
     /**
      * Get the gene group of this loci.
      */
-    public function loci()
-    {
+    public function loci() {
         return $this->belongsTo('App\Models\Genetics\Loci');
     }
 
@@ -52,22 +44,22 @@ class LociAllele extends Model
     /**
      * Scope a query to sort by sort order.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeSortByDominance($query)
-    {
+    public function scopeSortByDominance($query) {
         return $query->orderBy('is_dominant')->orderBy('sort');
     }
 
     /**
      * Scope a query to only include visible.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeVisible($query)
-    {
+    public function scopeVisible($query) {
         return $query->where('is_visible', 1);
     }
 
@@ -82,9 +74,9 @@ class LociAllele extends Model
      *
      * @return string
      */
-    public function getDisplayNameAttribute()
-    {
-        $name = $this->name . "<sup>" . $this->modifier . "</sup>";
+    public function getDisplayNameAttribute() {
+        $name = $this->name.'<sup>'.$this->modifier.'</sup>';
+
         return $this->is_dominant ? $name : strtolower($name);
     }
 
@@ -93,9 +85,9 @@ class LociAllele extends Model
      *
      * @return string
      */
-    public function getFullNameAttribute()
-    {
-        $name = $this->name . (($this->modifier && $this->modifier != "") ? "(" . $this->modifier . ")" : "");
+    public function getFullNameAttribute() {
+        $name = $this->name.(($this->modifier && $this->modifier != '') ? '('.$this->modifier.')' : '');
+
         return $this->is_dominant ? $name : strtolower($name);
     }
 }

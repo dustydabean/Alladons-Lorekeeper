@@ -66,9 +66,9 @@ class DesignUpdateManager extends Service {
                 'update_type'   => $character->is_myo_slot ? 'MYO' : 'Character',
 
                 // Set some data based on the character's existing stats
-                'rarity_id'     => $character->image->rarity_id,
-                'species_id'    => $character->image->species_id,
-                'subtype_ids'   => $character->image->subtypes()->pluck('subtype_id'),
+                'rarity_id'         => $character->image->rarity_id,
+                'species_id'        => $character->image->species_id,
+                'subtype_ids'       => $character->image->subtypes()->pluck('subtype_id'),
                 'transformation_id' => $character->image->transformation_id,
             ];
 
@@ -600,7 +600,7 @@ class DesignUpdateManager extends Service {
                 'species_id'         => $request->species_id,
                 'rarity_id'          => $request->rarity_id,
                 'sort'               => 0,
-                'transformation_id' => ($request->character->is_myo_slot && isset($request->character->image->transformation_id)) ? $request->character->image->transformation_id : $request->transformation_id,
+                'transformation_id'  => ($request->character->is_myo_slot && isset($request->character->image->transformation_id)) ? $request->character->image->transformation_id : $request->transformation_id,
             ]);
 
             // do subtype stuff

@@ -41,14 +41,14 @@ class CharacterImageController extends Controller {
         }
 
         return view('character.admin.upload_image', [
-            'character' => $this->character,
-            'rarities'  => ['0' => 'Select Rarity'] + Rarity::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'specieses' => ['0' => 'Select Species'] + Species::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'subtypes'  => Subtype::where('species_id', '=', $this->character->image->species_id)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'users'     => User::query()->orderBy('name')->pluck('name', 'id')->toArray(),
+            'character'       => $this->character,
+            'rarities'        => ['0' => 'Select Rarity'] + Rarity::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'specieses'       => ['0' => 'Select Species'] + Species::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'subtypes'        => Subtype::where('species_id', '=', $this->character->image->species_id)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'users'           => User::query()->orderBy('name')->pluck('name', 'id')->toArray(),
             'transformations' => ['0' => 'Select Transformation'] + Transformation::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'features'  => Feature::getDropdownItems(1),
-            'isMyo'     => false,
+            'features'        => Feature::getDropdownItems(1),
+            'isMyo'           => false,
         ]);
     }
 
@@ -120,13 +120,13 @@ class CharacterImageController extends Controller {
         $image = CharacterImage::find($id);
 
         return view('character.admin._edit_features_modal', [
-            'image'       => $image,
-            'specieses'   => ['0' => 'Select Species'] + Species::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'subtypes'    => Subtype::where('species_id', '=', $image->species_id)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'generations' => [null => 'Select Generation'] + CharacterGeneration::query()->orderByRaw('LENGTH(name) ASC')->orderBy('name')->pluck('name', 'id')->toArray(),
-            'pedigrees'   => [null => 'Select Pedigree Tag'] + CharacterPedigree::query()->orderBy('name', 'desc')->pluck('name', 'id')->toArray(),
+            'image'           => $image,
+            'specieses'       => ['0' => 'Select Species'] + Species::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'subtypes'        => Subtype::where('species_id', '=', $image->species_id)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'generations'     => [null => 'Select Generation'] + CharacterGeneration::query()->orderByRaw('LENGTH(name) ASC')->orderBy('name')->pluck('name', 'id')->toArray(),
+            'pedigrees'       => [null => 'Select Pedigree Tag'] + CharacterPedigree::query()->orderBy('name', 'desc')->pluck('name', 'id')->toArray(),
             'transformations' => ['0' => 'Select Transformation'] + Transformation::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'features'    => Feature::getDropdownItems(1),
+            'features'        => Feature::getDropdownItems(1),
         ]);
     }
 

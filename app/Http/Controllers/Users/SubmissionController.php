@@ -16,14 +16,11 @@ use App\Models\Prompt\PromptCriterion;
 use App\Models\Raffle\Raffle;
 use App\Models\Recipe\Recipe;
 use App\Models\Submission\Submission;
-use App\Models\Submission\SubmissionCharacter;
 use App\Models\User\User;
 use App\Models\User\UserItem;
 use App\Services\SubmissionManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
-use DB;
 
 class SubmissionController extends Controller {
     /*
@@ -232,7 +229,7 @@ class SubmissionController extends Controller {
         $count['Month'] = Submission::submitted($id, Auth::user()->id)->where('created_at', '>=', now()->startOfMonth())->count();
         $count['Year'] = Submission::submitted($id, Auth::user()->id)->where('created_at', '>=', now()->startOfYear())->count();
 
-        if($prompt->limit_character) {
+        if ($prompt->limit_character) {
             $limit = $prompt->limit * Character::visible()->where('is_myo_slot', 0)->where('user_id', Auth::user()->id)->count();
         } else {
             $limit = $prompt->limit;
@@ -240,8 +237,8 @@ class SubmissionController extends Controller {
 
         return view('home._prompt', [
             'prompt' => $prompt,
-            'count' => $count,
-            'limit' => $limit,
+            'count'  => $count,
+            'limit'  => $limit,
         ]);
     }
 
@@ -299,7 +296,7 @@ class SubmissionController extends Controller {
         if (!$submission) {
             abort(404);
         }
-        
+
         $request->validate(Submission::$updateRules);
         if ($submit && $service->editSubmission($submission, $request->only([
             'url', 'prompt_id', 'comments', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity',
