@@ -2152,6 +2152,7 @@ class CharacterManager extends Service {
                 $data['pedigree_descriptor'] = isset($data['pedigree_descriptor']) && $data['pedigree_descriptor'] ? $data['pedigree_descriptor'] : null;
                 $data['nickname'] = isset($data['nickname']) && $data['nickname'] ? $data['nickname'] : null;
                 $data['birthdate'] = isset($data['birthdate']) && $data['birthdate'] ? $data['birthdate'] : null;
+                $data['poucher_code'] = isset($data['poucher_code']) && $data['poucher_code'] ? $data['poucher_code'] : null;
             }
 
             $characterData = Arr::only($data, [
@@ -2159,7 +2160,7 @@ class CharacterManager extends Service {
                 'number', 'slug', 'description',
                 'sale_value', 'transferrable_at', 'is_visible',
                 'generation_id', 'pedigree_id', 'pedigree_descriptor',
-                'nickname', 'birthdate',
+                'nickname', 'birthdate', 'poucher_code',
             ]);
 
             $characterData['name'] = ($isMyo && isset($data['name'])) ? $data['name'] : null;
@@ -2232,6 +2233,7 @@ class CharacterManager extends Service {
             $imageData['fullsize_extension'] = (config('lorekeeper.settings.masterlist_fullsizes_format') ?? ($data['fullsize_extension'] ?? $data['image']->getClientOriginalExtension()));
             $imageData['character_id'] = $character->id;
             $imageData['content_warnings'] = isset($data['content_warnings']) ? explode(',', $data['content_warnings']) : null;
+            $imageData['sex'] = isset($data['sex']) ? $data['sex'] : null;
 
             $image = CharacterImage::create($imageData);
 

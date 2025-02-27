@@ -236,11 +236,6 @@
                     <a href="#" class="add-designer btn btn-link" data-toggle="tooltip" title="Add another designer">+</a>
                 </div>
             </div>
-            <div class="designer-row hide mb-2">
-                {!! Form::select('designer_id[]', $userOptions, null, ['class' => 'form-control mr-2 designer-select', 'placeholder' => 'Select a PA']) !!}
-                {!! Form::text('designer_url[]', null, ['class' => 'form-control mr-2', 'placeholder' => 'PA URL']) !!}
-                <a href="#" class="add-designer btn btn-link" data-toggle="tooltip" title="Add another designer">+</a>
-            </div>
         </div>
         <div class="form-group">
             {!! Form::label('AUA(s)') !!}
@@ -250,11 +245,6 @@
                     {!! Form::text('artist_url[]', null, ['class' => 'form-control mr-2', 'placeholder' => 'AUA URL']) !!}
                     <a href="#" class="add-artist btn btn-link" data-toggle="tooltip" title="Add another artist">+</a>
                 </div>
-            </div>
-            <div class="artist-row hide mb-2">
-                {!! Form::select('artist_id[]', $userOptions, null, ['class' => 'form-control mr-2 artist-select', 'placeholder' => 'Select an AUA']) !!}
-                {!! Form::text('artist_url[]', null, ['class' => 'form-control mr-2', 'placeholder' => 'AUA URL']) !!}
-                <a href="#" class="add-artist btn btn-link mb-2" data-toggle="tooltip" title="Add another artist">+</a>
             </div>
         </div>
         @if (!$isMyo)
@@ -352,6 +342,17 @@
             {!! Form::submit('Create Character', ['class' => 'btn btn-primary']) !!}
         </div>
         {!! Form::close() !!}
+
+        <div class="designer-row hide mb-2">
+            {!! Form::select('designer_id[]', $userOptions, null, ['class' => 'form-control mr-2 designer-select', 'placeholder' => 'Select a PA']) !!}
+            {!! Form::text('designer_url[]', null, ['class' => 'form-control mr-2', 'placeholder' => 'PA URL']) !!}
+            <a href="#" class="add-designer btn btn-link" data-toggle="tooltip" title="Add another designer">+</a>
+        </div>
+        <div class="artist-row hide mb-2">
+            {!! Form::select('artist_id[]', $userOptions, null, ['class' => 'form-control mr-2 artist-select', 'placeholder' => 'Select an AUA']) !!}
+            {!! Form::text('artist_url[]', null, ['class' => 'form-control mr-2', 'placeholder' => 'AUA URL']) !!}
+            <a href="#" class="add-artist btn btn-link mb-2" data-toggle="tooltip" title="Add another artist">+</a>
+        </div>
     @endif
 
 @endsection
