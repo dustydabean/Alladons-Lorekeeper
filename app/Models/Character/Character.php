@@ -392,6 +392,20 @@ class Character extends Model {
     }
 
     /**
+     * Gets the character's slug and poucher code for display on the masterlist.
+     * If this is a MYO slot, simply returns the slot's name.
+     *
+     * @return string
+     */
+    public function getMasterlistNameAttribute() {
+        if ($this->is_myo_slot) {
+            return $this->name;
+        } else {
+            return $this->slug.(isset($this->poucher_code) ? ' ('.$this->poucher_code.')' : '');
+        }
+    }
+
+    /**
      * Gets the character's warnings, if they exist.
      */
     public function getWarningsAttribute() {
