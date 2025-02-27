@@ -77,6 +77,16 @@ class AddSiteSettings extends Command {
 
         $this->addSiteSetting('default_theme', 0, 'ID of the default theme users should see. 0: Disabled, shows default lorekeeper. This setting is overwritten by the users theme setting.');
 
+        $this->addSiteSetting('event_currency', 1, 'ID of the currency used for events.');
+
+        $this->addSiteSetting('event_global_score', 0, '0: Event currency is only tracked individually, 1: A global tally of all event currency is also kept.');
+
+        $this->addSiteSetting('event_global_goal', 0, 'Goal for global event score. Has no effect if global event score is not 1 and/or if set to 0.');
+
+        $this->addSiteSetting('event_teams', 0, '0: Teams are not enabled, even if set. 1: Teams are enabled.');
+
+        $this->addSiteSetting('event_weighting', 0, '0: Score is not weighted depending on number of team members, 1: Score is weighted. Does not impact raw currency amounts.');
+
         $this->addSiteSetting('default_side', 0, 'The default "longest side" of a character image if the image is actually square. 0 = square, 1 = width, 2 = height');
 
         $this->addSiteSetting('claymore_cooldown', 0, 'Number of days to add to the cooldown timer when a pet/weapon/gear is attached.');

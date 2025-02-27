@@ -541,6 +541,14 @@ Route::group(['prefix' => 'pets', 'middleware' => 'power:edit_inventories'], fun
     Route::post('pet/{id}', 'Data\PetController@postEditPetDrop');
 });
 
+// EVENT SETTINGS
+Route::group(['prefix' => 'event-settings', 'middleware' => 'power:edit_inventories'], function() {
+    Route::get('/', 'EventController@getEventSettings');
+    Route::get('clear', 'EventController@getClearEventCurrency');
+    Route::post('clear', 'EventController@postClearEventCurrency');
+    Route::post('teams', 'EventController@postEventTeams');
+});
+
 // MASTERLIST
 Route::group(['prefix' => 'masterlist', 'namespace' => 'Characters', 'middleware' => 'power:manage_characters'], function () {
     Route::get('create-character', 'CharacterController@getCreateCharacter');

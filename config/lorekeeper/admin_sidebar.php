@@ -124,6 +124,10 @@ return [
                 'name' => 'Recipe Grants',
                 'url'  => 'admin/grants/recipes',
             ],
+            [
+                'name' => 'Event Settings',
+                'url' => 'admin/event-settings',
+            ],
         ],
     ],
     'Masterlist' => [

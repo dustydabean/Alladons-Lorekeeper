@@ -28,5 +28,9 @@ return [
         'title' => 'Credits',
         'text'  => 'This page will contain credits for code, art, ect that has been used on your site!',
     ],
+    'event-tracker' => [
+        'title' => 'Event Tracker',
+        'text' => 'This page will have information on the current event, to be displayed alongside information on a global event score. It does not need to be viewable, as it is automatically embedded into the event tracking page.'
+    ],
 
 ];

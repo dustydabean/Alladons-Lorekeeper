@@ -279,6 +279,10 @@ Route::group(['prefix' => 'designs', 'namespace' => 'Characters'], function () {
     Route::post('{id}/cancel', 'DesignController@postCancel');
 });
 
+Route::group(['prefix' => 'event-tracking'], function() {
+    Route::post('team/{id}', 'EventController@postJoinTeam');
+});
+
 /**************************************************************************************************
     Shops
 **************************************************************************************************/

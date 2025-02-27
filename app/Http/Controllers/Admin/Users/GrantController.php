@@ -10,9 +10,11 @@ use App\Models\Currency\Currency;
 use App\Models\Item\Item;
 use App\Models\Pet\Pet;
 use App\Models\Recipe\Recipe;
+use App\Models\SitePage;
 use App\Models\Submission\Submission;
 use App\Models\Trade;
 use App\Models\User\User;
+use App\Models\User\UserCurrency;
 use App\Models\User\UserItem;
 use App\Services\CurrencyManager;
 use App\Services\InventoryManager;
@@ -20,6 +22,8 @@ use App\Services\PetManager;
 use App\Services\RecipeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Config;
+use Settings;
 
 class GrantController extends Controller {
     /**
