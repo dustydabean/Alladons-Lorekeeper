@@ -377,6 +377,9 @@ class BrowseController extends Controller {
         if (!$isMyo && $request->get('character_category_id')) {
             $query->where('character_category_id', $request->get('character_category_id'));
         }
+        if ($request->get('pedigree_id')) {
+            $query->where('pedigree_id', $request->get('pedigree_id'));
+        }
 
         if ($request->get('sale_value_min')) {
             $query->where('sale_value', '>=', $request->get('sale_value_min'));
