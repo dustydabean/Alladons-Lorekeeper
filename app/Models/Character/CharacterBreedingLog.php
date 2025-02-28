@@ -22,14 +22,8 @@ class CharacterBreedingLog extends Model {
      */
     protected $casts = [
         'roller_settings' => 'array',
+        'rolled_at' => 'datetime',
     ];
-
-    /**
-     * Dates on the model to convert to Carbon instances.
-     *
-     * @var array
-     */
-    protected $dates = ['rolled_at'];
 
     /**
      * The table associated with the model.
