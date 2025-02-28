@@ -204,6 +204,9 @@ class FeatureService extends Service {
             if (isset($data['subtype_id']) && $data['subtype_id'] == 'none') {
                 $data['subtype_id'] = null;
             }
+            if (!isset($data['code_id'])) {
+                $data['code_id'] = null;
+            }
 
             if ((isset($data['feature_category_id']) && $data['feature_category_id']) && !FeatureCategory::where('id', $data['feature_category_id'])->exists()) {
                 throw new \Exception('The selected trait category is invalid.');
@@ -272,6 +275,9 @@ class FeatureService extends Service {
             }
             if (isset($data['subtype_id']) && $data['subtype_id'] == 'none') {
                 $data['subtype_id'] = null;
+            }
+            if (!isset($data['code_id'])) {
+                $data['code_id'] = null;
             }
 
             // More specific validation

@@ -306,7 +306,7 @@ class FeatureController extends Controller {
         $id ? $request->validate(Feature::$updateRules) : $request->validate(Feature::$createRules);
         $data = $request->only([
             'name', 'species_id', 'subtype_id', 'rarity_id', 'feature_category_id', 'description', 'image', 'remove_image', 'is_visible', 'sex',
-            'mut_level', 'mut_type', 'is_locked',
+            'mut_level', 'mut_type', 'is_locked', 'code_id',
         ]);
         if ($id && $service->updateFeature(Feature::find($id), $data, Auth::user())) {
             flash('Trait updated successfully.')->success();

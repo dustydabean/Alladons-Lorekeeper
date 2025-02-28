@@ -393,8 +393,9 @@ class WorldController extends Controller {
             $features->orderByRaw('FIELD(feature_category_id,'.implode(',', $categories->pluck('id')->toArray()).')') :
             $features;
         $features = $features
-            ->orderBy('has_image', 'DESC')
-            ->orderByRaw('LENGTH(name) ASC')->orderBy('name')
+            ->orderBy('code_id')
+            ->orderByRaw('LENGTH(code_id) ASC')
+            ->orderBy('name')
             ->get()->groupBy(['feature_category_id', 'id']);
 
         return view('world.universal_features', [

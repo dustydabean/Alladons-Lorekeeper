@@ -16,7 +16,7 @@ class Feature extends Model {
      */
     protected $fillable = [
         'feature_category_id', 'species_id', 'subtype_id', 'rarity_id', 'name', 'has_image', 'description', 'parsed_description', 'is_visible', 'hash', 'has_example_image', 'example_hash', 'example_summary',
-        'mut_level', 'mut_type', 'is_locked',
+        'mut_level', 'mut_type', 'is_locked', 'code_id',
     ];
 
     /**
@@ -242,7 +242,7 @@ class Feature extends Model {
      * @return string
      */
     public function getDisplayNameAttribute() {
-        return '<a href="'.$this->url.'" class="display-trait">'.$this->name.'</a>'.($this->rarity ? ' ('.$this->rarity->displayName.')' : '');
+        return ($this->code_id ? $this->code_id.' - ' : null).'<a href="'.$this->url.'" class="display-trait">'.$this->name.'</a>'.($this->rarity ? ' ('.$this->rarity->displayName.')' : '');
     }
 
     /**

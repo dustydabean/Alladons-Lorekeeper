@@ -7,6 +7,7 @@ use App\Models\Character\Character;
 use App\Models\Currency\Currency;
 use App\Models\Item\Item;
 use App\Models\Loot\LootTable;
+use App\Models\Prompt\Prompt;
 use App\Models\Prompt\PromptCategory;
 use App\Models\Raffle\Raffle;
 use App\Models\Recipe\Recipe;
