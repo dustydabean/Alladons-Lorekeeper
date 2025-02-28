@@ -23,6 +23,11 @@
         {!! Form::select('recipient_id', $userOptions, old('recipient_id'), ['class' => 'form-control user-select', 'placeholder' => 'Select User']) !!}
     </div>
     <div class="form-group">
+        {!! Form::label('terms_link', 'Proof of Terms') !!} 
+        {!! add_help('Enter a link to proof of the terms of agreement for the trade. This field is not strictly required but is strongly recommended.') !!} 
+        {!! Form::text('terms_link', null, ['class' => 'form-control']) !!}
+    </div>
+    <div class="form-group">
         {!! Form::label('comments', 'Comments (Optional)') !!} {!! add_help('This comment will be displayed on the trade index. You can write a helpful note here, for example to note down the purpose of the trade.') !!}
         {!! Form::textarea('comments', null, ['class' => 'form-control']) !!}
     </div>

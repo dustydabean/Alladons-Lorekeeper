@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Character\CharacterCategory;
 use App\Models\Character\CharacterGeneration;
 use App\Models\Character\CharacterPedigree;
+use App\Models\Character\CharacterTransformation as Transformation;
 use App\Models\Collection\Collection;
 use App\Models\Collection\CollectionCategory;
 use App\Models\Currency\Currency;
 use App\Models\Feature\Feature;
 use App\Models\Feature\FeatureCategory;
+use App\Models\Genetics\Loci;
 use App\Models\Item\Item;
 use App\Models\Item\ItemCategory;
 use App\Models\Pet\Pet;
@@ -79,6 +81,37 @@ class WorldController extends Controller {
     }
 
     /**
+     * Shows the genetics page.
+     *
+     * @todo allow people to search for genetics based on the name of alleles in the group?
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getGenetics(Request $request) {
+        $query = Loci::query();
+        if (!(Auth::user() && Auth::user()->hasPower('view_hidden_genetics'))) {
+            $query->visible();
+        }
+
+        $data = $request->only([
+            'name',
+            'variant',
+        ]);
+
+        if (isset($data['variant']) && $data['variant'] != 'none') {
+            $query->where('type', $data['variant']);
+        }
+        if (isset($data['name']) && $data['name'] != '') {
+            $query->where('name', 'LIKE', '%'.$data['name'].'%');
+        }
+
+        return view('world.genetics', [
+            'genetics' => $query->orderBy('sort', 'DESC')->paginate(20)->appends($request->query()),
+            'options'  => [0 => 'Any Type', 'gene' => 'Standard', 'gradient' => 'Gradient', 'numeric' => 'Numeric'],
+        ]);
+    }
+
+    /**
      * Shows the species page.
      *
      * @return \Illuminate\Contracts\Support\Renderable
@@ -111,6 +144,23 @@ class WorldController extends Controller {
 
         return view('world.subtypes', [
             'subtypes' => $query->with('species')->visible(Auth::user() ?? null)->orderBy('sort', 'DESC')->orderBy('id')->paginate(20)->appends($request->query()),
+        ]);
+    }
+
+    /**
+     * Shows the Transformations page.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getTransformations(Request $request) {
+        $query = Transformation::query();
+        $name = $request->get('name');
+        if ($name) {
+            $query->where('name', 'LIKE', '%'.$name.'%');
+        }
+
+        return view('world.transformations', [
+            'transformations' => $query->orderBy('sort', 'DESC')->paginate(20)->appends($request->query()),
         ]);
     }
 
@@ -343,8 +393,9 @@ class WorldController extends Controller {
             $features->orderByRaw('FIELD(feature_category_id,'.implode(',', $categories->pluck('id')->toArray()).')') :
             $features;
         $features = $features
-            ->orderBy('has_image', 'DESC')
-            ->orderByRaw('LENGTH(name) ASC')->orderBy('name')
+            ->orderBy('code_id')
+            ->orderByRaw('LENGTH(code_id) ASC')
+            ->orderBy('name')
             ->get()->groupBy(['feature_category_id', 'id']);
 
         return view('world.universal_features', [

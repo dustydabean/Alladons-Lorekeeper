@@ -254,6 +254,13 @@ class Character extends Model {
         return $this->belongsTo(CharacterFolder::class, 'folder_id');
     }
 
+    /**
+     * Get the character's genomes.
+     */
+    public function genomes() {
+        return $this->hasMany(CharacterGenome::class, 'character_id');
+    }
+
     /**********************************************************************************************
 
         SCOPES
@@ -388,6 +395,20 @@ class Character extends Model {
             return $this->name;
         } else {
             return $this->slug.($this->name ? ': '.$this->name : '');
+        }
+    }
+
+    /**
+     * Gets the character's slug and poucher code for display on the masterlist.
+     * If this is a MYO slot, simply returns the slot's name.
+     *
+     * @return string
+     */
+    public function getMasterlistNameAttribute() {
+        if ($this->is_myo_slot) {
+            return $this->name;
+        } else {
+            return $this->slug.(isset($this->poucher_code) ? ' ('.$this->poucher_code.')' : '');
         }
     }
 

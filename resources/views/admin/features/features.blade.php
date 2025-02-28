@@ -120,6 +120,9 @@
                                     @if ($feature->is_locked)
                                         <i class="fas fa-lock mr-1"></i>
                                     @endif
+                                    @if ($feature->code_id)
+                                        ({{ $feature->code_id }}) 
+                                    @endif
                                     {{ $feature->name }}
                                 </div>
                             </div>

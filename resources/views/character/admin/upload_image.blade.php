@@ -123,6 +123,11 @@
         {!! Form::select('subtype_ids[]', $subtypes, old('subtype_ids') ?: $character->image->subtypes()?->pluck('subtype_id')->toArray(), ['class' => 'form-control', 'id' => 'subtype', 'multiple']) !!}
     </div>
 
+    <div class="form-group" id="transformations">
+        {!! Form::label('Transformation (Optional)') !!}
+        {!! Form::select('transformation_id', $transformations, null, ['class' => 'form-control', 'id' => 'transformation']) !!}
+    </div>
+
     <div class="form-group">
         {!! Form::label('Character Rarity') !!}
         {!! Form::select('rarity_id', $rarities, old('rarity_id') ?: $character->image->rarity_id, ['class' => 'form-control']) !!}

@@ -1,5 +1,5 @@
 <div class="row world-entry">
-        @if ($feature->has_image)
+    @if ($feature->has_image)
         <div class="col-md-3 world-entry-image">
             <a href="{{ $feature->imageUrl }}" data-lightbox="entry" data-title="{{ $feature->name }}"><img src="{{ $feature->imageUrl }}" class="world-entry-image" alt="{{ $feature->name }}" style="max-height:30em;" /></a>
             @if ($feature->exampleImages->count() == 1)
@@ -47,7 +47,6 @@
                 </div>
             @endif
         </div>
-
     @endif
     <div class="{{ $feature->has_image ? 'col-md-9' : 'col-12' }}">
         <x-admin-edit title="Trait" :object="$feature" />

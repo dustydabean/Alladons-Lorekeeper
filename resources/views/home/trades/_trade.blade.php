@@ -1,10 +1,20 @@
 <div class="card mb-3">
     <div class="card-header">
-        <h2 class="mb-0"><span
-                class="float-right badge badge-{{ $trade->status == 'Pending' || $trade->status == 'Open' || $trade->status == 'Canceled' ? 'secondary' : ($trade->status == 'Completed' ? 'success' : 'danger') }}">{{ $trade->status }}</span><a
-                href="{{ $trade->url }} ">Trade (#{{ $trade->id }})</a></h2>
+        <h2 class="mb-0">
+            <span class="float-right badge badge-{{ $trade->status == 'Pending' || $trade->status == 'Open' || $trade->status == 'Canceled' ? 'secondary' : ($trade->status == 'Completed' ? 'success' : 'danger') }}">{{ $trade->status }}</span>
+            <a href="{{ $trade->url }} ">Trade (#{{ $trade->id }})</a>
+        </h2>
+        @if ($trade->staff)
+            Processed by {!! $trade->staff->displayName !!}
+        @endif
     </div>
     <div class="card-body">
+        @if (isset($trade->terms_link) && $trade->terms_link)
+            <div class="row">
+                <div class="col-md-2 col-4"><h5>Proof of Terms</h5></div>
+                <div class="col-md-10 col-8"><a href="{{ $trade->terms_link }}">{{ $trade->terms_link }}</a></div>
+            </div>
+        @endif
         @if ($trade->comments)
             <div>{!! nl2br(htmlentities($trade->comments)) !!}</div>
             <hr />
@@ -29,7 +39,7 @@
                     'user' => $trade->sender,
                     'data' => isset($trade->data['sender']) ? parseAssetData($trade->data['sender']) : null,
                     'trade' => $trade,
-                    'stacks' => isset($stacks[$trade->id]['sender']) ? $stacks[$trade->id]['sender'] : null,
+                    'stacks' => isset($trade->stacks['sender']) ? $trade->stacks['sender'] : [],
                 ])
             </div>
             <div class="col-md-6">
@@ -51,7 +61,7 @@
                     'user' => $trade->recipient,
                     'data' => isset($trade->data['recipient']) ? parseAssetData($trade->data['recipient']) : null,
                     'trade' => $trade,
-                    'stacks' => isset($stacks[$trade->id]['recipient']) ? $stacks[$trade->id]['recipient'] : null,
+                    'stacks' => isset($trade->stacks['recipient']) ? $trade->stacks['recipient'] : [],
                 ])
             </div>
         </div>

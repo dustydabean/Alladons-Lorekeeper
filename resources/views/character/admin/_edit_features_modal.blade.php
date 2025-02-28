@@ -9,6 +9,11 @@
     {!! Form::select('subtype_ids[]', $subtypes, $image->subtypes()->pluck('subtype_id')->toArray() ?? [], ['class' => 'form-control', 'id' => 'subtype', 'multiple']) !!}
 </div>
 
+<div class="form-group" id="transformations">
+    {!! Form::label('Transformation (Optional)') !!}
+    {!! Form::select('transformation_id', $transformations, $image->transformation_id, ['class' => 'form-control', 'id' => 'transformation']) !!}
+</div>
+
 <div class="form-group">
     {!! Form::label('Nickname (Optional)') !!}
     {!! Form::text('nickname', $image->character->nickname, ['class' => 'form-control']) !!}

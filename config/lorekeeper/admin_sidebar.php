@@ -124,6 +124,10 @@ return [
                 'name' => 'Recipe Grants',
                 'url'  => 'admin/grants/recipes',
             ],
+            [
+                'name' => 'Event Settings',
+                'url'  => 'admin/event-settings',
+            ],
         ],
     ],
     'Masterlist' => [
@@ -187,6 +191,10 @@ return [
                 'url'  => 'admin/data/traits',
             ],
             [
+                'name' => 'Transformations',
+                'url'  => 'admin/data/transformations',
+            ],
+            [
                 'name' => 'Shops',
                 'url'  => 'admin/data/shops',
             ],
@@ -245,6 +253,23 @@ return [
             [
                 'name' => 'Recipes',
                 'url'  => 'admin/data/recipes',
+            ],
+        ],
+    ],
+    'Genetics' => [
+        'power' => 'view_hidden_genetics',
+        'links' => [
+            [
+                'name' => 'Gene Groups',
+                'url'  => 'admin/genetics/genes',
+            ],
+            [
+                'name' => 'Breeding Roller',
+                'url'  => 'admin/genetics/roller',
+            ],
+            [
+                'name' => 'Breeding Logs',
+                'url'  => 'admin/genetics/logs',
             ],
         ],
     ],
