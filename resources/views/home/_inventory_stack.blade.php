@@ -129,7 +129,7 @@
                         <div id="transferForm" class="collapse">
                             <div class="form-group">
                                 {!! Form::label('user_id', 'Recipient') !!} {!! add_help('You can only transfer items to verified users.') !!}
-                                {!! Form::select('user_id', $userOptions, null, ['class' => 'form-control']) !!}
+                                {!! Form::select('user_id', $userOptions, null, ['class' => 'form-control user-select']) !!}
                             </div>
                             <div class="text-right">
                                 {!! Form::button('Transfer', ['class' => 'btn btn-primary', 'name' => 'action', 'value' => 'transfer', 'type' => 'submit']) !!}
@@ -165,6 +165,7 @@
             return false;
     });
     $('.default.character-select').selectize();
+    $('.user-select').selectize();
 
     function toggleChecks($toggle) {
         $.each($('.item-check'), function(index, checkbox) {
