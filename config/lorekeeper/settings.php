@@ -179,7 +179,7 @@ return [
     | 'masterlist_fullsizes_format' => null,
     |
     */
-    'store_masterlist_fullsizes'                        => 1,
+    'store_masterlist_fullsizes'                        => 0,
     'masterlist_fullsizes_cap'                          => 0,
     'masterlist_fullsizes_format'                       => null,
 
