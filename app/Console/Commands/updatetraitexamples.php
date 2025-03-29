@@ -9,8 +9,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
 
-class updatetraitexamples extends Command
-{
+class updatetraitexamples extends Command {
     /**
      * The name and signature of the console command.
      *
@@ -27,11 +26,8 @@ class updatetraitexamples extends Command
 
     /**
      * Create a new command instance.
-     *
-     * @return void
      */
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
     }
 
@@ -40,8 +36,7 @@ class updatetraitexamples extends Command
      *
      * @return int
      */
-    public function handle()
-    {
+    public function handle() {
         //this is probably messy and not optimal :')
 
         if (Schema::hasTable('feature_example_images')) {
@@ -63,16 +58,14 @@ class updatetraitexamples extends Command
 
             if ($features->count()) {
                 foreach ($features as $feature) {
-
-                    $old_image = $feature->imageDirectory . '/' . $feature->exampleImageFileName;
+                    $old_image = $feature->imageDirectory.'/'.$feature->exampleImageFileName;
 
                     //move the image
                     if (File::exists(public_path($old_image))) {
-
                         //make the new example
                         $example = FeatureExample::create([
-                            'summary' => $feature->example_summary,
-                            'hash' => $feature->example_hash,
+                            'summary'    => $feature->example_summary,
+                            'hash'       => $feature->example_hash,
                             'feature_id' => $feature->id,
                         ]);
 
@@ -87,30 +80,27 @@ class updatetraitexamples extends Command
                             chmod($example->imagePath, 0755);
                         }
 
-                        $new_image = $example->imageDirectory . '/' . $example->imageFileName;
+                        $new_image = $example->imageDirectory.'/'.$example->imageFileName;
                         if (!File::move(public_path($old_image), public_path($new_image))) {
-                            $this->error('Failed to move example for ' . $feature->name . ', skipping.');
+                            $this->error('Failed to move example for '.$feature->name.', skipping.');
                         } else {
                             $feature->update([
                                 'has_example_image' => 0,
-                                'example_summary' => null,
-                                'example_hash' => null,
+                                'example_summary'   => null,
+                                'example_hash'      => null,
                             ]);
                         }
                     } else {
-                        $this->error('Image for ' . $feature->name . 'does not exist.');
+                        $this->error('Image for '.$feature->name.'does not exist.');
                         $feature->update([
                             'has_example_image' => 0,
-                            'example_summary' => null,
-                            'example_hash' => null,
+                            'example_summary'   => null,
+                            'example_hash'      => null,
                         ]);
                     }
                 }
-
             } else {
-
                 if (Schema::hasColumn('features', 'has_example_image')) {
-
                     $this->info('No more example images to export, deleting previous columns...');
 
                     Schema::table('features', function (Blueprint $table) {
@@ -120,15 +110,12 @@ class updatetraitexamples extends Command
                     });
 
                     $this->info('All exports complete!');
-
                 } else {
                     $this->error('Why are you running this command after it\'s done??????? Go home');
                 }
-
             }
-        }else{
+        } else {
             $this->error('Why are you running this command after it\'s done??????? Go home');
         }
-
     }
 }

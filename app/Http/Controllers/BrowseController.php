@@ -6,6 +6,7 @@ use App\Facades\Settings;
 use App\Models\Character\Character;
 use App\Models\Character\CharacterCategory;
 use App\Models\Character\CharacterImage;
+use App\Models\Character\CharacterTransformation as Transformation;
 use App\Models\Character\Sublist;
 use App\Models\Faq;
 use App\Models\Feature\Feature;
@@ -196,6 +197,7 @@ class BrowseController extends Controller {
             'categories'      => [0 => 'Any Category'] + CharacterCategory::whereNotIn('id', $subCategories)->visible(Auth::user() ?? null)->orderBy('character_categories.sort', 'DESC')->pluck('name', 'id')->toArray(),
             'specieses'       => [0 => 'Any Species'] + Species::whereNotIn('id', $subSpecies)->visible(Auth::user() ?? null)->orderBy('specieses.sort', 'DESC')->pluck('name', 'id')->toArray(),
             'subtypes'        => ['none' => 'No Subtypes', 'any' => 'Any Subtype', 'hybrid' => 'Multiple / Hybrid Subtypes'] + Subtype::visible(Auth::user() ?? null)->orderBy('subtypes.sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'transformations' => [0 => 'Any Transformation'] + Transformation::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'rarities'        => [0 => 'Any Rarity'] + Rarity::orderBy('rarities.sort', 'DESC')->pluck('name', 'id')->toArray(),
             'features'        => Feature::getDropdownItems(),
             'sublists'        => Sublist::orderBy('sort', 'DESC')->get(),
@@ -217,13 +219,14 @@ class BrowseController extends Controller {
         $query = $this->handleMasterlistSearch($request, $query, $imageQuery, true);
 
         return view('browse.myo_masterlist', [
-            'isMyo'       => true,
-            'slots'       => $query->paginate(30)->appends($request->query()),
-            'specieses'   => [0 => 'Any Species'] + Species::visible(Auth::user() ?? null)->orderBy('specieses.sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'rarities'    => [0 => 'Any Rarity'] + Rarity::orderBy('rarities.sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'features'    => Feature::getDropdownItems(),
-            'sublists'    => Sublist::orderBy('sort', 'DESC')->get(),
-            'userOptions' => User::query()->orderBy('name')->pluck('name', 'id')->toArray(),
+            'isMyo'           => true,
+            'slots'           => $query->paginate(30)->appends($request->query()),
+            'specieses'       => [0 => 'Any Species'] + Species::visible(Auth::user() ?? null)->orderBy('specieses.sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'transformations' => [0 => 'Any Transformation'] + Transformation::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'rarities'        => [0 => 'Any Rarity'] + Rarity::orderBy('rarities.sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'features'        => Feature::getDropdownItems(),
+            'sublists'        => Sublist::orderBy('sort', 'DESC')->get(),
+            'userOptions'     => User::query()->orderBy('name')->pluck('name', 'id')->toArray(),
         ]);
     }
 
@@ -278,6 +281,7 @@ class BrowseController extends Controller {
             'specieses'       => [0 => 'Any Species'] + $subSpecies,
             'subtypes'        => ['none' => 'No Subtypes', 'any' => 'Any Subtype', 'hybrid' => 'Multiple / Hybrid Subtypes'] + Subtype::visible(Auth::user() ?? null)->orderBy('subtypes.sort', 'DESC')->pluck('name', 'id')->toArray(),
             'rarities'        => [0 => 'Any Rarity'] + Rarity::orderBy('rarities.sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'transformations' => [0 => 'Any Transformation'] + Transformation::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'features'        => Feature::getDropdownItems(),
             'sublist'         => $sublist,
             'sublists'        => Sublist::orderBy('sort', 'DESC')->get(),
@@ -373,6 +377,9 @@ class BrowseController extends Controller {
         if (!$isMyo && $request->get('character_category_id')) {
             $query->where('character_category_id', $request->get('character_category_id'));
         }
+        if ($request->get('pedigree_id')) {
+            $query->where('pedigree_id', $request->get('pedigree_id'));
+        }
 
         if ($request->get('sale_value_min')) {
             $query->where('sale_value', '>=', $request->get('sale_value_min'));
@@ -408,8 +415,19 @@ class BrowseController extends Controller {
         }
 
         // Search only main images
-        if (!$request->get('search_images')) {
+        if (!$request->get('search_images') && !$request->get('transformation_id') && !$request->get('has_transformation')) {
             $imageQuery->whereIn('id', $query->pluck('character_image_id')->toArray());
+        }
+
+        // Searching on image properties
+        if ($request->get('species_id')) {
+            $imageQuery->where('species_id', $request->get('species_id'));
+        }
+        if ($request->get('transformation_id')) {
+            $imageQuery->where('transformation_id', $request->get('transformation_id'));
+        }
+        if ($request->get('has_transformation')) {
+            $imageQuery->whereNotNull('transformation_id');
         }
 
         // Searching on image properties

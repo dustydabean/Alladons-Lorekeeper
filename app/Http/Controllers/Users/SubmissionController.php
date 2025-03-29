@@ -153,6 +153,21 @@ class SubmissionController extends Controller {
             $gallerySubmissions = [];
         }
 
+        if ($prompt) {
+            $count['all'] = Submission::submitted($prompt->id, Auth::user()->id)->count();
+            $count['Hour'] = Submission::submitted($prompt->id, Auth::user()->id)->where('created_at', '>=', now()->startOfHour())->count();
+            $count['Day'] = Submission::submitted($prompt->id, Auth::user()->id)->where('created_at', '>=', now()->startOfDay())->count();
+            $count['Week'] = Submission::submitted($prompt->id, Auth::user()->id)->where('created_at', '>=', now()->startOfWeek())->count();
+            $count['Month'] = Submission::submitted($prompt->id, Auth::user()->id)->where('created_at', '>=', now()->startOfMonth())->count();
+            $count['Year'] = Submission::submitted($prompt->id, Auth::user()->id)->where('created_at', '>=', now()->startOfYear())->count();
+
+            if ($prompt->limit_character) {
+                $limit = $prompt->limit * Character::visible()->where('is_myo_slot', 0)->where('user_id', Auth::user()->id)->count();
+            } else {
+                $limit = $prompt->limit;
+            }
+        }
+
         return view('home.edit_submission', [
             'closed'              => $closed,
             'isClaim'             => false,
@@ -169,7 +184,8 @@ class SubmissionController extends Controller {
             'page'                   => 'submission',
             'expanded_rewards'       => config('lorekeeper.extensions.character_reward_expansion.expanded'),
             'selectedInventory'      => isset($submission->data['user']) ? parseAssetData($submission->data['user']) : null,
-            'count'                  => Submission::where('prompt_id', $submission->prompt_id)->where('status', 'Approved')->where('user_id', $submission->user_id)->count(),
+            'count'                  => $count,
+            'limit'                  => $limit,
             'userGallerySubmissions' => $gallerySubmissions,
             'criteria'               => $prompt ? Criterion::active()->whereIn('id', $promptCriteria)->orderBy('name')->pluck('name', 'id') : null,
         ]));
@@ -222,9 +238,23 @@ class SubmissionController extends Controller {
             return response(404);
         }
 
+        $count['all'] = Submission::submitted($id, Auth::user()->id)->count();
+        $count['Hour'] = Submission::submitted($id, Auth::user()->id)->where('created_at', '>=', now()->startOfHour())->count();
+        $count['Day'] = Submission::submitted($id, Auth::user()->id)->where('created_at', '>=', now()->startOfDay())->count();
+        $count['Week'] = Submission::submitted($id, Auth::user()->id)->where('created_at', '>=', now()->startOfWeek())->count();
+        $count['Month'] = Submission::submitted($id, Auth::user()->id)->where('created_at', '>=', now()->startOfMonth())->count();
+        $count['Year'] = Submission::submitted($id, Auth::user()->id)->where('created_at', '>=', now()->startOfYear())->count();
+
+        if ($prompt->limit_character) {
+            $limit = $prompt->limit * Character::visible()->where('is_myo_slot', 0)->where('user_id', Auth::user()->id)->count();
+        } else {
+            $limit = $prompt->limit;
+        }
+
         return view('home._prompt', [
             'prompt' => $prompt,
-            'count'  => Submission::where('prompt_id', $id)->where('status', 'Approved')->where('user_id', Auth::user()->id)->count(),
+            'count'  => $count,
+            'limit'  => $limit,
         ]);
     }
 
@@ -282,7 +312,7 @@ class SubmissionController extends Controller {
         if (!$submission) {
             abort(404);
         }
-        
+
         $request->validate(Submission::$updateRules);
         if ($submit && $service->editSubmission($submission, $request->only([
             'url', 'prompt_id', 'comments', 'slug', 'character_rewardable_type', 'character_rewardable_id', 'character_rewardable_quantity',

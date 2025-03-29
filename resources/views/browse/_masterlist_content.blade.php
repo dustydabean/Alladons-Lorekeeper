@@ -52,6 +52,15 @@
                     ) !!}</span>
                 </div>
                 <hr />
+                <div class="masterlist-search-field">
+                    {!! Form::label('transformation_id', 'Transformation: ') !!}
+                    {!! Form::select('transformation_id', $transformations, Request::get('transformation_id'), ['class' => 'form-control']) !!}
+                </div>
+                <div class="masterlist-search-field">
+                    {!! Form::label('has_transformation', 'Has a Transformation: ') !!}
+                    {!! Form::select('has_transformation', ['1' => 'Has a transformation.'], Request::get('has_transformation'), ['class' => 'form-control', 'placeholder' => 'Any']) !!}
+                </div>
+                <hr />
             @endif
             <div class="masterlist-search-field">
                 {!! Form::label('owner', 'Owner Username: ') !!}
@@ -178,7 +187,7 @@
                         <a href="{{ $character->url }}" class="h5 mb-0">
                             @if (!$character->is_visible)
                                 <i class="fas fa-eye-slash"></i>
-                            @endif {!! $character->warnings !!} {{ Illuminate\Support\Str::limit($character->fullName, 20, $end = '...') }}
+                            @endif {!! $character->warnings !!} {{ Illuminate\Support\Str::limit($character->masterlistName, 20, $end = '...') }}
                         </a>
                     </div>
                     <div class="small">

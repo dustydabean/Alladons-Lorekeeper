@@ -15,8 +15,8 @@ class Feature extends Model {
      * @var array
      */
     protected $fillable = [
-        'feature_category_id', 'species_id', 'subtype_id', 'rarity_id', 'name', 'has_image', 'description', 'parsed_description', 'is_visible', 'hash', 'has_example_image','example_hash','example_summary',
-        'mut_level', 'mut_type', 'is_locked',
+        'feature_category_id', 'species_id', 'subtype_id', 'rarity_id', 'name', 'has_image', 'description', 'parsed_description', 'is_visible', 'hash', 'has_example_image', 'example_hash', 'example_summary',
+        'mut_level', 'mut_type', 'is_locked', 'code_id',
     ];
 
     /**
@@ -93,7 +93,7 @@ class Feature extends Model {
         return $this->belongsTo(FeatureCategory::class, 'feature_category_id');
     }
 
-        /**
+    /**
      * Get the example images.
      */
     public function exampleImages() {
@@ -101,7 +101,7 @@ class Feature extends Model {
     }
 
     /**
-     * Get the FIRST example image (if only 1)
+     * Get the FIRST example image (if only 1).
      */
     public function singleExample() {
         return $this->hasOne('App\Models\Feature\FeatureExample', 'feature_id');
@@ -242,7 +242,7 @@ class Feature extends Model {
      * @return string
      */
     public function getDisplayNameAttribute() {
-        return '<a href="'.$this->url.'" class="display-trait">'.$this->name.'</a>'.($this->rarity ? ' ('.$this->rarity->displayName.')' : '');
+        return ($this->code_id ? $this->code_id.' - ' : null).'<a href="'.$this->url.'" class="display-trait">'.$this->name.'</a>'.($this->rarity ? ' ('.$this->rarity->displayName.')' : '');
     }
 
     /**
@@ -290,8 +290,7 @@ class Feature extends Model {
      *
      * @return string
      */
-    public function getExampleImageFileNameAttribute()
-    {
+    public function getExampleImageFileNameAttribute() {
         return $this->example_hash.$this->id.'-example-image.png';
     }
 
@@ -300,10 +299,12 @@ class Feature extends Model {
      *
      * @return string
      */
-    public function getExampleImageUrlAttribute()
-    {
-        if (!$this->has_example_image) return null;
-        return asset($this->imageDirectory . '/' . $this->exampleImageFileName);
+    public function getExampleImageUrlAttribute() {
+        if (!$this->has_example_image) {
+            return null;
+        }
+
+        return asset($this->imageDirectory.'/'.$this->exampleImageFileName);
     }
 
     /**

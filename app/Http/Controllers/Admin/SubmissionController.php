@@ -7,6 +7,7 @@ use App\Models\Character\Character;
 use App\Models\Currency\Currency;
 use App\Models\Item\Item;
 use App\Models\Loot\LootTable;
+use App\Models\Prompt\Prompt;
 use App\Models\Prompt\PromptCategory;
 use App\Models\Raffle\Raffle;
 use App\Models\Recipe\Recipe;
@@ -61,8 +62,23 @@ class SubmissionController extends Controller {
     public function getSubmission($id) {
         $submission = Submission::whereNotNull('prompt_id')->where('id', $id)->where('status', '!=', 'Draft')->first();
         $inventory = isset($submission->data['user']) ? parseAssetData($submission->data['user']) : null;
+        $prompt = Prompt::where('id', $submission->prompt_id)->first();
+
         if (!$submission) {
             abort(404);
+        }
+
+        $count['all'] = Submission::submitted($prompt->id, $submission->user_id)->count();
+        $count['Hour'] = Submission::submitted($prompt->id, $submission->user_id)->where('created_at', '>=', now()->startOfHour())->count();
+        $count['Day'] = Submission::submitted($prompt->id, $submission->user_id)->where('created_at', '>=', now()->startOfDay())->count();
+        $count['Week'] = Submission::submitted($prompt->id, $submission->user_id)->where('created_at', '>=', now()->startOfWeek())->count();
+        $count['Month'] = Submission::submitted($prompt->id, $submission->user_id)->where('created_at', '>=', now()->startOfMonth())->count();
+        $count['Year'] = Submission::submitted($prompt->id, $submission->user_id)->where('created_at', '>=', now()->startOfYear())->count();
+
+        if ($prompt->limit_character) {
+            $limit = $prompt->limit * Character::visible()->where('is_myo_slot', 0)->where('user_id', $submission->user_id)->count();
+        } else {
+            $limit = $prompt->limit;
         }
 
         return view('admin.submissions.submission', [
@@ -80,7 +96,9 @@ class SubmissionController extends Controller {
             'tables'              => LootTable::orderBy('name')->pluck('name', 'id'),
             'recipes'             => Recipe::orderBy('name')->pluck('name', 'id'),
             'raffles'             => Raffle::where('rolled_at', null)->where('is_active', 1)->orderBy('name')->pluck('name', 'id'),
-            'count'               => Submission::where('prompt_id', $submission->prompt_id)->where('status', 'Approved')->where('user_id', $submission->user_id)->count(),
+            'count'               => $count,
+            'prompt'              => $prompt,
+            'limit'               => $limit,
         ] : []));
     }
 

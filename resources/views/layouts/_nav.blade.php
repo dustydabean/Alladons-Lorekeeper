@@ -58,6 +58,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url('gallery') }}"><i class="fas fa-paint-brush"></i> Gallery</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url('trades/listings') }}"><i class="fas fa-exchange-alt"></i> Trade Center</a>
+                </li>
 
                 <li class="nav-item dropdown">
                     <a id="loreDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>

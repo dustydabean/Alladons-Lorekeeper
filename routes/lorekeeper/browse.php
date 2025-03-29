@@ -102,6 +102,7 @@ Route::group(['prefix' => 'character', 'namespace' => 'Characters'], function ()
     Route::get('{slug}/bank', 'CharacterController@getCharacterBank');
     Route::get('{slug}/inventory', 'CharacterController@getCharacterInventory');
     Route::get('{slug}/images', 'CharacterController@getCharacterImages');
+    Route::get('{slug}/image/{id}', 'CharacterController@getCharacterImage');
 
     Route::get('{slug}/currency-logs', 'CharacterController@getCharacterCurrencyLogs');
     Route::get('{slug}/item-logs', 'CharacterController@getCharacterItemLogs');
@@ -131,8 +132,10 @@ Route::group(['prefix' => 'world'], function () {
 
     Route::get('currencies', 'WorldController@getCurrencies');
     Route::get('rarities', 'WorldController@getRarities');
+    Route::get('genetics', 'WorldController@getGenetics');
     Route::get('species', 'WorldController@getSpecieses');
     Route::get('subtypes', 'WorldController@getSubtypes');
+    Route::get('transformations', 'WorldController@getTransformations');
     Route::get('species/{id}/traits', 'WorldController@getSpeciesFeatures');
     Route::get('subtypes/{id}/traits', 'WorldController@getSubtypeFeatures');
     Route::get('universaltraits', 'WorldController@getUniversalFeatures');
@@ -174,6 +177,10 @@ Route::group(['prefix' => 'shops'], function () {
 Route::group(['prefix' => __('dailies.dailies')], function () {
     Route::get('/', 'DailyController@getIndex');
     Route::get('{id}', 'DailyController@getDaily')->where(['id' => '[0-9]+']);
+});
+
+Route::group(['prefix' => 'event-tracking'], function () {
+    Route::get('/', 'EventController@getEventTracking');
 });
 
 /**************************************************************************************************

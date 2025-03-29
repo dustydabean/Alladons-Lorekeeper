@@ -21,6 +21,7 @@
                     <li class="list-group-item"><a href="{{ url('world/character-categories') }}">Species Categories</a></li>
                     <li class="list-group-item"><a href="{{ url('world/character-pedigrees') }}">Alladon Pedigrees</a></li>
                     <!--<li class="list-group-item"><a href="{{ url('world/character-generations') }}">Character Generations</a></li>-->
+                    <!--<li class="list-group-item"><a href="{{ url('world/transformations') }}">Transformations</a></li>-->
                 </ul>
             </div>
         </div>
@@ -36,6 +37,7 @@
                     @endif
                     <li class="list-group-item"><a href="{{ url('world/trait-categories') }}">Mutation Categories</a></li>
                     <li class="list-group-item"><a href="{{ url('world/rarities') }}">Mutation Points</a></li>
+                    <!--<li class="list-group-item"><a href="{{ url('world/genetics') }}">Genetics</a></li>-->
                     <!--<li class="list-group-item"><a href="{{ url('world/traits') }}">All Mutations</a></li>-->
                 </ul>
             </div>

@@ -19,13 +19,17 @@
     <h3>Basic Information</h3>
 
     <div class="row">
-        <div class="col-md-6 form-group">
+        <div class="col-md-4 form-group">
             {!! Form::label('Name') !!}
             {!! Form::text('name', $feature->name, ['class' => 'form-control']) !!}
         </div>
-        <div class="col-md-6 form-group">
+        <div class="col-md-4 form-group">
             {!! Form::label('Rarity') !!}
             {!! Form::select('rarity_id', $rarities, $feature->rarity_id, ['class' => 'form-control']) !!}
+        </div>
+        <div class="col-md-4 form-group">
+            {!! Form::label('Code (Optional)') !!} {!! add_help('This displays before the name.') !!}
+            {!! Form::text('code_id', $feature->code_id, ['class' => 'form-control']) !!}
         </div>
     </div>
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Characters;
 use App\Http\Controllers\Controller;
 use App\Models\Character\Character;
 use App\Models\Character\CharacterDesignUpdate;
+use App\Models\Character\CharacterTransformation as Transformation;
 use App\Models\Feature\Feature;
 use App\Models\Item\Item;
 use App\Models\Item\ItemCategory;
@@ -222,11 +223,12 @@ class DesignController extends Controller {
         }
 
         return view('character.design.features', [
-            'request'   => $r,
-            'specieses' => ['0' => 'Select Species'] + Species::visible()->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'subtypes'  => Subtype::visible()->where('species_id', '=', $r->species_id)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'rarities'  => ['0' => 'Select Rarity'] + Rarity::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'features'  => Feature::getDropdownItems(),
+            'request'         => $r,
+            'specieses'       => ['0' => 'Select Species'] + Species::visible()->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'subtypes'        => Subtype::visible()->where('species_id', '=', $r->species_id)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'rarities'        => ['0' => 'Select Rarity'] + Rarity::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'transformations' => ['0' => 'Select Transformation'] + Transformation::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'features'        => Feature::getDropdownItems(),
         ]);
     }
 
@@ -242,6 +244,20 @@ class DesignController extends Controller {
         return view('character.design._features_subtype', [
             'subtypes' => Subtype::visible()->where('species_id', '=', $species)->orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
             'subtype'  => $id,
+        ]);
+    }
+
+    /**
+     * Shows the edit image transformation portion of the modal.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getFeaturesTransformation(Request $request) {
+        $id = $request->input('id');
+
+        return view('character.design._features_transformation', [
+            'transformations' => ['0' => 'Select Transformation'] + Transformation::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'transformation'  => $id,
         ]);
     }
 

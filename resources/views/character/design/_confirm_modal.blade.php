@@ -2,6 +2,9 @@
     @if ($request->isComplete)
         <p>This will submit the design approval request. While the request is in the queue, <u>you will not be able to edit it</u>. </p>
         <p>Are you sure you want to submit this request?</p>
+
+        @include('widgets._submission_checklist', ['type' => 'design_update'])
+
         {!! Form::open(['url' => 'designs/' . $request->id . '/submit', 'class' => 'text-right']) !!}
         {!! Form::submit('Submit Request', ['class' => 'btn btn-primary']) !!}
         {!! Form::close() !!}

@@ -43,9 +43,6 @@
             <div class="form-check mr-3 mb-3">
                 {!! Form::select('is_locked', ['none' => 'Any Status', '0' => 'Unlocked', '1' => 'Locked'], Request::get('is_locked'), ['class' => 'form-control']) !!}
             </div>
-            <div class="form-group mb-3">
-                {!! Form::submit('Search', ['class' => 'btn btn-primary']) !!}
-            </div>
         <div class="form-inline justify-content-end">
             <div class="form-group ml-3 mb-3">
                 {!! Form::select(
@@ -119,6 +116,9 @@
                                     @endif
                                     @if ($feature->is_locked)
                                         <i class="fas fa-lock mr-1"></i>
+                                    @endif
+                                    @if ($feature->code_id)
+                                        ({{ $feature->code_id }}) 
                                     @endif
                                     {{ $feature->name }}
                                 </div>
