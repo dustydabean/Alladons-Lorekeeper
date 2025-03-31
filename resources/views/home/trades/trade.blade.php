@@ -103,7 +103,7 @@
 @endsection
 
 @section('scripts')
-    @include('widgets._inventory_select_js', ['readOnly' => true])
+    @include('widgets._inventory_select_js')
     <script>
         $(document).ready(function() {
             $('#confirmOfferButton').on('click', function(e) {

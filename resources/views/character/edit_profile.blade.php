@@ -132,6 +132,7 @@
 
 @section('scripts')
     @parent
+    @include('js._tinymce_wysiwyg')
     <script>
         $(document).ready(function(){
             $values = $("#customValues");

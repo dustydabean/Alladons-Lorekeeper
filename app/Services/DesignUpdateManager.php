@@ -344,10 +344,10 @@ class DesignUpdateManager extends Service {
             }
 
             $request->has_addons = 1;
-            $request->data = json_encode([
+            $request->data = [
                 'user'      => Arr::only(getDataReadyAssets($userAssets), ['user_items', 'currencies']),
                 'character' => Arr::only(getDataReadyAssets($characterAssets), ['currencies']),
-            ]);
+            ];
             $request->save();
 
             return $this->commitReturn(true);
@@ -426,7 +426,7 @@ class DesignUpdateManager extends Service {
 
                 // Skip the feature if the rarity is too high.
                 // Comment out this check if rarities should have more berth for traits choice.
-                //if($features[$featureId]->rarity->sort > $rarity->sort) continue;
+                // if($features[$featureId]->rarity->sort > $rarity->sort) continue;
 
                 // Skip the feature if it's not the correct species.
                 if ($features[$featureId]->species_id && $features[$featureId]->species_id != $species->id) {
@@ -1022,10 +1022,10 @@ class DesignUpdateManager extends Service {
                     break;
             }
 
-            $voteData = (isset($request->vote_data) ? collect(json_decode($request->vote_data, true)) : collect([]));
+            $voteData = (isset($request->vote_data) ? collect($request->vote_data, true) : collect([]));
             $voteData->get($user->id) ? $voteData->pull($user->id) : null;
             $voteData->put($user->id, $vote);
-            $request->vote_data = $voteData->toJson();
+            $request->vote_data = $voteData;
 
             $request->save();
 

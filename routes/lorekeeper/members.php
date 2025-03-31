@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Member Routes
@@ -40,6 +42,7 @@ Route::group(['prefix' => 'account', 'namespace' => 'Users'], function () {
     Route::post('dob', 'AccountController@postBirthday');
     Route::post('devlog-notif', 'AccountController@postdevLogNotif');
     Route::post('warning', 'AccountController@postWarningVisibility');
+    Route::post('comments', 'AccountController@postProfileComments');
 
     Route::get('two-factor/confirm', 'AccountController@getConfirmTwoFactor');
     Route::post('two-factor/enable', 'AccountController@postEnableTwoFactor');
@@ -231,6 +234,7 @@ Route::group(['prefix' => 'submissions', 'namespace' => 'Users'], function () {
     Route::get('new/character/{slug}', 'SubmissionController@getCharacterInfo');
     Route::get('new/character-permissions/{slug}', 'SubmissionController@getCharacterPermissions');
     Route::get('new/prompt/{id}', 'SubmissionController@getPromptInfo');
+    Route::get('new/prompt/{id}/requirements', 'SubmissionController@getPromptRequirementInfo');
     Route::post('new', 'SubmissionController@postNewSubmission');
     Route::post('new/{draft}', 'SubmissionController@postNewSubmission')->where('draft', 'draft');
     Route::get('draft/{id}', 'SubmissionController@getEditSubmission');
@@ -373,4 +377,11 @@ Route::group(['prefix' => 'criteria'], function () {
     Route::post('rewards/{id}', 'CriterionController@postCriterionRewards');
 
     Route::get('guide/{id}', 'CriterionController@getCriterionGuide');
+});
+
+/**************************************************************************************************
+    Comments
+**************************************************************************************************/
+Route::group(['prefix' => 'limits'], function () {
+    Route::post('unlock/{id}', 'Admin\LimitController@postUnlockLimits');
 });

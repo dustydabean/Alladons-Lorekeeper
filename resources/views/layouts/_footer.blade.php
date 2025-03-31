@@ -6,6 +6,7 @@
         <li class="nav-item"><a href="{{ url('reports/bug-reports') }}" class="nav-link">Bug Reports</a></li>
         <li class="nav-item"><a href="https://github.com/corowne/lorekeeper" class="nav-link">Lorekeeper</a></li>
         <li class="nav-item"><a href="{{ url('credits') }}" class="nav-link">Credits</a></li>
+        <li class="nav-item"><a href="{{ url('feeds') }}" class="nav-link"><i class="fas fa-rss-square"></i> Feeds</a></li>
     </ul>
 </nav>
 <div class="copyright">&copy; {{ config('lorekeeper.settings.site_name', 'Lorekeeper') }} v{{ config('lorekeeper.settings.version') }} {{ Carbon\Carbon::now()->year }}</div>

@@ -312,7 +312,7 @@
     @parent
     @if (!$closed || ($submission->id && $submission->status != 'Rejected'))
         @include('galleries._character_select_js')
-
+        @include('js._tinymce_wysiwyg')
         <script>
             $(document).ready(function() {
                 var $submitButton = $('#submitButton');
