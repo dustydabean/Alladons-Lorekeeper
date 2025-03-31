@@ -1,4 +1,4 @@
-<div class="container text-center">
+<div class="container-fluid px-0 text-center">
     @if ($character->children->count() && config('lorekeeper.lineage.show_children_on_tab'))
         @include('character._lineage_children', [
             'character' => $character,
@@ -7,10 +7,12 @@
             'tab' => true,
         ])
     @endif
-    <h5>{{ $character->fullName }}'s Lineage</h5>
+    <h5>
+        {{ $character->fullName }}'s Lineage
+    </h5>
     {!! $character ? '<img src="' . $character->image->thumbnailUrl . '" class=\'img-thumbnail\' alt=\'Thumbnail for ' . $character->fullName . '\' / width="150" height="150">' : '' !!}
-<br>
-{!! $character ? $character->fullName : 'Unkown' !!}
+    <br>
+    {!! $character ? $character->fullName : 'Unkown' !!}
     <div class="row">
         @include('character._tab_lineage_col', [
             'character' => $character?->lineage?->parent_1,

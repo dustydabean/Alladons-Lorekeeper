@@ -1,4 +1,4 @@
-<div class="col mx-1">
+<div class="col px-1">
     <div class="border-bottom mb-1">
         <span class="font-weight-bold">
             {{ $parent }}
@@ -12,21 +12,21 @@
 
     @if ($max_depth > 0)
         <div class="row">
-        @if (!empty($character?->lineage?->parent_1))
-            @include('character._tab_lineage_col', [
-                'character' => $character?->lineage?->parent_1,
-                'max_depth' => config('lorekeeper.lineage.tab_lineage_depth') - 1,
-                'parent' => $character?->lineage?->parent_1?->parentType ?? 'Parent',
-            ])
-        @endif
-            
-        @if (!empty($character?->lineage?->parent_2))
-            @include('character._tab_lineage_col', [
-                'character' => $character?->lineage?->parent_2,
-                'max_depth' => config('lorekeeper.lineage.tab_lineage_depth') - 1,
-                'parent' => $character?->lineage?->parent_2?->parentType ?? 'Parent',
-        ])
-        @endif
+            @if (!empty($character?->lineage?->parent_1))
+                @include('character._tab_lineage_col', [
+                    'character' => $character?->lineage?->parent_1,
+                    'max_depth' => config('lorekeeper.lineage.tab_lineage_depth') - 1,
+                    'parent' => $character?->lineage?->parent_1?->parentType ?? 'Parent',
+                ])
+            @endif
+                
+            @if (!empty($character?->lineage?->parent_2))
+                @include('character._tab_lineage_col', [
+                    'character' => $character?->lineage?->parent_2,
+                    'max_depth' => config('lorekeeper.lineage.tab_lineage_depth') - 1,
+                    'parent' => $character?->lineage?->parent_2?->parentType ?? 'Parent',
+                ])
+            @endif
         </div>
     @endif
 </div>
