@@ -246,6 +246,15 @@ class Feature extends Model {
     }
 
     /**
+     * Displays the name with code.
+     *
+     * @return string
+     */
+    public function getCodeNameAttribute() {
+        return ($this->code_id ? $this->code_id.' - ' : null).$this->name;
+    }
+
+    /**
      * Gets the file directory containing the model's image.
      *
      * @return string
@@ -394,7 +403,7 @@ class Feature extends Model {
         if (config('lorekeeper.extensions.organised_traits_dropdown')) {
             $sorted_feature_categories = collect(FeatureCategory::all()->where('is_visible', '>=', $visibleOnly)->sortBy('sort')->pluck('name')->toArray());
 
-            $grouped = self::where('is_visible', '>=', $visibleOnly)->select('name', 'id', 'feature_category_id')->with('category')->orderBy('name')->get()->keyBy('id')->groupBy('category.name', $preserveKeys = true)->toArray();
+            $grouped = self::where('is_visible', '>=', $visibleOnly)->select('name', 'id', 'feature_category_id', 'code_id')->with('category')->orderBy('name')->get()->sortBy('code_id', SORT_NATURAL)->keyBy('id')->groupBy('category.name', $preserveKeys = true)->toArray();
             if (isset($grouped[''])) {
                 if (!$sorted_feature_categories->contains('Miscellaneous')) {
                     $sorted_feature_categories->push('Miscellaneous');
@@ -405,10 +414,9 @@ class Feature extends Model {
             $sorted_feature_categories = $sorted_feature_categories->filter(function ($value, $key) use ($grouped) {
                 return in_array($value, array_keys($grouped), true);
             });
-
             foreach ($grouped as $category => $features) {
                 foreach ($features as $id  => $feature) {
-                    $grouped[$category][$id] = $feature['name'];
+                    $grouped[$category][$id] = (isset($feature['code_id']) && $feature['code_id'] ? $feature['code_id'] . ' - ' : '') . $feature['name'];
                 }
             }
             $features_by_category = $sorted_feature_categories->map(function ($category) use ($grouped) {
@@ -417,7 +425,7 @@ class Feature extends Model {
 
             return $features_by_category;
         } else {
-            return self::where('is_visible', '>=', $visibleOnly)->orderBy('name')->pluck('name', 'id')->toArray();
+            return self::where('is_visible', '>=', $visibleOnly)->orderBy('name')->pluck('codeName', 'id')->toArray();
         }
     }
 }
