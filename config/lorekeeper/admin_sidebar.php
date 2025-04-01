@@ -254,6 +254,10 @@ return [
                 'name' => 'Recipes',
                 'url'  => 'admin/data/recipes',
             ],
+            [
+                'name' => 'Dynamic Limits',
+                'url'  => 'admin/data/limits',
+            ],
         ],
     ],
     'Genetics' => [

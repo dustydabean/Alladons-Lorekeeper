@@ -1,11 +1,13 @@
-<div class="container text-center {{ isset($tab) && $tab ? 'mb-3' : '' }}">
+<div class="container-fluid px-0 text-center {{ isset($tab) && $tab ? 'mb-3' : '' }}">
     {{-- recursive based on config --}}
     @if ($character->children && $character->children->count())
-        <h5 class="text-center">{{ $title }}</h5>
+        <h5 class="text-center">
+            {{ $title }}
+        </h5>
         @foreach ($character->children->chunk(4) as $chunk)
             <div class="row justify-content-center">
                 @foreach ($chunk as $child)
-                    @if($child->character)
+                    @if ($child->character)
                         <div class="col text-center">
                             <div>
                                 <a href="{{ $child->character->url }}">
@@ -16,7 +18,8 @@
                                 <a href="{{ $child->character->url }}" class="h5 mb-0">
                                     @if (!$child->character->is_visible)
                                         <i class="fas fa-eye-slash"></i>
-                                    @endif {{ Illuminate\Support\Str::limit($child->character->fullName, 20, $end = '...') }}
+                                    @endif 
+                                    {{ Illuminate\Support\Str::limit($child->character->fullName, 20, $end = '...') }}
                                 </a>
                             </div>
                             @if ($child->character->children->count() && $max_depth > 0)

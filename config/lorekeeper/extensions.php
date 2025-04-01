@@ -43,7 +43,7 @@ return [
     'character_TH_profile_link' => 1,
 
     // Design Update Voting - Mercury
-    'design_update_voting'                 => 0,
+    'design_update_voting' => 0,
 
     // Item Entry Expansion - Mercury
     'item_entry_expansion'                 => [
@@ -62,21 +62,21 @@ return [
     'scroll_to_top'                        => 1, // 1 - On, 0 - off
 
     // Character Reward Expansion - Uri
-    'character_reward_expansion'           => [
+    'character_reward_expansion' => [
         'expanded'          => 1,
         'default_recipient' => 1, // 0 to default to the character's owner (if a user), 1 to default to the submission user.
     ],
 
     // MYO Image Hide/Remove - Mercury
     // Adds an option when approving MYO submissions to hide or delete the MYO placeholder image
-    'remove_myo_image'                     => 0,
+    'remove_myo_image' => 0,
 
     // Auto-populate New Image Traits - Mercury
     // Automatically adds the traits present on a character's active image to the list when uploading a new image for an extant character.
     'autopopulate_image_features'          => 1,
 
     // Staff Rewards - Mercury
-    'staff_rewards'                        => [
+    'staff_rewards' => [
         'enabled'     => 0,
         'currency_id' => 1,
     ],
@@ -124,4 +124,7 @@ return [
     // Multiple Subtypes - Newt
     'exclusionary_search'    => 0, // If enabled, searching for multiple subtypes will only return results that have all of the subtypes specified. If disabled, it will return results that have any of the subtypes specified.
     'multiple_subtype_limit' => 10, // The maximum number of subtypes a character can have.
+
+    // TinyMCE Code Editor - Moif
+    'tinymce_code_editor'   => 1, // If enabled, uses the more advanced code editor instead of TinyMCE's default.
 ];

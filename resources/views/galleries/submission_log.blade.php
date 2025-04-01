@@ -9,7 +9,7 @@
 
     <h1>Log Details
         <span
-            class="float-right badge badge-{{ $submission->status == 'Pending' ? 'secondary' : ($submission->status == 'Accepted' ? 'success' : 'danger') }}">{{ $submission->collaboratorApproved ? $submission->status : 'Pending Collaborator Approval' }}</span>
+            class="float-right badge badge-{{ $submission->status == 'Pending' ? 'secondary' : ($submission->status == 'Accepted' ? 'success' : 'danger') }}">{{ $submission->collaboratorApproval ? $submission->status : 'Pending Collaborator Approval' }}</span>
     </h1>
 
     @include('galleries._queue_submission', ['key' => 0])
@@ -120,17 +120,17 @@
                 </div>
             </div>
         </div>
-        @if (Auth::user()->hasPower('manage_submissions') && $submission->collaboratorApproved)
+        @if (Auth::user()->hasPower('manage_submissions') && $submission->collaboratorApproval)
             <div class="col-12 col-md-5">
                 <div class="card mb-4">
                     <div class="card-header">
                         <h5>[Admin] Vote Info</h5>
                     </div>
                     <div class="card-body">
-                        @if (isset($submission->vote_data) && $submission->voteData->count())
-                            @foreach ($submission->voteData as $voter => $vote)
+                        @if ($submission->getVoteData()['raw']->count())
+                            @foreach ($submission->getVoteData(1)['raw'] as $vote)
                                 <li>
-                                    {!! App\Models\User\User::find($voter)->displayName !!} {{ $voter == Auth::user()->id ? '(you)' : '' }}: <span {!! $vote == 2 ? 'class="text-success">Accept' : 'class="text-danger">Reject' !!}</span>
+                                    {!! $vote['user']->displayName !!} {{ $vote['user']->id == Auth::user()->id ? '(you)' : '' }}: <span {!! $vote['vote'] == 2 ? 'class="text-success">Accept' : 'class="text-danger">Reject' !!}</span>
                                 </li>
                             @endforeach
                         @else

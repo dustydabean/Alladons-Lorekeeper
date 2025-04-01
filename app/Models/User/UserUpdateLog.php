@@ -22,6 +22,15 @@ class UserUpdateLog extends Model {
     protected $table = 'user_update_log';
 
     /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'data' => 'array',
+    ];
+
+    /**
      * The primary key of the model.
      *
      * @var string
@@ -53,20 +62,5 @@ class UserUpdateLog extends Model {
      */
     public function user() {
         return $this->belongsTo(User::class, 'user_id');
-    }
-
-    /**********************************************************************************************
-
-        ACCESSORS
-
-    **********************************************************************************************/
-
-    /**
-     * Get the data attribute as an associative array.
-     *
-     * @return array
-     */
-    public function getDataAttribute() {
-        return json_decode($this->attributes['data'], true);
     }
 }

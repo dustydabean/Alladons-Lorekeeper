@@ -91,6 +91,7 @@ class ShopController extends Controller {
         $id ? $request->validate(Shop::$updateRules) : $request->validate(Shop::$createRules);
         $data = $request->only([
             'name', 'description', 'image', 'remove_image', 'is_active', 'is_staff', 'use_coupons', 'is_fto', 'allowed_coupons', 'is_timed_shop', 'start_at', 'end_at',
+            'is_hidden', 'shop_days', 'shop_months',
         ]);
         if ($id && $service->updateShop(Shop::find($id), $data, Auth::user())) {
             flash('Shop updated successfully.')->success();
@@ -135,12 +136,30 @@ class ShopController extends Controller {
         if (!$stock) {
             abort(404);
         }
+        // get base modal from type using asset helper
+        $type = $stock->stock_type;
+        $model = getAssetModelString(strtolower($type));
+
+        // check if categories exist for this model ($model.'Category')
+        $categoryClass = $model.'Category';
+        if (class_exists($categoryClass)) {
+            // map the categories to be name-id
+            $categories = $categoryClass::orderBy('name')->get()->mapWithKeys(function ($category) {
+                return [$category->id.'-category' => $category->name];
+            });
+            $items = [
+                $type            => $model::orderBy('name')->pluck('name', 'id')->toArray() + ['random' => 'Random '.$type],
+                $type.'Category' => $categories->toArray(),
+            ];
+        } else {
+            $items = $model::orderBy('name')->pluck('name', 'id')->toArray();
+        }
 
         return view('admin.shops._stock_modal', [
             'shop'       => $stock->shop,
             'stock'      => $stock,
             'currencies' => Currency::orderBy('name')->pluck('name', 'id'),
-            'items'      => Item::orderBy('name')->pluck('name', 'id'),
+            'items'      => $items,
         ]);
     }
 
@@ -154,10 +173,40 @@ class ShopController extends Controller {
         }
         // get base modal from type using asset helper
         $model = getAssetModelString(strtolower($type));
-        Log::info([$model, $type]);
+
+        // check if categories exist for this model ($model.'Category')
+        $categoryClass = $model.'Category';
+        if (class_exists($categoryClass)) {
+            // map the categories to be name-id
+            $categories = $categoryClass::orderBy('name')->get()->mapWithKeys(function ($category) {
+                return [$category->id.'-category' => $category->name];
+            });
+            $items = [
+                $type            => $model::orderBy('name')->pluck('name', 'id')->toArray() + ['random' => 'Random '.$type],
+                $type.'Category' => $categories->toArray(),
+            ];
+        } else {
+            $items = $model::orderBy('name')->pluck('name', 'id')->toArray();
+        }
 
         return view('admin.shops._stock_item', [
-            'items' => $model::orderBy('name')->pluck('name', 'id'),
+            'items' => $items,
+        ]);
+    }
+
+    /**
+     * gets the type of a cost for a stock.
+     */
+    public function getShopStockCostType(Request $request) {
+        $type = $request->input('type');
+        if (!$type) {
+            return null;
+        }
+        // get base modal from type using asset helper
+        $model = getAssetModelString(strtolower($type));
+
+        return view('admin.shops._stock_cost', [
+            'costItems' => $model::orderBy('name')->pluck('name', 'id'),
         ]);
     }
 
@@ -171,8 +220,9 @@ class ShopController extends Controller {
      */
     public function postEditShopStock(Request $request, ShopService $service, $id) {
         $data = $request->only([
-            'shop_id', 'item_id', 'currency_id', 'cost', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'purchase_limit', 'purchase_limit_timeframe', 'is_fto', 'stock_type', 'is_visible',
-            'restock', 'restock_quantity', 'restock_interval', 'range', 'disallow_transfer', 'is_timed_stock', 'start_at', 'end_at',
+            'shop_id', 'item_id', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'purchase_limit', 'purchase_limit_timeframe', 'is_fto', 'stock_type', 'is_visible',
+            'restock', 'restock_quantity', 'restock_interval', 'range', 'disallow_transfer', 'is_timed_stock', 'stock_start_at', 'stock_end_at',
+            'cost_type', 'cost_quantity', 'cost_id', 'group', 'can_group_use_coupon', 'stock_days', 'stock_months',
         ]);
         if ($service->editShopStock(ShopStock::find($id), $data, Auth::user())) {
             flash('Shop stock updated successfully.')->success();
@@ -198,9 +248,10 @@ class ShopController extends Controller {
     public function postCreateShopStock(Request $request, ShopService $service, $id) {
         $data = $request->only([
             'shop_id', 'item_id', 'currency_id', 'cost', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'purchase_limit', 'purchase_limit_timeframe', 'is_fto', 'stock_type', 'is_visible',
-            'restock', 'restock_quantity', 'restock_interval', 'range', 'is_timed_stock', 'start_at', 'end_at',
+            'restock', 'restock_quantity', 'restock_interval', 'range', 'disallow_transfer', 'is_timed_stock', 'stock_start_at', 'stock_end_at',
+            'cost_type', 'cost_quantity', 'cost_id', 'group', 'stock_days', 'stock_months',
         ]);
-        if ($service->updateShopStock(Shop::find($id), $data, Auth::user())) {
+        if ($service->createShopStock(Shop::find($id), $data, Auth::user())) {
             flash('Shop stock updated successfully.')->success();
 
             return redirect()->back();
