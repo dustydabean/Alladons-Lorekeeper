@@ -4,7 +4,7 @@
         <h5 class="text-center">
             {{ $title }}
         </h5>
-        @foreach ($character->children->chunk(4) as $chunk)
+        @foreach ($character->children->chunk(5) as $chunk)
             <div class="row justify-content-center">
                 @foreach ($chunk as $child)
                     @if ($child->character)
