@@ -8,7 +8,7 @@
             <div class="row justify-content-center">
                 @foreach ($chunk as $child)
                     @if ($child->character)
-                        <div class="col text-center">
+                        <div class="col-sm-2 text-center">
                             <div>
                                 <a href="{{ $child->character->url }}">
                                     <img src="{{ $child->character->image->thumbnailUrl }}" class="img-thumbnail" alt="Thumbnail for {{ $child->character->fullName }}" width="100" height="100"/>
