@@ -1,4 +1,4 @@
-<div class="col px-1">
+<div class="col p-1">
     <div class="border-bottom mb-1">
         <span class="font-weight-bold">
             {{ $parent }}
@@ -11,7 +11,7 @@
     </div>
 
     @if ($max_depth > 0)
-        <div class="row">
+        <div class="row no-gutters">
             @if (!empty($character?->lineage?->parent_1))
                 @include('character._tab_lineage_col', [
                     'character' => $character?->lineage?->parent_1,

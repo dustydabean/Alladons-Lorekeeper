@@ -13,7 +13,7 @@
     {!! $character ? '<img src="' . $character->image->thumbnailUrl . '" class=\'img-thumbnail\' alt=\'Thumbnail for ' . $character->fullName . '\' / width="150" height="150">' : '' !!}
     <br>
     {!! $character ? $character->fullName : 'Unkown' !!}
-    <div class="row">
+    <div class="row no-gutters">
         @include('character._tab_lineage_col', [
             'character' => $character?->lineage?->parent_1,
             'max_depth' => config('lorekeeper.lineage.tab_lineage_depth') - 1,
