@@ -267,6 +267,9 @@
     </div>
 @endsection
 @section('scripts')
+    @if (Auth::user()->isStaff)
+        @include('js._website_links_js')
+    @endif
     @include('js._tinymce_wysiwyg')
     <script>
         var $avatarCrop = $('#avatarCrop');
