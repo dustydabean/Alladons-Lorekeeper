@@ -92,47 +92,47 @@
                             </div>
                         </div>
                     @endif
-                    <div class="row">
-                        <div class="col-lg-4 col-md-6 col-4">
+                    <div class="row no-gutters">
+                        <div class="col-lg-4 col-5">
                             <h5>Poucher Code</h5>
                         </div>
-                        <div class="col-lg-8 col-md-6 col-8">{!! $image->character->poucher_code ? $image->character->poucher_code : 'None' !!}</div>
+                        <div class="col-lg-8 col-7 pl-1">{!! $image->character->poucher_code ? $image->character->poucher_code : 'None' !!}</div>
                     </div>
                     @if ($image->character->pedigree_id)
-                        <div class="row">
-                            <div class="col-lg-4 col-md-6 col-4">
+                        <div class="row no-gutters">
+                            <div class="col-lg-4 col-5">
                                 <h5>Pedigree Name</h5>
                             </div>
-                            <div class="col-lg-8 col-md-6 col-8">{!! $image->character->pedigree_id ? $image->character->pedigreeName : 'None' !!}</div>
+                            <div class="col-lg-8 col-7 pl-1">{!! $image->character->pedigree_id ? $image->character->pedigreeName : 'None' !!}</div>
                         </div>
                     @endif
                     @if ($image->character->birthdate)
-                        <div class="row">
-                            <div class="col-lg-4 col-md-6 col-4">
+                        <div class="row no-gutters">
+                            <div class="col-lg-4 col-5">
                                 <h5>DOB</h5>
                             </div>
-                            <div class="col-lg-8 col-md-6 col-8">{!! $image->character->birthdate ? $image->character->birthdate->format('M d'.','.' Y') : 'Birthday Unknown' !!}</div>
+                            <div class="col-lg-8 col-7 pl-1">{!! $image->character->birthdate ? $image->character->birthdate->format('M d'.','.' Y') : 'Birthday Unknown' !!}</div>
                         </div>
                     @endif
                     @if ($image->character->generation_id)
-                        <div class="row">
-                            <div class="col-lg-4 col-md-6 col-4">
+                        <div class="row no-gutters">
+                            <div class="col-lg-4 col-5">
                                 <h5>Generation</h5>
                             </div>
-                            <div class="col-lg-8 col-md-6 col-8">{!! $image->character->generation_id ? $image->character->generation->displayName : 'None' !!}</div>
+                            <div class="col-lg-8 col-7 pl-1">{!! $image->character->generation_id ? $image->character->generation->displayName : 'None' !!}</div>
                         </div>
                     @endif
                     @if ($image->sex)
-                        <div class="row">
-                            <div class="col-lg-4 col-md-6 col-4">
+                        <div class="row no-gutters">
+                            <div class="col-lg-4 col-5">
                                 <h5>Sex</h5>
                             </div>
-                            <div class="col-lg-8 col-md-6 col-8">{!! $image->sex !!}</div>
+                            <div class="col-lg-8 col-7 pl-1">{!! $image->sex !!}</div>
                         </div>
                     @endif
                     @if (config('lorekeeper.character_pairing.colours'))
-                        <div class="row">
-                            <div class="col-lg-4 col-md-6 col-4">
+                        <div class="row no-gutters">
+                            <div class="col-lg-4 col-5">
                                 <h5>
                                     Colours
                                     @if ($image->character->is_myo_slot)
@@ -140,7 +140,7 @@
                                     @endif
                                 </h5>
                             </div>
-                            <div class="col-lg-8 col-md-6 col-8">
+                            <div class="col-lg-8 col-7 pl-1">
                                 @if ($image->colours)
                                     <div class="{{ $image->character->is_myo_slot ? '' : 'row' }}">
                                         {!! $image->displayColours() !!}
@@ -154,7 +154,7 @@
                                         </div>
                                     @endif
                                 @else
-                                    <div class="row">
+                                    <div class="row no-gutters">
                                         <div>No colours listed.</div>
                                         @if (Auth::check() && Auth::user()->hasPower('manage_characters') && !$image->character->is_myo_slot)
                                             {!! Form::open(['url' => 'admin/character/image/' . $image->id . '/colours']) !!}
