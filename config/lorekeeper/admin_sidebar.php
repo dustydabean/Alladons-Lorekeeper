@@ -191,7 +191,7 @@ return [
                 'url'  => 'admin/data/traits',
             ],
             [
-                'name' => 'Transformations',
+                'name' => 'Ref Types',
                 'url'  => 'admin/data/transformations',
             ],
             [
