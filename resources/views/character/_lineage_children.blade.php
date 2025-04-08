@@ -4,14 +4,14 @@
         <h5 class="text-center">
             {{ $title }}
         </h5>
-        @foreach ($character->children->chunk(4) as $chunk)
+        @foreach ($character->children->chunk(5) as $chunk)
             <div class="row justify-content-center">
                 @foreach ($chunk as $child)
                     @if ($child->character)
-                        <div class="col text-center">
+                        <div class="col-sm-2 text-center">
                             <div>
                                 <a href="{{ $child->character->url }}">
-                                    <img src="{{ $child->character->image->thumbnailUrl }}" class="img-thumbnail" alt="Thumbnail for {{ $child->character->fullName }}" width="150" height="150"/>
+                                    <img src="{{ $child->character->image->thumbnailUrl }}" class="img-thumbnail" alt="Thumbnail for {{ $child->character->fullName }}" width="100" height="100"/>
                                 </a>
                             </div>
                             <div class="mt-1">

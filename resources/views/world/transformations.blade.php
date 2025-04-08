@@ -1,7 +1,7 @@
 @extends('world.layout')
 
 @section('title')
-    Transformations
+    Ref Types
 @endsection
 
 @section('content')

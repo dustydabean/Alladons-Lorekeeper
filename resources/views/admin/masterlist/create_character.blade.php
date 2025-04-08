@@ -249,7 +249,7 @@
         </div>
         @if (!$isMyo)
             <div class="form-group">
-                {!! Form::label('Transformation (Optional)') !!} {!! add_help('This will make the image have the selected transformation id.') !!}
+                {!! Form::label('Ref Type (Optional)') !!} {!! add_help('This will make the image have the selected transformation id.') !!}
                 {!! Form::select('transformation_id', $transformations, null, ['class' => 'form-control']) !!}
             </div>
 
