@@ -517,14 +517,14 @@ function parseLiveClock($text) {
 }
 
 /**
-* Returns the given objects limits, if any.
-*
-* @param mixed $object
-*
-* @return bool
-*/
+ * Returns the given objects limits, if any.
+ *
+ * @param mixed $object
+ *
+ * @return bool
+ */
 function getLimits($object) {
-   return App\Models\Limit\Limit::where('object_model', get_class($object))->where('object_id', $object->id)->get();
+    return App\Models\Limit\Limit::where('object_model', get_class($object))->where('object_id', $object->id)->get();
 }
 
 /**

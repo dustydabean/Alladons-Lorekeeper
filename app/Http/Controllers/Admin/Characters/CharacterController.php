@@ -21,7 +21,6 @@ use App\Models\Species\Species;
 use App\Models\Species\Subtype;
 use App\Models\Trade;
 use App\Models\User\User;
-use App\Models\User\UserItem;
 use App\Services\CharacterManager;
 use App\Services\TradeManager;
 use Illuminate\Http\Request;
@@ -739,42 +738,48 @@ class CharacterController extends Controller {
     /**
      * Shows the use breeding permission modal.
      *
-     * @param  string  $slug
-     * @param  int     $id
+     * @param string $slug
+     * @param int    $id
+     *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getUseBreedingPermission($slug, $id)
-    {
+    public function getUseBreedingPermission($slug, $id) {
         $this->character = Character::where('slug', $slug)->first();
-        if(!$this->character) abort(404);
+        if (!$this->character) {
+            abort(404);
+        }
 
         return view('character.admin._use_breeding_permission', [
-            'character' => $this->character,
-            'breedingPermission' => BreedingPermission::find($id)
+            'character'          => $this->character,
+            'breedingPermission' => BreedingPermission::find($id),
         ]);
     }
 
     /**
      * Marks a breeding permission as used.
      *
-     * @param  \Illuminate\Http\Request       $request
-     * @param  App\Services\CharacterManager  $service
-     * @param  string                         $slug
-     * @param  int                            $id
+     * @param App\Services\CharacterManager $service
+     * @param string                        $slug
+     * @param int                           $id
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postUseBreedingPermission(Request $request, CharacterManager $service, $slug, $id)
-    {
+    public function postUseBreedingPermission(Request $request, CharacterManager $service, $slug, $id) {
         $this->character = Character::where('slug', $slug)->first();
-        if(!$this->character) abort(404);
+        if (!$this->character) {
+            abort(404);
+        }
 
         if ($service->useBreedingPermission($this->character, BreedingPermission::find($id), Auth::user())) {
             flash('Breeding permission marked used successfully.')->success();
+
             return redirect()->back();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
         }
-        else {
-            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
-        }
+
         return redirect()->back();
     }
 

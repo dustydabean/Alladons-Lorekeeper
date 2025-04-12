@@ -22,7 +22,6 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Fortify\Contracts\TwoFactorAuthenticationProvider;
 use Laravel\Fortify\RecoveryCode;
-use Illuminate\Support\Facades\Storage;
 
 class AccountController extends Controller {
     /*
@@ -154,6 +153,7 @@ class AccountController extends Controller {
                 flash($error)->error();
             }
         }
+
         return redirect()->back();
     }
 
@@ -607,14 +607,14 @@ class AccountController extends Controller {
     /**
      * Shows the user's owned breeding permissions.
      *
-     * @param  \Illuminate\Http\Request       $request
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getBreedingPermissions(Request $request)
-    {
+    public function getBreedingPermissions(Request $request) {
         $permissions = BreedingPermission::where('recipient_id', Auth::user()->id);
         $used = $request->get('used');
-        if(!$used) $used = 0;
+        if (!$used) {
+            $used = 0;
+        }
 
         $permissions = $permissions->where('is_used', $used);
 

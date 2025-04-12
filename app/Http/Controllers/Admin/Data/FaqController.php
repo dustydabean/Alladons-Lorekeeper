@@ -7,7 +7,6 @@ use App\Models\Faq;
 use App\Services\FaqService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Config;
 
 class FaqController extends Controller {
     /*

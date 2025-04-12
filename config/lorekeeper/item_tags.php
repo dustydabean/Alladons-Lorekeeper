@@ -64,8 +64,8 @@ return [
     ],
 
     'breedingperm' => [
-        'name' => 'Breeding Permission',
-        'text_color' => '#ffffff',
-        'background_color' => '#cbbd8a'
+        'name'             => 'Breeding Permission',
+        'text_color'       => '#ffffff',
+        'background_color' => '#cbbd8a',
     ],
 ];

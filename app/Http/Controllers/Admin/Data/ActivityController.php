@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Activity;
 use App\Services\ActivityService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Config;
 
 class ActivityController extends Controller {
     /*

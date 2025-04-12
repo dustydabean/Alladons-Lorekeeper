@@ -209,7 +209,7 @@ Route::group(['prefix' => 'myo', 'namespace' => 'Characters'], function () {
     Route::post('{id}/approval', 'MyoController@postCharacterApproval');
     Route::get('{id}/approval', 'MyoController@getCharacterApproval');
 });
-Route::group(['prefix' => 'breeding-permissions', 'namespace' => 'Users'], function() {
+Route::group(['prefix' => 'breeding-permissions', 'namespace' => 'Users'], function () {
     Route::get('/', 'AccountController@getBreedingPermissions');
 });
 

@@ -18,7 +18,6 @@ use App\Models\User\User;
 use App\Models\User\UserCharacterLog;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use DB;
 
 class Character extends Model {
     use SoftDeletes;
@@ -266,8 +265,7 @@ class Character extends Model {
     /**
      * Get the character's associated breeding permissions.
      */
-    public function breedingPermissions()
-    {
+    public function breedingPermissions() {
         return $this->hasMany('App\Models\Character\BreedingPermission', 'character_id');
     }
 
@@ -495,24 +493,25 @@ class Character extends Model {
     }
 
     /**
-    * Gets the character's maximum number of breeding permissions.
-    *
-    * @return int
-    */
-    public function getMaxBreedingPermissionsAttribute()
-    {
+     * Gets the character's maximum number of breeding permissions.
+     *
+     * @return int
+     */
+    public function getMaxBreedingPermissionsAttribute() {
         $currencies = $this->getCurrencies(true)->where('id', Settings::get('breeding_permission_currency'))->first();
-        if(!$currencies) return 0;
+        if (!$currencies) {
+            return 0;
+        }
+
         return $currencies->quantity;
     }
 
-   /**
-    * Gets the character's number of available breeding permissions.
-    *
-    * @return int
-    */
-    public function getAvailableBreedingPermissionsAttribute()
-    {
+    /**
+     * Gets the character's number of available breeding permissions.
+     *
+     * @return int
+     */
+    public function getAvailableBreedingPermissionsAttribute() {
         return $this->maxBreedingPermissions - $this->breedingPermissions->count();
     }
 

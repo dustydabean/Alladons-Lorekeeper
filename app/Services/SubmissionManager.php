@@ -133,8 +133,8 @@ class SubmissionManager extends Service {
 
             $submission->update([
                 'data' => [
-                    'user'    => Arr::only(getDataReadyAssets($userAssets), ['user_items', 'currencies']),
-                    'rewards' => getDataReadyAssets($promptRewards),
+                    'user'      => Arr::only(getDataReadyAssets($userAssets), ['user_items', 'currencies']),
+                    'rewards'   => getDataReadyAssets($promptRewards),
                     'criterion' => $data['criterion'] ?? null,
                 ] + (config('lorekeeper.settings.allow_gallery_submissions_on_prompts') ? ['gallery_submission_id' => $data['gallery_submission_id'] ?? null] : []),
             ]);
@@ -217,7 +217,7 @@ class SubmissionManager extends Service {
                 'data'          => [
                     'user'          => Arr::only(getDataReadyAssets($userAssets), ['user_items', 'currencies']),
                     'rewards'       => getDataReadyAssets($promptRewards),
-                    'criterion' => $data['criterion'] ?? null,
+                    'criterion'     => $data['criterion'] ?? null,
                 ] + (config('lorekeeper.settings.allow_gallery_submissions_on_prompts') ? ['gallery_submission_id' => $data['gallery_submission_id'] ?? null] : []),
             ] + ($isClaim ? [] : ['prompt_id' => $prompt->id]));
 
