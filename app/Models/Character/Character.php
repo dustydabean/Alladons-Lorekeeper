@@ -3,6 +3,7 @@
 namespace App\Models\Character;
 
 use App\Facades\Notifications;
+use App\Facades\Settings;
 use App\Models\Currency\Currency;
 use App\Models\Currency\CurrencyLog;
 use App\Models\Gallery\GalleryCharacter;
@@ -17,6 +18,7 @@ use App\Models\User\User;
 use App\Models\User\UserCharacterLog;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use DB;
 
 class Character extends Model {
     use SoftDeletes;
@@ -261,6 +263,14 @@ class Character extends Model {
         return $this->hasMany(CharacterGenome::class, 'character_id');
     }
 
+    /**
+     * Get the character's associated breeding permissions.
+     */
+    public function breedingPermissions()
+    {
+        return $this->hasMany('App\Models\Character\BreedingPermission', 'character_id');
+    }
+
     /**********************************************************************************************
 
         SCOPES
@@ -482,6 +492,28 @@ class Character extends Model {
         }
 
         return ' ・ <i class="fas fa-info-circle help-icon m-0" data-toggle="tooltip" data-html="true" title="'.$nonMyoSection.$tradingSection.'"></i>';
+    }
+
+    /**
+    * Gets the character's maximum number of breeding permissions.
+    *
+    * @return int
+    */
+    public function getMaxBreedingPermissionsAttribute()
+    {
+        $currencies = $this->getCurrencies(true)->where('id', Settings::get('breeding_permission_currency'))->first();
+        if(!$currencies) return 0;
+        return $currencies->quantity;
+    }
+
+   /**
+    * Gets the character's number of available breeding permissions.
+    *
+    * @return int
+    */
+    public function getAvailableBreedingPermissionsAttribute()
+    {
+        return $this->maxBreedingPermissions - $this->breedingPermissions->count();
     }
 
     /**********************************************************************************************

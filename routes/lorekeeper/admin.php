@@ -703,6 +703,9 @@ Route::group(['prefix' => 'character', 'namespace' => 'Characters', 'middleware'
 
     Route::post('{slug}/settings', 'CharacterController@postCharacterSettings');
 
+    Route::get('{slug}/breeding-permissions/{id}/use', 'CharacterController@getUseBreedingPermission')->where(['id' => '[0-9]+']);
+    Route::post('{slug}/breeding-permissions/{id}/use', 'CharacterController@postUseBreedingPermission')->where(['id' => '[0-9]+']);
+
     Route::post('{slug}/transfer', 'CharacterController@postTransfer');
 
     // GENOMES

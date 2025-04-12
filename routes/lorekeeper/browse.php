@@ -71,6 +71,7 @@ Route::group(['prefix' => 'user', 'namespace' => 'Users'], function () {
     Route::get('{name}/characters/{folder}', 'UserController@getUserCharacterFolder');
     Route::get('{name}/sublist/{key}', 'UserController@getUserSublist');
     Route::get('{name}/myos', 'UserController@getUserMyoSlots');
+    Route::get('{name}/breeding-permissions', 'UserController@getUserBreedingPermissions');
     Route::get('{name}/inventory', 'UserController@getUserInventory');
     Route::get('{name}/pets', 'UserController@getUserPets');
     Route::get('{name}/pets/{id}', 'UserController@getUserPet');
@@ -116,6 +117,8 @@ Route::group(['prefix' => 'character', 'namespace' => 'Characters'], function ()
     // lineage
     Route::get('{slug}/lineage', 'CharacterLineageController@getCharacterLineage');
     Route::get('{slug}/pets', 'CharacterController@getCharacterPets');
+
+    Route::get('{slug}/breeding-permissions', 'CharacterController@getCharacterBreedingPermissions');
 });
 
 Route::group(['prefix' => 'myo', 'namespace' => 'Characters'], function () {

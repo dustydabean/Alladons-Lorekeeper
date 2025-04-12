@@ -11,19 +11,19 @@
             <!-- Left Side Of Navbar -->
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    @if (Auth::check() && Auth::user()->is_news_unread && Config::get('lorekeeper.extensions.navbar_news_notif'))
+                    @if (Auth::check() && Auth::user()->is_news_unread && config('lorekeeper.extensions.navbar_news_notif'))
                         <a class="nav-link d-flex text-warning" href="{{ url('news') }}"><strong>News</strong><i class="fas fa-bell"></i></a>
                     @else
                         <a class="nav-link" href="{{ url('news') }}"><i class="fas fa-newspaper"></i> News</a>
                     @endif
                 </li>
-                @if(Auth::check() && Auth::user()->is_dev_logs_unread && Auth::user()->settings->dev_log_notif && Config::get('lorekeeper.extensions.navbar_news_notif'))
+                @if(Auth::check() && Auth::user()->is_dev_logs_unread && Auth::user()->settings->dev_log_notif && config('lorekeeper.extensions.navbar_news_notif'))
                     <li class="nav-item">
                         <a class="nav-link d-flex text-warning" href="{{ url('devlogs') }}"><strong>Devlog</strong><i class="fas fa-bell"></i></a>
                     </li>
                 @endif
                 <li class="nav-item">
-                    @if (Auth::check() && Auth::user()->is_sales_unread && Config::get('lorekeeper.extensions.navbar_news_notif'))
+                    @if (Auth::check() && Auth::user()->is_sales_unread && config('lorekeeper.extensions.navbar_news_notif'))
                         <a class="nav-link d-flex text-warning" href="{{ url('sales') }}"><strong>Sales</strong><i class="fas fa-bell"></i></a>
                     @else
                         <a class="nav-link" href="{{ url('sales') }}"><i class="fas fa-money-bill-wave-alt"></i> Sales</a>
@@ -128,6 +128,9 @@
                             <!--<a class="dropdown-item" href="{{ url('pets') }}">
                                My Companions
                             </a>-->
+                            <a class="dropdown-item" href="{{ url('breeding-permissions') }}">
+                                Breeding Permissions
+                            </a>
                             <a class="dropdown-item" href="{{ url('collection') }}">
                                 Collections
                             </a>

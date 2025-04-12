@@ -62,4 +62,10 @@ return [
         'text_color'       => '#ffffff',
         'background_color' => '#A8CE5E',
     ],
+
+    'breedingperm' => [
+        'name' => 'Breeding Permission',
+        'text_color' => '#ffffff',
+        'background_color' => '#cbbd8a'
+    ],
 ];

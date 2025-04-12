@@ -37,7 +37,7 @@ class ActivityController extends Controller {
     public function getCreateActivity() {
         return view('admin.activities.create_edit_activity', [
             'activity' => new Activity,
-            'modules'  => Config::get('lorekeeper.activity_modules'),
+            'modules'  => config('lorekeeper.activity_modules'),
         ]);
     }
 
@@ -56,7 +56,7 @@ class ActivityController extends Controller {
 
         return view('admin.activities.create_edit_activity', [
             'activity' => $activity,
-            'modules'  => Config::get('lorekeeper.activity_modules'),
+            'modules'  => config('lorekeeper.activity_modules'),
         ] + $activity->service->getEditData());
     }
 

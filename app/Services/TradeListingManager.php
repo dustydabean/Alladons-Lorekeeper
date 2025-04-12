@@ -140,7 +140,7 @@ class TradeListingManager extends Service {
         try {
             $seekingAssets = createAssetsArray();
             $assetCount = 0;
-            $assetLimit = Config::get('lorekeeper.settings.trade_asset_limit');
+            $assetLimit = config('lorekeeper.settings.trade_asset_limit');
 
             if (isset($data['item_ids'])) {
                 $keyed_quantities = [];
@@ -221,7 +221,7 @@ class TradeListingManager extends Service {
         try {
             $userAssets = createAssetsArray();
             $assetCount = 0;
-            $assetLimit = Config::get('lorekeeper.settings.trade_asset_limit');
+            $assetLimit = config('lorekeeper.settings.trade_asset_limit');
 
             // Attach items. They are not even held, merely recorded for display on the listing.
             if (isset($data['stack_id'])) {

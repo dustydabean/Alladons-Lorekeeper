@@ -41,7 +41,7 @@ class FaqController extends Controller {
             }
         }
 
-        $tags = Config::get('lorekeeper.faq');
+        $tags = config('lorekeeper.faq');
         // tags is an array of names, make it so their key is their name also
         $tags = array_combine($tags, $tags);
         $tags = array_map(function ($tag) {
@@ -51,7 +51,7 @@ class FaqController extends Controller {
 
         return view('admin.faq.faq', [
             'faqs' => $query->paginate(20)->appends($request->query()),
-            'tags' => Config::get('lorekeeper.faq'),
+            'tags' => config('lorekeeper.faq'),
         ]);
     }
 
@@ -61,7 +61,7 @@ class FaqController extends Controller {
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getCreateFaqQuestion() {
-        $tags = Config::get('lorekeeper.faq');
+        $tags = config('lorekeeper.faq');
         // tags is an array of names, make it so their key is their name also
         $tags = array_combine($tags, $tags);
         $tags = array_map(function ($tag) {
@@ -87,7 +87,7 @@ class FaqController extends Controller {
         if (!$faq) {
             abort(404);
         }
-        $tags = Config::get('lorekeeper.faq');
+        $tags = config('lorekeeper.faq');
         // tags is an array of names, make it so their key is their name also
         $tags = array_combine($tags, $tags);
         $tags = array_map(function ($tag) {
