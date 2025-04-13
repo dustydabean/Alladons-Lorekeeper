@@ -278,10 +278,10 @@ class User extends Authenticatable implements MustVerifyEmail {
     }
 
     /**
-    * Gets all of the user's unlocked limits.
-    */
+     * Gets all of the user's unlocked limits.
+     */
     public function unlockedLimits() {
-       return $this->hasMany(UserUnlockedLimit::class);
+        return $this->hasMany(UserUnlockedLimit::class);
     }
 
     /**********************************************************************************************

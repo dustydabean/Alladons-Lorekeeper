@@ -284,7 +284,7 @@ class ShopStock extends Model {
         OTHER FUNCTIONS
 
     **********************************************************************************************/
-    
+
     /**
      * Makes the cost an integer for display.
      */

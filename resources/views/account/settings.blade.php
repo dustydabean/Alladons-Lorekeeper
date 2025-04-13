@@ -131,7 +131,7 @@
         {!! Form::close() !!}
     </div>
 
-    @if(Config::get('lorekeeper.extensions.navbar_news_notif'))
+    @if(config('lorekeeper.extensions.navbar_news_notif'))
     <div class="card p-3 mb-2">
         <h3>Development Log Notifications</h3>
         {!! Form::open(['url' => 'account/devlog-notif']) !!}

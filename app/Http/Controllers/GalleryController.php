@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Facades\Settings;
 use App\Models\Character\Character;
-use App\Models\Comment\Comment;
 use App\Models\Criteria\Criterion;
 use App\Models\Currency\Currency;
 use App\Models\Gallery\Gallery;

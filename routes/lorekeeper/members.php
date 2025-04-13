@@ -167,6 +167,11 @@ Route::group(['prefix' => 'character', 'namespace' => 'Characters'], function ()
 
     Route::post('{slug}/inventory/edit', 'CharacterController@postInventoryEdit');
 
+    Route::get('{slug}/breeding-permissions/new', 'CharacterController@getNewBreedingPermission');
+    Route::post('{slug}/breeding-permissions/new', 'CharacterController@postNewBreedingPermission');
+    Route::get('{slug}/breeding-permissions/{id}/transfer', 'CharacterController@getTransferBreedingPermission');
+    Route::post('{slug}/breeding-permissions/{id}/transfer', 'CharacterController@postTransferBreedingPermission');
+
     Route::post('{slug}/bank/transfer', 'CharacterController@postCurrencyTransfer');
     Route::get('{slug}/transfer', 'CharacterController@getTransfer');
     Route::post('{slug}/transfer', 'CharacterController@postTransfer');
@@ -203,6 +208,9 @@ Route::group(['prefix' => 'myo', 'namespace' => 'Characters'], function () {
 
     Route::post('{id}/approval', 'MyoController@postCharacterApproval');
     Route::get('{id}/approval', 'MyoController@getCharacterApproval');
+});
+Route::group(['prefix' => 'breeding-permissions', 'namespace' => 'Users'], function () {
+    Route::get('/', 'AccountController@getBreedingPermissions');
 });
 
 /**************************************************************************************************

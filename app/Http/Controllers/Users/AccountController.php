@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Users;
 
 use App\Http\Controllers\Controller;
+use App\Models\Character\BreedingPermission;
 use App\Models\Notification;
 use App\Models\Theme;
 use App\Models\User\StaffProfile;
@@ -601,5 +602,24 @@ class AccountController extends Controller {
         }
 
         return redirect()->back();
+    }
+
+    /**
+     * Shows the user's owned breeding permissions.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getBreedingPermissions(Request $request) {
+        $permissions = BreedingPermission::where('recipient_id', Auth::user()->id);
+        $used = $request->get('used');
+        if (!$used) {
+            $used = 0;
+        }
+
+        $permissions = $permissions->where('is_used', $used);
+
+        return view('home.breeding_permissions', [
+            'permissions' => $permissions->orderBy('id', 'DESC')->paginate(20)->appends($request->query()),
+        ]);
     }
 }

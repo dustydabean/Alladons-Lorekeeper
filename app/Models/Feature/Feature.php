@@ -416,7 +416,7 @@ class Feature extends Model {
             });
             foreach ($grouped as $category => $features) {
                 foreach ($features as $id  => $feature) {
-                    $grouped[$category][$id] = (isset($feature['code_id']) && $feature['code_id'] ? $feature['code_id'] . ' - ' : '') . $feature['name'];
+                    $grouped[$category][$id] = (isset($feature['code_id']) && $feature['code_id'] ? $feature['code_id'].' - ' : '').$feature['name'];
                 }
             }
             $features_by_category = $sorted_feature_categories->map(function ($category) use ($grouped) {

@@ -11,6 +11,6 @@ return [
     //         'Uri' => 'https://github.com/preimpression/',
     //     ]),
     //     'version' => '1.0.0',
-    // ], 
+    // ],
 
 ];

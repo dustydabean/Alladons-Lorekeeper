@@ -22,7 +22,7 @@ class CharacterBreedingLog extends Model {
      */
     protected $casts = [
         'roller_settings' => 'array',
-        'rolled_at' => 'datetime',
+        'rolled_at'       => 'datetime',
     ];
 
     /**
