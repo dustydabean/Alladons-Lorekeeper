@@ -13,6 +13,11 @@
     </div>
 
     <hr>
+    <h5 class="mb-0">Thank you!</h5>
+    <p class="mb-2">Super big thank you to Min for putting together the custom aspects of our site and all their help! You can find them on <a href="https://toyhou.se/alyeong"><strong>TH</strong></a> and <a href="https://github.com/liwoyadan"><strong>Github</strong></a>!</p>
+    </hr>
+
+    <hr>
 
     <h4 class="mb-0">Core Extensions</h4>
     <p class="mb-2">These extensions were coded by the Lorekeeper community and are now a part of core Lorekeeper.</p>
