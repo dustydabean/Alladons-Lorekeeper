@@ -8,7 +8,7 @@
 
     <div class="form-group">
         {!! Form::label('type', 'Type') !!}
-        {!! Form::select('type', ['Full Fur' => 'Full Fur', 'Normal' => 'Normal'], $breedingPermission->type, ['class' => 'form-control', 'placeholder' => 'Select a Type']) !!}
+        {!! Form::select('type', ['Full' => 'Full Fur', 'Split' => 'Normal'], $breedingPermission->type, ['class' => 'form-control', 'placeholder' => 'Select a Type']) !!}
     </div>
 
     <div class="form-group">
