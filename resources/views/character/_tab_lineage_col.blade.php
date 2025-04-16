@@ -5,8 +5,8 @@
         </span>
         <br>
         <a href="{{ $character ? $character->url : '#' }}" data-toggle="tooltip" data-placement="top"
-            title="{!! $character ? '<img src="' . $character->image->thumbnailUrl . '" class=\'img-thumbnail\' alt=\'Thumbnail for ' . $character->fullName . '\' / width="150" height="150">' : '<i class=\'fas fa-question-circle\'></i>' !!}">
-            {!! $character ? $character->fullName : 'Unknown' !!}
+            title="{!! $character ? '<img src=\'' . $character->image->thumbnailUrl . '\' class=\'img-thumbnail\' alt=\'Thumbnail for ' . $character->fullName . '\' style=\'height: 150px; width: 150px;\'>' : '<i class=\'fas fa-question-circle\'></i>' !!}">
+            {{ $character ? $character->fullName : 'Unknown' }}
         </a>
     </div>
 
@@ -30,11 +30,3 @@
         </div>
     @endif
 </div>
-
-<script>
-    $(document).ready(function() {
-        $('[data-toggle="tooltip"]').tooltip({
-            html: true
-        });
-    });
-</script>
