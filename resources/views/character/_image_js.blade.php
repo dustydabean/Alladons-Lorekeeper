@@ -33,6 +33,10 @@
             e.preventDefault();
             loadModal("{{ url('admin/'.($character->is_myo_slot ? 'myo' : 'character').'/') }}/{{ $character->is_myo_slot ? $character->id : $character->slug }}/genome/"+$(this).data('genome-id'), 'Edit Genome');
         });
+        $('.edit-breeding-slot').on('click', function(e) {
+            e.preventDefault();
+            loadModal("{{ url('admin/character/') }}/breeding-slot/"+$(this).data('id'), 'Edit Breeding Slot');
+        });
         $('.delete-genome').on('click', function(e) {
             e.preventDefault();
             loadModal("{{ url('admin/'.($character->is_myo_slot ? 'myo' : 'character').'/') }}/{{ $character->is_myo_slot ? $character->id : $character->slug }}/genome/"+$(this).data('genome-id')+"/delete", 'Delete Genome');

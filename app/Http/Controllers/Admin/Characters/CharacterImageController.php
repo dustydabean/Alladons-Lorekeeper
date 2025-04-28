@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Characters;
 
 use App\Http\Controllers\Controller;
 use App\Models\Character\Character;
+use App\Models\Character\CharacterBreedingSlot;
 use App\Models\Character\CharacterGeneration;
 use App\Models\Character\CharacterImage;
 use App\Models\Character\CharacterPedigree;
@@ -148,6 +149,51 @@ class CharacterImageController extends Controller {
         }
         if ($service->updateImageFeatures($data, $image, Auth::user())) {
             flash('Character traits edited successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back()->withInput();
+    }
+
+    /**
+     * Shows the edit breeding slot modal.
+     *
+     * @param int $id
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getEditBreedingSlot($id) {
+        $slot = CharacterBreedingSlot::find($id);
+        if (!$slot) {
+            abort(404);
+        }
+
+        return view('character.admin._edit_breeding_slots_modal', [
+            'slot'           => $slot,
+            'users' => User::query()->orderBy('name')->pluck('name', 'id')->toArray(),
+            'characterOptions' => Character::visible()->myo(0)->orderBy('slug')->get()->pluck('fullName', 'id')->toArray(),
+        ]);
+    }
+
+    /**
+     * Edits the breeding slot.
+     *
+     * @param App\Services\CharacterManager $service
+     * @param int                           $id
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postEditBreedingSlot(Request $request, CharacterManager $service, $id) {
+        $data = $request->only(['user_id', 'user_url', 'offspring_id']);
+        $slot = CharacterBreedingSlot::find($id);
+        if (!$slot) {
+            abort(404);
+        }
+        if ($service->updateBreedingSlot($data, $slot, Auth::user())) {
+            flash('Breeding slot edited successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();

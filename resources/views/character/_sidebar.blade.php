@@ -19,6 +19,7 @@
         <div class="sidebar-item"><a href="{{ $character->url . '/images' }}" class="{{ set_active('character/' . $character->slug . '/images') }}">Images</a></div>
         <div class="sidebar-item"><a href="{{ $character->url . '/change-log' }}" class="{{ set_active('character/' . $character->slug . '/change-log') }}">Change Log</a></div>
         <div class="sidebar-item"><a href="{{ $character->url . '/ownership' }}" class="{{ set_active('character/' . $character->slug . '/ownership') }}">Ownership History</a></div>
+        <div class="sidebar-item"><a href="{{ $character->url . '/breeding-slots-log' }}" class="{{ set_active('character/' . $character->slug . '/breeding-slots-log') }}">Breeding Slots Log</a></div>
         <div class="sidebar-item"><a href="{{ $character->url . '/item-logs' }}" class="{{ set_active('character/' . $character->slug . '/item-logs') }}">Item Logs</a></div>
         <div class="sidebar-item"><a href="{{ $character->url . '/currency-logs' }}" class="{{ set_active('character/' . $character->slug . '/currency-logs') }}">Currency Logs</a></div>
         <div class="sidebar-item"><a href="{{ $character->url . '/submissions' }}" class="{{ set_active('character/' . $character->slug . '/submissions') }}">Submissions</a></div>

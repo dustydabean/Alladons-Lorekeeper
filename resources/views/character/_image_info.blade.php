@@ -34,6 +34,11 @@
                     <li class="nav-item">
                         <a class="nav-link" id="linTab-{{ $image->id }}" data-toggle="tab" href="#lin-{{ $image->id }}" role="tab">Lineage</a>
                     </li>
+                    @if ($image->character->breedingSlots()->count())
+                        <li class="nav-item">
+                            <a class="nav-link" id="slotsTab-{{ $image->id }}" data-toggle="tab" href="#slots-{{ $image->id }}" role="tab">FF Slots</a>
+                        </li>
+                    @endif
                     <li class="nav-item">
                         <a class="nav-link" id="notesTab-{{ $image->id }}" data-toggle="tab" href="#notes-{{ $image->id }}" role="tab">Notes</a>
                     </li>
@@ -231,8 +236,8 @@
                     @if (Auth::check() && Auth::user()->hasPower('manage_characters'))
                         <div class="mt-3">
                             <a href="#" class="btn btn-outline-info btn-sm edit-features" data-id="{{ $image->id }}"><i class="fas fa-cog"></i> Edit</a>
-                            @if (Auth::user()->hasPower('view_hidden_genetics')) 
-                                <a href="#" class="btn btn-outline-info btn-sm add-genome mx-1"><i class="fas fa-plus mr-1"></i><i class="fas fa-dna"></i></a> 
+                            @if (Auth::user()->hasPower('view_hidden_genetics'))
+                                <a href="#" class="btn btn-outline-info btn-sm add-genome mx-1"><i class="fas fa-plus mr-1"></i><i class="fas fa-dna"></i></a>
                             @endif
                         </div>
                     @endif
@@ -276,6 +281,12 @@
                 <div class="tab-pane fade" id="lin-{{ $image->id }}">
                     @include('character._tab_lineage', ['character' => $image->character])
                 </div>
+
+                @if ($image->character->breedingSlots()->count())
+                    <div class="tab-pane fade pt-2" id="slots-{{ $image->id }}">
+                        @include('character._tab_breeding_slots', ['character' => $image->character])
+                    </div>
+                @endif
 
                 {{-- Image notes --}}
                 <div class="tab-pane fade" id="notes-{{ $image->id }}">

@@ -10,6 +10,7 @@ use App\Models\Gallery\GalleryCharacter;
 use App\Models\Item\Item;
 use App\Models\Item\ItemLog;
 use App\Models\Model;
+use App\Models\Species\Subtype;
 use App\Models\Rarity;
 use App\Models\Submission\Submission;
 use App\Models\Submission\SubmissionCharacter;
@@ -266,7 +267,33 @@ class Character extends Model {
      * Get the character's associated breeding permissions.
      */
     public function breedingPermissions() {
-        return $this->hasMany('App\Models\Character\BreedingPermission', 'character_id');
+        return $this->hasMany(BreedingPermission::class, 'character_id');
+    }
+
+    /**
+     * Get the character's associated breeding slots.
+     */
+    public function breedingSlots() {
+        $subtypes = Subtype::whereNotNull('breeding_slot_amount')->where('breeding_slot_amount', '>', 0)->pluck('id')->toArray();
+        if (!$this->image->subtypes() || !$this->image->subtypes()->whereIn('subtype_id', $subtypes)->first()) {
+            return $this->belongsTo('App\Models\Loot\Loot', 'rewardable_id', 'loot_table_id')->whereNull('loot_table_id');;
+        }
+        if (!CharacterBreedingSlot::where('character_id', $this->id)->first()) {
+            $selectedSubtype = $this->image->subtypes()->whereIn('subtype_id', $subtypes)->first();
+            $subtypeCount = $selectedSubtype->subtype->breeding_slot_amount;
+            if ($subtypeCount > 0) {
+                for ($i = 0; $i < $subtypeCount; $i++) {
+                    CharacterBreedingSlot::create([
+                        'character_id' => $this->id,
+                        'offspring_id' => null,
+                        'user_id'      => null,
+                        'user_url'     => null,
+                    ]);
+                }
+            }
+        }
+
+        return $this->hasMany(CharacterBreedingSlot::class, 'character_id');
     }
 
     /**********************************************************************************************
@@ -644,7 +671,18 @@ class Character extends Model {
      * @return \Illuminate\Pagination\LengthAwarePaginator
      */
     public function getCharacterLogs() {
-        $query = CharacterLog::with('sender.rank')->where('character_id', $this->id)->orderBy('id', 'DESC');
+        $query = CharacterLog::with('sender.rank')->where('character_id', $this->id)->where('log_type', '!=', 'Breeding Slot Updated')->orderBy('id', 'DESC');
+
+        return $query->paginate(30);
+    }
+
+    /**
+     * Get the character's breeding slots logs.
+     *
+     * @return \Illuminate\Pagination\LengthAwarePaginator
+     */
+    public function getCharacterSlotsLogs() {
+        $query = CharacterLog::with('sender.rank')->where('character_id', $this->id)->where('log_type', 'Breeding Slot Updated')->orderBy('id', 'DESC');
 
         return $query->paginate(30);
     }
