@@ -11,7 +11,7 @@
     </div>
 
     @if ($max_depth > 0)
-        <div class="row no-gutters">
+        <div class="row no-gutters flex-nowrap">
             @if (!empty($character?->lineage?->parent_1))
                 @include('character._tab_lineage_col', [
                     'character' => $character?->lineage?->parent_1,
