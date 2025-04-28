@@ -17,6 +17,11 @@
     {!! Form::select('offspring_id', $characterOptions, $slot->offspring_id ?? null, ['class' => 'form-control mr-2 selectize', 'placeholder' => 'Select an Offspring']) !!}
 </div>
 
+<div class="form-group">
+    {!! Form::label('notes', 'Slot Notes') !!} {!! add_help('Notes about the breeding slot. This will show up as a tooltip.') !!}
+    {!! Form::textarea('notes', $slot->notes ?? null, ['class' => 'form-control']) !!}
+</div>
+
 <div class="text-right">
     {!! Form::submit('Edit', ['class' => 'btn btn-primary']) !!}
 </div>

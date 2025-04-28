@@ -8,7 +8,7 @@
             <h5>Slot {{ $c }}</h5>
         </div>
         <div class="col pl-1">
-            {!! $slot->displayLink() !!}<span class="mx-1">||</span>{!! $slot->displayOffspring() !!}
+            {!! $slot->displayLink() !!}<span class="mx-1">||</span>{!! $slot->displayOffspring() !!} {!! $slot->displayNotes() !!}
         </div>
         @if (Auth::check() && Auth::user()->hasPower('manage_characters'))
             <div class="col-auto text-right pl-2">

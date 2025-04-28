@@ -1090,9 +1090,14 @@ class CharacterManager extends Service {
                 }
             }
 
+            if (!isset($data['notes'])) {
+                $data['notes'] = null;
+            }
+
             $slot->user_id = $data['user_id'];
             $slot->user_url = $data['user_url'];
             $slot->offspring_id = $data['offspring_id'];
+            $slot->notes = $data['notes'];
             $slot->save();
 
             if (!$this->logAdminAction($user, 'Updated Breeding Slot', 'Updated breeding slot entry for '.$slot->character->displayName)) {

@@ -12,7 +12,7 @@ class CharacterBreedingSlot extends Model {
      * @var array
      */
     protected $fillable = [
-        'character_id', 'offspring_id', 'user_id', 'user_url',
+        'character_id', 'offspring_id', 'user_id', 'user_url', 'notes',
     ];
 
     /**
@@ -51,9 +51,22 @@ class CharacterBreedingSlot extends Model {
 
     /**********************************************************************************************
 
-        RELATIONS
+        OTHER FUNCTIONS
 
     **********************************************************************************************/
+
+    /**
+     * Displays the slot's notes as a tooltip.
+     *
+     * @return string
+     */
+    public function displayNotes() {
+        if (!$this->notes) {
+            return null;
+        }
+
+        return add_help($this->notes);
+    }
 
     /**
      * Displays a link using the user's URL.

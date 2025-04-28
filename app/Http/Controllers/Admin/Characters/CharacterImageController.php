@@ -187,7 +187,7 @@ class CharacterImageController extends Controller {
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postEditBreedingSlot(Request $request, CharacterManager $service, $id) {
-        $data = $request->only(['user_id', 'user_url', 'offspring_id']);
+        $data = $request->only(['user_id', 'user_url', 'offspring_id', 'notes']);
         $slot = CharacterBreedingSlot::find($id);
         if (!$slot) {
             abort(404);
