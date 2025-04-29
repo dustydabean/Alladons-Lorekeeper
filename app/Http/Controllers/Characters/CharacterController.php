@@ -571,6 +571,21 @@ class CharacterController extends Controller {
     }
 
     /**
+     * Shows a character's breeding slots logs.
+     *
+     * @param string $slug
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCharacterSlotsLogs($slug) {
+        return view('character.breeding_slots_logs', [
+            'character'             => $this->character,
+            'extPrevAndNextBtnsUrl' => '/breeding-slots-log',
+            'logs'                  => $this->character->getCharacterSlotsLogs(),
+        ]);
+    }
+
+    /**
      * Shows a character's submissions.
      *
      * @param mixed $slug

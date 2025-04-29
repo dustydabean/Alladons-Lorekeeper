@@ -1,4 +1,4 @@
-<div class="container-fluid px-0 text-center">
+<div class="container-fluid px-0 text-center" style="overflow-x: auto;">
     @if ($character->children->count() && config('lorekeeper.lineage.show_children_on_tab'))
         @include('character._lineage_children', [
             'character' => $character,
@@ -13,7 +13,7 @@
     {!! $character ? '<img src="' . $character->image->thumbnailUrl . '" class=\'img-thumbnail\' alt=\'Thumbnail for ' . $character->fullName . '\' / width="150" height="150">' : '' !!}
     <br>
     {!! $character ? $character->fullName : 'Unkown' !!}
-    <div class="row no-gutters">
+    <div class="row no-gutters flex-nowrap">
         @include('character._tab_lineage_col', [
             'character' => $character?->lineage?->parent_1,
             'max_depth' => config('lorekeeper.lineage.tab_lineage_depth') - 1,

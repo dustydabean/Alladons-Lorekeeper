@@ -1020,6 +1020,113 @@ class CharacterManager extends Service {
     }
 
     /**
+     * Updates a character's breeding slot.
+     *
+     * @param array          $data
+     * @param CharacterBreedingSlot $slot
+     * @param User           $user
+     *
+     * @return bool
+     */
+    public function updateBreedingSlot($data, $slot, $user) {
+        DB::beginTransaction();
+
+        try {
+            $oldUser = $slot->user_id ? User::find($slot->user_id) : null;
+            $recipient = null;
+            if (isset($data['user_id']) && $data['user_id']) {
+                $recipient = User::find($data['user_id']);
+                if (!$recipient) {
+                    throw new \Exception('Selected user is invalid.');
+                }
+                if (!$oldUser || $slot->user_id != $recipient->id) {
+                    $userChange = true;
+                }
+            } elseif (!isset($data['user_id'])) {
+                $data['user_id'] = null;
+                if ($oldUser) {
+                    $userChange = true;
+                }
+            }
+
+            $oldUrl = $slot->user_url ? prettyProfileLink($slot->user_url) : null;
+            $recipientUrl = null;
+            if (isset($data['user_url']) && $data['user_url']) {
+                $recipientUrl = checkAlias($data['user_url']);
+
+                if (is_object($recipientUrl)) {
+                    $data['user_id'] = $recipientUrl->id;
+                    $data['user_url'] = null;
+                    $recipientUrl = null;
+                    if (!$oldUser || isset($oldUser->id) && $oldUser->id != $recipientUrl->id) {
+                        $userChange = true;
+                    }
+                } elseif (!$oldUrl || $slot->user_url != $data['user_url']) {
+                    $userChange = true;
+                }
+            } elseif (!isset($data['user_url'])) {
+                $data['user_url'] = null;
+                if ($oldUrl) {
+                    $userChange = true;
+                }
+            }
+
+            $oldOffspring = $slot->offspring_id ? Character::find($slot->offspring_id) : null;
+            $offspring = null;
+            if (isset($data['offspring_id']) && $data['offspring_id']) {
+                $offspring = Character::find($data['offspring_id']);
+                if (!$offspring) {
+                    throw new \Exception('Selected user is invalid.');
+                }
+
+                $data['offspring_id'] = $offspring->id;
+                if (!$oldOffspring || isset($oldOffspring->id) && $oldOffspring->id != $offspring->id) {
+                    $offspringChange = true;
+                }
+            } elseif (!isset($data['offspring_id'])) {
+                $data['offspring_id'] = null;
+                if ($oldOffspring) {
+                    $offspringChange = true;
+                }
+            }
+
+            if (!isset($data['notes'])) {
+                $data['notes'] = null;
+            }
+
+            $slot->user_id = $data['user_id'];
+            $slot->user_url = $data['user_url'];
+            $slot->offspring_id = $data['offspring_id'];
+            $slot->notes = $data['notes'];
+            $slot->save();
+
+            if (!$this->logAdminAction($user, 'Updated Breeding Slot', 'Updated breeding slot entry for '.$slot->character->displayName)) {
+                throw new \Exception('Failed to log admin action.');
+            }
+
+            $string = '';
+            if (isset($userChange)) {
+                $string .= 'User changed from '.($oldUser->displayName ?? ($oldUrl ? prettyProfileLink($oldUrl) : 'no user')).' to '.($recipient->displayName ?? ($recipientUrl ? prettyProfileLink($recipientUrl) : 'no user')).'.';
+            }
+            if (isset($offspringChange)) {
+                if (isset($userChange)) {
+                    $string .= ' ';
+                }
+                $string .= 'Offspring set to '.(isset($offspring) ? $offspring->displayName : 'none').'.';
+            }
+            // Add a log for the character
+            $this->createLog($user->id, null, null, null, $slot->character_id, 'Breeding Slot Updated', $string, 'character');
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+
+    /**
      * Updates image data.
      *
      * @param array          $data
