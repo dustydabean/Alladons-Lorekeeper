@@ -429,7 +429,7 @@ main > .row {
     background-color: #f5f5f5;
     cursor: pointer;
     padding: .3rem 1.25rem;
-    font-size: .9rem;
+    font-size: 1.0rem;
     font-family: Roboto Condensed, serif;
     color: inherit;
     text-transform: uppercase;
