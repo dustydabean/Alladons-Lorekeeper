@@ -4,9 +4,8 @@ namespace App\Services\Item;
 
 use App\Models\Item\Item;
 use App\Models\Pet\Pet;
-use App\Models\Pet\PetVariant;
 use App\Services\Service;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class SpliceService extends Service {
     /*
@@ -25,8 +24,8 @@ class SpliceService extends Service {
      */
     public function getEditData() {
         // group the variants by their $variant->pet name, and pluck the variant name and id
-        $variants = PetVariant::with('pet')->get()->groupBy('pet.name')->map(function ($item) {
-            return $item->pluck('variant_name', 'id');
+        $variants = Pet::whereNotNull('parent_id')->with('parent')->get()->groupBy('parent.name')->map(function ($item) {
+            return $item->pluck('name', 'id');
         })->toArray();
 
         return [
@@ -43,20 +42,20 @@ class SpliceService extends Service {
      */
     public function getTagData($tag) {
         $displayVariants = [];
-        if ($tag->data['variant_ids']) {
+        if (isset($tag->data['variant_ids']) && $tag->data['variant_ids']) {
             foreach ($tag->data['variant_ids'] as $variantId) {
                 if ($variantId == 'default') {
                     $displayVariants[] = 'Default';
                 } else {
-                    $variant = PetVariant::find($variantId);
-                    $displayVariants[] = '<a href="'.$variant->pet->url.'" target="_blank">'.$variant->variant_name.' ('.$variant->pet->name.')</a>';
+                    $variant = Pet::find($variantId);
+                    $displayVariants[] = '<a href="'.$variant->parent->url.'" target="_blank">'.$variant->name.' ('.$variant->parent->name.')</a>';
                 }
             }
         }
 
         return [
             'variant_ids' => $tag->data['variant_ids'] ?? null,
-            'variants'    => $tag->data['variant_ids'] ? PetVariant::whereIn('id', $tag->data['variant_ids'])->get() : null,
+            'variants'    => isset($tag->data['variant_ids']) ? Pet::whereIn('id', $tag->data['variant_ids'])->get() : null,
             'display'     => $displayVariants ? implode(', ', $displayVariants) : null,
         ];
     }
@@ -74,7 +73,7 @@ class SpliceService extends Service {
 
         try {
             $tag->data = json_encode([
-                'variant_ids' => $data['variant_ids'],
+                'variant_ids' => isset($data['variant_ids']) ? $data['variant_ids'] : null,
             ]);
 
             return $this->commitReturn(true);

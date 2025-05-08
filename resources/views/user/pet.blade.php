@@ -12,9 +12,7 @@
         : breadcrumbs(['Users' => 'users', $user->name => $user->url, 'Pets' => $user->url . '/pets', $pet->pet_name ? $pet->pet_name . ' (' . $pet->pet->name . ')' : $user->name . "'s " . $pet->pet->name => $pet->url]) !!}
 
     <h1>
-        {!! $pet->pet_name
-            ? $pet->pet_name . ' (' . $user->displayName . "'s " . ($pet->variant_id ? $pet->variant->variant_name . ' ' : '') . $pet->pet->displayName . ')'
-            : $user->name . "'s " . ($pet->variant_id ? $pet->variant->variant_name . ' ' : '') . $pet->pet->displayName !!}
+        {!! $pet->pet_name ? $pet->pet_name . ' (' . $pet->pet->name . ')' : $user->name . "'s " . $pet->pet->name . ($pet->pet->isVariant ? ' (' . $pet->pet->parent->name . ')' : '') !!}
     </h1>
 
     @if (!$namespace)
@@ -33,16 +31,27 @@
 
     <div class="row world-entry">
         <div class="col-md-3 world-entry-image">
-            <img class="img-fluid rounded mb-2" src="{{ $pet->pet->VariantImage($pet->id) }}" data-toggle="tooltip" title="{{ $pet->pet_name ?? $pet->pet->name }}" alt="{{ $pet->pet_name ?? $pet->pet->name }}" />
+            <img class="img-fluid rounded mb-2" src="{{ $pet->pet->image($pet->id) }}" data-toggle="tooltip" title="{{ $pet->pet_name ?? $pet->pet->name }}" alt="{{ $pet->pet_name ?? $pet->pet->name }}" />
         </div>
         <div class="col-md-9">
             <div class="row col-12 world-entry-text">
-                <div class="col-md-4 mb-2">
+                <div class="col-md-4 mb-2 text-center">
                     @if ($pet->character)
                         <h2 class="h5">Attached to {{ $pet->character->fullName }}</h2>
                         <a href="{{ $pet->character->url }}">
-                            <img src="{{ $pet->character->image->thumbnailUrl }}" class="rounded img-thumbnail" alt="Thumbnail for {{ $pet->character->fullName }}" />
+                            <img src="{{ $pet->character->image->thumbnailUrl }}" class="rounded img-thumbnail mb-2" alt="Thumbnail for {{ $pet->character->fullName }}" />
                         </a>
+                        @if ($namespace)
+                            @if (Auth::check() && Auth::user()->id == $pet->character->user_id && $pet->canBond())
+                                <div class="form-group mb-0">
+                                    {!! Form::open(['url' => 'pets/bond/' . $pet->id]) !!}
+                                    {!! Form::submit('Bond', ['class' => 'btn btn-primary']) !!}
+                                    {!! Form::close() !!}
+                                </div>
+                            @else
+                                <div class="alert alert-warning mb-0">{{ $pet->canBond(true) }}</div>
+                            @endif
+                        @endif
                     @endif
                     @if ($pet->evolution)
                         <h2 class="h5">Evolved</h2>

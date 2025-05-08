@@ -2,17 +2,17 @@
 
 namespace App\Services;
 
+use App\Facades\Notifications;
 use App\Models\Character\Character;
 use App\Models\Pet\Pet;
 use App\Models\Pet\PetDrop;
 use App\Models\User\User;
 use App\Models\User\UserItem;
 use App\Models\User\UserPet;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Arr;
-use Notifications;
 
 class PetManager extends Service {
     /*
@@ -62,6 +62,13 @@ class PetManager extends Service {
                 }
             });
 
+            $keyed_evolution = [];
+            array_walk($data['pet_ids'], function ($id, $key) use (&$keyed_evolution, $data) {
+                if ($id != null && !in_array($id, array_keys($keyed_evolution), true)) {
+                    $keyed_evolution[$id] = $data['evolution'][$key];
+                }
+            });
+
             // Process pet
             $pets = Pet::find($data['pet_ids']);
             if (!count($pets)) {
@@ -70,7 +77,7 @@ class PetManager extends Service {
 
             foreach ($users as $user) {
                 foreach ($pets as $pet) {
-                    if ($this->creditPet($staff, $user, 'Staff Grant', Arr::only($data, ['data', 'disallow_transfer', 'notes']), $pet, $keyed_quantities[$pet->id], $keyed_variant[$pet->id])) {
+                    if ($this->creditPet($staff, $user, 'Staff Grant', Arr::only($data, ['data', 'disallow_transfer', 'notes']), $pet, $keyed_quantities[$pet->id], $keyed_variant[$pet->id] ?? null, $keyed_evolution[$pet->id] ?? null)) {
                         Notifications::create('PET_GRANT', $user, [
                             'pet_name'     => $pet->name,
                             'pet_quantity' => $keyed_quantities[$pet->id],
@@ -90,6 +97,7 @@ class PetManager extends Service {
 
         return $this->rollbackReturn(false);
     }
+
 
     /**
      * Transfers an pet stack between users.
@@ -213,7 +221,7 @@ class PetManager extends Service {
         try {
             $user = Auth::user();
             if (!$user->hasAlias) {
-                throw new \Exception('Your deviantART account must be verified before you can perform this action.');
+                throw new \Exception('Your account must be verified before you can perform this action.');
             }
             if (!$pet) {
                 throw new \Exception('An invalid pet was selected.');
@@ -234,7 +242,7 @@ class PetManager extends Service {
     }
 
     /**
-     * attaches a pet stack.
+     * Attaches a pet stack.
      *
      * @param mixed $pet
      * @param mixed $id
@@ -247,9 +255,6 @@ class PetManager extends Service {
         try {
             // First, check user permissions
             $user = Auth::user();
-            if (!$user->hasAlias) {
-                throw new \Exception('Your deviantART account must be verified before you can perform this action.');
-            }
 
             // Next, why bother checking everything else if the pet isn't even attachable? Also determine if the user is the owner of the pet/has permission to attach.
             if (!$pet) {
@@ -263,15 +268,21 @@ class PetManager extends Service {
             }
 
             // Next, check if the character the pet is being attached to is valid and the user has permission to attach the pet to that character.
-            if ($id == null) {
+            if (!$id) {
                 throw new \Exception('No character selected.');
             }
             $character = Character::find($id);
             if (!$character) {
                 throw new \Exception('An invalid character was selected.');
             }
-            if ($character->user_id !== $user->id && !$user->hasPower('edit_inventories')) {
+            if ($character->user_id != $user->id && !$user->hasPower('edit_inventories')) {
                 throw new \Exception('You do not own this character.');
+            }
+            if ($character->user_id != $pet->user_id && !$user->hasPower('edit_inventories')) {
+                throw new \Exception('This character does not belong to the owner of the pet.');
+            }
+            if (config('lorekeeper.pets.max_pets') && $character->pets->count() >= config('lorekeeper.pets.max_pets')) {
+                throw new \Exception('This character has reached the limit of pets.');
             }
 
             // Finally, compare character and limits based on pet and pet category.
@@ -303,9 +314,16 @@ class PetManager extends Service {
             }
 
             // If all checks pass, attach the pet to the character.
-            $pet['chara_id'] = $character->id;
-            $pet['attached_at'] = Carbon::now();
+            $pet->character_id = $character->id;
+            $pet->attached_at = Carbon::now();
             $pet->save();
+
+            if (!$pet->level && config('lorekeeper.pet_bonding_enabled')) {
+                $pet->level()->create([
+                    'bonding_level'   => 0,
+                    'bonding' => 0,
+                ]);
+            }
 
             return $this->commitReturn(true);
         } catch (\Exception $e) {
@@ -335,7 +353,7 @@ class PetManager extends Service {
                 throw new \Exception('You do not own this pet.');
             }
 
-            $pet['chara_id'] = null;
+            $pet['character_id'] = null;
             $pet->save();
 
             return $this->commitReturn(true);
@@ -347,7 +365,89 @@ class PetManager extends Service {
     }
 
     /**
-     * edits variant.
+     * Bonds with a pet.
+     */
+    public function bondPet($pet, $user) {
+        DB::beginTransaction();
+
+        try {
+
+            if (!config('lorekeeper.pets.pet_bonding_enabled')) {
+                throw new \Exception('Pet bonding is not enabled.');
+            }
+
+            if ($user->id != $pet->user_id) {
+                throw new \Exception('You do not own this pet.');
+            }
+
+            if (!$pet->canBond()) {
+                throw new \Exception('You cannot bond with this pet again yet.');
+            }
+
+            $pet->bonded_at = Carbon::now();
+            $pet->save();
+
+            if (!$pet->level) {
+                $pet->level()->create([
+                    'bonding_level'   => 0,
+                    'bonding' => 0,
+                ]);
+                $pet = $pet->fresh();
+            }
+
+            $bonding = $pet->level->bonding + 1;
+            // check if meets bonding requirement for next level
+            if ($pet->level->nextLevel && $bonding >= $pet->level->nextLevel?->bonding_required) {
+                // check if this level has rewards, or if it has pet rewards for this pet
+                $nextLevel = $pet->level->nextLevel;
+                $nextLevelRewards = $pet->level->nextLevel?->rewardData;
+                $petRewards = $nextLevel->pets()->where('pet_id', $pet->pet->id)->first()?->rewardData;
+                if ($nextLevelRewards || $petRewards) {
+                    $assets = createAssetsArray();
+
+                    if ($nextLevelRewards) {
+                        foreach ($nextLevelRewards as $reward) {
+                            $model = getAssetModelString(strtolower($reward->rewardable_type));
+                            $asset = $model::find($reward->rewardable_id);
+                            addAsset($assets, $asset, $reward->quantity);
+                        }
+                    }
+
+                    if ($petRewards) {
+                        foreach ($petRewards as $reward) {
+                            $model = getAssetModelString(strtolower($reward->rewardable_type));
+                            $asset = $model::find($reward->rewardable_id);
+                            addAsset($assets, $asset, $reward->quantity);
+                        }
+                    }
+
+                    // function fillUserAssets($assets, $sender, $recipient, $logType, $data) {
+                    fillUserAssets($assets, null, $pet->user, 'Pet Level Up', ['data' => 'Received rewards from leveling up '.$pet->pet->name]);
+
+                    flash('You received: '. createRewardsString($assets))->success();
+                }
+
+                // level up
+                $pet->level->bonding_level += 1;
+                $pet->level->bonding = 0;
+                $pet->level->save();
+
+                flash('Your pet has leveled up! They are now level '.$pet->level->bonding_level.'.')->success();
+            } else {
+                $pet->level->bonding = $bonding;
+                $pet->level->save();
+            }
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Edits variant.
      *
      * @param mixed $id
      * @param mixed $pet
@@ -376,18 +476,23 @@ class PetManager extends Service {
                 if ($tag->data['variant_ids'] && !in_array($id, $tag->data['variant_ids'])) {
                     throw new \Exception('Item is not a splice for this variant.');
                 }
-                if ($id == $pet->variant_id) {
+                if ($id == $pet->pet_id) {
                     throw new \Exception('Pet is already this variant.');
                 }
 
-                $invman = new InventoryManager;
-                if (!$invman->debitStack($pet->user, 'Used to change pet variant', ['data' => 'Used to change '.$pet->pet->name.' variant'], $item, 1)) {
+                $service = new InventoryManager;
+                if (!$service->debitStack($pet->user, 'Used to change pet variant', ['data' => 'Used to change '.$pet->pet->name.' variant'], $item, 1)) {
+                    foreach ($service->errors()->getMessages()['error'] as $error) {
+                        flash($error)->error();
+                    }
                     throw new \Exception('Could not debit item.');
                 }
             }
-            // else logAdminAction($pet->user, 'Pet Variant Changed', ['pet' => $pet->id, 'variant' => $id]); // for when develop is merged
+            else {
+                $this->logAdminAction($pet->user, 'Pet Evolution Changed', json_encode(['pet' => $pet->id, 'evolution' => $id]));
+            }
 
-            $pet['variant_id'] = $id == 'default' ? null : $id;
+            $pet->pet_id = $id == 'default' ? null : $id;
             $pet->save();
 
             return $this->commitReturn(true);
@@ -399,7 +504,7 @@ class PetManager extends Service {
     }
 
     /**
-     * edits evolution.
+     * Edits evolution.
      *
      * @param mixed $id
      * @param mixed $pet
@@ -417,14 +522,20 @@ class PetManager extends Service {
 
                 // check if user has item
                 $item = UserItem::find($stack_id);
-                $invman = new InventoryManager;
-                if (!$invman->debitStack($pet->user, 'Used to change pet evolution', ['data' => 'Used to change '.$pet->pet->name.' evolution'], $item, 1)) {
+                $service = new InventoryManager;
+                if (!$service->debitStack($pet->user, 'Used to change pet evolution', ['data' => 'Used to change '.$pet->pet->name.' evolution'], $item, 1)) {
+                    foreach ($service->errors()->getMessages()['error'] as $error) {
+                        flash($error)->error();
+                    }
+
                     throw new \Exception('Could not debit item.');
                 }
             }
-            // else logAdminAction($pet->user, 'Pet Evolution Changed', ['pet' => $pet->id, 'evolution' => $id]); // for when develop is merged
+            else {
+                $this->logAdminAction($pet->user, 'Pet Evolution Changed', json_encode(['pet' => $pet->id, 'evolution' => $id]));
+            }
 
-            $pet['evolution_id'] = $id;
+            $pet->evolution_id = $id;
             $pet->save();
 
             return $this->commitReturn(true);
@@ -436,7 +547,7 @@ class PetManager extends Service {
     }
 
     /**
-     * Edits the custom variant image on a user pet stack.
+     * Edits the custom image on a user pet stack.
      *
      * @param mixed $pet
      * @param mixed $data
@@ -483,7 +594,7 @@ class PetManager extends Service {
     }
 
     /**
-     * change pet's description.
+     * Change pet's description.
      *
      * @param mixed $pet
      * @param mixed $data
@@ -516,7 +627,7 @@ class PetManager extends Service {
      *
      * @return bool
      */
-    public function creditPet($sender, $recipient, $type, $data, $pet, $quantity, $variant_id = null) {
+    public function creditPet($sender, $recipient, $type, $data, $pet, $quantity, $variant_id = null, $evolution_id = null) {
         DB::beginTransaction();
 
         try {
@@ -534,11 +645,24 @@ class PetManager extends Service {
                     $variant = $pet->variants->where('id', $variant_id)->first();
                 }
 
+                if ($evolution_id == 'randomize' && count($pet->evolutions)) {
+                    // randomly get an evolution
+                    $evolution = $pet->evolutions->random();
+                    // 25% chance to be no evolution
+                    if (rand(1, 4) == 1) {
+                        $evolution = null;
+                    }
+                } elseif ($evolution_id == 'none') {
+                    $evolution = null;
+                } else {
+                    $evolution = $pet->evolutions->where('id', $evolution_id)->first();
+                }
+
                 $user_pet = UserPet::create([
-                    'user_id'    => $recipient->id,
-                    'pet_id'     => $pet->id,
-                    'data'       => json_encode($data),
-                    'variant_id' => $variant?->id,
+                    'user_id'      => $recipient->id,
+                    'pet_id'       => $variant ? $variant->id : $pet->id,
+                    'data'         => $data,
+                    'evolution_id' => $evolution?->id,
                 ]);
             }
 

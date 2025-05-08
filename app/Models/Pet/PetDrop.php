@@ -25,11 +25,13 @@ class PetDrop extends Model {
     protected $table = 'pet_drops';
 
     /**
-     * Dates on the model to convert to Carbon instances.
+     * The attributes that should be cast to native types.
      *
      * @var array
      */
-    public $dates = ['next_day'];
+    public $casts = [
+        'next_day' => 'datetime',
+    ];
 
     /**********************************************************************************************
 
@@ -41,14 +43,14 @@ class PetDrop extends Model {
      * Get the associated user pet.
      */
     public function user_pet() {
-        return $this->belongsTo('App\Models\User\UserPet', 'user_pet_id');
+        return $this->belongsTo(UserPet::class, 'user_pet_id');
     }
 
     /**
      * Get the category the user pet belongs to.
      */
     public function dropData() {
-        return $this->belongsTo('App\Models\Pet\PetDropData', 'drop_id');
+        return $this->belongsTo(PetDropData::class, 'drop_id');
     }
 
     /**********************************************************************************************
@@ -65,7 +67,7 @@ class PetDrop extends Model {
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeRequiresUpdate($query) {
-        return $query->whereNotIn('user_pet_id', UserPet::pluck('pet_id')->toArray())->whereIn('drop_id', PetDropData::where('is_active', 1)->pluck('id')->toArray())->where('next_day', '<', Carbon::now());
+        return $query->whereIn('drop_id', PetDropData::where('is_active', 1)->pluck('id')->toArray())->where('next_day', '<', Carbon::now());
     }
 
     /**********************************************************************************************

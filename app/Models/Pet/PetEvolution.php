@@ -39,7 +39,7 @@ class PetEvolution extends Model {
      * Get the pet associated with this pet stack.
      */
     public function pet() {
-        return $this->belongsTo('App\Models\Pet\Pet');
+        return $this->belongsTo(Pet::class, 'pet_id');
     }
 
     /**********************************************************************************************
@@ -91,60 +91,5 @@ class PetEvolution extends Model {
      */
     public function getImageUrlAttribute() {
         return asset($this->imageDirectory.'/'.$this->imageFileName);
-    }
-
-    /**********************************************************************************************
-
-        VARIANT IMAGES
-
-    **********************************************************************************************/
-
-    /**
-     * Gets the file directory containing the model's variant image.
-     *
-     * @return string
-     */
-    public function getVariantImageDirectoryAttribute() {
-        return 'images/data/pets/evolutions';
-    }
-
-    /**
-     * Gets the file name of the model's variant image.
-     *
-     * @param mixed $id
-     *
-     * @return string
-     */
-    public function variantImageFileName($id) {
-        return $this->pet_id.'-evolution-'.$this->id.'-variant-'.$id.'-image.png';
-    }
-
-    /**
-     * Gets the path to the file directory containing the model's variant image.
-     *
-     * @return string
-     */
-    public function getVariantImagePathAttribute() {
-        return public_path($this->variantImageDirectory);
-    }
-
-    /**
-     * Gets the URL of the model's variant image.
-     *
-     * @param mixed $id
-     *
-     * @return string
-     */
-    public function variantImageUrl($id) {
-        return asset($this->variantImageDirectory.'/'.$this->variantImageFileName($id));
-    }
-
-    /**
-     * checks if variant image file exists.
-     *
-     * @param mixed $id
-     */
-    public function variantImageExists($id) {
-        return File::exists($this->variantImagePath.'/'.$this->variantImageFileName($id));
     }
 }

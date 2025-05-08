@@ -40,7 +40,7 @@
             $now = Carbon\Carbon::parse($pet->attached_at);
             $diff = $now->addDays(Settings::get('claymore_cooldown'));
         @endphp
-        @if ($pet->chara_id != null && $diff < Carbon\Carbon::now())
+        @if ($pet->character_id != null && $diff < Carbon\Carbon::now())
             <a class="card-title h5 collapse-title" data-toggle="collapse" href="#attachForm">
                 @if ($pet->user_id != $user->id)
                     [ADMIN]
@@ -52,7 +52,7 @@
                 {!! Form::submit('Detach', ['class' => 'btn btn-primary']) !!}
             </div>
             {!! Form::close() !!}
-        @elseif($pet->chara_id == null || $diff < Carbon\Carbon::now())
+        @elseif($pet->character_id == null || $diff < Carbon\Carbon::now())
             <a class="card-title h5 collapse-title" data-toggle="collapse" href="#attachForm">
                 @if ($pet->user_id != $user->id)
                     [ADMIN]
@@ -80,14 +80,14 @@
     </li>
 @endif
 
-@if ($user && count($splices) && $user->id == $pet->user_id)
+@if ($user && isset($splices) && count($splices) && $user->id == $pet->user_id)
     <li class="list-group-item">
         <a class="card-title h5 collapse-title" data-toggle="collapse" href="#userVariantForm">Change Pet Variant</a>
         {!! Form::open(['url' => 'pets/variant/' . $pet->id, 'id' => 'userVariantForm', 'class' => 'collapse']) !!}
         <p>
             This will use a splice item!
-            @if ($pet->variant_id)
-                <br>Current Variant: {{ $pet->variant->variant_name }}
+            @if ($pet->pet->isVariant)
+                <br>Current Variant: {{ $pet->pet->name }}
             @endif
         </p>
         <div class="form-group">
@@ -95,12 +95,10 @@
         </div>
         <div class="form-group">
             @php
-                $variants =
-                    ['0' => 'Default'] +
-                    $pet->pet
-                        ->variants()
-                        ->pluck('variant_name', 'id')
-                        ->toArray();
+                $variants = ['0' => 'Default'] + ($pet->pet->isVariant ?
+                    $pet->pet->parent->variants()->pluck('name', 'id')->toArray() :
+                    $pet->pet->variants()->pluck('name', 'id')->toArray()
+                );
             @endphp
             {!! Form::select('variant_id', $variants, $pet->variant_id, ['class' => 'form-control']) !!}
         </div>
@@ -119,12 +117,10 @@
         {!! Form::hidden('is_staff', 1) !!}
         <div class="form-group">
             @php
-                $variants =
-                    ['0' => 'Default'] +
-                    $pet->pet
-                        ->variants()
-                        ->pluck('variant_name', 'id')
-                        ->toArray();
+                $variants = ['0' => 'Default'] + ($pet->pet->isVariant ?
+                    $pet->pet->parent->variants()->pluck('name', 'id')->toArray() :
+                    $pet->pet->variants()->pluck('name', 'id')->toArray()
+                );
             @endphp
             {!! Form::select('variant_id', $variants, $pet->variant_id, ['class' => 'form-control mt-2']) !!}
         </div>

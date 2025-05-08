@@ -4,10 +4,16 @@
     <div class="text-center">
         <div class="mb-1">
             <a href="{{ $stack->pet->url }}">
-                <img class="img-fluid" src="{{ $stack->pet->variantImage($stack->id) }}" />
+                <img class="img-fluid" src="{{ $stack->pet->image($stack->id) }}" />
             </a>
         </div>
         <div class="mb-1"><a href="{{ $stack->pet->url }}">{{ $stack->pet->name }}</a></div>
+
+        @if (isset($stack->pet->description) && $stack->pet->description)
+            <div class="card inventory-stack-description p-3 my-2">
+                {!! $stack->pet->parsed_description !!}
+            </div>
+        @endif
     </div>
 
     @if (isset($stack->data['notes']) || isset($stack->data['data']))
@@ -73,7 +79,7 @@
                         $now = Carbon\Carbon::parse($stack->attached_at);
                         $diff = $now->addDays(Settings::get('claymore_cooldown'));
                     @endphp
-                    @if ($stack->chara_id != null && $diff < Carbon\Carbon::now())
+                    @if ($stack->character_id != null && $diff < Carbon\Carbon::now())
                         <a class="card-title h5 collapse-title" data-toggle="collapse" href="#attachForm">
                             @if ($stack->user_id != $user->id)
                                 [ADMIN]
@@ -85,7 +91,7 @@
                             {!! Form::submit('Detach', ['class' => 'btn btn-primary']) !!}
                         </div>
                         {!! Form::close() !!}
-                    @elseif($stack->chara_id == null || $diff < Carbon\Carbon::now())
+                    @elseif($stack->character_id == null || $diff < Carbon\Carbon::now())
                         <a class="card-title h5 collapse-title" data-toggle="collapse" href="#attachForm">
                             @if ($stack->user_id != $user->id)
                                 [ADMIN]
@@ -112,8 +118,8 @@
                         {!! Form::open(['url' => 'pets/variant/' . $stack->id, 'id' => 'userVariantForm', 'class' => 'collapse']) !!}
                         <p>
                             This will use a splice item!
-                            @if ($stack->variant_id)
-                                <br><b>Current variant:</b> {{ $stack->variant->variant_name }}
+                            @if ($stack->pet->isVariant)
+                                <br><b>Current variant:</b> {{ $stack->pet->name }}
                             @endif
                         </p>
                         <div class="form-group">
@@ -121,14 +127,12 @@
                         </div>
                         <div class="form-group">
                             @php
-                                $variants =
-                                    ['0' => 'Default'] +
-                                    $stack->pet
-                                        ->variants()
-                                        ->pluck('variant_name', 'id')
-                                        ->toArray();
+                                $variants = ['0' => 'Default'] + ($stack->pet->isVariant ?
+                                    $stack->pet->parent->variants()->pluck('name', 'id')->toArray() :
+                                    $stack->pet->variants()->pluck('name', 'id')->toArray()
+                                );
                             @endphp
-                            {!! Form::select('variant_id', $variants, $stack->variant_id, ['class' => 'form-control']) !!}
+                            {!! Form::select('variant_id', $variants, $stack->pet->parent_id, ['class' => 'form-control']) !!}
                         </div>
                         <div class="text-right">
                             {!! Form::submit('Change Variant', ['class' => 'btn btn-primary']) !!}
@@ -137,6 +141,7 @@
                     </li>
                 @endif
                 @if ($user->hasPower('edit_inventories'))
+                {{-- TODO --}}
                     {{-- variant --}}
                     <li class="list-group-item">
                         <a class="card-title h5 collapse-title" data-toggle="collapse" href="#variantForm">[ADMIN] Change Pet Variant</a>
@@ -144,19 +149,17 @@
                         {!! Form::hidden('is_staff', 1) !!}
                         <p>
                             @if ($stack->variant_id)
-                                <br><b>Current variant:</b> {{ $stack->variant->variant_name }}
+                                <br><b>Current variant:</b> {{ $stack->variant->name }}
                             @endif
                         </p>
                         <div class="form-group">
                             @php
-                                $variants =
-                                    ['0' => 'Default'] +
-                                    $stack->pet
-                                        ->variants()
-                                        ->pluck('variant_name', 'id')
-                                        ->toArray();
+                                $variants = ['0' => 'Default'] + ($stack->pet->isVariant ?
+                                    $stack->pet->parent->variants()->pluck('name', 'id')->toArray() :
+                                    $stack->pet->variants()->pluck('name', 'id')->toArray()
+                                );
                             @endphp
-                            {!! Form::select('variant_id', $variants, $stack->variant_id, ['class' => 'form-control mt-2']) !!}
+                            {!! Form::select('variant_id', $variants, $stack->pet->isVariant ? $stack->pet_id : 0, ['class' => 'form-control mt-2']) !!}
                         </div>
                         <div class="text-right">
                             {!! Form::submit('Change Variant', ['class' => 'btn btn-primary']) !!}
@@ -232,7 +235,7 @@
                     </li>
                 @endif
                 @if ($stack->isTransferrable || $user->hasPower('edit_inventories'))
-                    @if (!$stack->chara_id)
+                    @if (!$stack->character_id)
                         <li class="list-group-item">
                             <a class="card-title h5 collapse-title" data-toggle="collapse" href="#transferForm">
                                 @if ($stack->user_id != $user->id)
@@ -254,7 +257,7 @@
                         </li>
                     @else
                         <li class="list-group-item bg-light">
-                            <h5 class="card-title mb-0 text-muted"><i class="fas fa-lock mr-2"></i> Currently attached to a character</h5>
+                            <h5 class="card-title mb-0 text-muted"><i class="fas fa-lock mr-2"></i> Currently attached to {!! $stack->character->displayName !!}</h5>
                         </li>
                     @endif
                 @else

@@ -120,12 +120,21 @@
         <h5 class="card-title">Pets</h5>
         <div class="card-body">
             @if (count($pets))
-                <div class="row">
+                <div class="row no-gutters justify-content-center">
                     @foreach ($pets as $pet)
-                        <div class="col profile-inventory-item">
+                        <div class="col-md-3 col-6 p-1 profile-inventory-item">
                             <a href="{{ url($user->url . '/pets') }}" class="inventory-stack">
-                                <img class="img-fluid" src="{{ $pet->VariantImage($pet->pivot->id) }}" data-toggle="tooltip" title="{{ $pet->pivot->pet_name ? $pet->pivot->pet_name . ' (' . $pet->name . ')' : $pet->name }}"
+                                @if ($pet->has_image)
+                                    <img class="img-fluid" src="{{ $pet->image($pet->pivot->id) }}" data-toggle="tooltip" title="{{ $pet->pivot->pet_name ? $pet->pivot->pet_name . ' (' . $pet->name . ')' : $pet->name }}"
                                     alt="{{ $pet->pivot->pet_name ? $pet->pivot->pet_name . ' (' . $pet->name . ')' : $pet->name }}" />
+                                @else
+                                    <p>
+                                        @if (!$pet->is_visible)
+                                            <i class="fas fa-eye-slash mr-1"></i>
+                                        @endif
+                                        {{ $pet->name }}
+                                    </p>
+                                @endif
                             </a>
                         </div>
                     @endforeach

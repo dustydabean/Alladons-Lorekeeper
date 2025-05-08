@@ -58,6 +58,11 @@
         {!! Form::textarea('description', $category->description, ['class' => 'form-control wysiwyg']) !!}
     </div>
 
+    <div class="form-group">
+        {!! Form::checkbox('is_visible', 1, $category->id ? $category->is_visible : 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
+        {!! Form::label('is_visible', 'Is Visible', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If this is turned off, this gear category will not be visible on world pages.') !!}
+    </div>
+
     <div class="text-right">
         {!! Form::submit($category->id ? 'Edit' : 'Create', ['class' => 'btn btn-primary']) !!}
     </div>
@@ -68,7 +73,7 @@
         <h2 class="h3">Preview</h2>
         <div class="card mb-3">
             <div class="card-body">
-                @include('world._entry', ['imageUrl' => $category->categoryImageUrl, 'name' => $category->displayName, 'description' => $category->parsed_description])
+                @include('world._entry', ['imageUrl' => $category->categoryImageUrl, 'name' => $category->displayName, 'description' => $category->parsed_description, 'visible' => $category->is_visible])
             </div>
         </div>
     @endif
@@ -82,8 +87,6 @@
                 e.preventDefault();
                 loadModal("{{ url('admin/data/pet-categories/delete') }}/{{ $category->id }}", 'Delete Category');
             });
-
-
         });
     </script>
 @endsection

@@ -87,6 +87,7 @@ Route::group(['prefix' => 'character', 'namespace' => 'Characters'], function ()
     Route::get('{slug}/change-log', 'CharacterController@getCharacterLogs');
     Route::get('{slug}/submissions', 'CharacterController@getCharacterSubmissions');
 
+    Route::get('{slug}/pets', 'CharacterController@getCharacterPets');
     Route::get('{slug}/gallery', 'CharacterController@getCharacterGallery');
 });
 Route::group(['prefix' => 'myo', 'namespace' => 'Characters'], function () {
@@ -134,6 +135,11 @@ Route::group(['prefix' => 'shops'], function () {
     Route::get('{id}', 'ShopController@getShop')->where(['id' => '[0-9]+']);
     Route::get('{id}/{stockId}', 'ShopController@getShopStock')->where(['id' => '[0-9]+', 'stockId' => '[0-9]+']);
 });
+
+/**************************************************************************************************
+    Pet Drops
+**************************************************************************************************/
+Route::get('pets/pet/{id}', 'Users\PetController@getPetDrops');
 
 /**************************************************************************************************
     Site Pages
