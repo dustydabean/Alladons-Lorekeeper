@@ -69,6 +69,15 @@ class User extends Authenticatable implements MustVerifyEmail {
     ];
 
     /**
+     * The relationships that should always be loaded.
+     *
+     * @var array
+     */
+    protected $with = [
+        'rank',
+    ];
+
+    /**
      * Whether the model contains timestamps to be saved and updated.
      *
      * @var string
@@ -192,8 +201,9 @@ class User extends Authenticatable implements MustVerifyEmail {
     public function gallerySubmissions() {
         return $this->hasMany(GallerySubmission::class)
             ->where('user_id', $this->id)
-            ->orWhereIn('id', GalleryCollaborator::where('user_id', $this->id)->where('type', 'Collab')->pluck('gallery_submission_id')->toArray())
-            ->visible($this)->accepted()->orderBy('created_at', 'DESC');
+            ->orWhereIn('id', GalleryCollaborator::where('user_id', $this->id)
+                ->where('type', 'Collab')->pluck('gallery_submission_id')->toArray())
+            ->orderBy('created_at', 'DESC');
     }
 
     /**
