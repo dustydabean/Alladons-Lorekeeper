@@ -78,49 +78,49 @@
     <link href="{{ asset('css/selectize.bootstrap4.css') }}" rel="stylesheet">
 
     @if (file_exists(public_path() . '/css/custom.css'))
-        <link href="{{ asset('css/custom.css') . '?v=' . filemtime(public_path('css/lorekeeper.css')) }}" rel="stylesheet">
+        <link href="{{ asset('css/custom.css') . '?v=' . filemtime(public_path('css/custom.css')) }}" rel="stylesheet">
     @endif
 
-    @if ($theme?->prioritize_css)
+    @if (isset($theme) && $theme?->prioritize_css)
         @include('layouts.editable_theme')
     @endif
-    @if ($theme?->has_css)
+    @if (isset($theme) && $theme?->has_css)
         <style type="text/css" media="screen">
             @php include_once($theme?->cssUrl)
             @endphp
             {{-- css in style tag to so that order matters --}}
         </style>
     @endif
-    @if (!$theme?->prioritize_css)
+    @if (isset($theme) && !$theme?->prioritize_css)
         @include('layouts.editable_theme')
     @endif
 
     {{-- Conditional Themes are dependent on other site features --}}
-    @if ($conditionalTheme?->prioritize_css)
+    @if (isset($conditionalTheme) && $conditionalTheme?->prioritize_css)
         @include('layouts.editable_theme', ['theme' => $conditionalTheme])
     @endif
-    @if ($conditionalTheme?->has_css)
+    @if (isset($conditionalTheme) && $conditionalTheme?->has_css)
         <style type="text/css" media="screen">
             @php include_once($conditionalTheme?->cssUrl)
             @endphp
             {{-- css in style tag to so that order matters --}}
         </style>
     @endif
-    @if (!$conditionalTheme?->prioritize_css)
+    @if (isset($conditionalTheme) && !$conditionalTheme?->prioritize_css)
         @include('layouts.editable_theme', ['theme' => $conditionalTheme])
     @endif
 
-    @if ($decoratorTheme?->prioritize_css)
+    @if (isset($decoratorTheme) && $decoratorTheme?->prioritize_css)
         @include('layouts.editable_theme', ['theme' => $decoratorTheme])
     @endif
-    @if ($decoratorTheme?->has_css)
+    @if (isset($decoratorTheme) && $decoratorTheme?->has_css)
         <style type="text/css" media="screen">
             @php include_once($decoratorTheme?->cssUrl)
             @endphp
             {{-- css in style tag to so that order matters --}}
         </style>
     @endif
-    @if (!$decoratorTheme?->prioritize_css)
+    @if (isset($decoratorTheme) && !$decoratorTheme?->prioritize_css)
         @include('layouts.editable_theme', ['theme' => $decoratorTheme])
     @endif
 
@@ -248,9 +248,9 @@
                         '{{ asset('css/all.min.css') }}' //fontawesome
                     ],
                     content_style: `
-                    {{ str_replace(['<style>', '</style>'], '', view('layouts.editable_theme', ['theme' => $theme])) }}
-                    {{ str_replace(['<style>', '</style>'], '', view('layouts.editable_theme', ['theme' => $conditionalTheme])) }}
-                    {{ str_replace(['<style>', '</style>'], '', view('layouts.editable_theme', ['theme' => $decoratorTheme])) }}
+                    {!! isset($theme) && $theme ? str_replace(['<style>', '</style>'], '', view('layouts.editable_theme', ['theme' => $theme])) : '' !!}
+                    {!! isset($conditionalTheme) && $conditionalTheme ? str_replace(['<style>', '</style>'], '', view('layouts.editable_theme', ['theme' => $conditionalTheme])) : '' !!}
+                    {!! isset($decoratorTheme) && $decoratorTheme ? str_replace(['<style>', '</style>'], '', view('layouts.editable_theme', ['theme' => $decoratorTheme])) : '' !!}
                     `,
                     spoiler_caption: 'Toggle Spoiler',
                     target_list: false
