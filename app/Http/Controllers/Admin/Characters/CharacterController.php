@@ -570,11 +570,11 @@ class CharacterController extends Controller {
                     $transfers->sortNewest();
                     break;
                 case 'oldest':
-                    $transfers->sortOldest();
+                    $transfers->sortNewest(true);
                     break;
             }
         } else {
-            $transfers->sortOldest();
+            $transfers->sortNewest(true);
         }
 
         if ($type == 'completed') {
