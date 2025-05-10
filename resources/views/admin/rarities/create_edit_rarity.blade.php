@@ -68,6 +68,10 @@
                     'description' => $rarity->parsed_description,
                     'searchFeaturesUrl' => $rarity->searchFeaturesUrl,
                     'searchCharactersUrl' => $rarity->searchCharactersUrl,
+                    'edit' => [
+                        'title' => 'Edit Rarity',
+                        'object' => $rarity,
+                    ],
                 ])
             </div>
         </div>
