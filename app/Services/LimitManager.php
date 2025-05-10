@@ -40,6 +40,10 @@ class LimitManager extends Service {
             }
 
             if ($limits->first()->is_unlocked) {
+                if (!$user) {
+                    throw new \Exception('You must be logged in to complete this action.');
+                }
+
                 if ($user->unlockedLimits()->where('object_model', get_class($object))->where('object_id', $object->id)->exists()) {
                     return true;
                 }
