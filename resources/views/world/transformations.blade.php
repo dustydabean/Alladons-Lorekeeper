@@ -6,7 +6,7 @@
 
 @section('content')
     {!! breadcrumbs(['World' => 'world', 'Transformations' => 'world/transformations']) !!}
-    <h1>Transformations</h1>
+    <h1>Ref Types</h1>
 
     <div>
         {!! Form::open(['method' => 'GET', 'class' => 'form-inline justify-content-end']) !!}
