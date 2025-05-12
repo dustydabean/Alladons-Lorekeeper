@@ -125,7 +125,7 @@
 
     <div class="form-group" id="transformations">
         {!! Form::label('Ref Type (Optional)') !!}
-        {!! Form::select('transformation_id', $transformations, null, ['class' => 'form-control', 'id' => 'transformation']) !!}
+        {!! Form::select('transformation_id', $transformations, null, ['class' => 'form-control selectize', 'id' => 'transformation']) !!}
     </div>
 
     <div class="form-group">
