@@ -252,3 +252,4 @@ Route::group(['prefix' => 'faq'], function () {
     Custom
 **************************************************************************************************/
 Route::get('rules', 'RulesController@getRules');
+Route::get('rulespage', 'RulesPageController@getRulesPage');

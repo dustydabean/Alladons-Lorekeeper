@@ -17,4 +17,11 @@ class RulesController extends Controller
     return view('rules.Rules');     
     }
 
+
+    public function getRulesPage() 
+    {
+    return view('rules.RulesPage', [ 
+    'page' => SitePage::where('key', 'RulesPage')->first()
+        ]);
+    }
 }
