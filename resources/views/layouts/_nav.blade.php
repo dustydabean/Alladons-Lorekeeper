@@ -80,6 +80,9 @@
                         <a class="dropdown-item" href="{{ url('reports/bug-reports') }}">
                             Bug Reports
                         </a>
+                        <a class="dropdown-item" href="{{ url('rules') }}">
+                            Rules
+                        </a>
                     </div>
             </ul>
 
