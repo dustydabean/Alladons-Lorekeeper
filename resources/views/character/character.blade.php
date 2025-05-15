@@ -91,4 +91,12 @@
     @include('widgets._datetimepicker_js', ['dtvalue' => $character->transferrable_at])
     @include('character._image_js', ['character' => $character])
     @include('character._transformation_js')
+    <script>
+        $('.lineage-popover').popover({
+            html: true,
+            trigger: 'hover',
+            placement: 'top',
+            boundary: 'window',
+        });
+    </script>
 @endsection
