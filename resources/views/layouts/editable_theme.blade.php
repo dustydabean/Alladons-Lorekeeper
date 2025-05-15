@@ -88,10 +88,10 @@
     @if($mainMarginTop) margin-top: {{ $mainMarginTop }}px; @endif
 }
 
-/**Removed .form-control */
+/**Removed .form-control and .selectize-input */
 .main-content, .modal-content, 
 .sidebar-section, .sidebar-item, .sidebar a:hover, .sidebar a:active, 
-option:hover, .selectize-input, .selectize-dropdown .active, 
+option:hover, .selectize-dropdown .active, 
 ::placeholder, .breadcrumb-item, 
 .dropdown-item:hover, .dropdown-item, .dropdown-menu, #tinymce {
     @if($mainColor) background-color: {{ $mainColor }} !important; @endif
