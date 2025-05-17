@@ -7,6 +7,6 @@
 @section('content')
 {!! breadcrumbs(['rules' => 'rules']) !!}
 
-<h4>This page is WIP! Once finished there will be an announcement!</h4>
+<div class="card-mut">This page is WIP! Once finished there will be an announcement!</div>
 
 @endsection
