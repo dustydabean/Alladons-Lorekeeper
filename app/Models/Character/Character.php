@@ -410,6 +410,20 @@ class Character extends Model {
     }
 
     /**
+     * Gets the character's slug number.
+     * If this is a MYO slot, it will return the MYO slot's name.
+     *
+     * @return string
+     */
+    public function getNumberAttribute() {
+        if ($this->is_myo_slot) {
+            return $this->name;
+        } else {
+            return $this->attributes['number'];
+        }
+    }
+
+    /**
      * Displays the character's name, linked to their character page.
      * Added Poucher Code.
      *
