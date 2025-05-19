@@ -61,7 +61,7 @@
                                         @else
                                             {{ $variant->name }}
                                         @endif
-                                        <p class="mb-0">{{ $variant->description }}</p>
+                                        <p class="mb-0">{!! $variant->description !!}</p>
                                     </a>
                                 </div>
                             @endforeach
