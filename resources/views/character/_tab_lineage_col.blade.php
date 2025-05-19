@@ -5,7 +5,7 @@
         </span>
         <br>
         <a href="{{ $character ? $character->url : '#' }}" class="lineage-popover btn btn-sm btn-primary" data-container="body" data-toggle="popover" data-content="{{ $character ? '<img src="' . $character->image->thumbnailUrl . '" class=\'img-thumbnail\' alt=\'Thumbnail for ' . $character->fullName . '\' style=\'width: 100px;\'>' : '<i class=\'fas fa-question-circle\'></i>' }}" style="white-space: normal;">
-            {!! $character ? $character->fullName : 'Unknown' !!}
+            {!! $character ? $character->number : 'Unknown' !!}
         </a>
     </div>
 
