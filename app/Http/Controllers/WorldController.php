@@ -104,7 +104,7 @@ class WorldController extends Controller {
                     $query->sortNewest();
                     break;
                 case 'oldest':
-                    $query->sortOldest();
+                    $query->sortNewest(true);
                     break;
             }
         } else {
@@ -331,7 +331,7 @@ class WorldController extends Controller {
                     $query->sortNewest();
                     break;
                 case 'oldest':
-                    $query->sortOldest();
+                    $query->sortNewest(true);
                     break;
             }
         } else {
@@ -540,7 +540,7 @@ class WorldController extends Controller {
                     $query->sortNewest();
                     break;
                 case 'oldest':
-                    $query->sortOldest();
+                    $query->sortNewest(true);
                     break;
             }
         } else {

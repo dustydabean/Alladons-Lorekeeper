@@ -38,11 +38,11 @@ class SubmissionController extends Controller {
                     $submissions->sortNewest();
                     break;
                 case 'oldest':
-                    $submissions->sortOldest();
+                    $submissions->sortNewest(true);
                     break;
             }
         } else {
-            $submissions->sortOldest();
+            $submissions->sortNewest(true);
         }
 
         return view('admin.submissions.index', [
@@ -118,11 +118,11 @@ class SubmissionController extends Controller {
                     $submissions->sortNewest();
                     break;
                 case 'oldest':
-                    $submissions->sortOldest();
+                    $submissions->sortNewest(true);
                     break;
             }
         } else {
-            $submissions->sortOldest();
+            $submissions->sortNewest(true);
         }
 
         return view('admin.submissions.index', [

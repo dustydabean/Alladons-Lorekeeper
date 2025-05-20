@@ -23,7 +23,7 @@
         @endif
     </h1>
 
-    @if (!$submission->id && ($closed || !$gallery->canSubmit(Auth::user())))
+    @if (!$submission->id && ($closed || !$gallery->canSubmit(Settings::get('gallery_submissions_open'), Auth::user())))
         <div class="alert alert-danger">
             @if ($closed)
                 Gallery submissions are currently closed.
