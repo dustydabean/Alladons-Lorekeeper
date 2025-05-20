@@ -10,8 +10,8 @@ return [
     // and so on
     // not larger numbers may begin to display oddly
     // recommended to keep at 3 or lower
-    'tab_lineage_depth' => 2, // recommended to keep at 2 or lower
-    'lineage_depth'     => 5,
+    'tab_lineage_depth' => 11, // recommended to keep at 2 or lower
+    'lineage_depth'     => 12,
 
     // same as above, but for descendants
     // 0 = character only, descendants tab hidden
