@@ -16,7 +16,7 @@
         {!! $character ? $character->fullName : 'Unkown' !!}
     </div>
 
-    <div class="col-12 px-0 row no-gutters flex-nowrap">
+    <div class="px-0 row no-gutters flex-nowrap">
         @include('character._tab_lineage_col', [
             'character' => $character?->lineage?->parent_1,
             'max_depth' => config('lorekeeper.lineage.tab_lineage_depth') - 1,
