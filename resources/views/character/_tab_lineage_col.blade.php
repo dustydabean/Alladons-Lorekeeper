@@ -1,4 +1,4 @@
-<div class="col-auto p-1">
+<div class="{{ ($max_depth == (config('lorekeeper.lineage.tab_lineage_depth') - 1)) ? 'col-6' : 'col-auto'}} p-1">
     <div class="border-bottom mb-1">
         <span class="font-weight-bold">
             {{ $parent }}
@@ -14,7 +14,7 @@
             @if (!empty($character?->lineage?->parent_1))
                 @include('character._tab_lineage_col', [
                     'character' => $character?->lineage?->parent_1,
-                    'max_depth' => config('lorekeeper.lineage.tab_lineage_depth') - 1,
+                    'max_depth' => $max_depth - 1,
                     'parent' => $character?->lineage?->parent_1?->parentType ?? 'Parent',
                 ])
             @endif
@@ -22,7 +22,7 @@
             @if (!empty($character?->lineage?->parent_2))
                 @include('character._tab_lineage_col', [
                     'character' => $character?->lineage?->parent_2,
-                    'max_depth' => config('lorekeeper.lineage.tab_lineage_depth') - 1,
+                    'max_depth' => $max_depth - 1,
                     'parent' => $character?->lineage?->parent_2?->parentType ?? 'Parent',
                 ])
             @endif
