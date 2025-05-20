@@ -59,7 +59,7 @@
             editor.setTheme("ace/theme/monokai");
             editor.session.setMode("ace/mode/php");
 
-            editor.setValue(`{!! $limit->evaluation ? $limit->evaluation : '<?php\n\n' !!}`);
+            editor.setValue(`{!! $limit->evaluation ? $limit->evaluation : '\n\n' !!}`);
 
             $('#submit').on('click', function(e) {
                 $('#evaluation').val(editor.getValue());
