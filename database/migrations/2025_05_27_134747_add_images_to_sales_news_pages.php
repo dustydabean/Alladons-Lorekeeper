@@ -5,12 +5,10 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 class AddImagesToSalesNewsPages extends Migration {
-{
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
+    public function up(): void {
         Schema::table('news', function (Blueprint $table) {
             $table->boolean('has_image')->default(0);
             $table->string('hash', 10)->nullable();
@@ -28,8 +26,7 @@ class AddImagesToSalesNewsPages extends Migration {
     /**
      * Reverse the migrations.
      */
-    public function down(): void
-    {
+    public function down(): void {
         Schema::table('news', function (Blueprint $table) {
             $table->dropColumn('has_image');
             $table->dropColumn('hash');
@@ -43,4 +40,4 @@ class AddImagesToSalesNewsPages extends Migration {
             $table->dropColumn('hash');
         });
     }
-};
+}
