@@ -33,11 +33,11 @@
                         <div class="container-fluid">
                             <div class="row">
                                 <div class="col-md-12">
-                                    <div class="card">
+                                    <div class="card-mut">
                                         <h5 class="card-header">
                                             S P E C I E S &nbsp R U L E S
                                         </h5>
-                                        <div class="card-body">
+                                        <div class="card-mut-body">
                                             <p class="card-text">
                                                 RULES
                                             </p>
