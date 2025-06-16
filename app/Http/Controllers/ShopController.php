@@ -116,7 +116,7 @@ class ShopController extends Controller {
         return view('shops.shop', [
             'shop'       => $shop,
             'stocks'     => $stocks,
-            'shops'      => Shop::where('is_active', 1)->orderBy('sort', 'DESC')->get(),
+            'shops'      => Shop::where('is_active', 1)->where('is_hidden', 0)->orderBy('sort', 'DESC')->get(),
         ]);
     }
 
