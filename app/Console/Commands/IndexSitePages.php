@@ -88,7 +88,7 @@ class IndexSitePages extends Command {
                     'id'          => $item->id,
                     'title'       => $item->name,
                     'type'        => 'Item',
-                    'identifier'  => $item->id,
+                    'identifier'  => $item->name,
                     'description' => substr_replace(strip_tags($item->description), '...', 100),
                 ]);
             }
