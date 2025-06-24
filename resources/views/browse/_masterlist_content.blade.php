@@ -51,15 +51,15 @@
                         'If turned on, the search will only return characters with the exact nickname entered. If turned off, the search will return characters with the nickname entered as a partial match.',
                     ) !!}</span>
                 </div>
-                <hr />
-                <div class="masterlist-search-field">
-                    {!! Form::label('transformation_id', 'Transformation: ') !!}
+                <!--<hr />-->
+                <!--<div class="masterlist-search-field">
+                    {!! Form::label('transformation_id', 'Ref Type: ') !!}
                     {!! Form::select('transformation_id', $transformations, Request::get('transformation_id'), ['class' => 'form-control']) !!}
-                </div>
-                <div class="masterlist-search-field">
-                    {!! Form::label('has_transformation', 'Has a Transformation: ') !!}
+                </div>-->
+                <!--<div class="masterlist-search-field">
+                    {!! Form::label('has_transformation', 'Has a Ref Type: ') !!}
                     {!! Form::select('has_transformation', ['1' => 'Has a transformation.'], Request::get('has_transformation'), ['class' => 'form-control', 'placeholder' => 'Any']) !!}
-                </div>
+                </div>-->
                 <hr />
             @endif
             <div class="masterlist-search-field">

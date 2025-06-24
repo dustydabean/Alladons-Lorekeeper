@@ -43,14 +43,23 @@
         {!! Form::textarea('description', $shop->description, ['class' => 'form-control wysiwyg']) !!}
     </div>
 
-    <div class="form-group">
-        {!! Form::checkbox('is_active', 1, $shop->id ? $shop->is_active : 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
-        {!! Form::label('is_active', 'Set Active', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If turned off, the shop will not be visible to regular users.') !!}
-    </div>
-
-    <div class="form-group">
-        {!! Form::checkbox('is_staff', 1, $shop->id ? $shop->is_staff : 0, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
-        {!! Form::label('is_staff', 'For Staff?', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If turned on, the shop will not be visible to regular users, only staff.') !!}
+    <div class="row">
+        <div class="col-md form-group">
+            {!! Form::checkbox('is_active', 1, $shop->id ? $shop->is_active : 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
+            {!! Form::label('is_active', 'Set Active', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If turned off, the shop will not be visible to regular users.') !!}
+        </div>
+        <div class="col-md form-group">
+            {!! Form::checkbox('is_hidden', 0, $shop->id ? $shop->is_hidden : 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
+            {!! Form::label('is_hidden', 'Set Hidden', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If turned off, the shop will not be visible on the shop index, but still accessible.') !!}
+        </div>
+        <div class="col-md form-group">
+            {!! Form::checkbox('is_staff', 1, $shop->id ? $shop->is_staff : 0, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
+            {!! Form::label('is_staff', 'For Staff?', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If turned on, the shop will not be visible to regular users, only staff.') !!}
+        </div>
+        <div class="col-md form-group">
+            {!! Form::checkbox('is_fto', 1, $shop->id ? $shop->is_fto : 0, ['class' => 'form-check-label', 'data-toggle' => 'toggle']) !!}
+            {!! Form::label('is_fto', 'FTO Only?', ['class' => 'form-check-label ml-3']) !!} {!! add_help('Only users who are currently FTO and staff can enter.') !!}
+        </div>
     </div>
 
     <div class="form-group">
@@ -60,39 +69,65 @@
     <div class="form-group coupon-row {{ $shop->use_coupons ? '' : 'hide' }}">
         {!! Form::label('allowed_coupons', 'Allowed Coupon(s)', ['class' => 'form-check-label']) !!}
         <p>Leave blank to allow ALL coupons.</p>
-        {!! Form::select('allowed_coupons[]', $coupons, json_decode($shop->allowed_coupons, 1), ['multiple', 'class' => 'form-check-label', 'placeholder' => 'Select Coupons', 'id' => 'allowed_coupons']) !!}
-
+        {!! Form::select('allowed_coupons[]', $coupons, $shop->allowed_coupons, ['multiple', 'class' => 'form-check-label', 'placeholder' => 'Select Coupons', 'id' => 'allowed_coupons']) !!}
     </div>
 
     <div class="form-group">
-        {!! Form::checkbox('is_fto', 1, $shop->id ? $shop->is_fto : 0, ['class' => 'form-check-label', 'data-toggle' => 'toggle']) !!}
-        {!! Form::label('is_fto', 'FTO Only?', ['class' => 'form-check-label ml-3']) !!} {!! add_help('Only users who are currently FTO and staff can enter.') !!}
+        {!! Form::checkbox('is_timed_shop', 1, $shop->is_timed_shop ?? 0, ['class' => 'form-check-input shop-timed shop-toggle shop-field', 'data-toggle' => 'toggle', 'id' => 'is_timed_shop']) !!}
+        {!! Form::label('is_timed_shop', 'Set Timed Shop', ['class' => 'form-check-label ml-3']) !!} {!! add_help('Sets the shop as timed between the chosen dates.') !!}
     </div>
+    <div class="card mb-3 shop-timed-quantity {{ $shop->is_timed_shop ? '' : 'hide' }}">
+        <div class="card-body">
+            <h3>Shop Time Period</h3>
+            <p>Both of the below options can work together. If both are set, the shop will only be available during the specific time period, and on the specific days of the week and months.</p>
 
-    <br>
-    <div class="pl-4">
-        <div class="form-group">
-            {!! Form::checkbox('is_timed_shop', 1, $shop->is_timed_shop ?? 0, ['class' => 'form-check-input shop-timed shop-toggle shop-field', 'id' => 'is_timed_shop']) !!}
-            {!! Form::label('is_timed_shop', 'Set Timed Shop', ['class' => 'form-check-label ml-3']) !!} {!! add_help('Sets the shop as timed between the chosen dates.') !!}
-        </div>
-        <div class="shop-timed-quantity {{ $shop->is_timed_shop ? '' : 'hide' }}">
+            <h5>Specific Time Period</h5>
+            <p>The time period below is between the specific dates and times, rather than an agnostic period like "every November".</p>
             <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        {!! Form::label('start_at', 'Start Time') !!} {!! add_help('The shop will cycle in at this date.') !!}
-                        {!! Form::text('start_at', $shop->start_at, ['class' => 'form-control', 'id' => 'datepicker2']) !!}
-                    </div>
+                <div class="col-md-6 form-group">
+                    {!! Form::label('start_at', 'Start Time') !!} {!! add_help('The shop will cycle in at this date.') !!}
+                    {!! Form::text('start_at', $shop->start_at, ['class' => 'form-control datepicker']) !!}
                 </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        {!! Form::label('end_at', 'End Time') !!} {!! add_help('The shop will cycle out at this date.') !!}
-                        {!! Form::text('end_at', $shop->end_at, ['class' => 'form-control', 'id' => 'datepicker3']) !!}
-                    </div>
+                <div class="col-md-6 form-group">
+                    {!! Form::label('end_at', 'End Time') !!} {!! add_help('The shop will cycle out at this date.') !!}
+                    {!! Form::text('end_at', $shop->end_at, ['class' => 'form-control datepicker']) !!}
                 </div>
+            </div>
+
+            <h5>Repeating Time Period</h5>
+            <p>Select the months and days of the week that the shop will be available.</p>
+            <p><b>If months are set alongside days, the shop will only be available on those days in those months.</b></p>
+            <div class="form-group">
+                {!! Form::label('shop_days', 'Days of the Week') !!}
+                {!! Form::select('shop_days[]', ['Monday' => 'Monday', 'Tuesday' => 'Tuesday', 'Wednesday' => 'Wednesday', 'Thursday' => 'Thursday', 'Friday' => 'Friday', 'Saturday' => 'Saturday', 'Sunday' => 'Sunday'], $shop->days ?? null, [
+                    'class' => 'form-control selectize',
+                    'multiple' => 'multiple',
+                ]) !!}
+            </div>
+            <div class="form-group">
+                {!! Form::label('shop_months', 'Months of the Year') !!}
+                {!! Form::select(
+                    'shop_months[]',
+                    [
+                        'January' => 'January',
+                        'February' => 'February',
+                        'March' => 'March',
+                        'April' => 'April',
+                        'May' => 'May',
+                        'June' => 'June',
+                        'July' => 'July',
+                        'August' => 'August',
+                        'September' => 'September',
+                        'October' => 'October',
+                        'November' => 'November',
+                        'December' => 'December',
+                    ],
+                    $shop->months ?? null,
+                    ['class' => 'form-control selectize', 'multiple' => 'multiple'],
+                ) !!}
             </div>
         </div>
     </div>
-
 
     <div class="text-right">
         {!! Form::submit($shop->id ? 'Edit' : 'Create', ['class' => 'btn btn-primary']) !!}
@@ -101,92 +136,81 @@
     {!! Form::close() !!}
 
     @if ($shop->id)
-        {!! Form::open(['url' => 'admin/data/shops/restrictions/' . $shop->id]) !!}
-        <h3>Restrict Shop</h3>
-        <div class="form-group">
-            {!! Form::checkbox('is_restricted', 1, $shop->is_restricted, ['class' => 'is-restricted-class form-check-label', 'data-toggle' => 'toggle']) !!}
-            {!! Form::label('is_restricted', 'Should this shop require an item to enter?', ['class' => 'is-restricted-label form-check-label ml-3']) !!} {!! add_help('If turned on, the shop will cannot be entered unless the user currently owns all required items.') !!}
-        </div>
+        <hr />
 
-        <div class="br-form-group" style="display: none">
-            <div><a href="#" class="btn btn-primary mb-3" id="add-feature">Add Item Requirement</a></div>
+        @include('widgets._add_limits', ['object' => $shop])
 
-            <div class="form-group">
-                @foreach ($shop->limits as $limit)
-                    <div class="row mb-2">
-                        {!! Form::label('item_id', 'Item', ['class' => 'col-form-label']) !!}
-                        <div class="col-4">
-                            {!! Form::select('item_id[]', $items, $limit->item_id, ['class' => 'form-control', 'placeholder' => 'Select Item']) !!}
-                        </div>
-                        <a href="#" class="remove-feature btn btn-danger">Remove</a>
-                    </div>
-                @endforeach
-            </div>
-            <div id="featureList" class="form-group">
-            </div>
-        </div>
-        <div class="text-right">
-            {!! Form::submit('Edit', ['class' => 'btn btn-primary']) !!}
-        </div>
-
-        {!! Form::close() !!}
+        <hr />
 
         <h3>Shop Stock</h3>
         <div class="text-right mb-3">
             <a href="#" class="add-stock-button btn btn-outline-primary">Add Stock</a>
         </div>
-        <div id="shopStock">
-            <div class="row col-12">
-                @foreach ($shop->stock as $stock)
-                    <div class="col-md-4">
-                        <div class="card p-3 my-1">
+        <div class="row">
+            @foreach ($shop->stock as $stock)
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
                             <div class="row">
-                                @if ($stock->item->has_image)
-                                    <div class="col-2">
-                                        <img src="{{ $stock->item->imageUrl }}" style="width: 100%;" alt="{{ $stock->item->name }}">
+                                @if ($stock->item?->has_image)
+                                    <div class="col-4">
+                                        <img src="{{ $stock->item?->imageUrl }}" class="img-fluid" alt="{{ $stock->item?->name }}">
                                     </div>
                                 @endif
-                                <div class="col-{{ $stock->item->has_image ? '8' : '10' }}">
-                                    <div><a href="{{ $stock->item->idUrl }}"><strong>{{ $stock->item->name }} - {{ $stock->stock_type }}</strong></a></div>
-                                    <div><strong>Cost: </strong> {!! $stock->currency->display($stock->cost) !!}</div>
-                                </div>
-                                <div class="row">
+                                <div class="col-{{ $stock->item?->has_image ? '8' : '10' }}">
+                                    <div>
+                                        <a href="{{ $stock->item?->idUrl }}">
+                                            <strong>{{ $stock->item?->name ?? 'Deleted' }} - {{ $stock->stock_type }}</strong>
+                                        </a>
+                                        @if ($stock->isRandom)
+                                            <span class="ml-1 badge badge-primary">Random</span>
+                                        @endif
+                                    </div>
+                                    <div><strong>Cost: </strong> {!! $stock->displayCosts() ?? 'Free' !!}</div>
                                     @if (!$stock->is_visible)
-                                        <div class="col-2"> <i class="fas fa-eye-slash"></i></div>
+                                        <div><i class="fas fa-eye-slash"></i></div>
                                     @endif
                                     @if ($stock->is_timed_stock)
-                                        <div class="col-2"> <i class="fas fa-clock"></i></div>
+                                        <i class="fas fa-clock"></i>
+                                    @endif
+                                    @if ($stock->is_limited_stock)
+                                        <div>Stock: {{ $stock->quantity }}</div>
+                                    @endif
+                                    @if ($stock->is_limited_stock)
+                                        <div>Restock: {!! $stock->restock ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-danger"></i>' !!}</div>
+                                    @endif
+                                    @if ($stock->purchase_limit)
+                                        <div class="text-danger">Max {{ $stock->purchase_limit }}
+                                            @if ($stock->purchase_limit_timeframe !== 'lifetime')
+                                                {{ $stock->purchase_limit_timeframe }}
+                                            @endif per user
+                                        </div>
+                                    @endif
+                                    @if ($stock->disallow_transfer)
+                                        <div class="text-danger">Cannot be transferred</div>
                                     @endif
                                 </div>
                             </div>
-                            @if ($stock->is_limited_stock)
-                                <div>Stock: {{ $stock->quantity }}</div>
+                            @if ($stock->is_timed_stock)
+                                <div class="row no-gutters d-flex">
+                                    <small>
+                                        {!! $stock->displayTime() !!}
+                                    </small>
+                                </div>
                             @endif
-                            @if ($stock->is_limited_stock)
-                                <div>Restock: {!! $stock->restock ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-danger"></i>' !!}</div>
-                            @endif
-                            @if ($stock->purchase_limit)
-                                <div class="text-danger">Max {{ $stock->purchase_limit }} @if ($stock->purchase_limit_timeframe !== 'lifetime')
-                                        {{ $stock->purchase_limit_timeframe }}
-                                    @endif per user</div>
-                            @endif
-                            @if ($stock->disallow_transfer)
-                                <div class="text-danger">Cannot be transferred</div>
-                            @endif
-                            <div class="text-right">
+                            <div class="text-right mb-0">
                                 <button class="btn btn-primary" onclick="editStock({{ $stock->id }})">
-                                    {{-- pencil icon --}}
                                     <i class="fas fa-pencil-alt"></i>
                                 </button>
                                 <div class="btn btn-danger" onclick="deleteStock({{ $stock->id }})">
-                                    {{-- trash icon --}}
                                     <i class="fas fa-trash"></i>
                                 </div>
                             </div>
                         </div>
                     </div>
-                @endforeach
-            </div>
+                </div>
+            @endforeach
+        </div>
     @endif
 
     <div class="feature-row mb-2 hide">
@@ -200,23 +224,17 @@
 
 @section('scripts')
     @parent
+    @include('widgets._datetimepicker_js')
+    @include('js._tinymce_wysiwyg')
     <script>
+        $('.selectize').selectize();
+
         $('#is_timed_shop').change(function() {
             if ($(this).is(':checked')) {
                 $('.shop-timed-quantity').removeClass('hide');
             } else {
                 $('.shop-timed-quantity').addClass('hide');
             }
-        });
-
-        $("#datepicker2").datetimepicker({
-            dateFormat: "yy-mm-dd",
-            timeFormat: 'HH:mm:ss',
-        });
-
-        $("#datepicker3").datetimepicker({
-            dateFormat: "yy-mm-dd",
-            timeFormat: 'HH:mm:ss',
         });
 
         // edit stock function
@@ -227,8 +245,8 @@
         function deleteStock(id) {
             loadModal("{{ url('admin/data/shops/stock/delete') }}/" + id, 'Delete Stock');
         }
-        $(document).ready(function() {
 
+        $(document).ready(function() {
             $('#use_coupons').change(function() {
                 if ($(this).is(':checked')) {
                     $('.coupon-row').removeClass('hide');

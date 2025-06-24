@@ -44,7 +44,7 @@
                 <div class="alert alert-secondary">{!! $request->character->image->transformation->displayName !!}</div>
             @else
                 <div id="transformations">
-                    {!! Form::select('transformation_id', $transformations, $request->transformation_id, ['class' => 'form-control', 'id' => 'transformation']) !!}
+                    {!! Form::select('transformation_id', $transformations, $request->transformation_id, ['class' => 'form-control selectize', 'id' => 'transformation']) !!}
                 </div>
             @endif
         </div>

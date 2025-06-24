@@ -249,8 +249,8 @@
         </div>
         @if (!$isMyo)
             <div class="form-group">
-                {!! Form::label('Transformation (Optional)') !!} {!! add_help('This will make the image have the selected transformation id.') !!}
-                {!! Form::select('transformation_id', $transformations, null, ['class' => 'form-control']) !!}
+                {!! Form::label('Ref Type (Optional)') !!} {!! add_help('This will make the image have the selected transformation id.') !!}
+                {!! Form::select('transformation_id', $transformations, null, ['class' => 'form-control selectize']) !!}
             </div>
 
             <div class="form-group">
@@ -351,7 +351,7 @@
                 The default site setting for genome visibility is <strong class="text-dark">{{ $dVis < 1 ? "Completely Hidden" : ($dVis == 1 ? "Half-Hidden" : "Fully Visible") }}</strong>.
             </span>
         </div>
-    
+
         <div class="form-group">
             {!! Form::label('Genes') !!}
             <div id="geneList"></div>
@@ -396,7 +396,7 @@
     @if (!$isMyo)
         @include('widgets._character_code_js')
     @endif
-
+    @include('js._tinymce_wysiwyg')
     <script>
         $("#species").change(function() {
             var species = $('#species').val();

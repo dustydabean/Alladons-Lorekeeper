@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Facades\Notifications;
 use App\Facades\Settings;
+use App\Models\Character\BreedingPermission;
+use App\Models\Character\BreedingPermissionLog;
 use App\Models\Character\Character;
 use App\Models\Character\CharacterBookmark;
 use App\Models\Character\CharacterBreedingLog;
@@ -20,6 +22,7 @@ use App\Models\Character\CharacterGenomeNumeric;
 use App\Models\Character\CharacterImage;
 use App\Models\Character\CharacterImageSubtype;
 use App\Models\Character\CharacterLineage;
+use App\Models\Character\CharacterLog;
 use App\Models\Character\CharacterPedigree;
 use App\Models\Character\CharacterProfileCustomValue;
 use App\Models\Character\CharacterTransfer;
@@ -28,6 +31,7 @@ use App\Models\Rarity;
 use App\Models\Sales\SalesCharacter;
 use App\Models\Species\Subtype;
 use App\Models\User\User;
+use App\Models\User\UserCharacterLog;
 use App\Models\User\UserPet;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
@@ -406,6 +410,13 @@ class CharacterManager extends Service {
                 $recipient->settings->save();
             }
 
+            // Grant breeding permission currency to the character if relevant
+            if (Settings::get('breeding_permission_autogrant')) {
+                if (!(new CurrencyManager)->creditCurrency($user, $character, 'Automatic Breeding Permission Grant', 'Character Created', Settings::get('breeding_permission_currency'), Settings::get('breeding_permission_autogrant'))) {
+                    throw new \Exception('An error occurred while granting breeding permissions.');
+                }
+            }
+
             // If the recipient has an account, send them a notification
             if (is_object($recipient) && $user->id != $recipient->id) {
                 Notifications::create($isMyo ? 'MYO_GRANT' : 'CHARACTER_UPLOAD', $recipient, [
@@ -504,7 +515,7 @@ class CharacterManager extends Service {
         if (config('lorekeeper.settings.masterlist_image_dimension') != 0) {
             if ($image->width() > $image->height()) {
                 // Landscape
-                if (config('lorekeeper.settings.masterlist_image_dimension_target') == 'short') {
+                if (config('lorekeeper.settings.masterlist_image_dimension_target') == 'shorter') {
                     $image->resize(null, config('lorekeeper.settings.masterlist_image_dimension'), function ($constraint) {
                         $constraint->aspectRatio();
                         $constraint->upsize();
@@ -517,7 +528,7 @@ class CharacterManager extends Service {
                 }
             } else {
                 // Portrait
-                if (config('lorekeeper.settings.masterlist_image_dimension_target') == 'short') {
+                if (config('lorekeeper.settings.masterlist_image_dimension_target') == 'shorter') {
                     $image->resize(config('lorekeeper.settings.masterlist_image_dimension'), null, function ($constraint) {
                         $constraint->aspectRatio();
                         $constraint->upsize();
@@ -543,11 +554,11 @@ class CharacterManager extends Service {
 
                 $wmScale = config('lorekeeper.settings.watermark_percent');
 
-                //Assume Landscape by Default
+                // Assume Landscape by Default
                 $maxSize = $imageWidth * $wmScale;
 
                 if ($imageWidth > $imageHeight) {
-                    //Landscape
+                    // Landscape
                     $maxSize = $imageWidth * $wmScale;
                 } else {
                     // Portrait
@@ -555,7 +566,7 @@ class CharacterManager extends Service {
                 }
 
                 if ($wmWidth > $wmHeight) {
-                    //Landscape
+                    // Landscape
                     $watermark->resize($maxSize, null, function ($constraint) {
                         $constraint->aspectRatio();
                     });
@@ -651,11 +662,11 @@ class CharacterManager extends Service {
 
                     $wmScale = config('lorekeeper.settings.watermark_percent');
 
-                    //Assume Landscape by Default
+                    // Assume Landscape by Default
                     $maxSize = $imageWidth * $wmScale;
 
                     if ($imageWidth > $imageHeight) {
-                        //Landscape
+                        // Landscape
                         $maxSize = $imageWidth * $wmScale;
                     } else {
                         // Portrait
@@ -663,7 +674,7 @@ class CharacterManager extends Service {
                     }
 
                     if ($wmWidth > $wmHeight) {
-                        //Landscape
+                        // Landscape
                         $watermark->resize($maxSize, null, function ($constraint) {
                             $constraint->aspectRatio();
                         });
@@ -753,26 +764,33 @@ class CharacterManager extends Service {
      * @return bool
      */
     public function createLog($senderId, $senderUrl, $recipientId, $recipientUrl, $characterId, $type, $data, $logType, $isUpdate = false, $oldData = null, $newData = null) {
-        return DB::table($logType == 'character' ? 'character_log' : 'user_character_log')->insert(
-            [
-                'sender_id'     => $senderId,
-                'sender_url'    => $senderUrl,
-                'recipient_id'  => $recipientId,
-                'recipient_url' => $recipientUrl,
-                'character_id'  => $characterId,
-                'log'           => $type.($data ? ' ('.$data.')' : ''),
-                'log_type'      => $type,
-                'data'          => $data,
-                'created_at'    => Carbon::now(),
-                'updated_at'    => Carbon::now(),
-            ] + ($logType == 'character' ?
-                [
-                    'change_log' => $isUpdate ? json_encode([
+        $log = null;
+
+        $shared = [
+            'sender_id'     => $senderId,
+            'sender_url'    => $senderUrl,
+            'recipient_id'  => $recipientId,
+            'recipient_url' => $recipientUrl,
+            'character_id'  => $characterId,
+            'log'           => $type.($data ? ' ('.$data.')' : ''),
+            'log_type'      => $type,
+            'data'          => $data,
+        ];
+
+        if ($logType == 'character') {
+            $log = CharacterLog::create(
+                $shared + [
+                    'change_log' => $isUpdate ? [
                         'old' => $oldData,
                         'new' => $newData,
-                    ]) : null,
-                ] : [])
-        );
+                    ] : null,
+                ]
+            );
+        } else {
+            $log = UserCharacterLog::create($shared);
+        }
+
+        return $log;
     }
 
     /**
@@ -1000,6 +1018,113 @@ class CharacterManager extends Service {
 
         return $this->rollbackReturn(false);
     }
+
+    /**
+     * Updates a character's breeding slot.
+     *
+     * @param array          $data
+     * @param CharacterBreedingSlot $slot
+     * @param User           $user
+     *
+     * @return bool
+     */
+    public function updateBreedingSlot($data, $slot, $user) {
+        DB::beginTransaction();
+
+        try {
+            $oldUser = $slot->user_id ? User::find($slot->user_id) : null;
+            $recipient = null;
+            if (isset($data['user_id']) && $data['user_id']) {
+                $recipient = User::find($data['user_id']);
+                if (!$recipient) {
+                    throw new \Exception('Selected user is invalid.');
+                }
+                if (!$oldUser || $slot->user_id != $recipient->id) {
+                    $userChange = true;
+                }
+            } elseif (!isset($data['user_id'])) {
+                $data['user_id'] = null;
+                if ($oldUser) {
+                    $userChange = true;
+                }
+            }
+
+            $oldUrl = $slot->user_url ? prettyProfileLink($slot->user_url) : null;
+            $recipientUrl = null;
+            if (isset($data['user_url']) && $data['user_url']) {
+                $recipientUrl = checkAlias($data['user_url']);
+
+                if (is_object($recipientUrl)) {
+                    $data['user_id'] = $recipientUrl->id;
+                    $data['user_url'] = null;
+                    $recipientUrl = null;
+                    if (!$oldUser || isset($oldUser->id) && $oldUser->id != $recipientUrl->id) {
+                        $userChange = true;
+                    }
+                } elseif (!$oldUrl || $slot->user_url != $data['user_url']) {
+                    $userChange = true;
+                }
+            } elseif (!isset($data['user_url'])) {
+                $data['user_url'] = null;
+                if ($oldUrl) {
+                    $userChange = true;
+                }
+            }
+
+            $oldOffspring = $slot->offspring_id ? Character::find($slot->offspring_id) : null;
+            $offspring = null;
+            if (isset($data['offspring_id']) && $data['offspring_id']) {
+                $offspring = Character::find($data['offspring_id']);
+                if (!$offspring) {
+                    throw new \Exception('Selected user is invalid.');
+                }
+
+                $data['offspring_id'] = $offspring->id;
+                if (!$oldOffspring || isset($oldOffspring->id) && $oldOffspring->id != $offspring->id) {
+                    $offspringChange = true;
+                }
+            } elseif (!isset($data['offspring_id'])) {
+                $data['offspring_id'] = null;
+                if ($oldOffspring) {
+                    $offspringChange = true;
+                }
+            }
+
+            if (!isset($data['notes'])) {
+                $data['notes'] = null;
+            }
+
+            $slot->user_id = $data['user_id'];
+            $slot->user_url = $data['user_url'];
+            $slot->offspring_id = $data['offspring_id'];
+            $slot->notes = $data['notes'];
+            $slot->save();
+
+            if (!$this->logAdminAction($user, 'Updated Breeding Slot', 'Updated breeding slot entry for '.$slot->character->displayName)) {
+                throw new \Exception('Failed to log admin action.');
+            }
+
+            $string = '';
+            if (isset($userChange)) {
+                $string .= 'User changed from '.($oldUser->displayName ?? ($oldUrl ? prettyProfileLink($oldUrl) : 'no user')).' to '.($recipient->displayName ?? ($recipientUrl ? prettyProfileLink($recipientUrl) : 'no user')).'.';
+            }
+            if (isset($offspringChange)) {
+                if (isset($userChange)) {
+                    $string .= ' ';
+                }
+                $string .= 'Offspring set to '.(isset($offspring) ? $offspring->displayName : 'none').'.';
+            }
+            // Add a log for the character
+            $this->createLog($user->id, null, null, null, $slot->character_id, 'Breeding Slot Updated', $string, 'character');
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
 
     /**
      * Updates image data.
@@ -1350,12 +1475,12 @@ class CharacterManager extends Service {
 
             $count = 0;
             foreach ($images as $image) {
-                //if($count == 1)
-                //{
+                // if($count == 1)
+                // {
                 //    // Set the first one as the active image
                 //    $image->character->image_id = $image->id;
                 //    $image->character->save();
-                //}
+                // }
                 $image->sort = $count;
                 $image->save();
                 $count++;
@@ -1506,6 +1631,220 @@ class CharacterManager extends Service {
                 $pet->save();
                 $count++;
             }
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Creates a breeding permission.
+     *
+     * @param array     $data
+     * @param Character $character
+     * @param User      $user
+     *
+     * @return bool
+     */
+    public function createBreedingPermission($data, $character, $user) {
+        DB::beginTransaction();
+
+        try {
+            // Perform additional checks
+            if ($character->user_id != $user->id) {
+                throw new \Exception('Only this character\'s owner may create new breeding permissions.');
+            }
+            if ($user->id == $data['recipient_id']) {
+                throw new \Exception('You cannot grant a breeding permission to yourself.');
+            }
+            if ($character->availableBreedingPermissions < 1) {
+                throw new \Exception('This character may not have any more breeding permissions created.');
+            }
+
+            // Create the permission itself
+            $permission = BreedingPermission::create([
+                'character_id' => $character->id,
+                'recipient_id' => $data['recipient_id'],
+                'type'         => $data['type'],
+                'description'  => $data['description'],
+            ]);
+
+            if (!$permission) {
+                throw new \Exception('Failed to create breeding permission.');
+            }
+
+            // Create a log for the permission
+            if (!$this->createBreedingPermissionLog($user->id, $data['recipient_id'], $permission->id, 'Breeding Permission Granted', $data['type'].' Permission Created')) {
+                throw new \Exception('Failed to create log.');
+            }
+
+            // Create a notification for the recipient
+            Notifications::create('BREEDING_PERMISSION_GRANTED', $permission->recipient, [
+                'character_name' => $character->name,
+                'character_slug' => $character->slug,
+                'sender_url'     => $user->url,
+                'sender_name'    => $user->name,
+                'type'           => strtolower($permission->type),
+            ]);
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Marks a breeding permission as used.
+     *
+     * @param Character          $character
+     * @param BreedingPermission $permission
+     * @param User               $user
+     *
+     * @return bool
+     */
+    public function useBreedingPermission($character, $permission, $user) {
+        DB::beginTransaction();
+
+        try {
+            if (!$permission) {
+                throw new \Exception('Invalid breeding permission');
+            }
+            if ($permission->is_used) {
+                throw new \Exception('This permission has already been used.');
+            }
+
+            // Update the permission
+            $permission->update(['is_used' => 1]);
+
+            // Create a log
+            if (!$this->createBreedingPermissionLog($user->id, null, $permission->id, 'Breeding Permission Marked Used', null)) {
+                throw new \Exception('Failed to create log.');
+            }
+
+            // Create notifications for both the character owner and recipient
+            foreach ([$character->user, $permission->recipient] as $notificationRecipient) {
+                if ($notificationRecipient->id != $user->id) {
+                    Notifications::create('BREEDING_PERMISSION_USED', $notificationRecipient, [
+                        'character_name' => $character->name,
+                        'character_slug' => $character->slug,
+                        'sender_url'     => $user->url,
+                        'sender_name'    => $user->name,
+                        'type'           => strtolower($permission->type),
+                        'permission_id'  => $permission->id,
+                    ]);
+                }
+            }
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Transfers a breeding permission.
+     *
+     * @param Character          $character
+     * @param BreedingPermission $permission
+     * @param User               $recipient
+     * @param User               $user
+     *
+     * @return bool
+     */
+    public function transferBreedingPermission($character, $permission, $recipient, $user) {
+        DB::beginTransaction();
+
+        try {
+            if (!$permission) {
+                throw new \Exception('Invalid breeding permission');
+            }
+            if ($permission->is_used) {
+                throw new \Exception('This permission has already been used.');
+            }
+
+            if (!$recipient) {
+                throw new \Exception('Invalid recipient.');
+            }
+            if ($recipient->id == $permission->recipient_id) {
+                throw new \Exception('Cannot transfer breeding permission; the current and selected recipient are the same.');
+            }
+
+            // It might be strange to allow transferral of breeding permissions back
+            // to the character's original owner, but it also might come in handy.
+            // The following line would disallow this; it is preserved here, albeit commented out, for convenience.
+            //if($recipient->id == $character->user_id) throw new \Exception('Cannot transfer breeding permission; the selected recipient is the character\'s owner.');
+
+            // Record the pre-existing recipient
+            $oldRecipient = $permission->recipient;
+
+            // Update the permission
+            $permission->update(['recipient_id' => $recipient->id]);
+
+            // Create a log
+            if (!$this->createBreedingPermissionLog($oldRecipient->id, $recipient->id, $permission->id, 'Breeding Permission Transferred', 'Transferred by '.$user->displayName.($user->id != $oldRecipient->id ? ' (Admin Transfer)' : ''))) {
+                throw new \Exception('Failed to create log.');
+            }
+
+            // If this is a forced/admin transfer, send the original recipient a notification
+            if ($user->id != $oldRecipient->id) {
+                Notifications::create('FORCED_BREEDING_PERMISSION_TRANSFER', $oldRecipient, [
+                    'character_name' => $character->name,
+                    'character_slug' => $character->slug,
+                    'sender_url'     => $user->url,
+                    'sender_name'    => $user->name,
+                    'type'           => strtolower($permission->type),
+                ]);
+            }
+
+            // Create a notification for the recipient
+            if ($recipient->id != $user->id) {
+                Notifications::create('BREEDING_PERMISSION_TRANSFER', $recipient, [
+                    'character_name' => $character->name,
+                    'character_slug' => $character->slug,
+                    'sender_url'     => $user->url,
+                    'sender_name'    => $user->name,
+                    'type'           => strtolower($permission->type),
+                ]);
+            }
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Creates a breeding permission log.
+     *
+     * @param int    $senderId
+     * @param int    $recipientId
+     * @param int    $breedingPermissionId
+     * @param string $type
+     * @param string $data
+     *
+     * @return bool
+     */
+    public function createBreedingPermissionLog($senderId, $recipientId, $breedingPermissionId, $type, $data) {
+        DB::beginTransaction();
+
+        try {
+            BreedingPermissionLog::create([
+                'sender_id'              => $senderId,
+                'recipient_id'           => $recipientId,
+                'breeding_permission_id' => $breedingPermissionId,
+                'log'                    => $type.($data ? ' ('.$data.')' : ''),
+                'log_type'               => $type,
+                'data'                   => $data,
+            ]);
 
             return $this->commitReturn(true);
         } catch (\Exception $e) {
@@ -2011,7 +2350,7 @@ class CharacterManager extends Service {
             if ($sender) {
                 Notifications::create('CHARACTER_SENT', $sender, [
                     'character_name' => $character->slug,
-                    'character_slug' => $character->slug,
+                    'character_url'  => $character->is_myo_slot ? 'myo/'.$character->id : 'character/'.$character->slug,
                     'sender_name'    => $user->name,
                     'sender_url'     => $user->url,
                     'recipient_name' => is_object($recipient) ? $recipient->name : prettyProfileName($recipient),
@@ -2021,7 +2360,7 @@ class CharacterManager extends Service {
             if (is_object($recipient)) {
                 Notifications::create('CHARACTER_RECEIVED', $recipient, [
                     'character_name' => $character->slug,
-                    'character_slug' => $character->slug,
+                    'character_url'  => $character->is_myo_slot ? 'myo/'.$character->id : 'character/'.$character->slug,
                     'sender_name'    => $user->name,
                     'sender_url'     => $user->url,
                 ]);
@@ -2059,16 +2398,16 @@ class CharacterManager extends Service {
 
                 // Process the character move if the transfer has already been approved
                 if ($transfer->is_approved) {
-                    //check the cooldown saved
+                    // check the cooldown saved
                     if (isset($transfer->data['cooldown'])) {
                         $cooldown = $transfer->data['cooldown'];
                     }
                     $this->moveCharacter($transfer->character, $transfer->recipient, 'User Transfer', $cooldown);
                     if (!Settings::get('open_transfers_queue')) {
-                        $transfer->data = json_encode([
+                        $transfer->data = [
                             'cooldown' => $cooldown,
                             'staff_id' => null,
-                        ]);
+                        ];
                     }
 
                     // Notify sender of the successful transfer
@@ -2081,9 +2420,9 @@ class CharacterManager extends Service {
                 }
             } else {
                 $transfer->status = 'Rejected';
-                $transfer->data = json_encode([
+                $transfer->data = [
                     'staff_id' => null,
-                ]);
+                ];
 
                 // Notify sender that transfer has been rejected
                 Notifications::create('CHARACTER_TRANSFER_REJECTED', $transfer->sender, [
@@ -2162,10 +2501,10 @@ class CharacterManager extends Service {
 
             if ($data['action'] == 'Approve') {
                 $transfer->is_approved = 1;
-                $transfer->data = json_encode([
+                $transfer->data = [
                     'staff_id' => $user->id,
                     'cooldown' => $data['cooldown'] ?? Settings::get('transfer_cooldown'),
-                ]);
+                ];
 
                 // Process the character move if the recipient has already accepted the transfer
                 if ($transfer->status == 'Accepted') {
@@ -2207,9 +2546,9 @@ class CharacterManager extends Service {
 
                 $transfer->status = 'Rejected';
                 $transfer->reason = $data['reason'] ?? null;
-                $transfer->data = json_encode([
+                $transfer->data = [
                     'staff_id' => $user->id,
-                ]);
+                ];
 
                 // Notify both parties that the request was denied
                 Notifications::create('CHARACTER_TRANSFER_DENIED', $transfer->sender, [

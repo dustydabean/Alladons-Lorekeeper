@@ -1,22 +1,25 @@
-<div class="container text-center {{ isset($tab) && $tab ? 'mb-3' : '' }}">
+<div class="container-fluid px-0 text-center {{ isset($tab) && $tab ? 'mb-3' : '' }}">
     {{-- recursive based on config --}}
     @if ($character->children && $character->children->count())
-        <h5 class="text-center">{{ $title }}</h5>
-        @foreach ($character->children->chunk(4) as $chunk)
+        <h5 class="text-center">
+            {{ $title }}
+        </h5>
+        @foreach ($character->children->chunk(5) as $chunk)
             <div class="row justify-content-center">
                 @foreach ($chunk as $child)
-                    @if($child->character)
-                        <div class="col text-center">
+                    @if ($child->character)
+                        <div class="col-sm-2 text-center">
                             <div>
                                 <a href="{{ $child->character->url }}">
-                                    <img src="{{ $child->character->image->thumbnailUrl }}" class="img-thumbnail" alt="Thumbnail for {{ $child->character->fullName }}" width="150" height="150"/>
+                                    <img src="{{ $child->character->image->thumbnailUrl }}" class="img-thumbnail" alt="Thumbnail for {{ $child->character->fullName }}" width="100" height="100"/>
                                 </a>
                             </div>
                             <div class="mt-1">
                                 <a href="{{ $child->character->url }}" class="h5 mb-0">
                                     @if (!$child->character->is_visible)
                                         <i class="fas fa-eye-slash"></i>
-                                    @endif {{ Illuminate\Support\Str::limit($child->character->fullName, 20, $end = '...') }}
+                                    @endif 
+                                    {{ Illuminate\Support\Str::limit($child->character->fullName, 20, $end = '...') }}
                                 </a>
                             </div>
                             @if ($child->character->children->count() && $max_depth > 0)

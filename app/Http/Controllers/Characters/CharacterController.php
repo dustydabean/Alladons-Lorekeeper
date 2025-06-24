@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Characters;
 
 use App\Facades\Settings;
 use App\Http\Controllers\Controller;
+use App\Models\Character\BreedingPermission;
 use App\Models\Character\Character;
 use App\Models\Character\CharacterCurrency;
 use App\Models\Character\CharacterImage;
@@ -337,6 +338,60 @@ class CharacterController extends Controller {
     }
 
     /**
+     * Shows a character's breeding permissions.
+     *
+     * @param string $slug
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCharacterBreedingPermissions(Request $request, $slug) {
+        return view('character.breeding_permissions', [
+            'character'   => $this->character,
+            'permissions' => $this->character->breedingPermissions()->orderBy('is_used')->paginate(20)->appends($request->query()),
+        ]);
+    }
+
+    /**
+     * Shows the new breeding permission modal.
+     *
+     * @param string $slug
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getNewBreedingPermission($slug) {
+        if (!Auth::check() || $this->character->user_id != Auth::user()->id) {
+            abort(404);
+        }
+
+        return view('character._create_edit_breeding_permission', [
+            'character'          => $this->character,
+            'breedingPermission' => new BreedingPermission,
+            'userOptions'        => User::orderBy('id')->pluck('name', 'id'),
+        ]);
+    }
+
+    /**
+     * Shows the transfer breeding permission modal.
+     *
+     * @param string $slug
+     * @param int    $id
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getTransferBreedingPermission($slug, $id) {
+        $permission = BreedingPermission::where('id', $id)->first();
+        if (!Auth::check() || !$permission || ($permission->recipient_id != Auth::user()->id && !Auth::user()->hasPower('manage_characters'))) {
+            abort(404);
+        }
+
+        return view('character._transfer_breeding_permission', [
+            'character'          => $this->character,
+            'breedingPermission' => $permission,
+            'userOptions'        => User::orderBy('id')->pluck('name', 'id'),
+        ]);
+    }
+
+    /**
      * Transfers currency between the user and character.
      *
      * @param App\Services\CharacterManager $service
@@ -407,6 +462,55 @@ class CharacterController extends Controller {
     }
 
     /**
+     * Creates a new breeding permission for a character.
+     *
+     * @param App\Services\CharacterManager $service
+     * @param string                        $slug
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postNewBreedingPermission(Request $request, CharacterManager $service, $slug) {
+        if (!Auth::check()) {
+            abort(404);
+        }
+
+        $request->validate(BreedingPermission::$createRules);
+
+        if ($service->createBreedingPermission($request->only(['recipient_id', 'type', 'description']), $this->character, Auth::user())) {
+            flash('Breeding permission created successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
+    }
+
+    /**
+     * Transfers a breeding permission.
+     *
+     * @param App\Services\CharacterManager $service
+     * @param string                        $slug
+     * @param int                           $id
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postTransferBreedingPermission(Request $request, CharacterManager $service, $slug, $id) {
+        if ($service->transferBreedingPermission($this->character, BreedingPermission::where('id', $id)->first(), User::where('id', $request->only(['recipient_id']))->first(), Auth::user())) {
+            flash('Breeding permission transferred successfully.')->success();
+
+            return redirect()->back();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
+    }
+
+    /**
      * Shows a character's currency logs.
      *
      * @param string $slug
@@ -463,6 +567,21 @@ class CharacterController extends Controller {
             'character'             => $this->character,
             'extPrevAndNextBtnsUrl' => '/change-log',
             'logs'                  => $this->character->getCharacterLogs(),
+        ]);
+    }
+
+    /**
+     * Shows a character's breeding slots logs.
+     *
+     * @param string $slug
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCharacterSlotsLogs($slug) {
+        return view('character.breeding_slots_logs', [
+            'character'             => $this->character,
+            'extPrevAndNextBtnsUrl' => '/breeding-slots-log',
+            'logs'                  => $this->character->getCharacterSlotsLogs(),
         ]);
     }
 

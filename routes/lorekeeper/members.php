@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Member Routes
@@ -40,6 +42,7 @@ Route::group(['prefix' => 'account', 'namespace' => 'Users'], function () {
     Route::post('dob', 'AccountController@postBirthday');
     Route::post('devlog-notif', 'AccountController@postdevLogNotif');
     Route::post('warning', 'AccountController@postWarningVisibility');
+    Route::post('comments', 'AccountController@postProfileComments');
 
     Route::get('two-factor/confirm', 'AccountController@getConfirmTwoFactor');
     Route::post('two-factor/enable', 'AccountController@postEnableTwoFactor');
@@ -164,6 +167,11 @@ Route::group(['prefix' => 'character', 'namespace' => 'Characters'], function ()
 
     Route::post('{slug}/inventory/edit', 'CharacterController@postInventoryEdit');
 
+    Route::get('{slug}/breeding-permissions/new', 'CharacterController@getNewBreedingPermission');
+    Route::post('{slug}/breeding-permissions/new', 'CharacterController@postNewBreedingPermission');
+    Route::get('{slug}/breeding-permissions/{id}/transfer', 'CharacterController@getTransferBreedingPermission');
+    Route::post('{slug}/breeding-permissions/{id}/transfer', 'CharacterController@postTransferBreedingPermission');
+
     Route::post('{slug}/bank/transfer', 'CharacterController@postCurrencyTransfer');
     Route::get('{slug}/transfer', 'CharacterController@getTransfer');
     Route::post('{slug}/transfer', 'CharacterController@postTransfer');
@@ -201,6 +209,9 @@ Route::group(['prefix' => 'myo', 'namespace' => 'Characters'], function () {
     Route::post('{id}/approval', 'MyoController@postCharacterApproval');
     Route::get('{id}/approval', 'MyoController@getCharacterApproval');
 });
+Route::group(['prefix' => 'breeding-permissions', 'namespace' => 'Users'], function () {
+    Route::get('/', 'AccountController@getBreedingPermissions');
+});
 
 /**************************************************************************************************
     Submissions
@@ -231,6 +242,7 @@ Route::group(['prefix' => 'submissions', 'namespace' => 'Users'], function () {
     Route::get('new/character/{slug}', 'SubmissionController@getCharacterInfo');
     Route::get('new/character-permissions/{slug}', 'SubmissionController@getCharacterPermissions');
     Route::get('new/prompt/{id}', 'SubmissionController@getPromptInfo');
+    Route::get('new/prompt/{id}/requirements', 'SubmissionController@getPromptRequirementInfo');
     Route::post('new', 'SubmissionController@postNewSubmission');
     Route::post('new/{draft}', 'SubmissionController@postNewSubmission')->where('draft', 'draft');
     Route::get('draft/{id}', 'SubmissionController@getEditSubmission');
@@ -373,4 +385,11 @@ Route::group(['prefix' => 'criteria'], function () {
     Route::post('rewards/{id}', 'CriterionController@postCriterionRewards');
 
     Route::get('guide/{id}', 'CriterionController@getCriterionGuide');
+});
+
+/**************************************************************************************************
+    Comments
+**************************************************************************************************/
+Route::group(['prefix' => 'limits'], function () {
+    Route::post('unlock/{id}', 'Admin\LimitController@postUnlockLimits');
 });

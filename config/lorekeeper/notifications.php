@@ -141,14 +141,14 @@ return [
     18  => [
         'name'    => 'Character Sent',
         'message' => '{character_name} was transferred to <a href="{recipient_url}">{recipient_name}</a> by <a href="{sender_url}">{sender_name}</a>. (<a href="{url}">View Character</a>)',
-        'url'     => 'character/{character_slug}',
+        'url'     => '/{character_url}',
     ],
 
     // CHARACTER_RECEIVED
     19  => [
         'name'    => 'Character Received',
         'message' => '{character_name} was transferred to you by <a href="{sender_url}">{sender_name}</a>. (<a href="{url}">View Character</a>)',
-        'url'     => 'character/{character_slug}',
+        'url'     => '/{character_url}',
     ],
 
     // SUBMISSION_APPROVED
@@ -546,5 +546,33 @@ return [
         'name'    => 'Pairings Cancelled',
         'message' => 'The pairing of <a href="{character_1_url}">{character_1_slug}</a> and <a href="{character_2_url}">{character_2_slug}</a> has been cancelled.',
         'url'     => '',
+    ],
+
+    // BREEDING_PERMISSION_GRANTED
+    517 => [
+        'name'    => 'Breeding Permission Granted',
+        'message' => '<a href="{sender_url}">{sender_name}</a> has granted you a {type} breeding permission for <a href="character/{character_slug}">{character_name}</a>. (<a href="{url}">View Breeding Permissions</a>)',
+        'url'     => 'breeding-permissions',
+    ],
+
+    // BREEDING_PERMISSION_USED
+    518 => [
+        'name'    => 'Breeding Permission Used',
+        'message' => '<a href="{sender_url}">{sender_name}</a> has marked a {type} breeding permission (#{permission_id}) for <a href="character/{character_slug}">{character_name}</a> as used. (<a href="{url}?used=1">View Breeding Permissions</a>)',
+        'url'     => 'breeding-permissions',
+    ],
+
+    // BREEDING_PERMISSION_TRANSFER
+    519 => [
+        'name'    => 'Breeding Permission Transfer',
+        'message' => '<a href="{sender_url}">{sender_name}</a> has transferred a {type} breeding permission for <a href="character/{character_slug}">{character_name}</a> to you. (<a href="{url}">View Breeding Permissions</a>)',
+        'url'     => 'breeding-permissions',
+    ],
+
+    // FORCED_BREEDING_PERMISSION_TRANSFER
+    520 => [
+        'name'    => 'Forced Breeding Permission Transfer',
+        'message' => '<a href="{sender_url}">{sender_name}</a> has transferred a {type} breeding permission for <a href="character/{character_slug}">{character_name}</a> from you. (<a href="{url}">View Breeding Permissions</a>)',
+        'url'     => 'breeding-permissions',
     ],
 ];

@@ -184,22 +184,12 @@ class Feature extends Model {
      * Scope a query to sort features by newest first.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param mixed                                 $reverse
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeSortNewest($query) {
-        return $query->orderBy('id', 'DESC');
-    }
-
-    /**
-     * Scope a query to sort features oldest first.
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     *
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function scopeSortOldest($query) {
-        return $query->orderBy('id');
+    public function scopeSortNewest($query, $reverse = false) {
+        return $query->orderBy('id', $reverse ? 'ASC' : 'DESC');
     }
 
     /**
@@ -243,6 +233,15 @@ class Feature extends Model {
      */
     public function getDisplayNameAttribute() {
         return ($this->code_id ? $this->code_id.' - ' : null).'<a href="'.$this->url.'" class="display-trait">'.$this->name.'</a>'.($this->rarity ? ' ('.$this->rarity->displayName.')' : '');
+    }
+
+    /**
+     * Displays the name with code.
+     *
+     * @return string
+     */
+    public function getCodeNameAttribute() {
+        return ($this->code_id ? $this->code_id.' - ' : null).$this->name;
     }
 
     /**
@@ -394,7 +393,7 @@ class Feature extends Model {
         if (config('lorekeeper.extensions.organised_traits_dropdown')) {
             $sorted_feature_categories = collect(FeatureCategory::all()->where('is_visible', '>=', $visibleOnly)->sortBy('sort')->pluck('name')->toArray());
 
-            $grouped = self::where('is_visible', '>=', $visibleOnly)->select('name', 'id', 'feature_category_id')->with('category')->orderBy('name')->get()->keyBy('id')->groupBy('category.name', $preserveKeys = true)->toArray();
+            $grouped = self::where('is_visible', '>=', $visibleOnly)->select('name', 'id', 'feature_category_id', 'code_id')->with('category')->orderBy('name')->get()->sortBy('code_id', SORT_NATURAL)->keyBy('id')->groupBy('category.name', $preserveKeys = true)->toArray();
             if (isset($grouped[''])) {
                 if (!$sorted_feature_categories->contains('Miscellaneous')) {
                     $sorted_feature_categories->push('Miscellaneous');
@@ -405,10 +404,9 @@ class Feature extends Model {
             $sorted_feature_categories = $sorted_feature_categories->filter(function ($value, $key) use ($grouped) {
                 return in_array($value, array_keys($grouped), true);
             });
-
             foreach ($grouped as $category => $features) {
                 foreach ($features as $id  => $feature) {
-                    $grouped[$category][$id] = $feature['name'];
+                    $grouped[$category][$id] = (isset($feature['code_id']) && $feature['code_id'] ? $feature['code_id'].' - ' : '').$feature['name'];
                 }
             }
             $features_by_category = $sorted_feature_categories->map(function ($category) use ($grouped) {
@@ -417,7 +415,7 @@ class Feature extends Model {
 
             return $features_by_category;
         } else {
-            return self::where('is_visible', '>=', $visibleOnly)->orderBy('name')->pluck('name', 'id')->toArray();
+            return self::where('is_visible', '>=', $visibleOnly)->orderBy('name')->pluck('codeName', 'id')->toArray();
         }
     }
 }

@@ -191,7 +191,7 @@ return [
                 'url'  => 'admin/data/traits',
             ],
             [
-                'name' => 'Transformations',
+                'name' => 'Ref Types',
                 'url'  => 'admin/data/transformations',
             ],
             [
@@ -253,6 +253,10 @@ return [
             [
                 'name' => 'Recipes',
                 'url'  => 'admin/data/recipes',
+            ],
+            [
+                'name' => 'Dynamic Limits',
+                'url'  => 'admin/data/limits',
             ],
         ],
     ],

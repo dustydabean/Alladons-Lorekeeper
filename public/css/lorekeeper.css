@@ -414,6 +414,7 @@ main > .row {
 /* Firefox */
 .pagination-popover input[type=number] {
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 .spoiler {
@@ -428,7 +429,7 @@ main > .row {
     background-color: #f5f5f5;
     cursor: pointer;
     padding: .3rem 1.25rem;
-    font-size: .9rem;
+    font-size: 1.0rem;
     font-family: Roboto Condensed, serif;
     color: inherit;
     text-transform: uppercase;
@@ -840,4 +841,16 @@ tr.accountbound {
 /* RECIPES ***************************************************************************************/
 .recipe-image {
     width: 150px;
+}
+
+/* CODE EDITOR *************************************************************************************/
+#ace-code-editor-wrapper .editor-btn {
+    background: white;
+    font-size: 14px;
+    height: 34px;
+    width: 34px;
+}
+
+#ace-code-editor-wrapper .editor-btn:hover {
+    background: buttonface;
 }

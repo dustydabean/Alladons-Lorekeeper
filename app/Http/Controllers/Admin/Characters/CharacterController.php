@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Characters;
 
 use App\Facades\Settings;
 use App\Http\Controllers\Controller;
+use App\Models\Character\BreedingPermission;
 use App\Models\Character\Character;
 use App\Models\Character\CharacterCategory;
 use App\Models\Character\CharacterGeneration;
@@ -593,7 +594,7 @@ class CharacterController extends Controller {
             abort(404);
         }
 
-        return view('character.admin._edit_description_modal', [
+        return view('character.admin._edit_description', [
             'character' => $this->character,
             'isMyo'     => false,
         ]);
@@ -612,7 +613,7 @@ class CharacterController extends Controller {
             abort(404);
         }
 
-        return view('character.admin._edit_description_modal', [
+        return view('character.admin._edit_description', [
             'character' => $this->character,
             'isMyo'     => true,
         ]);
@@ -732,6 +733,54 @@ class CharacterController extends Controller {
         }
 
         return redirect()->back()->withInput();
+    }
+
+    /**
+     * Shows the use breeding permission modal.
+     *
+     * @param string $slug
+     * @param int    $id
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getUseBreedingPermission($slug, $id) {
+        $this->character = Character::where('slug', $slug)->first();
+        if (!$this->character) {
+            abort(404);
+        }
+
+        return view('character.admin._use_breeding_permission', [
+            'character'          => $this->character,
+            'breedingPermission' => BreedingPermission::find($id),
+        ]);
+    }
+
+    /**
+     * Marks a breeding permission as used.
+     *
+     * @param App\Services\CharacterManager $service
+     * @param string                        $slug
+     * @param int                           $id
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postUseBreedingPermission(Request $request, CharacterManager $service, $slug, $id) {
+        $this->character = Character::where('slug', $slug)->first();
+        if (!$this->character) {
+            abort(404);
+        }
+
+        if ($service->useBreedingPermission($this->character, BreedingPermission::find($id), Auth::user())) {
+            flash('Breeding permission marked used successfully.')->success();
+
+            return redirect()->back();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
     }
 
     /**
@@ -943,11 +992,11 @@ class CharacterController extends Controller {
                     $transfers->sortNewest();
                     break;
                 case 'oldest':
-                    $transfers->sortOldest();
+                    $transfers->sortNewest(true);
                     break;
             }
         } else {
-            $transfers->sortOldest();
+            $transfers->sortNewest(true);
         }
 
         if ($type == 'completed') {

@@ -3,12 +3,14 @@
 namespace App\Models\Character;
 
 use App\Facades\Notifications;
+use App\Facades\Settings;
 use App\Models\Currency\Currency;
 use App\Models\Currency\CurrencyLog;
 use App\Models\Gallery\GalleryCharacter;
 use App\Models\Item\Item;
 use App\Models\Item\ItemLog;
 use App\Models\Model;
+use App\Models\Species\Subtype;
 use App\Models\Rarity;
 use App\Models\Submission\Submission;
 use App\Models\Submission\SubmissionCharacter;
@@ -261,6 +263,39 @@ class Character extends Model {
         return $this->hasMany(CharacterGenome::class, 'character_id');
     }
 
+    /**
+     * Get the character's associated breeding permissions.
+     */
+    public function breedingPermissions() {
+        return $this->hasMany(BreedingPermission::class, 'character_id');
+    }
+
+    /**
+     * Get the character's associated breeding slots.
+     */
+    public function breedingSlots() {
+        $subtypes = Subtype::whereNotNull('breeding_slot_amount')->where('breeding_slot_amount', '>', 0)->pluck('id')->toArray();
+        if (!$this->image->subtypes() || !$this->image->subtypes()->whereIn('subtype_id', $subtypes)->first()) {
+            return $this->belongsTo('App\Models\Loot\Loot', 'rewardable_id', 'loot_table_id')->whereNull('loot_table_id');;
+        }
+        if (!CharacterBreedingSlot::where('character_id', $this->id)->first()) {
+            $selectedSubtype = $this->image->subtypes()->whereIn('subtype_id', $subtypes)->first();
+            $subtypeCount = $selectedSubtype->subtype->breeding_slot_amount;
+            if ($subtypeCount > 0) {
+                for ($i = 0; $i < $subtypeCount; $i++) {
+                    CharacterBreedingSlot::create([
+                        'character_id' => $this->id,
+                        'offspring_id' => null,
+                        'user_id'      => null,
+                        'user_url'     => null,
+                    ]);
+                }
+            }
+        }
+
+        return $this->hasMany(CharacterBreedingSlot::class, 'character_id');
+    }
+
     /**********************************************************************************************
 
         SCOPES
@@ -375,6 +410,20 @@ class Character extends Model {
     }
 
     /**
+     * Gets the character's slug number.
+     * If this is a MYO slot, it will return the MYO slot's name.
+     *
+     * @return string
+     */
+    public function getNumberAttribute() {
+        if ($this->is_myo_slot) {
+            return $this->name;
+        } else {
+            return $this->attributes['number'];
+        }
+    }
+
+    /**
      * Displays the character's name, linked to their character page.
      * Added Poucher Code.
      *
@@ -482,6 +531,29 @@ class Character extends Model {
         }
 
         return ' ・ <i class="fas fa-info-circle help-icon m-0" data-toggle="tooltip" data-html="true" title="'.$nonMyoSection.$tradingSection.'"></i>';
+    }
+
+    /**
+     * Gets the character's maximum number of breeding permissions.
+     *
+     * @return int
+     */
+    public function getMaxBreedingPermissionsAttribute() {
+        $currencies = $this->getCurrencies(true)->where('id', Settings::get('breeding_permission_currency'))->first();
+        if (!$currencies) {
+            return 0;
+        }
+
+        return $currencies->quantity;
+    }
+
+    /**
+     * Gets the character's number of available breeding permissions.
+     *
+     * @return int
+     */
+    public function getAvailableBreedingPermissionsAttribute() {
+        return $this->maxBreedingPermissions - $this->breedingPermissions->count();
     }
 
     /**********************************************************************************************
@@ -613,7 +685,18 @@ class Character extends Model {
      * @return \Illuminate\Pagination\LengthAwarePaginator
      */
     public function getCharacterLogs() {
-        $query = CharacterLog::with('sender.rank')->where('character_id', $this->id)->orderBy('id', 'DESC');
+        $query = CharacterLog::with('sender.rank')->where('character_id', $this->id)->where('log_type', '!=', 'Breeding Slot Updated')->orderBy('id', 'DESC');
+
+        return $query->paginate(30);
+    }
+
+    /**
+     * Get the character's breeding slots logs.
+     *
+     * @return \Illuminate\Pagination\LengthAwarePaginator
+     */
+    public function getCharacterSlotsLogs() {
+        $query = CharacterLog::with('sender.rank')->where('character_id', $this->id)->where('log_type', 'Breeding Slot Updated')->orderBy('id', 'DESC');
 
         return $query->paginate(30);
     }
@@ -627,14 +710,14 @@ class Character extends Model {
         return Submission::with('user.rank')->with('prompt')->where('status', 'Approved')->whereIn('id', SubmissionCharacter::where('character_id', $this->id)->pluck('submission_id')->toArray())->paginate(30);
 
         // Untested
-        //$character = $this;
-        //return Submission::where('status', 'Approved')->with(['characters' => function($query) use ($character) {
+        // $character = $this;
+        // return Submission::where('status', 'Approved')->with(['characters' => function($query) use ($character) {
         //    $query->where('submission_characters.character_id', 1);
-        //}])
-        //->whereHas('characters', function($query) use ($character) {
+        // }])
+        // ->whereHas('characters', function($query) use ($character) {
         //    $query->where('submission_characters.character_id', 1);
-        //});
-        //return Submission::where('status', 'Approved')->where('user_id', $this->id)->orderBy('id', 'DESC')->paginate(30);
+        // });
+        // return Submission::where('status', 'Approved')->where('user_id', $this->id)->orderBy('id', 'DESC')->paginate(30);
     }
 
     /**

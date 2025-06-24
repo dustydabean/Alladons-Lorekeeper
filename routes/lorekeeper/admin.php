@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Admin Routes
@@ -149,7 +151,16 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('galleries/sort', 'GalleryController@postSortGallery');
 
     // CURRENCIES
-    Route::get('currencies', 'CurrencyController@getIndex');
+    Route::get('currency-categories', 'CurrencyController@getIndex');
+    Route::get('currency-categories/create', 'CurrencyController@getCreateCurrencyCategory');
+    Route::get('currency-categories/edit/{id}', 'CurrencyController@getEditCurrencyCategory');
+    Route::get('currency-categories/delete/{id}', 'CurrencyController@getDeleteCurrencyCategory');
+    Route::post('currency-categories/create', 'CurrencyController@postCreateEditCurrencyCategory');
+    Route::post('currency-categories/edit/{id?}', 'CurrencyController@postCreateEditCurrencyCategory');
+    Route::post('currency-categories/delete/{id}', 'CurrencyController@postDeleteCurrencyCategory');
+    Route::post('currency-categories/sort', 'CurrencyController@postSortCurrencyCategory');
+
+    Route::get('currencies', 'CurrencyController@getCurrencyIndex');
     Route::get('currencies/sort', 'CurrencyController@getSort');
     Route::get('currencies/create', 'CurrencyController@getCreateCurrency');
     Route::get('currencies/edit/{id}', 'CurrencyController@getEditCurrency');
@@ -326,6 +337,20 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('activities/delete/{id}', 'ActivityController@postDeleteActivity');
     Route::post('activities/sort', 'ActivityController@postSortActivity');
 
+    // stock
+    // create
+    Route::get('shops/stock/{id}', 'ShopController@getCreateShopStock');
+    Route::post('shops/stock/{id}', 'ShopController@postCreateShopStock');
+    // edit
+    Route::get('shops/stock/edit/{id}', 'ShopController@getEditShopStock');
+    Route::post('shops/stock/edit/{id}', 'ShopController@postEditShopStock');
+    // delete
+    Route::get('shops/stock/delete/{id}', 'ShopController@getDeleteShopStock');
+    Route::post('shops/stock/delete/{id}', 'ShopController@postDeleteShopStock');
+    // misc
+    Route::get('shops/stock-type', 'ShopController@getShopStockType');
+    Route::get('shops/stock-cost-type', 'ShopController@getShopStockCostType');
+
     // FEATURES (TRAITS)
     Route::get('trait-categories', 'FeatureController@getIndex');
     Route::get('trait-categories/create', 'FeatureController@getCreateFeatureCategory');
@@ -421,6 +446,15 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('prompts/edit/{id?}', 'PromptController@postCreateEditPrompt');
     Route::post('prompts/delete/{id}', 'PromptController@postDeletePrompt');
 
+    // DYNAMIC LIMITS
+    Route::get('limits', 'LimitController@getIndex');
+    Route::get('limits/create', 'LimitController@getCreateLimit');
+    Route::get('limits/edit/{id}', 'LimitController@getEditLimit');
+    Route::get('limits/delete/{id}', 'LimitController@getDeleteLimit');
+    Route::post('limits/create', 'LimitController@postCreateEditLimit');
+    Route::post('limits/edit/{id?}', 'LimitController@postCreateEditLimit');
+    Route::post('limits/delete/{id}', 'LimitController@postDeleteLimit');
+
     // DAILIES
     Route::get('dailies', 'DailyController@getIndex');
     Route::get('dailies/create', 'DailyController@getCreateDaily');
@@ -511,9 +545,11 @@ Route::group(['prefix' => 'pages', 'middleware' => 'power:edit_pages'], function
     Route::get('create', 'PageController@getCreatePage');
     Route::get('edit/{id}', 'PageController@getEditPage');
     Route::get('delete/{id}', 'PageController@getDeletePage');
+    Route::get('regen/{id}', 'PageController@getRegenPage');
     Route::post('create', 'PageController@postCreateEditPage');
     Route::post('edit/{id?}', 'PageController@postCreateEditPage');
     Route::post('delete/{id}', 'PageController@postDeletePage');
+    Route::post('regen/{id}', 'PageController@postRegenPage');
 });
 
 // NEWS
@@ -522,9 +558,11 @@ Route::group(['prefix' => 'news', 'middleware' => 'power:manage_news'], function
     Route::get('create', 'NewsController@getCreateNews');
     Route::get('edit/{id}', 'NewsController@getEditNews');
     Route::get('delete/{id}', 'NewsController@getDeleteNews');
+    Route::get('regen/{id}', 'NewsController@getRegenNews');
     Route::post('create', 'NewsController@postCreateEditNews');
     Route::post('edit/{id?}', 'NewsController@postCreateEditNews');
     Route::post('delete/{id}', 'NewsController@postDeleteNews');
+    Route::post('regen/{id}', 'NewsController@postRegenNews');
 });
 
 // DEV LOGS
@@ -629,6 +667,9 @@ Route::group(['prefix' => 'character', 'namespace' => 'Characters', 'middleware'
     Route::get('image/traits/subtype', 'CharacterImageController@getEditImageSubtype');
     Route::get('image/traits/transformation', 'CharacterImageController@getEditImageTransformation');
 
+    Route::get('breeding-slot/{id}', 'CharacterImageController@getEditBreedingSlot');
+    Route::post('breeding-slot/{id}', 'CharacterImageController@postEditBreedingSlot');
+
     Route::get('image/{id}/notes', 'CharacterImageController@getEditImageNotes');
     Route::post('image/{id}/notes', 'CharacterImageController@postEditImageNotes');
 
@@ -664,6 +705,9 @@ Route::group(['prefix' => 'character', 'namespace' => 'Characters', 'middleware'
     Route::post('{slug}/delete', 'CharacterController@postCharacterDelete');
 
     Route::post('{slug}/settings', 'CharacterController@postCharacterSettings');
+
+    Route::get('{slug}/breeding-permissions/{id}/use', 'CharacterController@getUseBreedingPermission')->where(['id' => '[0-9]+']);
+    Route::post('{slug}/breeding-permissions/{id}/use', 'CharacterController@postUseBreedingPermission')->where(['id' => '[0-9]+']);
 
     Route::post('{slug}/transfer', 'CharacterController@postTransfer');
 
@@ -774,4 +818,9 @@ Route::get('{type}/{status}', 'DesignController@getDesignIndex')->where('type', 
 Route::group(['prefix' => 'pairings', 'middleware' => 'power:manage_raffles'], function () {
     Route::get('roller', 'PairingController@getRoller');
     Route::post('roller', 'PairingController@postRoll');
+});
+
+// LIMITS
+Route::group(['prefix' => 'limits', 'middleware' => 'power:manage_data'], function () {
+    Route::post('/', 'LimitController@postCreateEditLimits');
 });

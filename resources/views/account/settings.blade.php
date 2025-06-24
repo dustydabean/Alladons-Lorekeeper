@@ -131,7 +131,7 @@
         {!! Form::close() !!}
     </div>
 
-    @if(Config::get('lorekeeper.extensions.navbar_news_notif'))
+    @if(config('lorekeeper.extensions.navbar_news_notif'))
     <div class="card p-3 mb-2">
         <h3>Development Log Notifications</h3>
         {!! Form::open(['url' => 'account/devlog-notif']) !!}
@@ -148,6 +148,22 @@
     </div>
     @endif
     
+
+    <div class="card p-3 mb-2">
+        <h3>Allow Profile Comments</h3>
+        {!! Form::open(['url' => 'account/comments']) !!}
+        <p>If turned off, all comments on your profile will be hidden.</p>
+        <div class="form-group row">
+            <label class="col-md-2 col-form-label">Setting</label>
+            <div class="col-md-10">
+                {!! Form::select('allow_profile_comments', ['0' => '0: No one can comment on your profile.', '1' => '1: Users can comment on your profile.'], Auth::user()->settings->allow_profile_comments, ['class' => 'form-control']) !!}
+            </div>
+        </div>
+        <div class="text-right">
+            {!! Form::submit('Edit', ['class' => 'btn btn-primary']) !!}
+        </div>
+        {!! Form::close() !!}
+    </div>
 
     <div class="card p-3 mb-2">
         <h3>Character Warning Visibility</h3>
@@ -251,6 +267,10 @@
     </div>
 @endsection
 @section('scripts')
+    @if (Auth::user()->isStaff)
+        @include('js._website_links_js')
+    @endif
+    @include('js._tinymce_wysiwyg')
     <script>
         var $avatarCrop = $('#avatarCrop');
         var $cropper = $('#cropper');

@@ -83,7 +83,7 @@ class BoostService extends Service {
             }
 
             //get pairingData array and put it into the 'data' column of the DB for this tag
-            $tag->update(['data' => json_encode($boostData)]);
+            $tag->update(['data' => $boostData]);
 
             return $this->commitReturn(true);
         } catch (\Exception $e) {

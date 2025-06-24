@@ -31,7 +31,7 @@
                     </li>
                 @endforeach
                 <li>
-                    <h3>{!! add_help('Click on a transformation to view the image. If you don\'t see the transformation you\'re looking for, it may not have been uploaded yet.') !!}</h3>
+                    <h3>{!! add_help('Click on the tabs to view the reference type of the alladon! You can also view other refs in the IMAGES sidebar tab.') !!}</h3>
                 </li>
             </ul>
         </div>
@@ -91,4 +91,12 @@
     @include('widgets._datetimepicker_js', ['dtvalue' => $character->transferrable_at])
     @include('character._image_js', ['character' => $character])
     @include('character._transformation_js')
+    <script>
+        $('.lineage-popover').popover({
+            html: true,
+            trigger: 'hover',
+            placement: 'top',
+            boundary: 'window',
+        });
+    </script>
 @endsection

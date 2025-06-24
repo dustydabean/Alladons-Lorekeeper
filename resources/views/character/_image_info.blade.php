@@ -19,7 +19,7 @@
                 <div>{!! implode(', ', $image->content_warnings) !!}</div>
             </div>
         @endif
-        <div class="card character-bio w-100">
+        <div class="card character-bio w-100 h-100">
             <div class="card-header">
                 <ul class="nav nav-tabs card-header-tabs">
                     <li class="nav-item">
@@ -34,6 +34,11 @@
                     <li class="nav-item">
                         <a class="nav-link" id="linTab-{{ $image->id }}" data-toggle="tab" href="#lin-{{ $image->id }}" role="tab">Lineage</a>
                     </li>
+                    @if ($image->character->breedingSlots()->count())
+                        <li class="nav-item">
+                            <a class="nav-link" id="slotsTab-{{ $image->id }}" data-toggle="tab" href="#slots-{{ $image->id }}" role="tab">FF Slots</a>
+                        </li>
+                    @endif
                     <li class="nav-item">
                         <a class="nav-link" id="notesTab-{{ $image->id }}" data-toggle="tab" href="#notes-{{ $image->id }}" role="tab">Notes</a>
                     </li>
@@ -83,7 +88,7 @@
                     @if ($image->transformation_id && ($image->transformation_id > 0))
                         <div class="row no-gutters">
                             <div class="col-lg-4 col-5">
-                                <h5>Form {!! add_help('The main image is always the active image') !!}</h5>
+                                <h5>Ref Type {!! add_help('The main image is always the active image') !!}</h5>
                             </div>
                             <div class="col-lg-8 col-7 pl-1">
                                 <a href="{{ $image->transformation->url }}">
@@ -92,47 +97,47 @@
                             </div>
                         </div>
                     @endif
-                    <div class="row">
-                        <div class="col-lg-4 col-md-6 col-4">
+                    <div class="row no-gutters">
+                        <div class="col-lg-4 col-5">
                             <h5>Poucher Code</h5>
                         </div>
-                        <div class="col-lg-8 col-md-6 col-8">{!! $image->character->poucher_code ? $image->character->poucher_code : 'None' !!}</div>
+                        <div class="col-lg-8 col-7 pl-1">{!! $image->character->poucher_code ? $image->character->poucher_code : 'None' !!}</div>
                     </div>
                     @if ($image->character->pedigree_id)
-                        <div class="row">
-                            <div class="col-lg-4 col-md-6 col-4">
+                        <div class="row no-gutters">
+                            <div class="col-lg-4 col-5">
                                 <h5>Pedigree Name</h5>
                             </div>
-                            <div class="col-lg-8 col-md-6 col-8">{!! $image->character->pedigree_id ? $image->character->pedigreeName : 'None' !!}</div>
+                            <div class="col-lg-8 col-7 pl-1">{!! $image->character->pedigree_id ? $image->character->pedigreeName : 'None' !!}</div>
                         </div>
                     @endif
                     @if ($image->character->birthdate)
-                        <div class="row">
-                            <div class="col-lg-4 col-md-6 col-4">
+                        <div class="row no-gutters">
+                            <div class="col-lg-4 col-5">
                                 <h5>DOB</h5>
                             </div>
-                            <div class="col-lg-8 col-md-6 col-8">{!! $image->character->birthdate ? $image->character->birthdate->format('M d'.','.' Y') : 'Birthday Unknown' !!}</div>
+                            <div class="col-lg-8 col-7 pl-1">{!! $image->character->birthdate ? $image->character->birthdate->format('M d'.','.' Y') : 'Birthday Unknown' !!}</div>
                         </div>
                     @endif
                     @if ($image->character->generation_id)
-                        <div class="row">
-                            <div class="col-lg-4 col-md-6 col-4">
+                        <div class="row no-gutters">
+                            <div class="col-lg-4 col-5">
                                 <h5>Generation</h5>
                             </div>
-                            <div class="col-lg-8 col-md-6 col-8">{!! $image->character->generation_id ? $image->character->generation->displayName : 'None' !!}</div>
+                            <div class="col-lg-8 col-7 pl-1">{!! $image->character->generation_id ? $image->character->generation->displayName : 'None' !!}</div>
                         </div>
                     @endif
                     @if ($image->sex)
-                        <div class="row">
-                            <div class="col-lg-4 col-md-6 col-4">
+                        <div class="row no-gutters">
+                            <div class="col-lg-4 col-5">
                                 <h5>Sex</h5>
                             </div>
-                            <div class="col-lg-8 col-md-6 col-8">{!! $image->sex !!}</div>
+                            <div class="col-lg-8 col-7 pl-1">{!! $image->sex !!}</div>
                         </div>
                     @endif
                     @if (config('lorekeeper.character_pairing.colours'))
-                        <div class="row">
-                            <div class="col-lg-4 col-md-6 col-4">
+                        <div class="row no-gutters">
+                            <div class="col-lg-4 col-5">
                                 <h5>
                                     Colours
                                     @if ($image->character->is_myo_slot)
@@ -140,7 +145,7 @@
                                     @endif
                                 </h5>
                             </div>
-                            <div class="col-lg-8 col-md-6 col-8">
+                            <div class="col-lg-8 col-7 pl-1">
                                 @if ($image->colours)
                                     <div class="{{ $image->character->is_myo_slot ? '' : 'row' }}">
                                         {!! $image->displayColours() !!}
@@ -154,7 +159,7 @@
                                         </div>
                                     @endif
                                 @else
-                                    <div class="row">
+                                    <div class="row no-gutters">
                                         <div>No colours listed.</div>
                                         @if (Auth::check() && Auth::user()->hasPower('manage_characters') && !$image->character->is_myo_slot)
                                             {!! Form::open(['url' => 'admin/character/image/' . $image->id . '/colours']) !!}
@@ -231,8 +236,8 @@
                     @if (Auth::check() && Auth::user()->hasPower('manage_characters'))
                         <div class="mt-3">
                             <a href="#" class="btn btn-outline-info btn-sm edit-features" data-id="{{ $image->id }}"><i class="fas fa-cog"></i> Edit</a>
-                            @if (Auth::user()->hasPower('view_hidden_genetics')) 
-                                <a href="#" class="btn btn-outline-info btn-sm add-genome mx-1"><i class="fas fa-plus mr-1"></i><i class="fas fa-dna"></i></a> 
+                            @if (Auth::user()->hasPower('view_hidden_genetics'))
+                                <a href="#" class="btn btn-outline-info btn-sm add-genome mx-1"><i class="fas fa-plus mr-1"></i><i class="fas fa-dna"></i></a>
                             @endif
                         </div>
                     @endif
@@ -276,6 +281,12 @@
                 <div class="tab-pane fade" id="lin-{{ $image->id }}">
                     @include('character._tab_lineage', ['character' => $image->character])
                 </div>
+
+                @if ($image->character->breedingSlots()->count())
+                    <div class="tab-pane fade pt-2" id="slots-{{ $image->id }}">
+                        @include('character._tab_breeding_slots', ['character' => $image->character])
+                    </div>
+                @endif
 
                 {{-- Image notes --}}
                 <div class="tab-pane fade" id="notes-{{ $image->id }}">

@@ -124,8 +124,8 @@
     </div>
 
     <div class="form-group" id="transformations">
-        {!! Form::label('Transformation (Optional)') !!}
-        {!! Form::select('transformation_id', $transformations, null, ['class' => 'form-control', 'id' => 'transformation']) !!}
+        {!! Form::label('Ref Type (Optional)') !!}
+        {!! Form::select('transformation_id', $transformations, null, ['class' => 'form-control selectize', 'id' => 'transformation']) !!}
     </div>
 
     <div class="form-group">
@@ -163,9 +163,9 @@
 
 @section('scripts')
     @parent
+    @include('js._tinymce_wysiwyg')
     <script>
         $(document).ready(function() {
-
             // Cropper ////////////////////////////////////////////////////////////////////////////////////
 
             var $useCropper = $('#useCropper');

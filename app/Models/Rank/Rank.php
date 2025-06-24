@@ -13,6 +13,7 @@ class Rank extends Model {
      */
     protected $fillable = [
         'name', 'description', 'parsed_description', 'sort', 'color', 'icon',
+        'is_admin',
     ];
 
     /**
@@ -72,11 +73,7 @@ class Rank extends Model {
      * @return bool
      */
     public function getIsAdminAttribute() {
-        if ($this->id == self::orderBy('sort', 'DESC')->first()->id) {
-            return true;
-        }
-
-        return false;
+        return $this->attributes['is_admin'];
     }
 
     /**********************************************************************************************

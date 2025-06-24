@@ -93,7 +93,7 @@ class CommentController extends Controller {
         $recipient = null;
         $post = null;
         $model_type = $comment->commentable_type;
-        //getting user who commented
+        // getting user who commented
         $sender = User::find($comment->commenter_id);
         $type = $comment->type;
 
@@ -185,11 +185,11 @@ class CommentController extends Controller {
         $comment->edits()->create([
             'user_id'    => Auth::user()->id,
             'comment_id' => $comment->id,
-            'data'       => json_encode([
+            'data'       => [
                 'action'      => 'edit',
                 'old_comment' => config('lorekeeper.settings.wysiwyg_comments') ? parse($comment->comment) : $comment->comment,
                 'new_comment' => config('lorekeeper.settings.wysiwyg_comments') ? parse($request->message) : $request->message,
-            ]),
+            ],
         ]);
 
         $comment->update([

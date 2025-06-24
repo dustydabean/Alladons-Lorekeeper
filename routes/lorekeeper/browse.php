@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Browse Routes
@@ -69,6 +71,7 @@ Route::group(['prefix' => 'user', 'namespace' => 'Users'], function () {
     Route::get('{name}/characters/{folder}', 'UserController@getUserCharacterFolder');
     Route::get('{name}/sublist/{key}', 'UserController@getUserSublist');
     Route::get('{name}/myos', 'UserController@getUserMyoSlots');
+    Route::get('{name}/breeding-permissions', 'UserController@getUserBreedingPermissions');
     Route::get('{name}/inventory', 'UserController@getUserInventory');
     Route::get('{name}/pets', 'UserController@getUserPets');
     Route::get('{name}/pets/{id}', 'UserController@getUserPet');
@@ -108,12 +111,15 @@ Route::group(['prefix' => 'character', 'namespace' => 'Characters'], function ()
     Route::get('{slug}/item-logs', 'CharacterController@getCharacterItemLogs');
     Route::get('{slug}/ownership', 'CharacterController@getCharacterOwnershipLogs');
     Route::get('{slug}/change-log', 'CharacterController@getCharacterLogs');
+    Route::get('{slug}/breeding-slots-log', 'CharacterController@getCharacterSlotsLogs');
     Route::get('{slug}/submissions', 'CharacterController@getCharacterSubmissions');
     Route::get('{slug}/gallery', 'CharacterController@getCharacterGallery');
 
     // lineage
     Route::get('{slug}/lineage', 'CharacterLineageController@getCharacterLineage');
     Route::get('{slug}/pets', 'CharacterController@getCharacterPets');
+
+    Route::get('{slug}/breeding-permissions', 'CharacterController@getCharacterBreedingPermissions');
 });
 
 Route::group(['prefix' => 'myo', 'namespace' => 'Characters'], function () {
@@ -130,6 +136,7 @@ Route::group(['prefix' => 'myo', 'namespace' => 'Characters'], function () {
 Route::group(['prefix' => 'world'], function () {
     Route::get('/', 'WorldController@getIndex');
 
+    Route::get('currency-categories', 'WorldController@getCurrencyCategories');
     Route::get('currencies', 'WorldController@getCurrencies');
     Route::get('rarities', 'WorldController@getRarities');
     Route::get('genetics', 'WorldController@getGenetics');
@@ -188,6 +195,7 @@ Route::group(['prefix' => 'event-tracking'], function () {
 **************************************************************************************************/
 Route::get('credits', 'PageController@getCreditsPage');
 Route::get('info/{key}', 'PageController@getPage');
+Route::get('feeds', 'PageController@getFeedsPage');
 
 /**************************************************************************************************
     Raffles
@@ -239,3 +247,8 @@ Route::group(['prefix' => 'faq'], function () {
     Route::get('/modal/{id}', 'BrowseController@getFaqQuestion')->where(['id' => '[0-9]+']);
     Route::get('/search', 'BrowseController@getFaqSearch');
 });
+
+/**************************************************************************************************
+    Custom
+**************************************************************************************************/
+Route::get('rules', 'RulesController@getRules');

@@ -22,6 +22,15 @@ class Notification extends Model {
     protected $table = 'notifications';
 
     /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'data' => 'array',
+    ];
+
+    /**
      * Whether the model contains timestamps to be saved and updated.
      *
      * @var string
@@ -46,15 +55,6 @@ class Notification extends Model {
         ACCESSORS
 
     **********************************************************************************************/
-
-    /**
-     * Get the data attribute as an associative array.
-     *
-     * @return array
-     */
-    public function getDataAttribute() {
-        return json_decode($this->attributes['data'], true);
-    }
 
     /**
      * Get the notification message using the stored data.
@@ -165,6 +165,10 @@ class Notification extends Model {
     public const GALLERY_SUBMISSION_PARTICIPANT = 515;
     public const FRIEND_REQUEST_SENT = 516;
     public const FRIEND_REQUEST_ACCEPTED = 517;
+    public const BREEDING_PERMISSION_GRANTED = 518;
+    public const BREEDING_PERMISSION_USED = 519;
+    public const BREEDING_PERMISSION_TRANSFER = 520;
+    public const FORCED_BREEDING_PERMISSION_TRANSFER = 521;
     public const RECIPE_GRANT = 600; // Draginraptor - Crafting
     public const GIFT_SUBMISSION_RECEIVED = 1002;
     public const GIFT_CLAIM_RECEIVED = 1003;

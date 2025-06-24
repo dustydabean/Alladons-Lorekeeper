@@ -7,7 +7,7 @@
 @section('admin-content')
     {!! breadcrumbs(['Admin Panel' => 'admin', 'Transformations' => 'admin/data/transformations']) !!}
 
-    <h1>Transformations</h1>
+    <h1>Ref Type</h1>
 
     <p>Transformations are optional categories that can be added to species. Characters require a species, but do not require a transformation. Note that the sort order here reflects the sort order under the species name as well.</p>
 

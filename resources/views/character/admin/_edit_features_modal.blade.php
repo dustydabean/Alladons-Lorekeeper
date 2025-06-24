@@ -10,8 +10,8 @@
 </div>
 
 <div class="form-group" id="transformations">
-    {!! Form::label('Transformation (Optional)') !!}
-    {!! Form::select('transformation_id', $transformations, $image->transformation_id, ['class' => 'form-control', 'id' => 'transformation']) !!}
+    {!! Form::label('Ref Type (Optional)') !!}
+    {!! Form::select('transformation_id', $transformations, $image->transformation_id, ['class' => 'form-control selectize', 'id' => 'transformation']) !!}
 </div>
 
 <div class="form-group">
@@ -29,7 +29,7 @@
     <div class="col-md-6">
         <div class="form-group">
             {!! Form::label('Generation (Optional)') !!}
-            {!! Form::select('generation_id', $generations, $image->character->generation_id, ['class' => 'form-control', 'id' => 'generationSelect']) !!}
+            {!! Form::select('generation_id', $generations, $image->character->generation_id, ['class' => 'form-control selectize', 'id' => 'generationSelect']) !!}
         </div>
     </div>
 </div>
@@ -38,7 +38,7 @@
 <div class="row">
     <div class="col-md-6">
         <div class="form-group">
-            {!! Form::select('pedigree_id', $pedigrees, $image->character->pedigree_id, ['class' => 'form-control', 'id' => 'pedigreeSelect']) !!}
+            {!! Form::select('pedigree_id', $pedigrees, $image->character->pedigree_id, ['class' => 'form-control selectize', 'id' => 'pedigreeSelect']) !!}
         </div>
     </div>
     <div class="col-md-6">
@@ -109,8 +109,7 @@
             removeFeatureRow($(this));
         })
 
-        $('#generationSelect').selectize();
-        $('#pedigreeSelect').selectize();
+        $('.selectize').selectize();
 
         function addFeatureRow() {
             var $clone = $('.feature-row').clone();

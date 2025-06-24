@@ -47,9 +47,14 @@
         {!! Form::textarea('description', $subtype->description, ['class' => 'form-control wysiwyg']) !!}
     </div>
 
-    <div class="col form-group">
+    <div class="form-group">
         {!! Form::label('Chance to inherit') !!} {!! add_help('For pairings, how likely this subtype is to be passed on in percent. Must be a number between 1-100. Defaults to 50. Does not guarantee a subtypes is inherited 100% of the time as the chances for both subtypes are added!') !!}
         {!! Form::number('inherit_chance', $subtype->inherit_chance ?? 50, ['class' => 'form-control']) !!}
+    </div>
+
+    <div class="form-group">
+        {!! Form::label('breeding_slot_amount', 'Amount of Breeding Slots') !!} {!! add_help('How many special breeding slots can characters of this subtype have?') !!}
+        {!! Form::number('breeding_slot_amount', $subtype->breeding_slot_amount ?? null, ['class' => 'form-control']) !!}
     </div>
 
     <div class="form-group">
@@ -80,6 +85,7 @@
 
 @section('scripts')
     @parent
+    @include('js._tinymce_wysiwyg')
     <script>
         $(document).ready(function() {
             $('.delete-subtype-button').on('click', function(e) {
