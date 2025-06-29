@@ -23,6 +23,8 @@
             <div class="form-group ml-3 mb-3">
                 {!! Form::select('subtype_id', $subtypes, Request::get('subtype_id'), ['class' => 'form-control']) !!}
             </div>-->
+        </div>
+        <div class="form-inline justify-content-end">
             <div class="form-group ml-3 mb-3">
                 {!! Form::select('rarity_id', $rarities, Request::get('rarity_id'), ['class' => 'form-control']) !!}
             </div>
@@ -35,8 +37,6 @@
             <div class="form-group ml-3 mb-3">
                 {!! Form::select('mut_type', $types, Request::get('mut_type'), ['class' => 'form-control']) !!}
             </div>
-        </div>
-        <div class="form-inline justify-content-end">
             <div class="form-check ml-3 mb-3">
                 {!! Form::select('is_locked', ['none' => 'Any Status', '0' => 'Unlocked', '1' => 'Locked'], Request::get('is_locked'), ['class' => 'form-control']) !!}
             </div>
