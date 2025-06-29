@@ -34,6 +34,9 @@
             </div>
         </div>
         <div class="form-inline justify-content-end">
+            <div class="form-group ml-3 mb-3">
+                {!! Form::text('code_id', Request::get('code_id'), ['class' => 'form-control', 'placeholder' => 'Mutation Code']) !!}
+            </div>
             <div class="form-check ml-3 mb-3">
                 {!! Form::select('is_locked', ['none' => 'Any Status', '0' => 'Unlocked', '1' => 'Locked'], Request::get('is_locked'), ['class' => 'form-control']) !!}
             </div>

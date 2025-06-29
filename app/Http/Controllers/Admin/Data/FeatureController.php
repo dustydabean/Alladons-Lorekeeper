@@ -166,7 +166,7 @@ class FeatureController extends Controller {
      */
     public function getFeatureIndex(Request $request) {
         $query = Feature::query();
-        $data = $request->only(['rarity_id', 'feature_category_id', 'species_id', 'subtype_id', 'name', 'sort', 'visibility', 'mut_level', 'mut_type', 'is_locked']);
+        $data = $request->only(['rarity_id', 'feature_category_id', 'species_id', 'subtype_id', 'name', 'sort', 'visibility', 'mut_level', 'mut_type', 'is_locked', 'code_id']);
         if (isset($data['rarity_id']) && $data['rarity_id'] != 'none') {
             $query->where('rarity_id', $data['rarity_id']);
         }
@@ -193,6 +193,9 @@ class FeatureController extends Controller {
         }
         if (isset($data['name'])) {
             $query->where('name', 'LIKE', '%'.$data['name'].'%');
+        }
+        if (isset($data['code_id'])) {
+            $query->where('code_id', 'LIKE', '%'.$data['code_id'].'%');
         }
         if (isset($data['mut_level']) && $data['mut_level'] > '0') {
             $query->where('mut_level', $data['mut_level']);

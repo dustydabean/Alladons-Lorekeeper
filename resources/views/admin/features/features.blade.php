@@ -34,16 +34,20 @@
             <div class="form-group ml-3 mb-3">
                 {!! Form::select('feature_category_id', $categories, Request::get('feature_category_id'), ['class' => 'form-control']) !!}
             </div>
-            <div class="form-group mr-3 mb-3">
+            <div class="form-group ml-3 mb-3">
                 {!! Form::select('mut_level', $levels, Request::get('mut_level'), ['class' => 'form-control']) !!}
             </div>
-            <div class="form-group mr-3 mb-3">
+            <div class="form-group ml-3 mb-3">
                 {!! Form::select('mut_type', $types, Request::get('mut_type'), ['class' => 'form-control']) !!}
             </div>
-            <div class="form-check mr-3 mb-3">
+        </div>
+        <div class="form-inline justify-content-end">
+            <div class="form-group ml-3 mb-3">
+                {!! Form::text('code_id', Request::get('code_id'), ['class' => 'form-control', 'placeholder' => 'Mutation Code']) !!}
+            </div>
+            <div class="form-check ml-3 mb-3">
                 {!! Form::select('is_locked', ['none' => 'Any Status', '0' => 'Unlocked', '1' => 'Locked'], Request::get('is_locked'), ['class' => 'form-control']) !!}
             </div>
-        <div class="form-inline justify-content-end">
             <div class="form-group ml-3 mb-3">
                 {!! Form::select(
                     'visibility',
@@ -118,7 +122,7 @@
                                         <i class="fas fa-lock mr-1"></i>
                                     @endif
                                     @if ($feature->code_id)
-                                        ({{ $feature->code_id }}) 
+                                        ({{ $feature->code_id }})
                                     @endif
                                     {{ $feature->name }}
                                 </div>

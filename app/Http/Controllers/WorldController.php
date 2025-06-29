@@ -265,7 +265,7 @@ class WorldController extends Controller {
     public function getFeatures(Request $request) {
         $query = Feature::visible(Auth::user() ?? null)->with('category', 'rarity', 'species', 'subtype');
 
-        $data = $request->only(['rarity_id', 'feature_category_id', 'species_id', 'subtype_id', 'name', 'sort']);
+        $data = $request->only(['rarity_id', 'feature_category_id', 'species_id', 'subtype_id', 'name', 'sort', 'code_id', 'mut_level', 'mut_type', 'is_locked']);
 
         if (isset($data['rarity_id']) && $data['rarity_id'] != 'none') {
             $query->where('rarity_id', $data['rarity_id']);
@@ -293,6 +293,9 @@ class WorldController extends Controller {
         }
         if (isset($data['name'])) {
             $query->where('name', 'LIKE', '%'.$data['name'].'%');
+        }
+        if (isset($data['code_id'])) {
+            $query->where('code_id', 'LIKE', '%'.$data['code_id'].'%');
         }
         if (isset($data['mut_level']) && $data['mut_level'] > '0') {
             $query->where('mut_level', $data['mut_level']);
