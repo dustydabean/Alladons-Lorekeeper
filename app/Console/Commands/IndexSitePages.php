@@ -119,6 +119,19 @@ class IndexSitePages extends Command {
                 ]);
             }
 
+            //7. FIND ALL MUTATIONS TO INDEX
+            $shops = DB::table('traits')->get();
+            foreach ($traits as $trait) {
+                DB::table('site_temp_index')->insert([
+                    // input all neccessary fields
+                    'id'          => $trait->id,
+                    'title'       => $trait->name,
+                    'type'        => 'Mutation',
+                    'identifier'  => $trait->id,
+                    'description' => substr_replace(strip_tags($trait->description), '...', 100),
+                ]);
+            }
+
             /* IMPORTANT
             * If you would like to add your own areas to search you can easily add them here! Just copy one of the sections above and replace the data as needed.
             * note: identifier field should always match the URL parameter. (Characters use slug, pages use key, etc)
