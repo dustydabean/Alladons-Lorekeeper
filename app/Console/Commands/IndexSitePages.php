@@ -120,16 +120,17 @@ class IndexSitePages extends Command {
             }
 
             //7. FIND ALL MUTATIONS TO INDEX
-            $shops = DB::table('traits')->get();
-            foreach ($traits as $trait) {
+            $shops = DB::table('features')->get();
+            foreach ($features as $feature) {
                 DB::table('site_temp_index')->insert([
                     // input all neccessary fields
-                    'id'          => $trait->id,
-                    'title'       => $trait->name,
+                    'id'          => $feature->id,
+                    'title'       => $feature->name,
                     'type'        => 'Mutation',
-                    'identifier'  => $trait->id,
-                    'description' => substr_replace(strip_tags($trait->description), '...', 100),
+                    'identifier'  => $feature->id,
+                    'description' => substr_replace(strip_tags($feature->description), '...', 100),
                 ]);
+                $this->info("Inserted {$feature->name} [{$feature->id}]");
             }
 
             /* IMPORTANT
