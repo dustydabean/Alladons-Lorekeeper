@@ -221,10 +221,10 @@
                         @endif
                     </div>
 
-                    <div class="mb-3">
+                    <!--<div class="mb-3">
                         <div><h5>Genes</h5></div>
                         @include('character._genomes', ['character' => $character])
-                    </div>
+                    </div>-->
 
                     <div>
                         <strong>Uploaded:</strong> {!! pretty_date($image->created_at) !!}
