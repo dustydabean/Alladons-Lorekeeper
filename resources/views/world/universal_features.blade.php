@@ -28,5 +28,3 @@
         @include('world._features_index_modal_js')
     @endif
 @endsection
-
-<p>  ▹ </p>
