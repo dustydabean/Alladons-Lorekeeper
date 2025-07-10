@@ -13,7 +13,7 @@ class SitePage extends Model {
      * @var array
      */
     protected $fillable = [
-        'key', 'title', 'text', 'parsed_text', 'is_visible', 'admin_only', 'can_comment', 'allow_dislikes',
+        'key', 'title', 'text', 'parsed_text', 'is_visible', 'admin_only', 'can_comment', 'allow_dislikes', 'has_image', 'hash',
     ];
 
     /**
@@ -40,6 +40,7 @@ class SitePage extends Model {
         'title'      => 'required|between:3,100',
         'text'       => 'nullable',
         'admin_only' => 'boolean',
+        'image' => 'mimes:png',
     ];
 
     /**
@@ -52,6 +53,7 @@ class SitePage extends Model {
         'title'      => 'required|between:3,100',
         'text'       => 'nullable',
         'admin_only' => 'boolean',
+        'image' => 'mimes:png',
     ];
 
     /**********************************************************************************************
@@ -92,6 +94,46 @@ class SitePage extends Model {
      */
     public function getDisplayNameAttribute() {
         return '<a href="'.$this->url.'">'.$this->title.'</a>';
+    }
+
+    /**
+     * Gets the file directory containing the model's image.
+     *
+     * @return string
+     */
+    public function getImageDirectoryAttribute() {
+        return 'images/data/pages';
+    }
+
+    /**
+     * Gets the file name of the model's image.
+     *
+     * @return string
+     */
+    public function getImageFileNameAttribute() {
+        return $this->id.'-'.$this->hash.'-image.png';
+    }
+
+    /**
+     * Gets the path to the file directory containing the model's image.
+     *
+     * @return string
+     */
+    public function getImagePathAttribute() {
+        return public_path($this->imageDirectory);
+    }
+
+    /**
+     * Gets the URL of the model's image.
+     *
+     * @return string
+     */
+    public function getImageUrlAttribute() {
+        if (!$this->has_image) {
+            return null;
+        }
+
+        return asset($this->imageDirectory.'/'.$this->imageFileName);
     }
 
     /**

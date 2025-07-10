@@ -40,7 +40,7 @@ class Shop extends Model {
      * Validation rules for creation.
      */
     public static $createRules = [
-        'name'        => 'required|unique:item_categories|between:3,100',
+        'name'        => 'required|unique:shops|between:3,100',
         'description' => 'nullable',
         'image'       => 'mimes:png',
     ];

@@ -18,6 +18,9 @@
         <div class="sidebar-item"><a href="{{ url('world/rarities') }}" class="{{ set_active('world/rarities*') }}">Mutation Points</a></div>
         <div class="sidebar-item"><a href="{{ url('world/traits') }}" class="{{ set_active('world/traits*') }}">All Mutations</a></div>
         <!--<div class="sidebar-item"><a href="{{ url('world/genetics') }}" class="{{ set_active('world/genetics*') }}">Genetics</a></div>-->
+        @if (config('lorekeeper.extensions.visual_trait_index.enable_all_trait_index'))
+            <div class="sidebar-item"><a href="{{ url('world/all-traits-index') }}" class="{{ set_active('world/all-traits-index*') }}">All Traits Index</a></div>
+        @endif
     </li>
     <li class="sidebar-section">
         <div class="sidebar-section-header">Items</div>
