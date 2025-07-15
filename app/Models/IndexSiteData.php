@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\IndexSiteData;
+namespace App\Models;
 
 class IndexSiteData extends Model {
     public function truncateDesc($string) {
