@@ -1052,7 +1052,7 @@ class CharacterManager extends Service {
             $oldUrl = $slot->user_url ? prettyProfileLink($slot->user_url) : null;
             $recipientUrl = null;
             if (isset($data['user_url']) && $data['user_url']) {
-                $recipientUrl = checkAlias($data['user_url']);
+                $recipientUrl = checkAlias($data['user_url'], false);
 
                 if (is_object($recipientUrl)) {
                     $data['user_id'] = $recipientUrl->id;

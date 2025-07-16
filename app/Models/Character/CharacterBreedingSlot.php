@@ -77,6 +77,10 @@ class CharacterBreedingSlot extends Model {
         if ($this->user_id) {
             return $this->user->displayName;
         } elseif ($this->user_url) {
+            if (!filter_var($this->user_url, FILTER_VALIDATE_URL)) {
+                return $this->user_url;
+            }
+
             $userEntry = checkAlias($this->user_url, false);
             if (is_object($userEntry)) {
                 $this->user_id = $userEntry->id;
