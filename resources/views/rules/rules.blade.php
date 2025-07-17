@@ -26,6 +26,9 @@
                     <li class="nav-item">
 						<a class="nav-link" href="#tab3" data-toggle="tab">Section 3: DISCORD/CONDUCT</a>
 					</li>
+                    <li class="nav-item">
+						<a class="nav-link" href="#tab4" data-toggle="tab">Section 4: BREEDING SLOTS</a>
+					</li>
 				</ul>
 				<div class="tab-content">
 					<div class="tab-pane active" id="tab1">
@@ -104,7 +107,7 @@
                                             </p>
                                         </div>
                                         <div class="card-footer">
-                                            Last Updated DATE
+                                            Last Updated <em>July 10, 2025</em>
                                         </div>
                                     </div>
                                 </div>
@@ -159,11 +162,54 @@
                                                         remember that these channels are for people to scroll through and find what they want, and isn't a first come first serve 
                                                         board.</li><br/>
                                                 </ol></strong>
-                                                <h6>t's not a rule, but we encourage everyone to remember what it was like when they first joined the alladon server and how hard it was to get your ticket don.</h6>
+                                                <h6>It's not a rule, but we encourage everyone to remember what it was like when they first joined the alladon server and how hard it was to get your ticket don.</h6>
                                             </p>
                                         </div>
                                         <div class="card-footer">
-                                            Last Updated DATE
+                                            Last Updated <em>July 10, 2025</em>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+					</div>
+                    <div class="tab-pane" id="tab4">
+				        <br>
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card">
+                                        <h5 class="card-header">
+                                            B R E E D I N G  S L O T S
+                                        </h5>
+                                        <div class="card-body">
+                                            <p class="card-text" style="font-family: Nunito, sans-serif;">
+                                                <h6 style="text-indent: 20px;">The main hub for this species is our discord servers (Official and Community)! We're there to send information, 
+                                                    exchange ideas, help develop our characters and trade art and artists that we get of our alladons! I want to create 
+                                                    a trustworthy community that isn't toxic or elitist like some other species... regardless of your artistic skills, 
+                                                    your large/small wallet, you're all equal in this community. The server is an informal way of getting to know your 
+                                                    fellow dons and a great way to make new friends and find artists/creative minds to help you.</h6>
+                                                <br/>
+                                                <h6>These following rules are compulsory and failure to abide by them after an official warning will result from being removed 
+                                                    from the server (whether this be temporary or permanent):</h6>
+                                                <br/>
+                                                <ol><strong>
+                                                    <li><u>Registered Alladons:</u> Only slots in our Stud Confirmations discord channel will be accepted by Poucher Artists (for FF slots see below).
+                                                    These slot posts must be unedited and include any companions (if applicable) in the post to be useable. Please view the channel rules for specifics.</li><br/>
+                                                    <li><u>Deregistered Designs:</u> Once an alladon is de-regged, all gifted and traded slots are considered void, unless in Stud Confirmations. 
+                                                    If you de-reg your alladons, it is your responsibility to contact those you sold slots to if you no longer wish for them to be used.</li><br/>
+                                                    <li><u>Full Fur Slots:</u> FF Slots are no longer accepted in Stud Confirmations. They are now being tracked on site to protect users
+                                                    from getting a slot that doesn't exist outside the 6 alloted slots. Owners of FFs must open a ticket to inform Admins of slots being 
+                                                    sold/traded/gifted so we can input that on the dons page. Users with FF slots, when using them in PA openings, please state which 
+                                                    slot you are using (ie Slot 1, 2, 3, etc).</li><br/>
+                                                    <li>You cannot sell or trade any slots with any don before they are aged up. If you sell a poucher, you cannot request a breed slot with that don in the future as part of the sales agreement. 
+                                                        Any previous plans are not official and does not need to be upheld by the new owner or any consecutive owners if the 
+                                                        poucher is sold on.</li><br/>
+                                                </ol></strong>
+                                            </p>
+                                        </div>
+                                        <div class="card-footer">
+                                            Last Updated <em>July 10, 2025</em>
                                         </div>
                                     </div>
                                 </div>
