@@ -87,8 +87,20 @@
                                             P O U C H E R &nbsp R U L E S
                                         </h5>
                                         <div class="card-body">
-                                            <p class="card-text">
-                                                RULES
+                                            <p class="card-text" style="font-family: Nunito, sans-serif;">
+                                                <h6 style="text-indent: 20px;">'Pouchlings' and 'Whelp' are the terms given to premature alladons. 
+                                                    If adopted, there are a few limitations on these designs until they can be used as normal alladons.</h6>
+                                                <br/>
+                                                <ol><strong>
+                                                    <li>Owners must have a pouchling for 3 months real time before it can be considered as an adult and 
+                                                        rebased to officially be classed as an adult. Rebasing can only be done by an Official Age Up Artist. 
+                                                        Rebasing will be the official step into adult hood. They do not need to be rebased after the 3 month 
+                                                        time period is up, this is up to the owner to decide!</li><br/>
+                                                    <li>Whelps/Pouchlings/Pouchers cannot be bred from until the 3 month time limit is up and they have been rebased as an adult.</li><br/>
+                                                    <li>Pouchlings will be given a code that relates to their genetic line. They also now recieve their official number as well on the website.</li><br/>
+                                                    <li>Pouchlings are always going to have the family ties to their parents - speak with the discord about working out where they came from and their history!</li><br/>
+                                                    <li>Prior to Age Up, you CANNOT "promise" breeding slots to users.</li><br/>
+                                                </ol></strong>
                                             </p>
                                         </div>
                                         <div class="card-footer">
@@ -109,8 +121,45 @@
                                             D I S C O R D / C O N D U C T
                                         </h5>
                                         <div class="card-body">
-                                            <p class="card-text">
-                                                RULES
+                                            <p class="card-text" style="font-family: Nunito, sans-serif;">
+                                                <h6 style="text-indent: 20px;">The main hub for this species is our discord servers (Official and Community)! We're there to send information, 
+                                                    exchange ideas, help develop our characters and trade art and artists that we get of our alladons! I want to create 
+                                                    a trustworthy community that isn't toxic or elitist like some other species... regardless of your artistic skills, 
+                                                    your large/small wallet, you're all equal in this community. The server is an informal way of getting to know your 
+                                                    fellow dons and a great way to make new friends and find artists/creative minds to help you.</h6>
+                                                <br/>
+                                                <h6>These following rules are compulsory and failure to abide by them after an official warning will result from being removed 
+                                                    from the server (whether this be temporary or permanent):</h6>
+                                                <br/>
+                                                <ol><strong>
+                                                    <li>Do not pick on any other member of the chat regarding anything. I don't mind a little friendly banter or if it's done
+                                                        using the characters - but nothing personal is to be said to anyone else. You have gripes with someone? Take it into DMs.</li><br/>
+                                                    <li>Do not shame someone for their artwork. We're here to develop each-other as artists and as creators.</li><br/>
+                                                    <li>Keep the chat at least vaguely relevant. We have channels for different types of chatter, please keep to each topic!</li><br/>
+                                                    <li>Don't cause or bring drama into the server. I'm extremely strict on this rule as I want the dons, whilst a fun, banterful environment, 
+                                                        to be a place where people feel safe. Have a gripe with someone? Take it into DMs.</li><br/>
+                                                    <li>If you're having 'banter' - i.e playfully picking on a character with defects, make sure you know when to stop. There 
+                                                        is a line between banter and bullying and if I see you cross it I will call you up on in.</li><br/>
+                                                    <li>Act mature in the chat. If you can't take a little banter, or if you can't tolerate someone who's speaking, don't 
+                                                        respond for a while and wait for them to move on.</li><br/>
+                                                    <li>RPing in chat is not allowed. Don't be annoying - there's no definition, just be normal!</li><br/>
+                                                    <li>Some NSFW will be shared within the chat. These SHOULD BE WARNED before hand, spoilered, and in the appropriate channels, 
+                                                        but beyond this there is no obligation for you to view or take part.</li><br/>
+                                                    <li>Anybody specifically upsetting you within the chat? Tell them to stop first, if they continue please report them to an admin.</li><br/>
+                                                    <li>If you're being annoying, I or an admin will tell you to stop. Don't be offended, just stop.</li><br/>
+                                                    <li>Begging in chat is now disallowed. If you would like someone to claim for you on an adopt or a breeding slot, 
+                                                        personal message a friend. Claiming for others is still allowed, however people will have to offer their service first. 
+                                                        Anyone found begging will be reminded of this rule. Continuous breakers will receive an official warning.</li><br/>
+                                                    <li>We release certain alladons with snipe guards/don-blocks to help get new members of the server into the species. 
+                                                        Whilst frustrating for some, this is for the good of the newbies in the server, as it can be really difficult to get 
+                                                        an alladon. Anybody thought to be trying to bypass the Snipe-Guard rules by enrolling out of server acquaintances to 
+                                                        get access to dons will be faced with the possibility of a temporary adoption ban, or an official warning. This is down 
+                                                        to the discretion of the admin team.</li><br/>
+                                                    <li>Spamming advertisements (including stud slots, commission slots, alladon sales etc) are not allowed in the server. Please 
+                                                        remember that these channels are for people to scroll through and find what they want, and isn't a first come first serve 
+                                                        board.</li><br/>
+                                                </ol></strong>
+                                                <h6>t's not a rule, but we encourage everyone to remember what it was like when they first joined the alladon server and how hard it was to get your ticket don.</h6>
                                             </p>
                                         </div>
                                         <div class="card-footer">
