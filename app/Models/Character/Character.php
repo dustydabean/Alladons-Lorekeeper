@@ -85,7 +85,6 @@ class Character extends Model {
         'sale_value'            => 'nullable',
         'image'                 => 'required|mimes:jpeg,jpg,gif,png|max:20000',
         'thumbnail'             => 'nullable|mimes:jpeg,jpg,gif,png|max:20000',
-        'owner_url'             => 'url|nullable',
         'poucher_code'          => 'nullable|between:1,20',
         'nickname'              => 'nullable',
         'pedigree_id'           => 'nullable',

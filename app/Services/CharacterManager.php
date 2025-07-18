@@ -350,7 +350,7 @@ class CharacterManager extends Service {
             if (isset($data['user_id']) && $data['user_id']) {
                 $recipient = User::find($data['user_id']);
             } elseif (isset($data['owner_url']) && $data['owner_url']) {
-                $recipient = checkAlias($data['owner_url']);
+                $recipient = checkAlias($data['owner_url'], false);
             }
 
             if (is_object($recipient)) {
@@ -2318,7 +2318,7 @@ class CharacterManager extends Service {
                 }
             } elseif (isset($data['recipient_url']) && $data['recipient_url']) {
                 // Transferring to an off-site user
-                $recipient = checkAlias($data['recipient_url']);
+                $recipient = checkAlias($data['recipient_url'], false);
                 if (!$this->logAdminAction($user, 'Admin Transfer', 'Admin transferred '.$character->displayname.' to '.$recipient)) {
                     throw new \Exception('Failed to log admin action.');
                 }
