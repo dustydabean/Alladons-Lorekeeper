@@ -64,6 +64,7 @@
 @section('scripts')
 @parent
 @include('widgets._datetimepicker_js')
+@include('js._tinymce_wysiwyg')
 <script>
 $( document ).ready(function() {    
     $('.delete-logs-button').on('click', function(e) {
