@@ -59,7 +59,7 @@
                     <a class="nav-link" href="{{ url('gallery') }}"> Gallery</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url('trades/listings') }}"><i class="fas fa-exchange-alt"></i> Trade Center</a>
+                    <a class="nav-link" href="{{ url('trades/listings') }}"> Trade Center</a>
                 </li>
 
                 <li class="nav-item dropdown">
