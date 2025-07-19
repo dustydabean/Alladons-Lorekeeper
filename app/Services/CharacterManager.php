@@ -357,7 +357,7 @@ class CharacterManager extends Service {
                 $recipientId = $recipient->id;
                 $data['user_id'] = $recipient->id;
             } else {
-                $url = $recipient;
+                $url = $data['owner_url'];
             }
 
             // Create character
@@ -2318,7 +2318,12 @@ class CharacterManager extends Service {
                 }
             } elseif (isset($data['recipient_url']) && $data['recipient_url']) {
                 // Transferring to an off-site user
-                $recipient = checkAlias($data['recipient_url'], false);
+                if (!filter_var($data['recipient_url'], FILTER_VALIDATE_URL)) {
+                    $recipient = $data['recipient_url'];
+                } else {
+                    $recipient = checkAlias($data['recipient_url'], false);
+                }
+
                 if (!$this->logAdminAction($user, 'Admin Transfer', 'Admin transferred '.$character->displayname.' to '.$recipient)) {
                     throw new \Exception('Failed to log admin action.');
                 }
