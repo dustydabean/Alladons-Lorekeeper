@@ -14,7 +14,7 @@
                     @if (Auth::check() && Auth::user()->is_news_unread && config('lorekeeper.extensions.navbar_news_notif'))
                         <a class="nav-link d-flex text-warning" href="{{ url('news') }}"><strong>News</strong><i class="fas fa-bell"></i></a>
                     @else
-                        <a class="nav-link" href="{{ url('news') }}"><i class="fas fa-newspaper"></i> News</a>
+                        <a class="nav-link" href="{{ url('news') }}"> News</a>
                     @endif
                 </li>
                 @if(Auth::check() && Auth::user()->is_dev_logs_unread && Auth::user()->settings->dev_log_notif && config('lorekeeper.extensions.navbar_news_notif'))
@@ -26,17 +26,17 @@
                     @if (Auth::check() && Auth::user()->is_sales_unread && config('lorekeeper.extensions.navbar_news_notif'))
                         <a class="nav-link d-flex text-warning" href="{{ url('sales') }}"><strong>Sales</strong><i class="fas fa-bell"></i></a>
                     @else
-                        <a class="nav-link" href="{{ url('sales') }}"><i class="fas fa-money-bill-wave-alt"></i> Sales</a>
+                        <a class="nav-link" href="{{ url('sales') }}"> Sales</a>
                     @endif
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url('masterlist') }}"><i class="fas fa-list-alt"></i> Masterlist</a>
+                    <a class="nav-link" href="{{ url('masterlist') }}"> Masterlist</a>
                 </li>
                 
                 <li class="nav-item dropdown">
                     <a id="loreDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                    <i class="fas fa-book"></i> World
+                     World
                     </a>
 
                     <div class="dropdown-menu" aria-labelledby="loreDropdown">
@@ -56,15 +56,12 @@
                     </div>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url('gallery') }}"><i class="fas fa-paint-brush"></i> Gallery</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url('trades/listings') }}"><i class="fas fa-exchange-alt"></i> Trade Center</a>
+                    <a class="nav-link" href="{{ url('gallery') }}"> Gallery</a>
                 </li>
 
                 <li class="nav-item dropdown">
                     <a id="loreDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                    <i class="fas fa-question-circle"></i> Help
+                     Help
                     </a>
 
                     <div class="dropdown-menu" aria-labelledby="loreDropdown">
@@ -181,6 +178,9 @@
                             @endif
                             <a class="dropdown-item" href="{{ url('shops') }}">
                                 Shops
+                            </a>
+                            <a class="dropdown-item" href="{{ url('trades/listings') }}">
+                                 Trade Center
                             </a>
                             <a class="dropdown-item" href="{{ url(__('dailies.dailies')) }}">
                             {{__('dailies.dailies')}}
