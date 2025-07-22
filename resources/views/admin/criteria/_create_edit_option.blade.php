@@ -40,6 +40,6 @@
 
 <script>
     $(document).ready(function() {
-        @include('js._modal_wyiswyg')
+        @include('js._tinymce_wysiwyg')
     });
 </script>
