@@ -141,7 +141,7 @@
 
         @include('layouts._nav')
         @if (View::hasSection('sidebar'))
-            <div class="site-mobile-header bg-secondary"><a href="#" class="btn btn-sm btn-outline-light" id="mobileMenuButton">Menu <i class="fas fa-caret-right ml-1"></i></a></div>
+            <div class="site-mobile-header"><a href="#" class="btn btn-sm btn-outline-light" id="mobileMenuButton">Menu <i class="fas fa-caret-right ml-1"></i></a></div>
         @endif
 
         <main class="container-fluid" id="main">
