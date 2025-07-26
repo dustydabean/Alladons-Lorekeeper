@@ -94,21 +94,21 @@
                 @if(Auth::check())
                     <div class="my-1">
                         @can('reply-to-comment', $comment)
-                            <button data-toggle="modal" data-target="#reply-modal-{{ $comment->getKey() }}" class="btn btn-sm px-3 py-2 px-sm-2 py-sm-1 btn-faded text-uppercase"><i class="fas fa-comment"></i><span class="ml-2 d-none d-sm-inline-block">Reply</span></button>
+                            <button data-toggle="modal" data-target="#reply-modal-{{ $comment->getKey() }}" class="btn btn-sm px-3 py-2 px-sm-2 py-sm-1 btn-dark text-uppercase"><i class="fas fa-comment"></i><span class="ml-2 d-none d-sm-inline-block">Reply</span></button>
                         @endcan
                         @can('edit-comment', $comment)
-                            <button data-toggle="modal" data-target="#comment-modal-{{ $comment->getKey() }}" class="btn btn-sm px-3 py-2 px-sm-2 py-sm-1 btn-faded text-uppercase"><i class="fas fa-edit"></i><span class="ml-2 d-none d-sm-inline-block">Edit</span></button>
+                            <button data-toggle="modal" data-target="#comment-modal-{{ $comment->getKey() }}" class="btn btn-sm px-3 py-2 px-sm-2 py-sm-1 btn-dark text-uppercase"><i class="fas fa-edit"></i><span class="ml-2 d-none d-sm-inline-block">Edit</span></button>
                         @endcan
                         @if(((Auth::user()->id == $comment->commentable_id) || Auth::user()->isStaff) && (isset($compact) && !$compact))
-                            <button data-toggle="modal" data-target="#feature-modal-{{ $comment->getKey() }}" class="btn btn-sm px-3 py-2 px-sm-2 py-sm-1 btn-faded text-success text-uppercase"><i class="fas fa-star"></i><span class="ml-2 d-none d-sm-inline-block">{{$comment->is_featured ? 'Unf' : 'F' }}eature Comment</span></button>
+                            <button data-toggle="modal" data-target="#feature-modal-{{ $comment->getKey() }}" class="btn btn-sm px-3 py-2 px-sm-2 py-sm-1 btn-dark text-success text-uppercase"><i class="fas fa-star"></i><span class="ml-2 d-none d-sm-inline-block">{{$comment->is_featured ? 'Unf' : 'F' }}eature Comment</span></button>
                         @endif
                         @can('delete-comment', $comment)
-                            <button data-toggle="modal" data-target="#delete-modal-{{ $comment->getKey() }}" class="btn btn-sm px-3 py-2 px-sm-2 py-sm-1 btn-outline-danger text-uppercase"><i class="fas fa-minus-circle"></i><span class="ml-2 d-none d-sm-inline-block">Delete</span></button>
+                            <button data-toggle="modal" data-target="#delete-modal-{{ $comment->getKey() }}" class="btn btn-sm px-3 py-2 px-sm-2 py-sm-1 btn-outline-danger btn-dark text-uppercase"><i class="fas fa-minus-circle"></i><span class="ml-2 d-none d-sm-inline-block">Delete</span></button>
                         @endcan
                         {{-- Likes Section --}}
                         <span class="mx-2 d-none d-sm-inline-block">|</span>
                         <a href="#" data-toggle="modal" data-target="#show-likes-{{$comment->id}}">
-                            <button href="#" data-toggle="tooltip" title="Click to View" class="btn btn-sm px-3 py-2 px-sm-2 py-sm-1 btn-faded">
+                            <button href="#" data-toggle="tooltip" title="Click to View" class="btn btn-sm px-3 py-2 px-sm-2 py-sm-1 btn-dark">
                                 {{ $comment->likes()->where('is_like', 1)->count() - $comment->likes()->where('is_like', 0)->count() }} 
                                 Like
                                 @if($comment->likes()->where('is_like', 1)->count() - $comment->likes()->where('is_like', 0)->count() != 1)
@@ -308,7 +308,7 @@
                     <img class="mr-3 mt-2" src="/images/avatars/default.jpg" style="width:70px; height:70px; border-radius:50%;" alt="Default Avatar">
                 </div>
             @endif
-            <div class="d-block bg-light" style="flex:1">
+            <div class="d-block" style="flex:1">
                 <div class="border p-3 rounded">
                     <p>Comment deleted</p>
                     <p class="border-top pt-1 text-right mb-0">
