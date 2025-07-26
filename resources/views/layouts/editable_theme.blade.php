@@ -39,6 +39,10 @@
                 color: {{ $navTextColor }} !important;
             @endif
         }
+
+        .site-mobile-header {
+            background-color: color-mix(in oklab, {{ $navBarColor }} 100%, #fff 5%) !important;
+        }
     @endif
 
     @if ($navTextColor)
@@ -148,6 +152,14 @@
         @if ($mainTextColor)
             ::placeholder {
                 color: {{ $mainTextColor }} !important;
+            }
+        @endif
+
+        @if ($mainColor)
+            @media (max-width: 991px) {
+                .sidebar {
+                    background-color: color-mix(in oklab, {{ $mainColor }} 100%, #000 20%) !important;
+                }
             }
         @endif
     @endif
