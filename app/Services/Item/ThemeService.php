@@ -9,13 +9,13 @@ use Illuminate\Support\Facades\DB;
 
 class ThemeService extends Service {
     /*
-      |--------------------------------------------------------------------------
-      | Theme Service
-      |--------------------------------------------------------------------------
-      |
-      | Handles the editing and usage of theme type items.
-      |
-      */
+    |--------------------------------------------------------------------------
+    | Theme Service
+    |--------------------------------------------------------------------------
+    |
+    | Handles the editing and usage of theme type items.
+    |
+    */
 
     /**
      * Retrieves any data that should be used in the item tag editing form.

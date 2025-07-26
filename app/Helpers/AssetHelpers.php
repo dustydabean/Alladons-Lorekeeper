@@ -20,7 +20,7 @@
  */
 function getAssetKeys($isCharacter = false) {
     if (!$isCharacter) {
-        return ['items', 'currencies', 'pets', 'pet_variants', 'raffle_tickets', 'loot_tables', 'user_items', 'characters', 'recipes'];
+        return ['items', 'currencies', 'pets', 'pet_variants', 'raffle_tickets', 'loot_tables', 'user_items', 'characters', 'recipes', 'themes'];
     } else {
         return ['currencies', 'items', 'character_items', 'loot_tables'];
     }

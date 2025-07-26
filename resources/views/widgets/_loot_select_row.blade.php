@@ -22,6 +22,11 @@
     if (isset($showRecipes) && $showRecipes) {
         $recipes = \App\Models\Recipe\Recipe::orderBy('name')->pluck('name', 'id');
     }
+    if (isset($showThemes) && $showThemes) {
+        $themes = \App\Models\Theme::orderBy('name')
+            ->where('is_user_selectable', 0)
+            ->pluck('name', 'id');
+    }
 @endphp
 
 <div id="lootRowData" class="hide">

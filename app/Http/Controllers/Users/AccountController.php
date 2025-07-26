@@ -175,6 +175,23 @@ class AccountController extends Controller {
     }
 
     /**
+     * Edits the user's username.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postUsername(Request $request, UserService $service) {
+        if ($service->updateUsername($request->get('username'), Auth::user())) {
+            flash('Username updated successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
+    }
+
+    /**
      * Changes the user's password.
      *
      * @param App\Services\UserService $service
@@ -210,23 +227,6 @@ class AccountController extends Controller {
         ]);
         if ($service->updateEmail($request->only(['email']), Auth::user())) {
             flash('Email updated successfully. A verification email has been sent to your new email address.')->success();
-        } else {
-            foreach ($service->errors()->getMessages()['error'] as $error) {
-                flash($error)->error();
-            }
-        }
-
-        return redirect()->back();
-    }
-
-    /**
-     * Edits the user's username.
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function postUsername(Request $request, UserService $service) {
-        if ($service->updateUsername($request->get('username'), Auth::user())) {
-            flash('Username updated successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();

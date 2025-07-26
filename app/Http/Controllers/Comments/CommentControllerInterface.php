@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Comments;
 
-use App\Models\Comment;
+use App\Models\Comment\Comment;
 use Illuminate\Http\Request;
 
 interface CommentControllerInterface {
