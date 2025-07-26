@@ -18,7 +18,7 @@
                     </div>
                     <p class="border-top pt-1 text-right mb-0">
                         <small class="text-muted">{!! $comment->created_at !!}
-                            @if($comment->created_at != $comment->updated_at) 
+                            @if($comment->created_at != $comment->updated_at)
                                 <span class="text-muted border-left mx-1 px-1">(Edited {!! ($comment->updated_at) !!})</span>
                             @endif
                         </small>
@@ -35,7 +35,7 @@
                     @foreach($grouped_comments[$comment->getKey()] as $child)
                         @php $limit++; @endphp
 
-                        @if($limit >= 3) 
+                        @if($limit >= 3)
                             <a href="{{ url('comment/').'/'.$comment->id }}"><span class="btn btn-secondary w-100 my-2">See More Replies</span></a>
                             @break
                         @endif
@@ -70,16 +70,16 @@
                         {!! $comment->commenter->commentDisplayName !!} @if($comment->commenter->isStaff == true)<small class="text-success">Staff Member</small>@endif
                     </h5>
                     @if($comment->is_featured)
-                        <div class="ml-1 text-muted text-right col-6 mx-0 pr-1"><small class="text-success">Featured by Owner</small></div> 
+                        <div class="ml-1 text-muted text-right col-6 mx-0 pr-1"><small class="text-success">Featured by Owner</small></div>
                     @endif
                 </div>
 
                 {{-- Comment --}}
                 <div class="comment border p-3 rounded {{ $comment->is_featured ? 'border-success bg-light' : '' }} {{ $comment->likes()->where('is_like', 1)->count() - $comment->likes()->where('is_like', 0)->count() < 0 ? 'bg-light bg-gradient' : '' }}">
-                    <p>{!! nl2br($markdown->line($comment->comment)) !!} </p>
+                    {!! config('lorekeeper.settings.wysiwyg_comments') ? $comment->comment : '<p>' . nl2br($markdown->line(strip_tags($comment->comment))) . '</p>' !!}
                     <p class="border-top pt-1 text-right mb-0">
                         <small class="text-muted">{!! $comment->created_at !!}
-                            @if($comment->created_at != $comment->updated_at) 
+                            @if($comment->created_at != $comment->updated_at)
                                 <span class="text-muted border-left mx-1 px-1">(Edited {!! ($comment->updated_at) !!})</span>
                             @endif
                         </small>
@@ -109,7 +109,7 @@
                         <span class="mx-2 d-none d-sm-inline-block">|</span>
                         <a href="#" data-toggle="modal" data-target="#show-likes-{{$comment->id}}">
                             <button href="#" data-toggle="tooltip" title="Click to View" class="btn btn-sm px-3 py-2 px-sm-2 py-sm-1 btn-dark">
-                                {{ $comment->likes()->where('is_like', 1)->count() - $comment->likes()->where('is_like', 0)->count() }} 
+                                {{ $comment->likes()->where('is_like', 1)->count() - $comment->likes()->where('is_like', 0)->count() }}
                                 Like
                                 @if($comment->likes()->where('is_like', 1)->count() - $comment->likes()->where('is_like', 0)->count() != 1)
                                     s
@@ -127,7 +127,7 @@
                         @endif
                     </div>
                 @endif
-                
+
                 {{-- Modals --}}
                 @can('edit-comment', $comment)
                     <div class="modal fade" id="comment-modal-{{ $comment->getKey() }}" tabindex="-1" role="dialog">
@@ -186,7 +186,7 @@
                             </div>
                         </div>
                     </div>
-                @endcan 
+                @endcan
 
                 @can('delete-comment', $comment)
                     <div class="modal fade" id="delete-modal-{{ $comment->getKey() }}" tabindex="-1" role="dialog">
@@ -201,7 +201,7 @@
                                 <div class="modal-body">
                                     <div class="form-group">Are you sure you want to delete this comment?</div>
                                     <div class="alert alert-warning">
-                                        <strong>Comments can be restored in the database.</strong> 
+                                        <strong>Comments can be restored in the database.</strong>
                                         <br> Deleting a comment does not delete the comment record.
                                     </div>
                                     <div class="text-right">
@@ -215,7 +215,7 @@
                             </div>
                         </div>
                     </div>
-                @endcan 
+                @endcan
 
                 <div class="modal fade" id="feature-modal-{{ $comment->getKey() }}" tabindex="-1" role="dialog">
                     <div class="modal-dialog" role="document">
@@ -285,7 +285,7 @@
                     @foreach($grouped_comments[$comment->getKey()] as $child)
                         @php $limit++; @endphp
 
-                        @if($limit >= 3) 
+                        @if($limit >= 3)
                             <a href="{{ url('comment/').'/'.$comment->id }}"><span class="btn btn-secondary w-100 my-2">See More Replies</span></a>
                             @break
                         @endif
@@ -330,7 +330,7 @@
                     @foreach($grouped_comments[$comment->getKey()] as $child)
                         @php $limit++; @endphp
 
-                        @if($limit >= 3) 
+                        @if($limit >= 3)
                             <a href="{{ url('comment/').'/'.$comment->id }}"><span class="btn btn-secondary w-100 my-2">See More Replies</span></a>
                             @break
                         @endif
