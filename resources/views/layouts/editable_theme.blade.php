@@ -135,11 +135,7 @@
         .form-control,
         .selectize-input,
         .selectize-dropdown .active,
-        ::placeholder,
         .breadcrumb-item,
-        .dropdown-item:hover,
-        .dropdown-item,
-        .dropdown-menu,
         #tinymce {
             @if ($mainColor)
                 background-color: {{ $mainColor }} !important;
@@ -148,6 +144,12 @@
                 color: {{ $mainTextColor }} !important;
             @endif
         }
+
+        @if ($mainTextColor)
+            ::placeholder {
+                color: {{ $mainTextColor }} !important;
+            }
+        @endif
     @endif
 
     @if ($cardColor || $cardTextColor)
