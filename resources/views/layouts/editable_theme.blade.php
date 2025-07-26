@@ -19,24 +19,27 @@
 @endphp
 
 <style>
-    /** Style the site header and nav */
-    .site-header-image {
-        @if ($headerImageDisplay)
-            display: {{ $headerImageDisplay }};
-        @endif
-    }
 
-    .bg-dark,
-    .sidebar .sidebar-header,
-    .sidebar a.active,
-    .sidebar a.active:hover {
-        @if ($navBarColor)
-            background-color: {{ $navBarColor }} !important;
-        @endif
-        @if ($navTextColor)
-            color: {{ $navTextColor }} !important;
-        @endif
-    }
+    /** Style the site header and nav */
+    @if ($headerImageDisplay)
+        .site-header-image {
+            display: {{ $headerImageDisplay }};
+        }
+    @endif
+
+    @if ($navBarColor || $navTextColor)
+        .bg-dark,
+        .sidebar .sidebar-header,
+        .sidebar a.active,
+        .sidebar a.active:hover {
+            @if ($navBarColor)
+                background-color: {{ $navBarColor }} !important;
+            @endif
+            @if ($navTextColor)
+                color: {{ $navTextColor }} !important;
+            @endif
+        }
+    @endif
 
     @if ($navTextColor)
         .dropdown-item:hover,
@@ -45,19 +48,17 @@
         .selectize-dropdown .active {
             filter: brightness(115%);
         }
+
+        .navbar-dark .navbar-nav .nav-link {
+            color: {{ $navTextColor }} !important;
+        }
     @endif
 
-    .navbar-dark .navbar-nav .nav-link {
-        @if ($navTextColor)
-            color: {{ $navTextColor }} !important;
-        @endif
-    }
-
-    .navbar-brand {
-        @if ($titleColor)
+    @if ($titleColor)
+        .navbar-brand {
             color: {{ $titleColor }} !important;
-        @endif
-    }
+        }
+    @endif
 
     @media (max-width: 991px) {
         .site-header-image {
@@ -67,106 +68,106 @@
 
     /** Style card header */
 
-    .card-header {
-        @if ($cardHeaderColor)
+    @if ($cardHeaderColor)
+        .card-header {
             background-color: {{ $cardHeaderColor }} !important;
-        @endif
-    }
+        }
+    @endif
 
-    .card-header .card-title a,
-    .card-header .card-title,
-    .card-header a {
-        @if ($cardHeaderTextColor)
+    @if ($cardHeaderTextColor)
+        .card-header .card-title a,
+        .card-header .card-title,
+        .card-header a {
             color: {{ $cardHeaderTextColor }} !important;
-        @endif
-    }
+        }
+    @endif
 
     /** Style main background */
 
-    #main {
-        @if ($backgroundImage)
-            background-image: url('{{ $backgroundImage }}');
-        @endif
-        @if ($backgroundColor)
-            background-color: {{ $backgroundColor }} !important;
-        @endif
-        @if ($backgroundSize)
-            background-size: 100% {{ $backgroundSize }};
-        @endif
-        background-repeat: repeat;
-    }
-
+    @if ($backgroundImage)
+        #main {
+            @if ($backgroundImage || $backgroundColor || $backgroundSize)
+                background-image: url('{{ $backgroundImage }}');
+            @endif
+            @if ($backgroundColor)
+                background-color: {{ $backgroundColor }} !important;
+            @endif
+            @if ($backgroundSize)
+                background-size: 100% {{ $backgroundSize }};
+            @endif
+            background-repeat: repeat;
+        }
+    @endif
 
     /** Style &buttons */
 
-    .btn-primary,
-    .page-item.active .page-link {
-        @if ($primaryButtonColor)
+    @if ($primaryButtonColor)
+        .btn-primary,
+        .page-item.active .page-link {
             background-color: {{ $primaryButtonColor }} !important;
-        @endif
-        @if ($primaryButtonColor)
             border-color: {{ $primaryButtonColor }} !important;
-        @endif
-    }
+        }
+    @endif
 
-    .btn-secondary {
-        @if ($secondaryButtonColor)
+    @if ($secondaryButtonColor)
+        .btn-secondary {
             background-color: {{ $secondaryButtonColor }} !important;
-        @endif
-        @if ($secondaryButtonColor)
             border-color: {{ $secondaryButtonColor }} !important;
-        @endif
-    }
-
+        }
+    @endif
 
     /** Style the main content + sidebars and make links/forms/cards fit. This part gets commented out if a css theme is used! */
-    .main-content,
-    .sidebar {
-        @if ($mainMarginTop)
+    @if ($mainMarginTop)
+        .main-content,
+        .sidebar {
             margin-top: {{ $mainMarginTop }}px;
-        @endif
-    }
+        }
+    @endif
 
-    .main-content,
-    .modal-content,
-    .sidebar-section,
-    .sidebar-item,
-    .sidebar a:hover,
-    .sidebar a:active,
-    option:hover,
-    .form-control,
-    .selectize-input,
-    .selectize-dropdown .active,
-    ::placeholder,
-    .breadcrumb-item,
-    .dropdown-item:hover,
-    .dropdown-item,
-    .dropdown-menu,
-    #tinymce {
-        @if ($mainColor)
-            background-color: {{ $mainColor }} !important;
-        @endif
-        @if ($mainTextColor)
-            color: {{ $mainTextColor }} !important;
-        @endif
-    }
+    @if ($mainColor || $mainTextColor)
+        .main-content,
+        .modal-content,
+        .sidebar-section,
+        .sidebar-item,
+        .sidebar a:hover,
+        .sidebar a:active,
+        option:hover,
+        .form-control,
+        .selectize-input,
+        .selectize-dropdown .active,
+        ::placeholder,
+        .breadcrumb-item,
+        .dropdown-item:hover,
+        .dropdown-item,
+        .dropdown-menu,
+        #tinymce {
+            @if ($mainColor)
+                background-color: {{ $mainColor }} !important;
+            @endif
+            @if ($mainTextColor)
+                color: {{ $mainTextColor }} !important;
+            @endif
+        }
+    @endif
 
-    .card,
-    .list-group-item,
-    .nav-tabs .active {
-        @if ($cardColor)
-            background-color: {{ $cardColor }} !important;
-        @endif
-        @if ($cardTextColor)
-            color: {{ $cardTextColor }} !important;
-        @endif
-    }
+    @if ($cardColor || $cardTextColor)
+        .card,
+        .list-group-item,
+        .nav-tabs .active {
+            @if ($cardColor)
+                background-color: {{ $cardColor }} !important;
+            @endif
+            @if ($cardTextColor)
+                color: {{ $cardTextColor }} !important;
+            @endif
+        }
+    @endif
 
-    a:not(.btn, .navbar-brand, .card-link, .dropdown-item):not(.sidebar-item > a),
-    a strong,
-    .text-muted {
-        @if ($linkColor)
+    @if ($linkColor)
+        a:not(.btn, .navbar-brand, .card-link, .dropdown-item):not(.sidebar-item > a),
+        a strong,
+        .text-muted {
             color: {{ $linkColor }} !important;
-        @endif
-    }
+        }
+    @endif
 </style>
