@@ -21,6 +21,11 @@
     if (isset($showRecipes) && $showRecipes) {
         $recipes = \App\Models\Recipe\Recipe::orderBy('name')->pluck('name', 'id');
     }
+    if (isset($showThemes) && $showThemes) {
+        $themes = \App\Models\Theme::orderBy('name')
+            ->where('is_user_selectable', 0)
+            ->pluck('name', 'id');
+    }
 @endphp
 
 <div class="text-right mb-3">
@@ -40,8 +45,8 @@
             @foreach ($loots as $loot)
                 <tr class="loot-row">
                     <td>
-                        {!! Form::select('rewardable_type[]', 
-                        ['Item' => 'Item', 'Currency' => 'Currency', 'Pet' => 'Pet', 'PetVariant' => 'Pet Variant'] + ($showLootTables ? ['LootTable' => 'Loot Table'] : []) + ($showRaffles ? ['Raffle' => 'Raffle Ticket'] : []) + (isset($showThemes) && $showThemes ? ['Theme' => 'Theme'] : []) + ((isset($showRecipes) && $showRecipes) ? ['Recipe' => 'Recipe'] : []), $loot->rewardable_type, 
+                        {!! Form::select('rewardable_type[]',
+                        ['Item' => 'Item', 'Currency' => 'Currency', 'Pet' => 'Pet', 'PetVariant' => 'Pet Variant'] + ($showLootTables ? ['LootTable' => 'Loot Table'] : []) + ($showRaffles ? ['Raffle' => 'Raffle Ticket'] : []) + (isset($showThemes) && $showThemes ? ['Theme' => 'Theme'] : []) + ((isset($showRecipes) && $showRecipes) ? ['Recipe' => 'Recipe'] : []), $loot->rewardable_type,
                         ['class' => 'form-control reward-type', 'placeholder' => 'Select Reward Type']) !!}
                     </td>
 

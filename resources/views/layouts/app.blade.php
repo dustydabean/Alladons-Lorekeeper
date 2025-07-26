@@ -83,46 +83,46 @@
         <link href="{{ asset('css/custom.css') . '?v=' . filemtime(public_path('css/custom.css')) }}" rel="stylesheet">
     @endif
 
-    @if ($theme?->prioritize_css)
+    @if (isset($theme) && $theme?->prioritize_css)
         @include('layouts.editable_theme')
     @endif
-    @if ($theme?->has_css)
+    @if (isset($theme) && $theme?->has_css)
         <style type="text/css" media="screen">
             @php include_once($theme?->cssUrl)
             @endphp
             {{-- css in style tag to so that order matters --}}
         </style>
     @endif
-    @if (!$theme?->prioritize_css)
+    @if (isset($theme) && !$theme?->prioritize_css)
         @include('layouts.editable_theme')
     @endif
 
     {{-- Conditional Themes are dependent on other site features --}}
-    @if ($conditionalTheme?->prioritize_css)
+    @if (isset($conditionalTheme) && $conditionalTheme?->prioritize_css)
         @include('layouts.editable_theme', ['theme' => $conditionalTheme])
     @endif
-    @if ($conditionalTheme?->has_css)
+    @if (isset($conditionalTheme) && $conditionalTheme?->has_css)
         <style type="text/css" media="screen">
             @php include_once($conditionalTheme?->cssUrl)
             @endphp
             {{-- css in style tag to so that order matters --}}
         </style>
     @endif
-    @if (!$conditionalTheme?->prioritize_css)
+    @if (isset($conditionalTheme) && !$conditionalTheme?->prioritize_css)
         @include('layouts.editable_theme', ['theme' => $conditionalTheme])
     @endif
 
-    @if ($decoratorTheme?->prioritize_css)
+    @if (isset($decoratorTheme) && $decoratorTheme?->prioritize_css)
         @include('layouts.editable_theme', ['theme' => $decoratorTheme])
     @endif
-    @if ($decoratorTheme?->has_css)
+    @if (isset($decoratorTheme) && $decoratorTheme?->has_css)
         <style type="text/css" media="screen">
             @php include_once($decoratorTheme?->cssUrl)
             @endphp
             {{-- css in style tag to so that order matters --}}
         </style>
     @endif
-    @if (!$decoratorTheme?->prioritize_css)
+    @if (isset($decoratorTheme) && !$decoratorTheme?->prioritize_css)
         @include('layouts.editable_theme', ['theme' => $decoratorTheme])
     @endif
 
@@ -265,12 +265,12 @@
             });
 
              // CLOCK
-             function time() {
-                    setInterval(function() { 
+            function time() {
+                    setInterval(function() {
                         var date = new Date(); // initial date, this acts kinda like a first carbon instance so we can preform functions on it
                         var time = new Date(date.getTime() + 60*60*1000);  // preform function on first date (basically get time in timestamp format, the 60*60*1000 is an offset of +1 hour. To do other timezones just convert it to the necessary amount of hours +- UTC
                         var cycle = time.getUTCHours() >= 12 ? ' PM' : ' AM'; // this gets the hour in military time so if it's greater than 12 it's pm
-                        // substr is a function that'll knock of certain letters from a given input. 
+                        // substr is a function that'll knock of certain letters from a given input.
                         // Because ours is -2, if we have 001, it'll read as 01. If we have 042, it'll be 42
                         // we want this because getUTCSeconds() for example gives a single integer value for values < 10 (ex 1 second shows as 1)
                         // this doesn't look correct so we basically ''force'' it to be correct by adding and (sometimes) removed the extra 0
@@ -279,7 +279,7 @@
                         var display = time.getUTCHours() + ":" +  ('0' + time.getUTCMinutes()).substr(-2) + ":" +  ('0' + time.getUTCSeconds()).substr(-2) + " " + cycle; // make it look pretty
                         $("#clock").text(display); // set the div to new time
                     }, 1000)} // times it out for 1 second so loop
-                
+
                 setInterval(time(), 1000); // loop
 
         </script>

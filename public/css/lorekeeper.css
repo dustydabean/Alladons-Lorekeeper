@@ -136,6 +136,16 @@ main > .row {
 
 .navbar .row { width: 100%; }
 
+#headerNav .dropdown-menu,
+#headerNav .dropdown-item {
+	background-color: color-mix(in oklab, var(--dark) 100%, #fff 10%);
+}
+
+#headerNav .dropdown-item:hover {
+	background-color: color-mix(in oklab, var(--dark) 100%, #fff 12.5%);
+    color: var(--gray-300);
+}
+
 /* Sidebar */
 
 .sidebar {
@@ -364,7 +374,7 @@ main > .row {
 	font-weight: 900;
 }
 .search-bar.loader:after {
-	
+
 }
 .dark-input:hover, .dark-input:focus {
 	filter: brightness(1.5);
@@ -391,8 +401,8 @@ main > .row {
 #searchResult:after {
 	position: absolute;
 	content: "";
-	width: 0; 
-  	height: 0; 
+	width: 0;
+  	height: 0;
   	border-left: 15px solid transparent;
   	border-right: 15px solid transparent;
   	border-bottom: 15px solid #3C4248;
@@ -446,7 +456,7 @@ main > .row {
     100% {
         transform: rotate(360deg);
     }
-    } 
+    }
 
 /**************************************************************************************************
 
@@ -907,17 +917,17 @@ tr.accountbound {
     letter-spacing: .05em;
 }
 
-.collectionnotunlocked {               
+.collectionnotunlocked {
     opacity: 0.4;
     filter: alpha(opacity=40);
-    zoom: 1;  /* needed to trigger "hasLayout" in IE if no width or height is set */ 
+    zoom: 1;  /* needed to trigger "hasLayout" in IE if no width or height is set */
  }
- 
+
  .greyscale {
     filter: grayscale(40%);
     opacity: 0.5;
  }
- 
+
 
 
 .square-grid {

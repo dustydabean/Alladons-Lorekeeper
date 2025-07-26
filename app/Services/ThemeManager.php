@@ -284,6 +284,10 @@ class ThemeManager extends Service {
             $data['is_active'] = 0;
         }
 
+        if (!isset($data['is_user_selectable'])) {
+            $data['is_user_selectable'] = 0;
+        }
+
         // Unset Default
         if (isset($data['is_default'])) {
             DB::table('themes')

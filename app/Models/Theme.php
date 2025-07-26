@@ -57,14 +57,14 @@ class Theme extends Model {
      * Get the users who are using this theme.
      */
     public function users() {
-        return $this->hasMany('App\Models\User\User', 'theme_id');
+        return $this->hasMany(User::class, 'theme_id');
     }
 
     /**
      * Get the ThemeEditor attached to this theme.
      */
     public function themeEditor() {
-        return $this->hasOne('App\Models\ThemeEditor', 'theme_id');
+        return $this->hasOne(ThemeEditor::class, 'theme_id');
     }
 
     /**********************************************************************************************
