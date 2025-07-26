@@ -40,9 +40,11 @@
             @endif
         }
 
-        .site-mobile-header {
-            background-color: color-mix(in oklab, {{ $navBarColor }} 100%, #fff 5%) !important;
-        }
+        @if ($navBarColor)
+            .site-mobile-header {
+                background-color: color-mix(in oklab, {{ $navBarColor }} 100%, #fff 5%) !important;
+            }
+        @endif
     @endif
 
     @if ($navTextColor)
@@ -101,6 +103,12 @@
             @endif
             background-repeat: repeat;
         }
+
+        @if ($backgroundColor)
+            #tinymce {
+                background-color: color-mix(in oklab, {{ $backgroundColor }} 100%, #fff 1.5%) !important;
+            }
+        @endif
     @endif
 
     /** Style &buttons */
@@ -139,8 +147,7 @@
         .form-control,
         .selectize-input,
         .selectize-dropdown .active,
-        .breadcrumb-item,
-        #tinymce {
+        .breadcrumb-item {
             @if ($mainColor)
                 background-color: {{ $mainColor }} !important;
             @endif
