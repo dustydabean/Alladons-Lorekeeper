@@ -44,6 +44,16 @@
             .site-mobile-header {
                 background-color: color-mix(in oklab, {{ $navBarColor }} 100%, #fff 5%) !important;
             }
+
+            #headerNav .btn-secondary {
+                background-color: color-mix(in oklab, {{ $navBarColor }} 100%, #fff 10%) !important;
+                border-color: color-mix(in oklab, {{ $navBarColor }} 100%, #fff 10%) !important;
+            }
+
+            #headerNav .btn-secondary:hover {
+                background-color: color-mix(in oklab, {{ $navBarColor }} 100%, #fff 20%) !important;
+                border-color: color-mix(in oklab, {{ $navBarColor }} 100%, #fff 20%) !important;
+            }
         @endif
     @endif
 
