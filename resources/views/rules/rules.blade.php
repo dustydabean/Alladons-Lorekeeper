@@ -160,7 +160,7 @@
                                 <div class="col-md-12">
                                     <div class="card">
                                         <h5 class="card-header">
-                                            B R E E D I N G  S L O T S
+                                            B R E E D I N G &nbsp S L O T S
                                         </h5>
                                         <div class="card-body">
                                             <p class="card-text" style="font-family: Nunito, sans-serif;">
@@ -193,7 +193,7 @@
                                 <div class="col-md-12">
                                     <div class="card">
                                         <h5 class="card-header">
-                                            O F F I C I A L  A R T I S T S
+                                            O F F I C I A L &nbsp A R T I S T S
                                         </h5>
                                         <div class="card-body">
                                             <p class="card-text" style="font-family: Nunito, sans-serif;">
@@ -221,7 +221,7 @@
                                 <div class="col-md-12">
                                     <div class="card">
                                         <h5 class="card-header">
-                                            D E R E G I S T E R E D  D E S I G N S
+                                            D E R E G I S T E R E D &nbsp D E S I G N S
                                         </h5>
                                         <div class="card-body">
                                             <p class="card-text" style="font-family: Nunito, sans-serif;">
@@ -251,7 +251,7 @@
                                 <div class="col-md-12">
                                     <div class="card">
                                         <h5 class="card-header">
-                                            L O R E  R U L E S
+                                            L O R E &nbsp R U L E S
                                         </h5>
                                         <div class="card-body">
                                             <p class="card-text" style="font-family: Nunito, sans-serif;">
