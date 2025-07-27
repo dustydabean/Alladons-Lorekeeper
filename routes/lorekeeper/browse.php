@@ -254,6 +254,9 @@ Route::group(['prefix' => 'faq'], function () {
 **************************************************************************************************/
 Route::get('rules', 'RulesController@getRules');
 
+Route::get('guide', 'GuideController@getguide');
+Route::get('guidepage', 'GuideController@getguidepage');
+
 /**************************************************************************************************
     Search Function
 **************************************************************************************************/
