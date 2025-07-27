@@ -20,11 +20,4 @@ class GuideController extends Controller
     return view('guide.guide');     
     }
 
-
-    public function getguidepage() 
-    {
-    return view('guide.guidepage', [ 
-    'page' => SitePage::where('key', 'guide')->first()
-        ]);
-    }
 }
