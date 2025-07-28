@@ -25,6 +25,7 @@
                 {!! Form::select('pet_ids[]', $pets, null, ['class' => 'form-control mr-2 default pet-select', 'placeholder' => 'Select Pet']) !!}
                 {!! Form::text('quantities[]', 1, ['class' => 'form-control mr-2', 'placeholder' => 'Quantity']) !!}
                 {!! Form::select('variant[]', ['none' => 'No Variant', 'randomize' => 'Randomize Variant'], null, ['class' => 'form-control mr-2 variant-select']) !!}
+                {!! Form::select('evolution[]', ['none' => 'No Evolution', 'randomize' => 'Randomize Evolution'], null, ['class' => 'form-control mr-2 evolution-select']) !!}
                 <a href="#" class="remove-pet btn btn-danger mb-2 disabled">×</a>
             </div>
         </div>
@@ -54,7 +55,7 @@
 
     {!! Form::close() !!}
 
-    <div class="pet-row hide mb-2">
+    <div class="pet-row d-flex hide mb-2">
         {!! Form::select('pet_ids[]', $pets, null, ['class' => 'form-control mr-2 pet-select', 'placeholder' => 'Select Pet']) !!}
         {!! Form::text('quantities[]', 1, ['class' => 'form-control mr-2', 'placeholder' => 'Quantity']) !!}
         {!! Form::select('variant[]', ['none' => 'No Variant', 'randomize' => 'Randomize Variant'], null, ['class' => 'form-control mr-2 variant-select']) !!}
@@ -91,7 +92,7 @@
                     e.preventDefault();
                     removePetRow($(this));
                 })
-                $clone.addPetListener($clone.find('.pet-select'));
+                addPetListener($clone.find('.pet-select'));
                 $clone.find('.pet-select').selectize();
             }
 
@@ -112,11 +113,12 @@
                         success: function(data) {
                             $variantSelect.html('');
                             $variantSelect.append('<option value="none">No Variant</option>');
-                            $variantSelect.append('<option value="randomize">Randomize Variant</option>');
-                            $.each(data, function(key, value) {
-                                $variantSelect.append('<option value="' + key + '">' + value + '</option>');
-                            });
-
+                            if (data.length != 0) {
+                                $variantSelect.append('<option value="randomize">Randomize Variant</option>');
+                                $.each(data, function(key, value) {
+                                    $variantSelect.append('<option value="' + key + '">' + value + '</option>');
+                                });
+                            }
                         }
                     });
                     $.ajax({
@@ -125,10 +127,13 @@
                         success: function(data) {
                             $evolutionSelect.html('');
                             $evolutionSelect.append('<option value="none">No Evolution</option>');
-                            $evolutionSelect.append('<option value="randomize">Randomize Evolution</option>');
-                            $.each(data, function(key, value) {
-                                $evolutionSelect.append('<option value="' + key + '">' + value + '</option>');
-                            });
+                            if (data.length != 0) {
+                                $evolutionSelect.append('<option value="randomize">Randomize Evolution</option>');
+                                $.each(data, function(key, value) {
+                                    $evolutionSelect.append('<option value="' + key + '">' + value + '</option>');
+                                });
+                                $evolutionSelect.removeClass('hide');
+                            }
                         }
                     });
                 });

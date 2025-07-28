@@ -303,7 +303,7 @@ class Pet extends Model {
      * @return string
      */
     public function getHasDropsAttribute() {
-        if ($this->dropData) {
+        if (isset($this->dropData) && $this->dropData) {
             return 1;
         } else {
             return 0;

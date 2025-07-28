@@ -57,15 +57,19 @@ class PetManager extends Service {
 
             $keyed_variant = [];
             array_walk($data['pet_ids'], function ($id, $key) use (&$keyed_variant, $data) {
-                if ($id != null && !in_array($id, array_keys($keyed_variant), true)) {
-                    $keyed_variant[$id] = $data['variant'][$key];
+                if (isset($data['variant'])) {
+                    if ($id != null && !in_array($id, array_keys($keyed_variant), true)) {
+                        $keyed_variant[$id] = $data['variant'][$key];
+                    }
                 }
             });
 
             $keyed_evolution = [];
             array_walk($data['pet_ids'], function ($id, $key) use (&$keyed_evolution, $data) {
-                if ($id != null && !in_array($id, array_keys($keyed_evolution), true)) {
-                    $keyed_evolution[$id] = $data['evolution'][$key];
+                if (isset($data['evolution'])) {
+                    if ($id != null && !in_array($id, array_keys($keyed_evolution), true)) {
+                        $keyed_evolution[$id] = $data['evolution'][$key];
+                    }
                 }
             });
 
@@ -664,21 +668,30 @@ class PetManager extends Service {
                     'data'         => $data,
                     'evolution_id' => $evolution?->id,
                 ]);
-            }
 
-            // Create drop information for the pet, if relevant
-            if ($pet->hasDrops) {
-                $drop = PetDrop::create([
-                    'drop_id'         => $user_pet->pet->dropData->id,
-                    'user_pet_id'     => $user_pet->id,
-                    'parameters'      => $user_pet->pet->dropData->rollParameters(),
-                    'drops_available' => 0,
-                    'next_day'        => Carbon::now()
-                        ->add($user_pet->pet->dropData->frequency, $user_pet->pet->dropData->interval)
-                        ->startOf($user_pet->pet->dropData->interval),
-                ]);
-                if (!$drop) {
-                    throw new \Exception('Failed to create drop.');
+                // Create drop information for the pet, if relevant
+                if ($variant ? ($user_pet->pet->hasDrops || $user_pet->pet->parent->hasDrops) : $user_pet->pet->hasDrops) {
+                    if ($variant) {
+                        $variantDrops = $variant->hasDrops ?? null;
+                    } else {
+                        $variantDrops = null;
+                    }
+                    $nextDayFrequency = $variant ? ($variantDrops ? $user_pet->pet->dropData->frequency : $user_pet->pet->parent->dropData->frequency) : $user_pet->pet->dropData->frequency;
+                    $nextDayInterval = $variant ? ($variantDrops ? $user_pet->pet->dropData->interval : $user_pet->pet->parent->dropData->interval) : $user_pet->pet->dropData->interval;
+
+                    $drop = PetDrop::create([
+                        'drop_id'         => $variant ? ($variantDrops ? $user_pet->pet->dropData->id : $user_pet->pet->parent->dropData->id) : $user_pet->pet->dropData->id,
+                        'user_pet_id'     => $user_pet->id,
+                        'parameters'      => $variant ? ($variantDrops ? $user_pet->pet->dropData->rollParameters() : $user_pet->pet->parent->dropData->rollParameters()) : $user_pet->pet->dropData->rollParameters(),
+                        'drops_available' => 0,
+                        'next_day'        => Carbon::now()
+                            ->add($nextDayFrequency, $nextDayInterval)
+                            ->startOf($nextDayInterval),
+                    ]);
+
+                    if (!$drop) {
+                        throw new \Exception('Failed to create drop.');
+                    }
                 }
             }
 
