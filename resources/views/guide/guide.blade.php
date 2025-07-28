@@ -141,7 +141,6 @@
                         <div class="d-flex mt-3">
                             <div style="flex: 2;">
                                 <h3 class="mb-0">Character Visibility</h3>
-                                    <div class="text-secondary">Options<span class="mx-1"> · </span>Additive</div>
                                         <div class="parsed-text mt-3 pl-2 py-2" style="border-left: 4px solid lightgrey">How much the character is visible in the artwork</div>
                                         <h4 class="mt-2">Options:</h4>
                             </div>
@@ -168,7 +167,6 @@
                         <div class="d-flex mt-3">
                             <div style="flex: 2;">
                                 <h3 class="mb-0">Finish Level</h3>
-                                    <div class="text-secondary">Options<span class="mx-1"> · </span>Additive</div>
                                         <div class="parsed-text mt-3 pl-2 py-2" style="border-left: 4px solid lightgrey">How refined the lines are</div>
                                             <h4 class="mt-2">Options:</h4>
                             </div>
@@ -191,7 +189,6 @@
                         <div class="d-flex mt-3">
                             <div style="flex: 2;">
                                 <h3 class="mb-0">Number of Characters</h3>
-                                    <div class="text-secondary">Options<span class="mx-1"> · </span>Additive</div>
                                     <div class="parsed-text mt-3 pl-2 py-2" style="border-left: 4px solid lightgrey">How many characters are in the piece</div>
                                         <h4 class="mt-2">Options:</h4>
                             </div>
@@ -218,7 +215,6 @@
                         <div class="d-flex mt-3">
                             <div style="flex: 2;">
                                 <h3 class="mb-0">Shading</h3>
-                                    <div class="text-secondary">Options<span class="mx-1"> · </span>Additive</div>
                                     <div class="parsed-text mt-3 pl-2 py-2" style="border-left: 4px solid lightgrey">Level of shading</div>
                                         <h4 class="mt-2">Options:</h4>
                             </div>
@@ -241,7 +237,6 @@
                         <div class="d-flex mt-3">
                             <div style="flex: 2;">
                                 <h3 class="mb-0">Background</h3>
-                                <div class="text-secondary">Options<span class="mx-1"> · </span>Additive</div>
                                 <div class="parsed-text mt-3 pl-2 py-2" style="border-left: 4px solid lightgrey">Level of background detail</div>
                                     <h4 class="mt-2">Options:</h4>
                             </div>
@@ -263,7 +258,7 @@
 
                         <div class="d-flex mt-3">
                             <div style="flex: 2;">
-                                <h3 class="mb-0">Color</h3><div class="text-secondary">Options<span class="mx-1"> · </span>Additive</div>
+                                <h3 class="mb-0">Color</h3>
                                 <div class="parsed-text mt-3 pl-2 py-2" style="border-left: 4px solid lightgrey">Level of Color in the piece</div>
                                     <h4 class="mt-2">Options:</h4>
                             </div>
@@ -286,7 +281,6 @@
                         <div class="d-flex mt-3">
                             <div style="flex: 2;">
                                 <h3 class="mb-0">Other</h3>
-                                <div class="text-secondary">Options<span class="mx-1"> · </span>Additive</div>
                                 <div class="parsed-text mt-3 pl-2 py-2" style="border-left: 4px solid lightgrey">Only use if any of these apply, if not leave blank.</div>
                                     <h4 class="mt-2">Options:</h4>
                             </div>
