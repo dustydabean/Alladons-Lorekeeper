@@ -135,13 +135,15 @@
             </ol>
             <div class="spoiler text-left">
                 <div class="spoiler-toggle">Art Criteria Guide</div>
-                    <div class="spoiler-text" style="padding-bottom: 10px;">
+                    <div class="spoiler-text">
+                        <h6 style="font-size: 1.2rem;">Here is a breakdown for the Art Criteria and descriptions for what qualify!</h6>
+                        <hr>
                         <div class="d-flex mt-3">
                             <div style="flex: 2;">
-                                <h2 class="mb-0">Character Visibility</h2>
+                                <h3 class="mb-0">Character Visibility</h3>
                                     <div class="text-secondary">Options<span class="mx-1"> · </span>Additive</div>
                                         <div class="parsed-text mt-3 pl-2 py-2" style="border-left: 4px solid lightgrey">How much the character is visible in the artwork</div>
-                                        <h3 class="mt-2">Options:</h3>
+                                        <h4 class="mt-2">Options:</h4>
                             </div>
                         </div>
                         <div class="pl-4">
@@ -165,10 +167,10 @@
 
                         <div class="d-flex mt-3">
                             <div style="flex: 2;">
-                                <h2 class="mb-0">Finish Level</h2>
+                                <h3 class="mb-0">Finish Level</h3>
                                     <div class="text-secondary">Options<span class="mx-1"> · </span>Additive</div>
                                         <div class="parsed-text mt-3 pl-2 py-2" style="border-left: 4px solid lightgrey">How refined the lines are</div>
-                                            <h3 class="mt-2">Options:</h3>
+                                            <h4 class="mt-2">Options:</h4>
                             </div>
                         </div>
                         <div class="pl-4">
@@ -188,10 +190,10 @@
 
                         <div class="d-flex mt-3">
                             <div style="flex: 2;">
-                                <h2 class="mb-0">Number of Characters</h2>
+                                <h3 class="mb-0">Number of Characters</h3>
                                     <div class="text-secondary">Options<span class="mx-1"> · </span>Additive</div>
                                     <div class="parsed-text mt-3 pl-2 py-2" style="border-left: 4px solid lightgrey">How many characters are in the piece</div>
-                                        <h3 class="mt-2">Options:</h3>
+                                        <h4 class="mt-2">Options:</h4>
                             </div>
                         </div>
                         <div class="pl-4">
@@ -215,10 +217,10 @@
 
                         <div class="d-flex mt-3">
                             <div style="flex: 2;">
-                                <h2 class="mb-0">Shading</h2>
+                                <h3 class="mb-0">Shading</h3>
                                     <div class="text-secondary">Options<span class="mx-1"> · </span>Additive</div>
                                     <div class="parsed-text mt-3 pl-2 py-2" style="border-left: 4px solid lightgrey">Level of shading</div>
-                                        <h3 class="mt-2">Options:</h3>
+                                        <h4 class="mt-2">Options:</h4>
                             </div>
                         </div>
                         <div class="pl-4">
@@ -238,10 +240,10 @@
 
                         <div class="d-flex mt-3">
                             <div style="flex: 2;">
-                                <h2 class="mb-0">Background</h2>
+                                <h3 class="mb-0">Background</h3>
                                 <div class="text-secondary">Options<span class="mx-1"> · </span>Additive</div>
                                 <div class="parsed-text mt-3 pl-2 py-2" style="border-left: 4px solid lightgrey">Level of background detail</div>
-                                    <h3 class="mt-2">Options:</h3>
+                                    <h4 class="mt-2">Options:</h4>
                             </div>
                         </div>
                         <div class="pl-4">
@@ -261,9 +263,9 @@
 
                         <div class="d-flex mt-3">
                             <div style="flex: 2;">
-                                <h2 class="mb-0">Color</h2><div class="text-secondary">Options<span class="mx-1"> · </span>Additive</div>
+                                <h3 class="mb-0">Color</h3><div class="text-secondary">Options<span class="mx-1"> · </span>Additive</div>
                                 <div class="parsed-text mt-3 pl-2 py-2" style="border-left: 4px solid lightgrey">Level of Color in the piece</div>
-                                    <h3 class="mt-2">Options:</h3>
+                                    <h4 class="mt-2">Options:</h4>
                             </div>
                         </div>
                         <div class="pl-4">
@@ -283,10 +285,10 @@
 
                         <div class="d-flex mt-3">
                             <div style="flex: 2;">
-                                <h2 class="mb-0">Other</h2>
+                                <h3 class="mb-0">Other</h3>
                                 <div class="text-secondary">Options<span class="mx-1"> · </span>Additive</div>
                                 <div class="parsed-text mt-3 pl-2 py-2" style="border-left: 4px solid lightgrey">Only use if any of these apply, if not leave blank.</div>
-                                    <h3 class="mt-2">Options:</h3>
+                                    <h4 class="mt-2">Options:</h4>
                             </div>
                         </div>
                         <div class="pl-4">
@@ -347,14 +349,6 @@
                         <h6>If you need to transfer a don with someone who is not registered on the site or you are not on the site, then please open a ticket with proof of transfer (DM agreement) so we can change the ownership.</h6>
                     </li>
                 </ul>
-        </div>
-    </div>
-</div>
-
-<div class="spoiler text-left">
-    <div class="spoiler-toggle">Art Criteria</div>
-        <div class="spoiler-text" style="padding-bottom: 10px;">
-            <p>Test Text</p>
         </div>
     </div>
 </div>
