@@ -298,11 +298,11 @@
                             <div class="parsed-text pl-2 ml-3 py-2" style="border-left: 4px solid lightgrey">The piece is animated or a GIF</div>
                         </div>
                     </div>
-                </div>
             </div>
         </div>
     </div>
 </div>
+
 <br/>
 <div class="card" id="accordion" style="font-family: Roboto Condensed, serif; background-color: #1e1e1f5c;">
     <div class="card-header" style="font-size: 1.4rem; text-align: center; font-weight: bold; text-transform: uppercase; background-color: #15161896;">
