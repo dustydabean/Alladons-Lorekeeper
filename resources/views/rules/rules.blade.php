@@ -7,13 +7,11 @@
 @section('content')
 {!! breadcrumbs(['rules' => 'rules']) !!}
 
-<br>
-
 <div class="container-fluid">
 	<div class="row">
 		<div class="col-md-12">
 			<div class="tabbable" id="tabs-494493">
-				<ul class="nav nav-tabs">
+				<ul class="nav nav-tabs" style="border-color: #26282a;">
 					<li class="nav-item">
 						<a class="nav-link active show" href="#tab1" data-toggle="tab">Section 1: SPECIES RULES</a>
 					</li>
