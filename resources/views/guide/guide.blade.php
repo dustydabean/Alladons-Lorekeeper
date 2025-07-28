@@ -7,7 +7,14 @@
 @section('content')
 {!! breadcrumbs(['Guide' => 'guide']) !!}
 
-<div class="card mx-auto" id="accordion" style="font-family: Roboto Condensed, serif; background-color: #1e1e1f5c; max-width: 800px;">
+<h2 style="text-align: center; text-transform: uppercase;">Guides</div>
+<h6 style="text-align: center;">
+    Here are all the Guides on how to do things organized by topic!
+</h6>
+
+<br/>
+
+<div class="card" id="accordion" style="font-family: Roboto Condensed, serif; background-color: #1e1e1f5c;">
     <div class="card-header" style="font-size: 1.4rem; text-align: center; font-weight: bold; text-transform: uppercase; background-color: #15161896;">
         <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
             Prompts
@@ -126,7 +133,7 @@
     </div>
 </div>
 <br/>
-<div class="card mx-auto" id="accordion" style="font-family: Roboto Condensed, serif; background-color: #1e1e1f5c; max-width: 800px;">
+<div class="card" id="accordion" style="font-family: Roboto Condensed, serif; background-color: #1e1e1f5c;">
     <div class="card-header" style="font-size: 1.4rem; text-align: center; font-weight: bold; text-transform: uppercase; background-color: #15161896;">
         <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">
             Transfers and Trades
