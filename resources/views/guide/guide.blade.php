@@ -7,14 +7,14 @@
 @section('content')
 {!! breadcrumbs(['Guide' => 'guide']) !!}
 
-<div class="card" id="accordion" style="font-family: Roboto Condensed, serif;">
-    <div class="card-header" style="font-size: 1.4rem; text-align: center; font-weight: bold; text-transform: uppercase;">
+<div class="card" id="accordion" style="font-family: Roboto Condensed, serif; background-color: #1e1e1f5c;">
+    <div class="card-header" style="font-size: 1.4rem; text-align: center; font-weight: bold; text-transform: uppercase; background-color: #15161896;">
         <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
             Prompts
         </a>
     </div>
     <div class="card-collapse collapse in" id="collapse1">
-        <div class="card-body" style="font-size: 1.0rem;">
+        <div class="card-body" style="font-size: 1.0rem; color: #ffffff;">
             <h6 style="font-size: 1.0rem;">Prompts are a fun and creative way to interact with the community and on our site! You can either submit art or writing to any of the prompts we have!</h6>
             <p> </p>
             <h5>RULES</h5>
@@ -126,14 +126,14 @@
     </div>
 </div>
 <br/>
-<div class="card" id="accordion" style="font-family: Roboto Condensed, serif;">
-    <div class="card-header" style="font-size: 1.4rem; text-align: center; font-weight: bold; text-transform: uppercase;">
+<div class="card" id="accordion" style="font-family: Roboto Condensed, serif; background-color: #1e1e1f5c;">
+    <div class="card-header" style="font-size: 1.4rem; text-align: center; font-weight: bold; text-transform: uppercase; background-color: #15161896;">
         <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">
             Transfers and Trades
         </a>
     </div>
     <div class="card-collapse collapse in" id="collapse2">
-        <div class="card-body" style="font-size: 1.0rem;">
+        <div class="card-body" style="font-size: 1.0rem; color: #ffffff;">
             <h6 style="font-size: 1.0rem;">There are 2 ways to send ownership of an Alladon to another user: Transfers and Trades.</h6>
                 <ul>
                     <li>
