@@ -7,10 +7,14 @@
 @section('content')
 {!! breadcrumbs(['Guide' => 'guide']) !!}
 
-<h2 style="text-align: center; text-transform: uppercase;">Guides</div>
-<h6 style="text-align: center;">
-    Here are all the Guides on how to do things organized by topic!
-</h6>
+<div class="card" style="font-family: Roboto Condensed, serif; background-color: #1e1e1f5c;">
+    <div class="card-header" style="background-color: #15161896;">
+        <h2 style="text-align: center; text-transform: uppercase; font-weight: bold;">Guides</h2>
+    </div>
+    <div class="card-body" style="text-align: center; color: #ffffff;">
+        <h5>Here are all the Guides on how to do things organized by topic!</h5>
+    </div>
+</div>
 
 <br/>
 
