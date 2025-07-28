@@ -371,8 +371,6 @@ class WorldController extends Controller {
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getItem($id) {
-        $categories = ItemCategory::orderBy('sort', 'DESC')->get();
-
         if (!Auth::check() || !Auth::user()->isStaff) {
             $item = Item::where('id', $id)->released()->first();
         } else {
@@ -392,7 +390,6 @@ class WorldController extends Controller {
             'imageUrl'    => $item->imageUrl,
             'name'        => $item->displayName,
             'description' => $item->parsed_description,
-            'categories'  => $categories->keyBy('id'),
             'shops'       => Shop::where(function ($shops) {
                 if (Auth::check() && Auth::user()->isStaff) {
                     return $shops;
