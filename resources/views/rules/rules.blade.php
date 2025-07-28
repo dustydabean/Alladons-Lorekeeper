@@ -11,33 +11,33 @@
 	<div class="row">
 		<div class="col-md-12">
 			<div class="tabbable" id="tabs-494493">
-				<ul class="nav nav-tabs" style="border-color: #26282a;">
+				<ul class="nav nav-tabs">
 					<li class="nav-item">
-						<a class="nav-link active show" href="#tab1" data-toggle="tab">Section 1: SPECIES RULES</a>
+						<a class="nav-link active show" href="#tab1" data-toggle="tab" style="border-color: #26282a;">Section 1: SPECIES RULES</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" href="#tab2" data-toggle="tab">Section 2: POUCHER RULES</a>
+						<a class="nav-link" href="#tab2" data-toggle="tab" style="border-color: #26282a;">Section 2: POUCHER RULES</a>
 					</li>
                     <li class="nav-item">
-						<a class="nav-link" href="#tab3" data-toggle="tab">Section 3: DISCORD/CONDUCT</a>
+						<a class="nav-link" href="#tab3" data-toggle="tab" style="border-color: #26282a;">Section 3: DISCORD/CONDUCT</a>
 					</li>
                     <li class="nav-item">
-						<a class="nav-link" href="#tab4" data-toggle="tab">Section 4: BREEDING SLOTS</a>
+						<a class="nav-link" href="#tab4" data-toggle="tab" style="border-color: #26282a;">Section 4: BREEDING SLOTS</a>
 					</li>
                     <li class="nav-item">
-						<a class="nav-link" href="#tab5" data-toggle="tab">Section 5: OFFICIAL ARTISTS</a>
+						<a class="nav-link" href="#tab5" data-toggle="tab" style="border-color: #26282a;">Section 5: OFFICIAL ARTISTS</a>
 					</li>
                     <li class="nav-item">
-						<a class="nav-link" href="#tab6" data-toggle="tab">Section 6: DEREGISTERED DESIGNS</a>
+						<a class="nav-link" href="#tab6" data-toggle="tab" style="border-color: #26282a;">Section 6: DEREGISTERED DESIGNS</a>
 					</li>
                     <li class="nav-item">
-						<a class="nav-link" href="#tab7" data-toggle="tab">Section 7: LORE RULES</a>
+						<a class="nav-link" href="#tab7" data-toggle="tab" style="border-color: #26282a;">Section 7: LORE RULES</a>
 					</li>
                     <li class="nav-item">
-						<a class="nav-link" href="#tab8" data-toggle="tab">Section 8: AUCTION/ADOPT</a>
+						<a class="nav-link" href="#tab8" data-toggle="tab" style="border-color: #26282a;">Section 8: AUCTION/ADOPT</a>
 					</li>
                     <li class="nav-item">
-						<a class="nav-link" href="#tab9" data-toggle="tab">Section 9: FURDONS</a>
+						<a class="nav-link" href="#tab9" data-toggle="tab" style="border-color: #26282a;">Section 9: FURDONS</a>
 					</li>
 				</ul>
 				<div class="tab-content">
