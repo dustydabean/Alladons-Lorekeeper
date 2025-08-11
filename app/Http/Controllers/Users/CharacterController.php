@@ -181,15 +181,15 @@ class CharacterController extends Controller {
 
         switch ($type) {
             case 'incoming':
-                $transfers->where('recipient_id', $user->id)->active();
+                $transfers->where('recipient_id', $user->id)->active()->sortNewest();
                 break;
             case 'outgoing':
-                $transfers->where('sender_id', $user->id)->active();
+                $transfers->where('sender_id', $user->id)->active()->sortNewest();
                 break;
             case 'completed':
                 $transfers->where(function ($query) use ($user) {
                     $query->where('recipient_id', $user->id)->orWhere('sender_id', $user->id);
-                })->completed();
+                })->completed()->sortNewest();
                 break;
         }
 
