@@ -179,7 +179,7 @@
                         @if (config('lorekeeper.extensions.traits_by_category'))
                             <div>
                                 @php
-                                    $traitgroup = $image->features()->get()->groupBy('feature_category_id');
+                                    $traitgroup = $image->features()->orderBy('name')->get()->sortBy('feature.code_id', SORT_NATURAL)->groupBy('feature_category_id');
                                 @endphp
                                 @if ($image->features()->count())
                                     @foreach ($traitgroup as $key => $group)

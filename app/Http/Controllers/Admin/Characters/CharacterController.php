@@ -994,9 +994,12 @@ class CharacterController extends Controller {
                 case 'oldest':
                     $transfers->sortNewest(true);
                     break;
+                default:
+                    $transfers->sortNewest();
+                    break;
             }
         } else {
-            $transfers->sortNewest(true);
+            $transfers->sortNewest();
         }
 
         if ($type == 'completed') {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Facades\Settings;
 use App\Models\Character\Character;
 use App\Models\Character\CharacterCategory;
+use App\Models\Character\CharacterGeneration;
 use App\Models\Character\CharacterImage;
 use App\Models\Character\CharacterTransformation as Transformation;
 use App\Models\Character\Sublist;
@@ -203,6 +204,7 @@ class BrowseController extends Controller {
             'sublists'        => Sublist::orderBy('sort', 'DESC')->get(),
             'userOptions'     => User::query()->orderBy('name')->pluck('name', 'id')->toArray(),
             'contentWarnings' => $contentWarnings,
+            'generations' => CharacterGeneration::orderBy('name', 'ASC')->pluck('name', 'id')->toArray(),
         ]);
     }
 
@@ -286,6 +288,7 @@ class BrowseController extends Controller {
             'sublists'        => Sublist::orderBy('sort', 'DESC')->get(),
             'userOptions'     => User::query()->orderBy('name')->pluck('name', 'id')->toArray(),
             'contentWarnings' => $contentWarnings,
+            'generations' => CharacterGeneration::orderBy('name', 'ASC')->pluck('name', 'id')->toArray(),
         ]);
     }
 
@@ -373,8 +376,14 @@ class BrowseController extends Controller {
         if ($request->get('rarity_id')) {
             $query->where('rarity_id', $request->get('rarity_id'));
         }
-        if (!$isMyo && $request->get('character_category_id')) {
-            $query->where('character_category_id', $request->get('character_category_id'));
+        if (!$isMyo) {
+            if ($request->get('character_category_id')) {
+                $query->where('character_category_id', $request->get('character_category_id'));
+            }
+
+            if ($request->get('generation_id')) {
+                $query->where('generation_id', $request->get('generation_id'));
+            }
         }
         if ($request->get('pedigree_id')) {
             $query->where('pedigree_id', $request->get('pedigree_id'));
@@ -428,6 +437,10 @@ class BrowseController extends Controller {
         if ($request->get('has_transformation')) {
             $imageQuery->whereNotNull('transformation_id');
         }
+        if ($request->get('gender') && ($request->get('gender') != 'Any')) {
+            $imageQuery->where('sex', $request->get('gender'));
+        }
+
 
         // Searching on image properties
         if ($request->get('species_id')) {
