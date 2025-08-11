@@ -51,6 +51,17 @@
                         'If turned on, the search will only return characters with the exact nickname entered. If turned off, the search will return characters with the nickname entered as a partial match.',
                     ) !!}</span>
                 </div>
+                @if (!$isMyo)
+                    <hr>
+                    <div class="masterlist-search-field">
+                        {!! Form::label('gender', 'Search Gender: ') !!}
+                        {!! Form::select('gender', ['Any' => 'Any', 'Male' => 'Male', 'Female' => 'Female'], Request::get('gender'), ['class' => 'form-control mr-2']) !!}
+                    </div>
+                    <div class="masterlist-search-field">
+                        {!! Form::label('generation_id', 'Search Generation: ') !!}
+                        {!! Form::select('generation_id', $generations, Request::get('generation_id'), ['class' => 'form-control selectize', 'placeholder' => 'Select Generation']) !!}
+                    </div>
+                @endif
                 <!--<hr />-->
                 <!--<div class="masterlist-search-field">
                     {!! Form::label('transformation_id', 'Ref Type: ') !!}
