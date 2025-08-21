@@ -2,10 +2,17 @@
     <div class="card-header">
         <ul class="nav nav-tabs card-header-tabs">
             @foreach ($stock as $categoryId => $categoryItems)
+                @php
+                    $visible = '';
+                    // check if method exists
+                    if (isset($categoryItems->first()->category) && method_exists($categoryItems->first()->category, 'is_visible') && !$categoryItems->first()->category->is_visible) {
+                        $visible = '<i class="fas fa-eye-slash mr-1"></i>';
+                    }
+                @endphp
                 <li class="nav-item">
                     <a class="nav-link {{ $loop->first ? 'active' : '' }}" id="categoryTab-{{ isset($categoryItems->first()->category) ? $categoryItems->first()->category->id : 'misc' }}" data-toggle="tab"
                         href="#category-{{ isset($categoryItems->first()->category) ? $categoryItems->first()->category->id : 'misc' }}" role="tab">
-                        {!! isset($categoryItems->first()->category) ? $categoryItems->first()->category->name : 'Miscellaneous' !!}
+                        {!! (isset($categoryItems->first()->item_category_id) && $categoryItems->first()->item_category_id) ? $visible . $categoryItems->first()->category->name : 'Miscellaneous' !!}
                     </a>
                 </li>
             @endforeach
