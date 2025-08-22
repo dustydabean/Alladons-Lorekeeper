@@ -695,7 +695,7 @@ tr.outflow {
     max-width: 100%;
 }
 .inventory-stack-name, .inventory-character-name {
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(0,0,0,0.7);
 }
 .inventory-stack-name:hover, .inventory-character-name:hover {
     color: inherit;

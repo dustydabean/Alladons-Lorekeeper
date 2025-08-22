@@ -66,7 +66,7 @@
                                             </div>
                                         @endif
                                         <div>
-                                            <a href="#" class="inventory-stack inventory-stack-name"><strong>{{ $item->name }}</strong></a>
+                                            <a href="#" class="inventory-stack" style="color: #ffffffb3;"><strong>{{ $item->name }}</strong></a>
                                             <div><strong>Cost: </strong> {!! $shop->displayStockCosts($item->pivot->id) ?? 'Free' !!}</div>
                                             @if ($item->pivot->is_limited_stock)
                                                 <div>Stock: {{ $item->pivot->quantity }}</div>
