@@ -48,6 +48,12 @@
                 @if ($transfersQueue)
                     Additionally, a mod will need to approve of the transfer. There may be a wait until the recipient receives the character, even after they have confirmed the transfer.
                 @endif
+                <br>
+                <br>
+                <strong>If this is for a SALE, please include the value they were sold for! If it is a GIFT just state Gift! But if this is a TRADE, please do the Trade <u><a href="https://www.alladons.club/trades/open">HERE</a></u> and not via Transfers!</strong>
+                <br>
+                <br>
+                <u><a href="https://www.alladons.club/guide">More info found here in our Guide under Transfers and Trades</a></u>
             </p>
             @if ($cooldown)
                 <p>

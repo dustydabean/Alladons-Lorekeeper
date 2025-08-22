@@ -36,6 +36,9 @@
                         <li class="list-group-item"><a href="{{ url('world/universaltraits') }}">Mutation Index</a></li>
                     @endif
                     <li class="list-group-item"><a href="{{ url('world/trait-categories') }}">Mutation Categories</a></li>
+                    @if (config('lorekeeper.extensions.visual_trait_index.enable_all_trait_index'))
+                        <li class="list-group-item"><a href="{{ url('world/all-traits-index') }}">All Traits Index</a></li>
+                    @endif
                     <li class="list-group-item"><a href="{{ url('world/rarities') }}">Mutation Points</a></li>
                     <!--<li class="list-group-item"><a href="{{ url('world/genetics') }}">Genetics</a></li>-->
                     <!--<li class="list-group-item"><a href="{{ url('world/traits') }}">All Mutations</a></li>-->

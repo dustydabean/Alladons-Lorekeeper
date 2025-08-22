@@ -14,8 +14,8 @@
             ],
             toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | spoiler-add spoiler-remove | removeformat | codeeditor',
             content_css: [
-                '{{ asset('css/app.css') }}',
-                '{{ asset('css/lorekeeper.css') }}',
+                '{{ asset('css/app.css?v=' . filemtime(public_path('css/app.css'))) }}',
+                '{{ asset('css/lorekeeper.css?v=' . filemtime(public_path('css/lorekeeper.css'))) }}',
                 '{{ asset('css/custom.css') }}',
                 '{{ asset($theme?->cssUrl) }}',
                 '{{ asset($conditionalTheme?->cssUrl) }}',
@@ -23,9 +23,9 @@
                 '{{ asset('css/all.min.css') }}' //fontawesome
             ],
             content_style: `
-            {{ str_replace(['<style>', '</style>'], '', view('layouts.editable_theme', ['theme' => $theme])) }}
-            {{ str_replace(['<style>', '</style>'], '', view('layouts.editable_theme', ['theme' => $conditionalTheme])) }}
-            {{ str_replace(['<style>', '</style>'], '', view('layouts.editable_theme', ['theme' => $decoratorTheme])) }}
+            {!! isset($theme) && $theme ? str_replace(['<style>', '</style>'], '', view('layouts.editable_theme', ['theme' => $theme])) : '' !!}
+            {!! isset($conditionalTheme) && $conditionalTheme ? str_replace(['<style>', '</style>'], '', view('layouts.editable_theme', ['theme' => $conditionalTheme])) : '' !!}
+            {!! isset($decoratorTheme) && $decoratorTheme ? str_replace(['<style>', '</style>'], '', view('layouts.editable_theme', ['theme' => $decoratorTheme])) : '' !!}
             `,
             spoiler_caption: 'Toggle Spoiler',
             target_list: false

@@ -85,7 +85,6 @@ class Character extends Model {
         'sale_value'            => 'nullable',
         'image'                 => 'required|mimes:jpeg,jpg,gif,png|max:20000',
         'thumbnail'             => 'nullable|mimes:jpeg,jpg,gif,png|max:20000',
-        'owner_url'             => 'url|nullable',
         'poucher_code'          => 'nullable|between:1,20',
         'nickname'              => 'nullable',
         'pedigree_id'           => 'nullable',
@@ -391,6 +390,10 @@ class Character extends Model {
         if ($this->user_id) {
             return $this->user->displayName;
         } else {
+            if (!filter_var($this->owner_url, FILTER_VALIDATE_URL)) {
+                return '<i class="fas fa-external-link-alt mx-1" data-toggle="tooltip" title="This character is owned by an off-site user."></i>' . $this->owner_url;
+            }
+
             return prettyProfileLink($this->owner_url);
         }
     }
@@ -572,7 +575,7 @@ class Character extends Model {
         }
 
         // Check if the owner has an account and update the character's user ID for them.
-        $owner = checkAlias($this->owner_url);
+        $owner = checkAlias($this->owner_url, false);
         if (is_object($owner)) {
             $this->user_id = $owner->id;
             $this->owner_url = null;

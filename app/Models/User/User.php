@@ -47,7 +47,7 @@ class User extends Authenticatable implements MustVerifyEmail {
      * @var array
      */
     protected $fillable = [
-        'name', 'alias', 'rank_id', 'email', 'email_verified_at', 'password', 'is_news_unread', 'is_dev_logs_unread', 'is_banned', 'has_alias', 'avatar', 'is_sales_unread', 'birthday',
+        'name', 'alias', 'rank_id', 'email', 'email_verified_at', 'password', 'is_news_unread', 'is_dev_logs_unread', 'is_banned', 'has_alias', 'avatar', 'is_sales_unread', 'birthday', 'theme_id', 'decorator_theme_id',
         'is_deactivated', 'deactivater_id', 'is_raffles_unread', 'content_warning_visibility',
     ];
 
@@ -119,24 +119,21 @@ class User extends Authenticatable implements MustVerifyEmail {
      * Get user theme.
      */
     public function theme() {
-        return $this->belongsTo('App\Models\Theme');
+        return $this->belongsTo(Theme::class);
     }
 
     /**
      * Get user decorator .
      */
     public function decoratorTheme() {
-        return $this->belongsTo('App\Models\Theme', 'decorator_theme_id');
+        return $this->belongsTo(Theme::class, 'decorator_theme_id');
     }
 
     /**
      * Get User Granted Themes.
      */
-    /**
-     * Get user theme.
-     */
     public function themes() {
-        return $this->belongsToMany('App\Models\Theme', 'user_themes')->withPivot('id');
+        return $this->belongsToMany(Theme::class, 'user_themes')->withPivot('id');
     }
 
     /**

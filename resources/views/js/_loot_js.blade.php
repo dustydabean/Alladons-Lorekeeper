@@ -15,8 +15,8 @@
         @if (isset($showRecipes) && $showRecipes)
             var $recipeSelect = $('#lootRowData').find('.recipe-select');
         @endif
-        @if(isset($showThemes) && $showThemes)
-            else if (val == 'Theme') $clone = $themeSelect.clone();
+        @if (isset($showThemes) && $showThemes)
+            var $themeSelect = $('#lootRowData').find('.theme-select');
         @endif
 
         $('#lootTableBody .selectize').selectize();

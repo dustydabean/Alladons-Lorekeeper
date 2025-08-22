@@ -350,14 +350,14 @@ class CharacterManager extends Service {
             if (isset($data['user_id']) && $data['user_id']) {
                 $recipient = User::find($data['user_id']);
             } elseif (isset($data['owner_url']) && $data['owner_url']) {
-                $recipient = checkAlias($data['owner_url']);
+                $recipient = checkAlias($data['owner_url'], false);
             }
 
             if (is_object($recipient)) {
                 $recipientId = $recipient->id;
                 $data['user_id'] = $recipient->id;
             } else {
-                $url = $recipient;
+                $url = $data['owner_url'];
             }
 
             // Create character
@@ -1052,7 +1052,7 @@ class CharacterManager extends Service {
             $oldUrl = $slot->user_url ? prettyProfileLink($slot->user_url) : null;
             $recipientUrl = null;
             if (isset($data['user_url']) && $data['user_url']) {
-                $recipientUrl = checkAlias($data['user_url']);
+                $recipientUrl = checkAlias($data['user_url'], false);
 
                 if (is_object($recipientUrl)) {
                     $data['user_id'] = $recipientUrl->id;
@@ -2318,7 +2318,12 @@ class CharacterManager extends Service {
                 }
             } elseif (isset($data['recipient_url']) && $data['recipient_url']) {
                 // Transferring to an off-site user
-                $recipient = checkAlias($data['recipient_url']);
+                if (!filter_var($data['recipient_url'], FILTER_VALIDATE_URL)) {
+                    $recipient = $data['recipient_url'];
+                } else {
+                    $recipient = checkAlias($data['recipient_url'], false);
+                }
+
                 if (!$this->logAdminAction($user, 'Admin Transfer', 'Admin transferred '.$character->displayname.' to '.$recipient)) {
                     throw new \Exception('Failed to log admin action.');
                 }

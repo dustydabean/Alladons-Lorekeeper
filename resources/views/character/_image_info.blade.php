@@ -179,7 +179,7 @@
                         @if (config('lorekeeper.extensions.traits_by_category'))
                             <div>
                                 @php
-                                    $traitgroup = $image->features()->get()->groupBy('feature_category_id');
+                                    $traitgroup = $image->features()->orderBy('name')->get()->sortBy('feature.code_id', SORT_NATURAL)->groupBy('feature_category_id');
                                 @endphp
                                 @if ($image->features()->count())
                                     @foreach ($traitgroup as $key => $group)
@@ -221,10 +221,10 @@
                         @endif
                     </div>
 
-                    <div class="mb-3">
+                    <!--<div class="mb-3">
                         <div><h5>Genes</h5></div>
                         @include('character._genomes', ['character' => $character])
-                    </div>
+                    </div>-->
 
                     <div>
                         <strong>Uploaded:</strong> {!! pretty_date($image->created_at) !!}

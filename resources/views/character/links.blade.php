@@ -66,7 +66,7 @@
                                             </div>
                                             {!! Form::close() !!}
                                         @else
-                                            <div class="m-4">{{ $link->info }}</div>
+                                            <div class="m-4">{{ $link->getRelationshipInfo($character->id) }}</div>
                                         @endif
                                     </div>
                                     @if (Auth::check() && ($character->user_id == Auth::user()->id || Auth::user()->hasPower('manage_characters')))

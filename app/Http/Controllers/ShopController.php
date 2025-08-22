@@ -121,7 +121,7 @@ class ShopController extends Controller {
         return view('shops.shop', [
             'shop'       => $shop,
             'stocks'     => $stocks,
-            'shops'      => Shop::where('is_active', 1)->orderBy('sort', 'DESC')->get(),
+            'shops'      => Shop::where('is_active', 1)->where('is_hidden', 0)->orderBy('sort', 'DESC')->get(),
         ]);
     }
 
@@ -161,7 +161,7 @@ class ShopController extends Controller {
             $userOwned = $service->getUserOwned($stock, Auth::user());
         }
 
-        if ($shop->use_coupons) {
+        if (Auth::check() && $shop->use_coupons) {
             $couponId = ItemTag::where('tag', 'coupon')->where('is_active', 1); // Removed get()
             $itemIds = $couponId->pluck('item_id'); // Could be combined with above
             // get rid of any itemIds that are not in allowed_coupons
