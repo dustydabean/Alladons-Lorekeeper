@@ -65,9 +65,15 @@
             @endif
         </div>
         <div class="text-right {{ $prompt->limit ? 'text-danger' : '' }}">
-        <p>{{ $prompt->limit ? 'You can submit this prompt '.$prompt->limit.' time(s)' : 'You can submit this prompt an unlimited number of times' }}
-        {{ $prompt->limit_period ? ' per '.strtolower($prompt->limit_period) : '' }}
-        {{ $prompt->limit_character ? ' per character' : ''}}.</p>
+            <p>
+                {{ $prompt->limit ? 'You can submit this prompt '.$prompt->limit.' time(s)' : 'You can submit this prompt an unlimited number of times' }}
+                {{ $prompt->limit_period ? ' per '.strtolower($prompt->limit_period) : '' }}
+                {{ $prompt->limit_character ? ' per character' : ''}}.
+                @if ($prompt->checkLimitCooldown(Auth::user() ?? null))
+                    <br>
+                    This prompt's limit will reset {!! pretty_date($prompt->checkLimitCooldown(Auth::user() ?? null)) !!}.
+                @endif
+            </p>
         </div>
         <div class="text-right">
             @if ($prompt->end_at && $prompt->end_at->isPast())
