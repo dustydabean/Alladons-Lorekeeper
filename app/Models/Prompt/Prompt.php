@@ -320,4 +320,31 @@ class Prompt extends Model {
     public function getAdminPowerAttribute() {
         return 'edit_data';
     }
+
+    /**
+     * Checks and returns the cooldown time
+     * for a limited prompt.
+     *
+     * @return string
+     */
+    public function checkLimitCooldown($user) {
+        if (!$this->limit || !$this->limit_period || !$user) {
+            return null;
+        }
+
+        switch ($this->limit_period) {
+            case 'Hour':
+                return Carbon::now()->addHour()->startOfHour();
+            case 'Day':
+                return Carbon::now()->addDay()->startOfDay();
+            case 'Week':
+                return Carbon::now()->addWeek()->startOfWeek();
+            case 'Month':
+                return Carbon::now()->addMonth()->startOfMonth();
+            case 'Year':
+                return Carbon::now()->addYear()->startOfYear();
+            default:
+                return null;
+        }
+    }
 }
