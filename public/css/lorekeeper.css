@@ -831,7 +831,6 @@ tr.accountbound {
 .user-items .category-selected .inventory-item, .user-characters .category-selected .character-item {
     background-color: #777777;
     border-radius: .25rem;
-    background-clip: content-box;
 }
 .user-items .category-selected.select-item-row {
     background-color: rgba(0,0,0,0.05);
