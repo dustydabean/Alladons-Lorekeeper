@@ -25,6 +25,7 @@
 
         <h3 class="mt-5 text-center">Regular Registration</h3>
         <h6 class="mt-1 text-center">In order to be verified after making your account, you have to open an Admin Ticket in our <u><a href="https://discord.gg/aEueQGUnZh">Official Discord Server</a></u>! This is required in order to own Alladons!</h6>
+        </br>
         <form method="POST" action="{{ route('register') }}">
             @csrf
             @honeypot
