@@ -36,7 +36,7 @@
             </h3>
         @endif
         @if (Settings::get('shop_type'))
-            @include('shops._tab', ['items' => $stock, 'shop' => $shop])
+            @include('shops._tab', ['items' => $stock, 'shop' => $shop, 'type' => $type])
         @else
             @foreach ($stock as $categoryId => $categoryItems)
                 @php
@@ -48,7 +48,7 @@
                 @endphp
                 <div class="card mb-3 inventory-category">
                     <h5 class="card-header inventory-header">
-                        {!! (isset($categoryItems->first()->item_category_id) && $categoryItems->first()->item_category_id) ? '<a href="' . $categoryItems->first()->category->searchUrl . '">' . $visible . $categoryItems->first()->category->name . '</a>' : 'Miscellaneous' !!}
+                        {!! (isset($categoryItems->first()->category) && $categoryItems->first()->category) ? '<a href="' . $categoryItems->first()->category->searchUrl . '">' . $visible . $categoryItems->first()->category->name . '</a>' : 'Miscellaneous' !!}
                     </h5>
                     <div class="card-body inventory-body">
                         @foreach ($categoryItems->chunk(4) as $chunk)

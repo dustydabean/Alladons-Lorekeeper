@@ -135,12 +135,23 @@ class ShopController extends Controller {
         if (!$stock) {
             abort(404);
         }
+        if (isset($stock->stock_type) && $stock->stock_type) {
+            $model = getAssetModelString(strtolower($stock->stock_type));
+            $items = $model::orderBy('name');
+            if (strtolower($stock->stock_type) == 'pet') {
+                $items = $items->get()->pluck('fullName', 'id');
+            } else {
+                $items = $items->pluck('name', 'id');
+            }
+        } else {
+            $items = Item::orderBy('name')->pluck('name', 'id');
+        }
 
         return view('admin.shops._stock_modal', [
             'shop'       => $stock->shop,
             'stock'      => $stock,
             'currencies' => Currency::orderBy('name')->pluck('name', 'id'),
-            'items'      => Item::orderBy('name')->pluck('name', 'id'),
+            'items'      => $items,
         ]);
     }
 
@@ -154,10 +165,15 @@ class ShopController extends Controller {
         }
         // get base modal from type using asset helper
         $model = getAssetModelString(strtolower($type));
-        log::info([$model, $type]);
+        $items = $model::orderBy('name');
+        if (strtolower($type) == 'pet') {
+            $items = $items->get()->pluck('fullName', 'id');
+        } else {
+            $items = $items->pluck('name', 'id');
+        }
 
         return view('admin.shops._stock_item', [
-            'items' => $model::orderBy('name')->pluck('name', 'id'),
+            'items' => $items,
         ]);
     }
 
