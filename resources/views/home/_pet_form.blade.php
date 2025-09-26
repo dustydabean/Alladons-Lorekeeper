@@ -91,22 +91,34 @@
             @endif
         </p>
         <div class="form-group">
-            {!! Form::select('stack_id', $splices, null, ['class' => 'form-control', 'placeholder' => 'Select Item']) !!}
+            {!! Form::select('stack_id', $splices, null, ['class' => 'form-control splice-item-select', 'placeholder' => 'Select Splice Item']) !!}
         </div>
-        <div class="form-group">
-            @php
-                $variants = ['0' => 'Default'] + ($pet->pet->isVariant ?
-                    $pet->pet->parent->variants()->pluck('name', 'id')->toArray() :
-                    $pet->pet->variants()->pluck('name', 'id')->toArray()
-                );
-            @endphp
-            {!! Form::select('variant_id', $variants, $pet->variant_id, ['class' => 'form-control']) !!}
+        <div class="form-group splice-item-dropdown">
+            {!! Form::select('variant_id', [], null, ['class' => 'form-control', 'placeholder' => 'Select a splice item first...', 'disabled']) !!}
         </div>
         <div class="text-right">
             {!! Form::submit('Change Variant', ['class' => 'btn btn-primary']) !!}
         </div>
         {!! Form::close() !!}
     </li>
+
+    <script>
+        $(".splice-item-select").change(function() {
+            var $stack = $('.splice-item-select').val();
+
+            if ($stack.length) {
+                $.ajax({
+                    type: "GET",
+                    url: "{{ url('pets/variant-check') }}/" + $stack + "/" + {{ $pet->id }},
+                    dataType: "text"
+                }).done(function(res) {
+                    $(".splice-item-dropdown").html(res);
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    alert("AJAX call failed: " + textStatus + ", " + errorThrown);
+                });
+            }
+        });
+    </script>
 @endif
 
 @if ($user->hasPower('edit_inventories'))
@@ -117,10 +129,17 @@
         {!! Form::hidden('is_staff', 1) !!}
         <div class="form-group">
             @php
-                $variants = ['0' => 'Default'] + ($pet->pet->isVariant ?
-                    $pet->pet->parent->variants()->pluck('name', 'id')->toArray() :
-                    $pet->pet->variants()->pluck('name', 'id')->toArray()
-                );
+                $variants =
+                    ['0' => 'Default'] +
+                    ($pet->pet->isVariant
+                        ? $pet->pet->parent
+                            ->variants()
+                            ->pluck('name', 'id')
+                            ->toArray()
+                        : $pet->pet
+                            ->variants()
+                            ->pluck('name', 'id')
+                            ->toArray());
             @endphp
             {!! Form::select('variant_id', $variants, $pet->variant_id, ['class' => 'form-control mt-2']) !!}
         </div>

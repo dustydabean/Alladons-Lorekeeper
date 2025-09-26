@@ -78,7 +78,7 @@
     </div>
 @endif
 
-<div class="card-deck mb-4 profile-assets" style="clear:both;">
+<div class="card-deck mb-3 profile-assets" style="clear:both;">
     <div class="card profile-currencies profile-assets-card">
         <div class="card-body text-center">
             <h5 class="card-title">Bank</h5>
@@ -115,7 +115,7 @@
     </div>
 </div>
 
-<div class="card mb-3">
+<div class="card mb-4">
     <div class="card-body text-center">
         <h5 class="card-title">Pets</h5>
         <div class="card-body">
@@ -123,7 +123,7 @@
                 <div class="row no-gutters justify-content-center">
                     @foreach ($pets as $pet)
                         <div class="col-md-3 col-6 p-1 profile-inventory-item">
-                            <a href="{{ url($user->url . '/pets') }}" class="inventory-stack">
+                            <div>
                                 @if ($pet->has_image)
                                     <img class="img-fluid" src="{{ $pet->image($pet->pivot->id) }}" data-toggle="tooltip" title="{{ $pet->pivot->pet_name ? $pet->pivot->pet_name . ' (' . $pet->name . ')' : $pet->name }}"
                                     alt="{{ $pet->pivot->pet_name ? $pet->pivot->pet_name . ' (' . $pet->name . ')' : $pet->name }}" />
@@ -135,7 +135,7 @@
                                         {{ $pet->name }}
                                     </p>
                                 @endif
-                            </a>
+                            </div>
                         </div>
                     @endforeach
                 </div>

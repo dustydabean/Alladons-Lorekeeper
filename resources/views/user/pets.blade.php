@@ -89,7 +89,7 @@
         <div class="logs-table-body">
             @foreach ($logs as $log)
                 <div class="logs-table-row">
-                    @include('user._pet_log_row', ['log' => $log, 'user' => $user])
+                    @include('user._pet_log_row', ['log' => $log, 'owner' => $user])
                 </div>
             @endforeach
         </div>

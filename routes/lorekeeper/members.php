@@ -84,6 +84,7 @@ Route::group(['prefix' => 'pets', 'namespace' => 'Users'], function () {
     Route::get('view/{id}', 'PetController@getPetPage')->where('id', '[0-9]+');
     Route::post('view/{id}/edit', 'PetController@postEditPetProfile')->where('id', '[0-9]+');
 
+    Route::get('variant-check/{stack_id}/{pet_id}', 'PetController@getVariantOptions');
     Route::post('bond/{id}', 'PetController@postBond');
 });
 

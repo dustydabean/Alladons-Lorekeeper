@@ -477,7 +477,7 @@ class PetManager extends Service {
                 if (!$tag) {
                     throw new \Exception('Item is not a splice.');
                 }
-                if ($tag->data['variant_ids'] && !in_array($id, $tag->data['variant_ids'])) {
+                if ((isset($tag->data['variant_ids']) && $tag->data['splice_type'] == 'by_variants') && !in_array($id, $tag->data['variant_ids'])) {
                     throw new \Exception('Item is not a splice for this variant.');
                 }
                 if ($id == $pet->pet_id) {
@@ -491,9 +491,8 @@ class PetManager extends Service {
                     }
                     throw new \Exception('Could not debit item.');
                 }
-            }
-            else {
-                $this->logAdminAction($pet->user, 'Pet Evolution Changed', json_encode(['pet' => $pet->id, 'evolution' => $id]));
+            } else {
+                $this->logAdminAction($pet->user, 'Pet Variant Changed', json_encode(['pet' => $pet->id, 'variant' => $id]));
             }
 
             $pet->pet_id = $id == 'default' ? null : $id;
