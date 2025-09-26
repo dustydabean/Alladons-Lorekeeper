@@ -18,9 +18,13 @@
                         @foreach ($pet->dropData->rewards(true)[strtolower($label)] as $reward)
                             <tr>
                                 <td>
-                                    @php $reward_object = $reward->rewardable_type::find($reward->rewardable_id); @endphp
+                                    @php
+                                        $reward_object = $reward->rewardable_type::find($reward->rewardable_id);
+                                    @endphp
                                     @if ($reward_object->has_image)
-                                        <img class="img-fluid" style="max-height: 10em;" src="{{ $reward_object->imageUrl }}"><br />
+                                        <div>
+                                            <img class="img-fluid" style="max-height: 10em;" src="{{ $reward_object->imageUrl }}">
+                                        </div>
                                     @endif
                                     {!! $reward_object->displayName !!}
                                 </td>

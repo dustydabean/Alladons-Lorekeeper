@@ -36,7 +36,7 @@
                                 @if (!$pet->is_visible)
                                     <i class="fas fa-eye-slash mr-1"></i>
                                 @endif
-                                {!! $pet->name !!}
+                                {!! $pet->fullName !!}
                             </h1>
                             <div class="row">
                                 @if (isset($pet->category) && $pet->category)
@@ -102,12 +102,23 @@
                                         <div class="col-md text-center">
                                             <a href="{{ $variant->idUrl }}">
                                                 @if ($variant->has_image)
-                                                    <img src="{{ $variant->imageUrl }}" class="img-fluid" style="max-height: 10em;" alt="{{ $variant->name }}" data-toggle="tooltip" data-title="{{ $variant->name }}" style="max-height:200px" />
+                                                    <div style="max-height: 200px;">
+                                                        <img src="{{ $variant->imageUrl }}" style="max-height: 100%; width: auto;" alt="{{ $variant->name }}" data-toggle="tooltip" data-title="{{ $variant->name }}" />
+                                                    </div>
+                                                    <div class="badge badge-primary">
+                                                        {{ $variant->name }}
+                                                    </div>
                                                 @else
-                                                    {{ $variant->name }}
+                                                    <div class="badge badge-primary">
+                                                        {{ $variant->name }}
+                                                    </div>
                                                 @endif
-                                                <p class="mb-0">{!! $variant->description !!}</p>
                                             </a>
+                                            @if (isset($variant->description) && $variant->description)
+                                                <div class="card p-1 mt-1">
+                                                    {!! $variant->description !!}
+                                                </div>
+                                            @endif
                                         </div>
                                     @endforeach
                                     </div>

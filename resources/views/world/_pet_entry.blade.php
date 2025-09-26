@@ -14,7 +14,7 @@
             @endif
             {!! $pet->displayName !!}
             @if ($pet->category)
-                <i class="h4"> ({!! $pet->category->displayName !!})</i>
+                <span class="h4">({!! $pet->category->displayName !!})</span>
             @endif
             <a href="{{ $pet->idUrl }}" class="world-entry-search text-muted">
                 <i class="fas fa-search"></i>
@@ -54,17 +54,16 @@
                         @foreach ($pet->variants->chunk(4) as $chunk)
                             <div class="row">
                                 @foreach ($chunk as $variant)
-                                <div class="col-md text-center">
-                                    <a href="{{ $variant->idUrl }}">
-                                        @if ($variant->has_image)
-                                            <img src="{{ $variant->imageUrl }}" class="img-fluid" style="max-height: 10em;" alt="{{ $variant->name }}" data-toggle="tooltip" data-title="{{ $variant->name }}" style="max-height:200px" />
-                                        @else
-                                            {{ $variant->name }}
-                                        @endif
-                                        <p class="mb-0">{!! $variant->description !!}</p>
-                                    </a>
-                                </div>
-                            @endforeach
+                                    <div class="col-md text-center">
+                                        <a href="{{ $variant->idUrl }}">
+                                            @if ($variant->has_image)
+                                                <img src="{{ $variant->imageUrl }}" class="img-fluid" style="max-height: 150px;" alt="{{ $variant->name }}" data-toggle="tooltip" data-title="{{ $variant->name }}" />
+                                            @else
+                                                {{ $variant->name }}
+                                            @endif
+                                        </a>
+                                    </div>
+                                @endforeach
                             </div>
                         @endforeach
                     </div>
