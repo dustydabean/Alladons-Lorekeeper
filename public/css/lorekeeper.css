@@ -829,7 +829,7 @@ tr.accountbound {
     cursor: not-allowed;
 }
 .user-items .category-selected .inventory-item, .user-characters .category-selected .character-item {
-    background-color: rgba(0,0,0,0.05);
+    background-color: #777777;
     border-radius: .25rem;
 }
 .user-items .category-selected.select-item-row {

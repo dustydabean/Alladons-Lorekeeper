@@ -147,21 +147,17 @@
                         </div>
                         <div class="pl-4">
                             <div class="d-flex align-items-center">
-                                <h5 class="mt-2">100%</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">2 DD</span></div>
+                                <h5 class="mt-2">100%</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">Full character is visible</span></div>
                             </div>
-                            <div class="parsed-text pl-2 ml-3 py-2" style="border-left: 4px solid lightgrey">Full character is visible</div>
                             <div class="d-flex align-items-center">
-                                <h5 class="mt-2">75%</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">1 DD</span></div>
+                                <h5 class="mt-2">75%</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">Most of the character is visible</span></div>
                             </div>
-                            <div class="parsed-text pl-2 ml-3 py-2" style="border-left: 4px solid lightgrey">Most of the character is visible</div>
                             <div class="d-flex align-items-center">
-                                <h5 class="mt-2">50%</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">1 DD</span></div>
+                                <h5 class="mt-2">50%</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">Halfbody visible</span></div>
                             </div>
-                            <div class="parsed-text pl-2 ml-3 py-2" style="border-left: 4px solid lightgrey">Halfbody visible</div>
                             <div class="d-flex align-items-center">
-                                <h5 class="mt-2">25%</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">0 DD</span></div>
+                                <h5 class="mt-2">25%</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">Headshot/bust visible</span></div>
                             </div>
-                            <div class="parsed-text pl-2 ml-3 py-2" style="border-left: 4px solid lightgrey">Headshot/bust visible</div>
                         </div>
 
                         <div class="d-flex mt-3">
@@ -173,17 +169,14 @@
                         </div>
                         <div class="pl-4">
                             <div class="d-flex align-items-center">
-                                <h5 class="mt-2">Rough Sketch</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">0 DD</span></div>
+                                <h5 class="mt-2">Rough Sketch</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">Lines are sketched</span></div>
                             </div>
-                            <div class="parsed-text pl-2 ml-3 py-2" style="border-left: 4px solid lightgrey">Lines are sketched</div>
                             <div class="d-flex align-items-center">
-                                <h5 class="mt-2">Clean Sketch</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">1 DD</span></div>
+                                <h5 class="mt-2">Clean Sketch</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">Sketch is cleaned up, not messy</span></div>
                             </div>
-                            <div class="parsed-text pl-2 ml-3 py-2" style="border-left: 4px solid lightgrey">Sketch is cleaned up, not messy</div>
                             <div class="d-flex align-items-center">
-                                <h5 class="mt-2">Lined / Lineless</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">2 DD</span></div>
+                                <h5 class="mt-2">Lined / Lineless</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">Art is lined or a lineless work</span></div>
                             </div>
-                            <div class="parsed-text pl-2 ml-3 py-2" style="border-left: 4px solid lightgrey">Art is lined or a lineless work</div>
                         </div>
 
                         <div class="d-flex mt-3">
@@ -195,21 +188,17 @@
                         </div>
                         <div class="pl-4">
                             <div class="d-flex align-items-center">
-                                <h5 class="mt-2">1 character</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">0 DD</span></div>
+                                <h5 class="mt-2">1 character</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">Only 1 character</span></div>
                             </div>
-                            <div class="parsed-text pl-2 ml-3 py-2" style="border-left: 4px solid lightgrey">Only 1 character</div>
                             <div class="d-flex align-items-center">
-                                <h5 class="mt-2">2 characters</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">1 DD</span></div>
+                                <h5 class="mt-2">2 characters</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">2 characters, both with the same level of visibility</span></div>
                             </div>
-                            <div class="parsed-text pl-2 ml-3 py-2" style="border-left: 4px solid lightgrey">2 characters, both with the same level of visibility</div>
                             <div class="d-flex align-items-center">
-                                <h5 class="mt-2">3 characters</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">2 DD</span></div>
+                                <h5 class="mt-2">3 characters</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">3 characters, all with the same level of visibility</span></div>
                             </div>
-                            <div class="parsed-text pl-2 ml-3 py-2" style="border-left: 4px solid lightgrey">3 characters, all with the same level of visibility</div>
                             <div class="d-flex align-items-center">
-                                <h5 class="mt-2">4+ characters</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">3 DD</span></div>
+                                <h5 class="mt-2">4+ characters</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">4 or more characters, with the same level of visibility</span></div>
                             </div>
-                            <div class="parsed-text pl-2 ml-3 py-2" style="border-left: 4px solid lightgrey">4 or more characters, with the same level of visibility</div>
                         </div>
 
                         <div class="d-flex mt-3">
@@ -221,17 +210,14 @@
                         </div>
                         <div class="pl-4">
                             <div class="d-flex align-items-center">
-                                <h5 class="mt-2">Unshaded</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">0 DD</span></div>
+                                <h5 class="mt-2">Unshaded</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">No shading</span></div>
                             </div>
-                            <div class="parsed-text pl-2 ml-3 py-2" style="border-left: 4px solid lightgrey">No shading</div>
                             <div class="d-flex align-items-center">
-                                <h5 class="mt-2">Minimal Shading</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">1 DD</span></div>
+                                <h5 class="mt-2">Minimal Shading</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">Few areas with simple shading</span></div>
                             </div>
-                            <div class="parsed-text pl-2 ml-3 py-2" style="border-left: 4px solid lightgrey">Few areas with simple shading</div>
                             <div class="d-flex align-items-center">
-                                <h5 class="mt-2">Fully Shaded</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">2 DD</span></div>
+                                <h5 class="mt-2">Fully Shaded</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">Most of the character is shaded</span></div>
                             </div>
-                            <div class="parsed-text pl-2 ml-3 py-2" style="border-left: 4px solid lightgrey">Most of the character is shaded</div>
                         </div>
 
                         <div class="d-flex mt-3">
@@ -243,17 +229,14 @@
                         </div>
                         <div class="pl-4">
                             <div class="d-flex align-items-center">
-                                <h5 class="mt-2">No / Simple / Photo BG</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">0 DD</span></div>
+                                <h5 class="mt-2">No / Simple / Photo BG</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">No BG, simple BG, or photo used for BG</span></div>
                             </div>
-                            <div class="parsed-text pl-2 ml-3 py-2" style="border-left: 4px solid lightgrey">No BG, simple BG, or photo used for BG</div>
                             <div class="d-flex align-items-center">
-                                <h5 class="mt-2">Pattern / Abstract</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">1 DD</span></div>
+                                <h5 class="mt-2">Pattern / Abstract</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">Self made pattern or as simple BG</span></div>
                             </div>
-                            <div class="parsed-text pl-2 ml-3 py-2" style="border-left: 4px solid lightgrey">Self made pattern or as simple BG</div>
                             <div class="d-flex align-items-center">
-                                <h5 class="mt-2">Detailed BG</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">2 DD</span></div>
+                                <h5 class="mt-2">Detailed BG</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">BG depicts a scene or is complex</span></div>
                             </div>
-                            <div class="parsed-text pl-2 ml-3 py-2" style="border-left: 4px solid lightgrey">BG depicts a scene or is complex</div>
                         </div>
 
                         <div class="d-flex mt-3">
@@ -265,17 +248,14 @@
                         </div>
                         <div class="pl-4">
                             <div class="d-flex align-items-center">
-                                <h5 class="mt-2">No Color</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">0 DD</span></div>
+                                <h5 class="mt-2">No Color</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">Piece has no color, only black/white</span></div>
                             </div>
-                            <div class="parsed-text pl-2 ml-3 py-2" style="border-left: 4px solid lightgrey">Piece has no color, only black/white</div>
                             <div class="d-flex align-items-center">
-                                <h5 class="mt-2">Rough Color</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">1 DD</span></div>
+                                <h5 class="mt-2">Rough Color</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">Messy color blocked in, simplified markings</span></div>
                             </div>
-                            <div class="parsed-text pl-2 ml-3 py-2" style="border-left: 4px solid lightgrey">Messy color blocked in, simplified markings</div>
                             <div class="d-flex align-items-center">
-                                <h5 class="mt-2">Clean Color</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">2 DD</span></div>
+                                <h5 class="mt-2">Clean Color</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">Neatly colored, all markings present</span></div>
                             </div>
-                            <div class="parsed-text pl-2 ml-3 py-2" style="border-left: 4px solid lightgrey">Neatly colored, all markings present</div>
                         </div>
 
                         <div class="d-flex mt-3">
@@ -287,9 +267,8 @@
                         </div>
                         <div class="pl-4">
                             <div class="d-flex align-items-center">
-                                <h5 class="mt-2">Animated</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">3 DD</span></div>
+                                <h5 class="mt-2">Animated</h5><span class="mx-1"> · </span><div class="text-secondary"><span class="display-currency">The piece is animated or a GIF</span></div>
                             </div>
-                            <div class="parsed-text pl-2 ml-3 py-2" style="border-left: 4px solid lightgrey">The piece is animated or a GIF</div>
                         </div>
                     </div>
             </div>
