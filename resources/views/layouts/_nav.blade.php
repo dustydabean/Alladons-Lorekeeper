@@ -67,7 +67,7 @@
                     <a class="nav-link" href="{{ url('gallery') }}"> Gallery</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url('guide') }}"> Guides</a>
+                    <a class="nav-link" href="{{ url('guides') }}"> Guides</a>
                 </li>
 
                 <li class="nav-item dropdown">
