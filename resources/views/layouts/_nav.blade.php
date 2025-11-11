@@ -77,6 +77,9 @@
                     </a>
 
                     <div class="dropdown-menu" aria-labelledby="loreDropdown">
+                        <a class="dropdown-item" href="{{ url('rules') }}">
+                            Rules
+                        </a>
                         <a class="dropdown-item" href="{{ url('faq') }}">
                             FAQ
                         </a>
@@ -88,9 +91,6 @@
                         </a>
                         <a class="dropdown-item" href="{{ url('reports/bug-reports') }}">
                             Bug Reports
-                        </a>
-                        <a class="dropdown-item" href="{{ url('rules') }}">
-                            Rules
                         </a>
                     </div>
             </ul>
