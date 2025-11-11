@@ -256,6 +256,8 @@ Route::get('rules', 'RulesController@getRules');
 
 Route::get('guide', 'GuideController@getguide');
 
+Route::get('guides', 'GuidesController@getguides');
+
 /**************************************************************************************************
     Search Function
 **************************************************************************************************/
