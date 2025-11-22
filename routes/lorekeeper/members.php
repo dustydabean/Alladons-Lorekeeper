@@ -394,3 +394,13 @@ Route::group(['prefix' => 'criteria'], function () {
 Route::group(['prefix' => 'limits'], function () {
     Route::post('unlock/{id}', 'Admin\LimitController@postUnlockLimits');
 });
+
+/**************************************************************************************************	
+    Foraging
+**************************************************************************************************/	
+Route::group(['prefix' => 'foraging', 'namespace' => 'Users'], function() {
+    Route::get('/', 'ForagingController@getIndex');
+    Route::post('/forage/{id}', 'ForagingController@postForage');
+    Route::post('/claim', 'ForagingController@postClaim');
+    Route::post('edit/character', 'ForagingController@postEditCharacter');
+});
