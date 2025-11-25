@@ -67,7 +67,7 @@
                     <a class="nav-link" href="{{ url('gallery') }}"> Gallery</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url('guide') }}"> Guides</a>
+                    <a class="nav-link" href="{{ url('info/guides') }}"> Guides</a>
                 </li>
 
                 <li class="nav-item dropdown">
@@ -77,6 +77,9 @@
                     </a>
 
                     <div class="dropdown-menu" aria-labelledby="loreDropdown">
+                        <a class="dropdown-item" href="{{ url('rules') }}">
+                            Rules
+                        </a>
                         <a class="dropdown-item" href="{{ url('faq') }}">
                             FAQ
                         </a>
@@ -88,9 +91,6 @@
                         </a>
                         <a class="dropdown-item" href="{{ url('reports/bug-reports') }}">
                             Bug Reports
-                        </a>
-                        <a class="dropdown-item" href="{{ url('rules') }}">
-                            Rules
                         </a>
                     </div>
             </ul>
@@ -205,6 +205,9 @@
                                 </a>
                                 <a class="dropdown-item" href="{{ url(__('dailies.dailies')) }}">
                                     {{ __('dailies.dailies') }}
+                                </a>
+                                <a class="dropdown-item" href="{{ url('foraging') }}">
+                                    Foraging
                                 </a>
                                 <a class="dropdown-item" href="{{ url('crafting') }}">
                                     Crafting

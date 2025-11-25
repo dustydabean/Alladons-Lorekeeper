@@ -256,6 +256,12 @@ Route::get('rules', 'RulesController@getRules');
 
 Route::get('guide', 'GuideController@getguide');
 
+Route::get('guides', 'GuidesController@getguides');
+
+Route::get('time' , function() {
+    return date('Y-m-d H:i:s');
+});
+
 /**************************************************************************************************
     Search Function
 **************************************************************************************************/

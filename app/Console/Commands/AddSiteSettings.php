@@ -41,6 +41,8 @@ class AddSiteSettings extends Command {
 
         $this->addSiteSetting('is_registration_open', 1, '0: Registration closed, 1: Registration open. When registration is closed, invitation keys can still be used to register.');
 
+        $this->addSiteSetting('foraging_stamina', 1, 'How many times a user can forage a day.');
+
         $this->addSiteSetting('transfer_cooldown', 0, 'Number of days to add to the cooldown timer when a character is transferred.');
 
         $this->addSiteSetting('open_transfers_queue', 0, '0: Character transfers do not need mod approval, 1: Transfers must be approved by a mod.');
