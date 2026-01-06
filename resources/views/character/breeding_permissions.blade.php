@@ -22,7 +22,7 @@
 <p>
     This character has {{ $character->availableBreedingPermissions }} out of {{ $character->maxBreedingPermissions }} maximum breeding permission{{ $character->availableBreedingPermissions == 1 ? '' : 's' }} available to create.
     @if(Auth::check() && (Auth::user()->id == $character->user_id))
-        As the character's owner, you may create and grant to other users up to this many breeding permissions. Other users may see how many of this character's breeding permissions have been created and/or used, and to whom they have been granted.
+        As the character's owner, you may create and grant to other users up to this many breeding permissions. Other users may see how many of this character's breeding permissions have been created and/or used, and to whom they have been granted. Please review the <u><a href="https://www.alladons.club/info/guides#collapse3">Fullfur Slots Guide</a></u> when making Breeding Perms. The slot type will ALWAYS be "Full Fur" and include the Stud Slot value in the notes (List the £ value, Gift, or Traded).
     @else
         Only the character's owner can create and distribute breeding permissions.
     @endif
