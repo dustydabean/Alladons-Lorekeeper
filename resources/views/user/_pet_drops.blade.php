@@ -3,7 +3,7 @@
 @endif
 
 <h4>
-    Collect {{ isset($pet->drops->dropData->name) ? $pet->drops->dropData->name . 's' : 'Drops' }} ({{ $pet->drops->parameters }})
+    Collect {{ isset($pet->drops->dropData->name) ? $pet->drops->dropData->name . 's' : 'Drops' }} ({{ ucwords(str_replace('_', ' ', $pet->drops->parameters)) }})
     {!! add_help('Your pet\'s type is ' . $pet->drops->parameters . '.<br>You can view all pet drops on the ' . $pet->pet->name . ' pet page.') !!}
     @if (Auth::check() && Auth::user()->hasPower('edit_inventories'))
         <a href="#" class="float-right btn btn-outline-info btn-sm" id="paramsButton" data-toggle="modal" data-target="#paramsModal"><i class="fas fa-cog"></i> Admin</a>
@@ -18,7 +18,9 @@
 
 <div class="card card-body mb-4 collapse" id="drops">
     @if ($pet->availableDrops)
-        <p>This pet produces these {{ isset($pet->drops->dropData->name) ? strtolower($pet->drops->dropData->name) . 's' : 'drops' }}, based on their type of pet and/or variant:</p>
+        <p>
+            This pet produces these {{ isset($pet->drops->dropData->name) ? strtolower($pet->drops->dropData->name) . 's' : 'drops' }}, based on their type of pet and/or variant:
+        </p>
         <table class="table table-sm category-table">
             <thead>
                 <tr>
@@ -27,8 +29,8 @@
                 </tr>
             </thead>
             <tbody>
-                @if (isset($pet->availableDrops->rewards(true)[strtolower($pet->drops->parameters)]))
-                    @foreach ($pet->availabledrops->rewards(true)[strtolower($pet->drops->parameters)] as $reward)
+                @if (isset($pet->availableDrops->rewards(true)[strtolower(str_replace(' ', '_', $pet->drops->parameters))]))
+                    @foreach ($pet->availabledrops->rewards(true)[strtolower(str_replace(' ', '_', $pet->drops->parameters))] as $reward)
                         <tr>
                             @php $reward_object = $reward->rewardable_type::find($reward->rewardable_id); @endphp
                             <td>

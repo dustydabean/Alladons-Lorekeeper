@@ -100,8 +100,8 @@ class PetDropData extends Model {
      * @return array
      */
     public function getParameterArrayAttribute() {
-        foreach ($this->parameters as $parameter=>$weight) {
-            $paramArray[$parameter] = $parameter;
+        foreach ($this->parameters as $parameter => $weight) {
+            $paramArray[strtolower(str_replace(' ', '_', $parameter))] = ucwords(str_replace('_', ' ', $parameter));
         }
 
         return $paramArray;

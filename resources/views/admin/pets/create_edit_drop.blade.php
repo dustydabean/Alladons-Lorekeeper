@@ -41,17 +41,17 @@
     <table class="table table-sm" id="lootTable">
         <thead>
             <tr>
-                <th width="25%">Group Label {!! add_help('This label will be shown to users.') !!}</th>
+                <th width="25%">Group Label {!! add_help('This label will be shown to users. <b>Spaces are automatically replaces with underscores.</b>') !!}</th>
                 <th width="10%">Weight {!! add_help('A higher weight means a pet is more likely to be randomly assigned to this group upon creation. Weights have to be integers above 0 (round positive number, no decimals) and do not have to add up to be a particular number.') !!}</th>
                 <th width="20%">Chance {!! add_help('Calculated automatically based on the weights. A pet has this percentage of chance of being automatically sorted into this group.') !!}</th>
                 <th width="10%"></th>
             </tr>
         </thead>
         <tbody id="lootTableBody">
-            @if ($drop->id)
+            @if ($drop->id && $drop->parameters)
                 @foreach ($drop->parameters as $label => $weight)
                     <tr class="drop-row">
-                        <td class="drop-row-select">{!! Form::text('label[]', $label, ['class' => 'form-control']) !!}</td>
+                        <td class="drop-row-select">{!! Form::text('label[]', strtolower(str_replace(' ', '_', $label)), ['class' => 'form-control']) !!}</td>
                         <td class="drop-row-weight">{!! Form::number('weight[]', $weight, ['class' => 'form-control drop-weight']) !!}</td>
                         <td class="drop-row-chance"></td>
                         <td class="text-right"><a href="#" class="btn btn-danger remove-drop-button">Remove</a></td>
@@ -69,7 +69,7 @@
     </div>
     <div class="form-group">
         {!! Form::label('cap', 'Drop Cap (Optional)', ['class' => 'form-label ml-3']) !!} {!! add_help('How many batches of drops are allowed to accumulate. Either set to 0 or unset to allow unlimited accumulation.') !!}
-        {!! Form::number('cap', $drop->id ?? null, ['class' => 'form-control mr-2', 'placeholder' => 'Drop Cap']) !!}
+        {!! Form::number('cap', $drop->id ? $drop->cap : null, ['class' => 'form-control mr-2', 'placeholder' => 'Drop Cap']) !!}
     </div>
     <div class="form-group">
         {!! Form::checkbox('is_active', 1, $drop->id ? $drop->isActive : 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
@@ -87,7 +87,6 @@
     <div class="text-right">
         {!! Form::submit($drop->id ? 'Edit' : 'Create', ['class' => 'btn btn-primary']) !!}
     </div>
-
     {!! Form::close() !!}
 
     @if ($drop->id)

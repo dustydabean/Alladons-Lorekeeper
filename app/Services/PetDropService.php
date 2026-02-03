@@ -42,7 +42,7 @@ class PetDropService extends Service {
             // Collect parameter data and encode it
             $paramData = [];
             foreach ($data['label'] as $key => $param) {
-                $paramData[$param] = $data['weight'][$key];
+                $paramData[strtolower(str_replace(' ', '_', $param))] = $data['weight'][$key];
             }
 
             $drop = PetDropData::create([
@@ -86,7 +86,7 @@ class PetDropService extends Service {
             // Collect parameter data and encode it
             $paramData = [];
             foreach ($data['label'] as $key => $param) {
-                $paramData[$param] = $data['weight'][$key];
+                $paramData[strtolower(str_replace(' ', '_', $param))] = $data['weight'][$key];
             }
 
             $data['rewardable_type'] ??= null;
@@ -170,8 +170,8 @@ class PetDropService extends Service {
             // these are handled like prompt rewards
             for ($i = 0; $i < $pet->drops->drops_available; $i++) {
                 foreach ($pet->availableDrops as $drops) {
-                    if (isset($drops->rewards(false)[strtolower($pet->drops->parameters)])) {
-                        foreach ($drops->rewards(false)[strtolower($pet->drops->parameters)] as $data) {
+                    if (isset($drops->rewards(false)[strtolower(str_replace(' ', '_', $pet->drops->parameters))])) {
+                        foreach ($drops->rewards(false)[strtolower(str_replace(' ', '_', $pet->drops->parameters))] as $data) {
                             // get object
                             switch ($data->rewardable_type) {
                                 case 'Item':

@@ -5,8 +5,8 @@
     <h2 class="h4">Base Pet Drops</h2>
     <div class="card p-3">
         @foreach ($pet->dropData->parameters as $label => $group)
-            @if (isset($pet->dropData->rewards(true)[strtolower($label)]))
-                <h4 class="h5">{{ $label }}</h4>
+            @if (isset($pet->dropData->rewards(true)[strtolower(str_replace(' ', '_', $label))]))
+                <h4 class="h5">{{ ucwords(str_replace('_', ' ', $label)) }}</h4>
                 <table class="table table-sm category-table">
                     <thead>
                         <tr>
@@ -15,7 +15,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($pet->dropData->rewards(true)[strtolower($label)] as $reward)
+                        @foreach ($pet->dropData->rewards(true)[strtolower(str_replace(' ', '_', $label))] as $reward)
                             <tr>
                                 <td>
                                     @php
@@ -28,7 +28,9 @@
                                     @endif
                                     {!! $reward_object->displayName !!}
                                 </td>
-                                <td>Between {{ $reward->min_quantity . ' and ' . $reward->max_quantity }}</td>
+                                <td>
+                                    Between {{ $reward->min_quantity . ' and ' . $reward->max_quantity }}
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>
