@@ -41,6 +41,8 @@ class Kernel extends ConsoleKernel {
             ->daily();
         $schedule->command('reset-foraging')
             ->daily();
+        $schedule->command('level-up-pets')
+            ->daily()->at('00:05');
     }
 
     /**

@@ -254,7 +254,6 @@ class PetManager extends Service {
         try {
             // First, check user permissions
             $user = Auth::user();
-
             // Next, why bother checking everything else if the pet isn't even attachable? Also determine if the user is the owner of the pet/has permission to attach.
             if (!$pet) {
                 throw new \Exception('An invalid pet was selected.');
@@ -305,16 +304,22 @@ class PetManager extends Service {
                     throw new \Exception('This character has reached the limit of this pet.');
                 }
             }
+            $logType = 'Companion Attached';
+            $logData = 'Attached '.$pet->fullName.' to '.$character->displayName.' on '.Carbon::now()->format('M j, Y H:i');
 
             // If all checks pass, attach the pet to the character.
             $pet->character_id = $character->id;
             $pet->attached_at = Carbon::now();
             $pet->save();
+            if (!$this->createLog($user->id, null, $pet->id, $logType, $logData, $pet->pet->id ?? null, 1)) {
+                throw new \Exception('Failed to create companion attachment log.');
+            }
 
-            if (!$pet->level && config('lorekeeper.pet_bonding_enabled')) {
+            if (!$pet->level) {
                 $pet->level()->create([
                     'bonding_level'   => 0,
                     'bonding'         => 0,
+                    'next_level_at' => Carbon::now()->addYear()->startOfDay(),
                 ]);
             }
 
@@ -345,9 +350,15 @@ class PetManager extends Service {
             if ($pet->user_id != $user->id && !$user->hasPower('edit_inventories')) {
                 throw new \Exception('You do not own this pet.');
             }
+            $logType = 'Companion Detached';
+            $logData = 'Detached '.$pet->fullName.' from '.($pet->character->displayName ?? '???').' on '.Carbon::now()->format('M j, Y H:i');
 
             $pet['character_id'] = null;
             $pet->save();
+
+            if (!$this->createLog($user->id, null, $pet->id, $logType, $logData, $pet->pet->id ?? null, 1)) {
+                throw new \Exception('Failed to create companion detachment log.');
+            }
 
             return $this->commitReturn(true);
         } catch (\Exception $e) {
@@ -648,6 +659,14 @@ class PetManager extends Service {
                     'variant_id'   => $variant?->id,
                     'evolution_id' => $evolution?->id,
                 ]);
+
+                if ($user_pet) {
+                    $levelData = $user_pet->level()->create([
+                        'bonding_level'   => 0,
+                        'bonding'         => 0,
+                        'next_level_at' => Carbon::now()->addYear()->startOfDay(),
+                    ]);
+                }
             }
 
             // Create drop information for the pet, if relevant
@@ -726,6 +745,57 @@ class PetManager extends Service {
 
             if ($type && !$this->createLog($user ? $user->id : null, null, $stack->id, $type, $data['data'], $stack->pet_id, 1)) {
                 throw new \Exception('Failed to create log.');
+            }
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Adjusts bonding value (experience points) for a pet (staff only).
+     *
+     * @param mixed $pet
+     * @param int   $amount
+     * @param mixed $staff
+     */
+    public function adjustBonding($pet, $amount, $staff) {
+        DB::beginTransaction();
+
+        try {
+            if (!$staff->hasPower('edit_inventories')) {
+                throw new \Exception('You do not have permission to adjust pet experience.');
+            }
+            if (!$pet) {
+                throw new \Exception('An invalid pet was selected.');
+            }
+            if (!$amount) {
+                throw new \Exception('Invalid value for experience inputted.');
+            }
+
+            // Create level if needed
+            if (!$pet->level) {
+                $pet->level()->create([
+                    'bonding_level' => 0,
+                    'bonding'       => 0,
+                    'next_level_at' => Carbon::now()->addYear()->startOfDay(),
+                ]);
+                $pet->refresh();
+            }
+
+            $oldBonding = $pet->level->bonding;
+            $newBonding = $oldBonding + $amount;
+            $pet->level->bonding = $newBonding;
+            $pet->level->save();
+
+            $logType = 'Pet EXP Edit';
+            $logData = '[Staff] Adjusted the experience value of '.$pet->fullName.' ('.($newBonding > $oldBonding ? '+' : '-').$amount.' EXP, now at '.$pet->level->bonding.' EXP)';
+
+            if (!$this->createLog($staff->id, $pet->user->id ?? null, $pet->id, $logType, $logData, $pet->pet->id ?? null, 1)) {
+                throw new \Exception('Failed to create pet experience edit log.');
             }
 
             return $this->commitReturn(true);

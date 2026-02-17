@@ -663,7 +663,7 @@ function rollCategory($id, $quantity = 1, $criteria = null, $rarity = null)
  * @param  string $rarity
  * @return \Illuminate\Support\Collection
  */
-function rollRarityItem($quantity = 1, $criteria, $rarity)
+function rollRarityItem($quantity, $criteria, $rarity)
 {
     $rewards = createAssetsArray();
 

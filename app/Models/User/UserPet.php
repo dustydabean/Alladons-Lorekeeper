@@ -260,6 +260,22 @@ class UserPet extends Model {
     }
 
     /**
+     * Gets the pet's name and species along with its ID.
+     * 
+     * @return string
+     */
+    public function getFullNameAttribute() {
+        if (!$this->pet_name) {
+            return ($this->pet->name ?? '(Unknown Pet)').' (#'.$this->id.')';
+        }
+        $string = $this->pet_name.' the ';
+        $string .= $this->pet->name ?? '(Unknown Pet)';
+        $string .= ' (#'.$this->id.')';
+
+        return $string;
+    }
+
+    /**
      * gets all drops this pet is eligible for.
      */
     public function getAvailableDropsAttribute() {

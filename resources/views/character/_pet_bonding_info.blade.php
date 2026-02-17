@@ -10,14 +10,10 @@
                 </span> the
             @endif
             {!! $pet->pet->displayName !!}
-            <div class="progress mb-2">
-                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
-                    style="width: {{ ($pet->level?->nextLevel?->bonding_required ? ($pet->level?->bonding / $pet->level?->nextLevel?->bonding_required) : 1 * 100) . '%' }}"
-                    aria-valuenow="{{ $pet->level?->bonding }}" aria-valuemin="0" aria-valuemax="{{ $pet->level?->nextLevel?->bonding_required ?? 100 }}">
-                    {{ $pet->level?->nextLevel?->bonding_required ? ($pet->level?->bonding .'/'. $pet->level?->nextLevel?->bonding_required) : 'Max' }}
-                </div>
+
+            <div>
+                Level {{ $pet->level?->levelName }}
             </div>
-            {{ $pet->level?->levelName }}
         </div>
     </div>
 </div>

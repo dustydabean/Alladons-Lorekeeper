@@ -633,10 +633,10 @@ main > .row {
 
 /* LOGS ******************************************************************************************/
 tr.inflow {
-    background-color: #fafaff;
+    background-color: rgba(255, 255, 255, 0.15);
 }
 tr.outflow {
-    background-color: #fffafa;
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 /* These are not truly tables, but divs styled to look like tables */

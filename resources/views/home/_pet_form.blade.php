@@ -200,4 +200,28 @@
         </div>
         {!! Form::close() !!}
     </li>
+
+    {{-- adjust bonding --}}
+    <li class="list-group-item">
+        <a class="card-title h5 collapse-title" data-toggle="collapse" href="#bondingForm">
+            [ADMIN] Adjust EXP
+        </a>
+        {!! Form::open(['url' => 'pets/edit-exp/' . $pet->id, 'id' => 'bondingForm', 'class' => 'collapse']) !!}
+        <p>
+            Adjust the pet's EXP value. <u>1 EXP is the equivalent of one week of time subtracted from gaining their next level.</u> Enter a positive number to add or a negative number to subtract.
+            @if ($pet->level)
+                <br><strong>Current EXP:</strong> {{ $pet->level->bonding }}
+            @else
+                <br><strong>Current EXP:</strong> 0
+            @endif
+        </p>
+        <div class="form-group">
+            {!! Form::label('bonding_amount', 'Bonding Amount') !!} {!! add_help('Enter an integer value. Positive values add EXP, negative values subtract. The pet\'s EXP cannot go below 0.') !!}
+            {!! Form::number('bonding_amount', null, ['class' => 'form-control', 'placeholder' => 'e.g. 5 or -3']) !!}
+        </div>
+        <div class="text-right">
+            {!! Form::submit('Adjust EXP', ['class' => 'btn btn-primary']) !!}
+        </div>
+        {!! Form::close() !!}
+    </li>
 @endif

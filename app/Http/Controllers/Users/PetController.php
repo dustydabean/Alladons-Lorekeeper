@@ -398,4 +398,29 @@ class PetController extends Controller {
 
         return redirect()->back();
     }
+
+    /**
+     * Adjusts a pet's bonding value (staff only).
+     *
+     * @param mixed $id
+     */
+    public function postAdjustBonding($id, Request $request, PetManager $service) {
+        $pet = UserPet::findOrFail($id);
+        if (!Auth::user()->isStaff) {
+            abort(404);
+        }
+
+        $request->validate([
+            'bonding_amount' => 'required',
+        ]);
+        if ($service->adjustBonding($pet, $request->get('bonding_amount'), Auth::user())) {
+            flash('Pet experience points adjusted successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
+    }
 }
