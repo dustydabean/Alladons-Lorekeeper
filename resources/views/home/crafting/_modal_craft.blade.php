@@ -31,7 +31,7 @@
             <div class="col-md-6">
                 <h5>Ingredients</h5>
                 @foreach($recipe->ingredients as $ingredient)
-                    <div class="alert alert-secondary">
+                    <div class="alert card">
                         @include('home.crafting._recipe_ingredient_entry', ['ingredient' => $ingredient])
                     </div>
                 @endforeach
@@ -40,7 +40,7 @@
                 <h5>Rewards</h5>
                 @foreach($recipe->reward_items as $type)
                     @foreach($type as $item)
-                        <div class="alert alert-secondary">
+                        <div class="alert card">
                             @include('home.crafting._recipe_reward_entry', ['reward' => $item])
                         </div>
                     @endforeach
