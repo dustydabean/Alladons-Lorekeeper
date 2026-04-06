@@ -28,49 +28,49 @@
                 <th scope="row">characters</th>
                 <td>{{ $counts['characters'] }}</td>
                 <td>
-                    {{ Form::checkbox('tables[characters]', 1, $core_tables['characters']) }}
+                    {{ Form::checkbox('tables[characters]', 1, $core_tables['characters'] ?? 1) }}
                 </td>
             </tr>
             <tr>
                 <th scope="row">site_pages</th>
                 <td>{{ $counts['site_pages'] }}</td>
                 <td>
-                    {{ Form::checkbox('tables[site_pages]', 1, $core_tables['site_pages']) }}
+                    {{ Form::checkbox('tables[site_pages]', 1, $core_tables['site_pages'] ?? 1) }}
                 </td>
             </tr>
             <tr>
                 <th scope="row">users</th>
                 <td>{{ $counts['users'] }}</td>
                 <td>
-                    {{ Form::checkbox('tables[users]', 1, $core_tables['users']) }}
+                    {{ Form::checkbox('tables[users]', 1, $core_tables['users'] ?? 1) }}
                 </td>
             </tr>
             <tr>
                 <th scope="row">items</th>
                 <td>{{ $counts['items'] }}</td>
                 <td>
-                    {{ Form::checkbox('tables[items]', 1, $core_tables['items']) }}
+                    {{ Form::checkbox('tables[items]', 1, $core_tables['items'] ?? 1) }}
                 </td>
             </tr>
             <tr>
                 <th scope="row">prompts</th>
                 <td>{{ $counts['prompts'] }}</td>
                 <td>
-                    {{ Form::checkbox('tables[prompts]', 1, $core_tables['prompts']) }}
+                    {{ Form::checkbox('tables[prompts]', 1, $core_tables['prompts'] ?? 1) }}
                 </td>
             </tr>
             <tr>
                 <th scope="row">shops</th>
                 <td>{{ $counts['shops'] }}</td>
                 <td>
-                    {{ Form::checkbox('tables[shops]', 1, $core_tables['shops']) }}
+                    {{ Form::checkbox('tables[shops]', 1, $core_tables['shops'] ?? 1) }}
                 </td>
             </tr>
             <tr>
                 <th scope="row">features (traits)</th>
                 <td>{{ $counts['features'] }}</td>
                 <td>
-                    {{ Form::checkbox('tables[features]', 1, $core_tables['features']) }}
+                    {{ Form::checkbox('tables[features]', 1, $core_tables['features'] ?? 1) }}
                 </td>
             </tr>
         </tbody>

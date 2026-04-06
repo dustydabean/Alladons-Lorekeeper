@@ -45,7 +45,7 @@ class SettingsController extends Controller {
     public function getAjaxSearchSettings() {
         $tables = DB::select("SELECT table_name FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name NOT LIKE '%log%'");
         $tableNames = array_map(function ($table) {
-            return $table->table_name;
+            return $table->TABLE_NAME;
         }, $tables);
         $tableNames = array_combine($tableNames, $tableNames);
         unset($tableNames['characters'], $tableNames['shops']);
