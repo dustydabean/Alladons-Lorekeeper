@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use File;
 use Str;
 
 class SettingsController extends Controller {
@@ -43,9 +43,8 @@ class SettingsController extends Controller {
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getAjaxSearchSettings() {
-
         $tables = DB::select("SELECT table_name FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name NOT LIKE '%log%'");
-        $tableNames = array_map(function($table) {
+        $tableNames = array_map(function ($table) {
             return $table->table_name;
         }, $tables);
         $tableNames = array_combine($tableNames, $tableNames);
@@ -61,7 +60,7 @@ class SettingsController extends Controller {
             'features'      => DB::table('features')->count() ?? 0,
         ];
 
-        foreach($tableNames as $tableName) {
+        foreach ($tableNames as $tableName) {
             $tableCols[$tableName] = DB::getSchemaBuilder()->getColumnListing($tableName);
             $tableCols[$tableName] = array_combine($tableCols[$tableName], $tableCols[$tableName]);
         }
@@ -80,7 +79,7 @@ class SettingsController extends Controller {
             'columns'           => $tableCols,
             'counts'            => $counts,
             'core_tables'       => $core_tables ?? null,
-            'custom_tables'    => $custom_tables ?? null,
+            'custom_tables'     => $custom_tables ?? null,
         ]);
     }
 
@@ -88,14 +87,12 @@ class SettingsController extends Controller {
      * Saves the AJAX search settings.
      */
     public function postEditAjaxSearchSettings(Request $request) {
-
         $data = $request->only(['tables', 'custom_tables']);
 
         //Custom Tables
         $c_tables = [];
-        if($data['custom_tables'] && count($data['custom_tables']) > 0 ) {
-            foreach($data['custom_tables']['table_name'] as $i => $table_name) {
-
+        if ($data['custom_tables'] && count($data['custom_tables']) > 0) {
+            foreach ($data['custom_tables']['table_name'] as $i => $table_name) {
                 $model = $this->getModelFromTable($table_name);
 
                 $c_tables[$table_name] = [
@@ -130,7 +127,6 @@ class SettingsController extends Controller {
         }
 
         return redirect()->back();
-
     }
 
     private function getModelFromTable($table) {
@@ -140,7 +136,7 @@ class SettingsController extends Controller {
         foreach ($files as $file) {
             // Build the fully qualified class name
             $relativePath = Str::replaceFirst(app_path(), '', $file->getPathname());
-            $namespace = 'App' . str_replace(['/', '\\', '.php'], ['\\', '\\', ''], $relativePath);
+            $namespace = 'App'.str_replace(['/', '\\', '.php'], ['\\', '\\', ''], $relativePath);
 
             if (class_exists($namespace) && is_subclass_of($namespace, 'Illuminate\Database\Eloquent\Model')) {
                 $model = new $namespace;
@@ -153,5 +149,4 @@ class SettingsController extends Controller {
 
         return false;
     }
-
 }

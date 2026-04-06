@@ -287,7 +287,6 @@ Route::group(['prefix' => 'ajax-search', 'middleware' => 'power:edit_site_settin
     Route::post('edit', 'SettingsController@postEditAjaxSearchSettings');
 });
 
-
 // GRANTS
 Route::group(['prefix' => 'grants', 'namespace' => 'Users', 'middleware' => 'power:edit_inventories'], function () {
     Route::get('user-currency', 'GrantController@getUserCurrency');

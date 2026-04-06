@@ -99,14 +99,15 @@ class AddSiteSettings extends Command {
      * @param string $key
      * @param int    $value
      * @param string $description
+     * @param mixed  $show_in_settings
      */
     private function addSiteSetting($key, $value, $description, $show_in_settings = true) {
         if (!DB::table('site_settings')->where('key', $key)->exists()) {
             DB::table('site_settings')->insert([
                 [
-                    'key'         => $key,
-                    'value'       => $value,
-                    'description' => $description,
+                    'key'               => $key,
+                    'value'             => $value,
+                    'description'       => $description,
                     'show_in_settings'  => $show_in_settings,
                 ],
             ]);
