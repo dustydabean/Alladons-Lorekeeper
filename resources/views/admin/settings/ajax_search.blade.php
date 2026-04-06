@@ -94,7 +94,7 @@
             </tr>
             <tr>
                 <th scope="col" style="width:20%;"><h5 class="mb-0">Title</h5><p class="small font-weight-normal">This is what will show as the title of this item within the seach.</p></th>
-                <th scope="col" style="width:15%;"><h5 class="mb-0">Identifier</h5><p class="small font-weight-normal">Test</p></th>
+                <th scope="col" style="width:15%;"><h5 class="mb-0">Identifier</h5><p class="small font-weight-normal">This should be an ID / integer! Providing strings may cause failure for indexing.</p></th>
                 <th scope="col" style="width:25%;"><h5 class="mb-0">Description</h5><p class="small font-weight-normal">Should include the primary content to search through, the content will be cleaned for the database.</p></th>
                 <th style="width:4%;"></th>
             </tr>
