@@ -9,7 +9,7 @@ class SiteIndex extends Model {
      * @var array
      */
     protected $fillable = [
-        'id', 'title', 'type', 'identifier', 'description', 'key', 'url', 'image_url'
+        'id', 'title', 'type', 'identifier', 'description', 'key', 'url', 'image_url',
     ];
 
     /**
