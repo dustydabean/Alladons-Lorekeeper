@@ -18,9 +18,9 @@
     <table class="table table-striped">
         <thead>
             <tr>
-            <th scope="col">Table Name</th>
-            <th scope="col">Count</th>
-            <th scope="col">Enabled</th>
+                <th scope="col">Table Name</th>
+                <th scope="col">Count</th>
+                <th scope="col">Enabled</th>
             </tr>
         </thead>
         <tbody>
@@ -79,7 +79,8 @@
     <div class="row">
         <div class="col-md-8">
             <h3>Custom Tables</h3>
-            <p>These are any custom tables you have added to your Lorekeeper installation that you want to include in the AJAX search. This list of tables is dynamically pulled from your Database. Please know that you should only add tables that you know have specific pages/urls.</p>
+            <p>These are any custom tables you have added to your Lorekeeper installation that you want to include in the AJAX search. This list of tables is dynamically pulled from your Database. Please know that you should only add tables that you know
+                have specific pages/urls.</p>
         </div>
         <div class="col-md-4 align-self-end text-right">
             <a id="addRow" class="btn btn-primary mb-2">Add Row</a>
@@ -93,27 +94,36 @@
                 <th scope="col" class="text-center" rowspan="1" colspan="4">Mappings</th>
             </tr>
             <tr>
-                <th scope="col" style="width:20%;"><h5 class="mb-0">Title</h5><p class="small font-weight-normal">This is what will show as the title of this item within the seach.</p></th>
-                <th scope="col" style="width:15%;"><h5 class="mb-0">Identifier</h5><p class="small font-weight-normal">Test</p></th>
-                <th scope="col" style="width:25%;"><h5 class="mb-0">Description</h5><p class="small font-weight-normal">Should include the primary content to search through, the content will be cleaned for the database.</p></th>
+                <th scope="col" style="width:20%;">
+                    <h5 class="mb-0">Title</h5>
+                    <p class="small font-weight-normal">This is what will show as the title of this item within the seach.</p>
+                </th>
+                <th scope="col" style="width:15%;">
+                    <h5 class="mb-0">Identifier</h5>
+                    <p class="small font-weight-normal">Test</p>
+                </th>
+                <th scope="col" style="width:25%;">
+                    <h5 class="mb-0">Description</h5>
+                    <p class="small font-weight-normal">Should include the primary content to search through, the content will be cleaned for the database.</p>
+                </th>
                 <th style="width:4%;"></th>
             </tr>
         </thead>
         <tbody class="repeater-wrapper">
             <tr class="template{{ $custom_tables && count($custom_tables) > 0 ? ' delete' : '' }}" data-index="0">
                 <th>{{ Form::select('custom_tables[table_name][]', $tables, null, ['class' => 'form-control selectize parent']) }}</th>
-                <td>{{ Form::select('custom_tables[title][]', [], null, [ 'class' => 'form-control selectize-1']) }}</td>
-                <td>{{ Form::select('custom_tables[identifier][]', [], null, [ 'class' => 'form-control selectize-1']) }}</td>
-                <td>{{ Form::select('custom_tables[description][]', [], null, [ 'class' => 'form-control selectize-1']) }}</td>
+                <td>{{ Form::select('custom_tables[title][]', [], null, ['class' => 'form-control selectize-1']) }}</td>
+                <td>{{ Form::select('custom_tables[identifier][]', [], null, ['class' => 'form-control selectize-1']) }}</td>
+                <td>{{ Form::select('custom_tables[description][]', [], null, ['class' => 'form-control selectize-1']) }}</td>
                 <td><a id="removeRow" class="btn btn-danger">-</a></td>
             </tr>
-            @if ( $custom_tables && count($custom_tables) > 0 )
-                @foreach( $custom_tables as $table_name => $d )
+            @if ($custom_tables && count($custom_tables) > 0)
+                @foreach ($custom_tables as $table_name => $d)
                     <tr data-index="0">
                         <th>{{ Form::select('custom_tables[table_name][]', $tables, $table_name, ['class' => 'form-control selectize parent']) }}</th>
-                        <td>{{ Form::select('custom_tables[title][]', $columns[$table_name], $d['title'] ?? null, [ 'class' => 'form-control selectize-1']) }}</td>
-                        <td>{{ Form::select('custom_tables[identifier][]', $columns[$table_name], $d['identifier'] ?? null, [ 'class' => 'form-control selectize-1']) }}</td>
-                        <td>{{ Form::select('custom_tables[description][]', $columns[$table_name], $d['description'] ?? null, [ 'class' => 'form-control selectize-1']) }}</td>
+                        <td>{{ Form::select('custom_tables[title][]', $columns[$table_name], $d['title'] ?? null, ['class' => 'form-control selectize-1']) }}</td>
+                        <td>{{ Form::select('custom_tables[identifier][]', $columns[$table_name], $d['identifier'] ?? null, ['class' => 'form-control selectize-1']) }}</td>
+                        <td>{{ Form::select('custom_tables[description][]', $columns[$table_name], $d['description'] ?? null, ['class' => 'form-control selectize-1']) }}</td>
                         <td><a id="removeRow" class="btn btn-danger">-</a></td>
                     </tr>
                 @endforeach
@@ -132,23 +142,26 @@
         $(document).ready(function() {
             var tableColumns = {!! json_encode($columns) !!};
             var customTables = 0;
-        
+
             var custom_table_template = $('.template').clone().removeClass('template');
             $('.selectize').selectize();
             $('.delete').remove();
-            
+
             $('table').on('change', 'select[name="custom_tables[table_name][]"]', function() {
                 var val = $(this).val();
                 var cols = tableColumns[val];
                 var $row = $(this).parents('tr');
 
-                $row.find('select:not(.parent)').each(function( i, element ) {
+                $row.find('select:not(.parent)').each(function(i, element) {
                     var $select = $(this).selectize();
                     var selectize = $select[0].selectize;
                     selectize.clearOptions();
 
                     $.each(cols, function(index, value) {
-                        selectize.addOption({value: value, text: value});
+                        selectize.addOption({
+                            value: value,
+                            text: value
+                        });
                         selectize.refreshOptions();
                     });
 

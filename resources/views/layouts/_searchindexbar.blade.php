@@ -16,7 +16,7 @@
                 clearTimeout(timer);
                 let s = $(this).val();
 
-                if ( s.includes(':') ) {
+                if (s.includes(':')) {
                     dataType = s.split(':')[0];
                     $badge.text(dataType.toUpperCase());
                     $(this).val('');
@@ -29,7 +29,7 @@
             });
 
             $('#ajaxsearch').on('keydown', function(e) {
-                if ( $(this).val() == '' && (e.key === 'Backspace' || e.key === 'Escape') ) {
+                if ($(this).val() == '' && (e.key === 'Backspace' || e.key === 'Escape')) {
                     $badge.text('');
                     $('#ajaxsearch').attr('data-type', '');
                 }
