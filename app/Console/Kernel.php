@@ -29,7 +29,7 @@ class Kernel extends ConsoleKernel {
             ->daily();
         $schedule->command('update-staff-reward-actions')
             ->daily();
-        $schedule->command('index-new-search-pages')
+        $schedule->command('index-search-pages')
             ->daily();
     }
 

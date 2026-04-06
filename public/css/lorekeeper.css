@@ -351,6 +351,19 @@ main > .row {
 .dark-input:focus, .dark-input.active {
 	min-width: 250px;
 }
+.search-bar > .badge {
+    transition: 250ms all;
+    cursor: pointer;
+}
+.search-bar > .badge:hover {
+    background-color: var(--red);
+    color: var(--white);
+}
+.search-bar img {
+    max-width: 30px;
+    aspect-ratio: 1;
+    object-fit: cover;
+}
 /*Search Dropdown*/
 #searchResult {
 	width: 15vw;
