@@ -137,7 +137,7 @@ class IndexSitePages extends Command {
         if ($indexes !== '*' && is_array($indexes)) {
             $tables_to_index = array_intersect($tables_to_index, $indexes);
         } else {
-            if ($enabled_tables !== '') {
+            if ($enabled_tables !== '' && is_array($enabled_tables)) {
                 $enabled_tables = unserialize($enabled_tables[0]);
                 $remove = array_keys($enabled_tables, 0);
 
