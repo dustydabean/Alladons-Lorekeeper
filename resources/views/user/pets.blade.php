@@ -45,6 +45,9 @@
                                                     class="fas fa-angle-double-up ml-1"></i>
                                             </span>
                                         @endif
+                                        <div>
+                                            <span class="badge badge-primary">ID #{{ $pet->pivot->id }}</span>
+                                        </div>
                                     </a>
                                 </div>
                                 @if ($stackName)

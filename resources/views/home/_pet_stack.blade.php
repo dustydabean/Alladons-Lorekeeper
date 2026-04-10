@@ -7,7 +7,14 @@
                 <img class="img-fluid" src="{{ $stack->pet->variantImage($stack->id) }}" />
             </a>
         </div>
-        <div class="mb-1"><a href="{{ $stack->pet->url }}">{{ $stack->pet->name }}</a></div>
+        <div>
+            <a href="{{ $stack->pet->url }}">
+                {{ $stack->pet->name }}
+            </a>
+        </div>
+        <div class="mb-1">
+            <span class="badge badge-primary">ID #{{ $stack->id }}</span>
+        </div>
     </div>
 
     @if (isset($stack->data['notes']) || isset($stack->data['data']))

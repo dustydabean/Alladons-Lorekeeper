@@ -139,6 +139,10 @@
             <a href="#" class="btn btn-outline-info" id="addCharacter">Add Character</a>
         </div>
 
+        <h2>Companions</h2>
+        <p>Select companions to attach. For each selected companion, you may enter an EXP amount to grant on approval.</p>
+        @include('widgets._submission_companion_select', ['submission' => $submission, 'isAdmin' => true])
+
         @if (isset($inventory['user_items']))
             <h2>Add-Ons</h2>
             <p>These items have been removed from the {{ $submission->prompt_id ? 'submitter' : 'claimant' }}'s inventory and will be refunded if the request is rejected or consumed if it is approved.</p>
@@ -328,6 +332,7 @@
     @if ($submission->status == 'Pending')
         @include('js._loot_js', ['showLootTables' => true, 'showRaffles' => true, 'showRecipes' => true])
         @include('js._character_select_js')
+        @include('widgets._submission_companion_select_js', ['showExp' => true])
         @include('js._tinymce_wysiwyg')
         <script>
             $(document).ready(function() {

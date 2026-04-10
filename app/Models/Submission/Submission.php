@@ -17,7 +17,7 @@ class Submission extends Model {
     protected $fillable = [
         'prompt_id', 'user_id', 'staff_id', 'url',
         'comments', 'staff_comments', 'parsed_staff_comments',
-        'status', 'data',
+        'status', 'data', 'pets',
     ];
 
     /**
@@ -34,6 +34,7 @@ class Submission extends Model {
      */
     protected $casts = [
         'data' => 'array',
+        'pets' => 'array',
     ];
 
     /**
@@ -93,6 +94,47 @@ class Submission extends Model {
      */
     public function characters() {
         return $this->hasMany(SubmissionCharacter::class, 'submission_id');
+    }
+
+    /**
+     * Get the companion UserPet models attached to the submission.
+     * Each returned UserPet has a `submission_exp` property with the EXP granted.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getSubmissionPetsAttribute() {
+        if (!$this->pets) {
+            return collect();
+        }
+
+        $petData = collect($this->pets);
+        $ids = $petData->pluck('id')->filter()->toArray();
+
+        if (!$ids) {
+            return collect();
+        }
+
+        $expMap = $petData->pluck('exp', 'id')->toArray();
+        $userPets = \App\Models\User\UserPet::with(['pet', 'pet.category'])->whereIn('id', $ids)->get();
+
+        foreach ($userPets as $userPet) {
+            $userPet->submission_exp = $expMap[$userPet->id] ?? 0;
+        }
+
+        return $userPets;
+    }
+
+    /**
+     * Get just the IDs of attached companions.
+     *
+     * @return array
+     */
+    public function getSubmissionPetIdsAttribute() {
+        if (!$this->pets) {
+            return [];
+        }
+
+        return collect($this->pets)->pluck('id')->filter()->toArray();
     }
 
     /**********************************************************************************************

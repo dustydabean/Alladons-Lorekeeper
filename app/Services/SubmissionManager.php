@@ -15,6 +15,7 @@ use App\Models\Recipe\Recipe;
 use App\Models\Submission\Submission;
 use App\Models\Submission\SubmissionCharacter;
 use App\Models\User\User;
+use App\Models\User\UserPet;
 use App\Models\User\UserItem;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
@@ -142,6 +143,9 @@ class SubmissionManager extends Service {
             // Set characters that have been attached.
             $this->createCharacterAttachments($submission, $data);
 
+            // Set companions that have been attached.
+            $this->createPetAttachments($submission, $data, $user);
+
             return $this->commitReturn($submission);
         } catch (\Exception $e) {
             $this->setError('error', $e->getMessage());
@@ -208,6 +212,7 @@ class SubmissionManager extends Service {
             $userAssets = $assets['userAssets'];
             $promptRewards = $assets['promptRewards'];
             $this->createCharacterAttachments($submission, $data);
+            $this->createPetAttachments($submission, $data, $user);
 
             // Modify submission
             $submission->update([
@@ -549,16 +554,49 @@ class SubmissionManager extends Service {
                 $data['parsed_staff_comments'] = null;
             }
 
+            // Update companion attachments and grant EXP
+            $petIds = $this->parsePetIds($data);
+            $submissionPets = $petIds ? $this->validatePetOwnership($petIds, $submission->user_id) : collect();
+            if ($submissionPets->count()) {
+
+                $petExpData = $data['pet_exp'] ?? [];
+                $petManager = new PetManager;
+                $petsWithExp = [];
+                foreach ($submissionPets as $pet) {
+                    $exp = isset($petExpData[$pet->id]) ? (int) $petExpData[$pet->id] : 0;
+                    $petsWithExp[] = ['id' => $pet->id, 'exp' => $exp];
+
+                    if ($exp > 0) {
+                        if (!$pet->level) {
+                            $pet->level()->create([
+                                'bonding_level' => 0,
+                                'bonding'       => 0,
+                            ]);
+                            $pet->refresh();
+                        }
+
+                        $pet->level->bonding += $exp;
+                        $pet->level->save();
+
+                        $logData = 'Received '.$exp.' EXP from '.($submission->prompt_id ? 'submission' : 'claim').' (<a href="'.$submission->viewUrl.'">#'.$submission->id.'</a>)';
+                        $petManager->createLog($user->id, $submission->user_id, $pet->id, 'Pet EXP Grant', $logData, $pet->pet->id, 1);
+                    }
+                }
+                $petIds = $petsWithExp;
+            }
+
             // Finally, set:
             // 1. staff comments
             // 2. staff ID
             // 3. status
             // 4. final rewards
+            // 5. final companion list
             $submission->update([
                 'staff_comments'        => $data['staff_comments'],
                 'parsed_staff_comments' => $data['parsed_staff_comments'],
                 'staff_id'              => $user->id,
                 'status'                => 'Approved',
+                'pets'                  => $petIds ?: null,
                 'data'                  => [
                     'user'                  => $addonData,
                     'rewards'               => getDataReadyAssets($rewards),
@@ -916,6 +954,71 @@ class SubmissionManager extends Service {
         }
 
         return true;
+    }
+
+    /**
+     * Attaches companions to a submission.
+     *
+     * @param mixed $submission
+     * @param mixed $data
+     * @param mixed $user
+     */
+    private function createPetAttachments($submission, $data, $user) {
+        $petIds = $this->parsePetIds($data);
+
+        if (!$petIds) {
+            $submission->update(['pets' => null]);
+
+            return true;
+        }
+
+        $this->validatePetOwnership($petIds, $user->id);
+
+        $petsData = array_map(function ($id) {
+            return ['id' => $id, 'exp' => 0];
+        }, array_values($petIds));
+
+        $submission->update(['pets' => $petsData]);
+
+        return true;
+    }
+
+    /**
+     * Parses and validates pet IDs from form data.
+     *
+     * @param array $data
+     *
+     * @return array
+     */
+    private function parsePetIds($data) {
+        if (!isset($data['pet_id']) || !$data['pet_id']) {
+            return [];
+        }
+
+        $petIds = array_unique(array_filter(array_map('intval', $data['pet_id'])));
+
+        if (count($petIds) > 10) {
+            throw new \Exception('You may attach a maximum of 10 companions.');
+        }
+
+        return $petIds;
+    }
+
+    /**
+     * Validates that the given pet IDs belong to the specified user.
+     *
+     * @param array $petIds
+     * @param int   $userId
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    private function validatePetOwnership($petIds, $userId) {
+        $userPets = UserPet::where('user_id', $userId)->whereNull('deleted_at')->whereIn('id', $petIds)->get();
+        if ($userPets->count() != count($petIds)) {
+            throw new \Exception('One or more of the selected companions are invalid.');
+        }
+
+        return $userPets;
     }
 
     /**

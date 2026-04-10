@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Facades\Notifications;
+use App\Facades\Settings;
 use App\Models\Character\Character;
 use App\Models\Pet\Pet;
 use App\Models\Pet\PetDrop;
@@ -265,6 +266,8 @@ class PetManager extends Service {
                 throw new \Exception('You do not own this companion.');
             }
 
+            $this->checkCooldown($pet, $user);
+
             // Next, check if the character the pet is being attached to is valid and the user has permission to attach the pet to that character.
             if (!$id) {
                 throw new \Exception('No character selected.');
@@ -350,6 +353,9 @@ class PetManager extends Service {
             if ($pet->user_id != $user->id && !$user->hasPower('edit_inventories')) {
                 throw new \Exception('You do not own this companion.');
             }
+
+            $this->checkCooldown($pet, $user);
+
             $logType = 'Companion Detached';
             $logData = 'Detached '.$pet->fullName.' from '.($pet->character->displayName ?? '???').' on '.Carbon::now()->format('M j, Y H:i');
 
@@ -804,6 +810,22 @@ class PetManager extends Service {
         }
 
         return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Checks if a pet is on attach/detach cooldown.
+     *
+     * @param mixed $pet
+     * @param mixed $user
+     */
+    private function checkCooldown($pet, $user) {
+        $cooldownDays = Settings::get('claymore_cooldown');
+        if ($cooldownDays && $pet->attached_at && !$user->hasPower('edit_inventories')) {
+            $cooldownExpires = Carbon::parse($pet->attached_at)->addDays($cooldownDays);
+            if ($cooldownExpires->isFuture()) {
+                throw new \Exception('This companion is on cooldown until '.$cooldownExpires->format('M j, Y H:i').'.');
+            }
+        }
     }
 
     /**

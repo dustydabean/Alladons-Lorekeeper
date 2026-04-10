@@ -6,16 +6,18 @@
 @endsection
 
 @section($namespace ? 'content' : 'profile-content')
-
     {!! $namespace
         ? breadcrumbs(['Companions' => 'pets', $pet->pet_name ? $pet->pet_name . ' (' . $pet->pet->name . ')' : $user->name . "'s " . $pet->pet->name => $pet->url])
         : breadcrumbs(['Users' => 'users', $user->name => $user->url, 'Companions' => $user->url . '/pets', $pet->pet_name ? $pet->pet_name . ' (' . $pet->pet->name . ')' : $user->name . "'s " . $pet->pet->name => $pet->url]) !!}
 
-    <h1>
+    <h1 class="mb-0">
         {!! $pet->pet_name
             ? $pet->pet_name . ' (' . $user->displayName . "'s " . ($pet->variant_id ? $pet->variant->variant_name . ' ' : '') . $pet->pet->displayName . ')'
             : $user->name . "'s " . ($pet->variant_id ? $pet->variant->variant_name . ' ' : '') . $pet->pet->displayName !!}
     </h1>
+    <div>
+        <span class="badge badge-primary">ID #{{ $pet->id }}</span>
+    </div>
 
     @if (!$namespace)
         <div class="container justify-content-right text-right my-3">
@@ -31,7 +33,7 @@
         </div>
     @endif
 
-    <div class="row world-entry">
+    <div class="row world-entry align-items-center">
         <div class="col-md-3 world-entry-image">
             <img class="img-fluid rounded mb-2" src="{{ $pet->pet->VariantImage($pet->id) }}" data-toggle="tooltip" title="{{ $pet->pet_name ?? $pet->pet->name }}" alt="{{ $pet->pet_name ?? $pet->pet->name }}" />
             <div class="mb-2 mb-md-0">
@@ -97,6 +99,36 @@
             <ul class="list-group list-group-flush">
                 @include('home._pet_form', ['pet' => $pet, 'user' => Auth::user()])
             </ul>
+        </div>
+    @endif
+
+    @php
+        $logs = \App\Models\Pet\PetLog::where('stack_id', $pet->id)
+            ->orderBy('created_at', 'DESC')
+            ->take(10)
+            ->get();
+    @endphp
+    @if ($logs->count())
+        <div class="card mt-3">
+            <div class="card-header h5 mb-0">Recent Activity</div>
+            <div class="card-body p-0">
+                <table class="table table-sm mb-0">
+                    <thead>
+                        <tr>
+                            <th>Log</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($logs as $log)
+                            <tr>
+                                <td>{!! $log->log !!}</td>
+                                <td>{!! format_date($log->created_at) !!}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
     @endif
 @endsection

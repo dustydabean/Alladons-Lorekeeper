@@ -50,7 +50,20 @@
                                     <div class="text-light btn btn-dark">{!! $pet->pet_name !!}</div>
                                 </a>
                             @endif
-                            <div>{!! $pet->pet->displayName !!}</div>
+                            <h5 class="mb-0">
+                                {!! $pet->pet->displayName !!}
+                            </h5>
+                        </div>
+                        <div class="mb-2 mb-md-0">
+                            <div class="font-weight-bold">
+                                Level {{ $pet->level->levelName ?? 1 }}
+                            </div>
+                            <div class="small">
+                                Will level up {!! pretty_date($pet->level->levelsAt) !!}.
+                            </div>
+                            <div class="small" style="opacity: 0.65;">
+                                (<b>{{ $pet->level->bonding }} EXP</b>, minus {{ ($pet->level->bonding > 0) ? ($pet->level->bonding * 7) : 0 }} days)
+                            </div>
                         </div>
                     </div>
                 </div>

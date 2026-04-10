@@ -34,7 +34,7 @@
         <div class="col-md-6">
             <div class="form-group">
                 {!! Form::label('Level') !!}
-                {!! Form::number('level', $level->level, ['class' => 'form-control']) !!}
+                {!! Form::number('level', $level->level ?? 1, ['class' => 'form-control', 'min' => 1]) !!}
             </div>
         </div>
     </div>

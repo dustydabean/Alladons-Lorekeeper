@@ -276,6 +276,17 @@ class UserPet extends Model {
     }
 
     /**
+     * Gets the pet's display name with ID prefix for select widgets.
+     *
+     * @return string
+     */
+    public function getSelectNameAttribute() {
+        $name = $this->pet_name ?: ($this->pet->name ?? '(Unknown Pet)');
+
+        return '[#'.$this->id.'] '.$name;
+    }
+
+    /**
      * gets all drops this pet is eligible for.
      */
     public function getAvailableDropsAttribute() {
