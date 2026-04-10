@@ -228,9 +228,9 @@ class PetController extends Controller {
             'name', 'allow_transfer', 'pet_category_id', 'description', 'image', 'remove_image', 'limit',
         ]);
         if ($id && $service->updatePet(Pet::find($id), $data, Auth::user())) {
-            flash('Pet updated successfully.')->success();
+            flash('Companion updated successfully.')->success();
         } elseif (!$id && $pet = $service->createPet($data, Auth::user())) {
-            flash('Pet created successfully.')->success();
+            flash('Companion created successfully.')->success();
 
             return redirect()->to('admin/data/pets/edit/'.$pet->id);
         } else {
@@ -267,7 +267,7 @@ class PetController extends Controller {
      */
     public function postDeletePet(Request $request, PetService $service, $id) {
         if ($id && $service->deletePet(Pet::find($id))) {
-            flash('Pet deleted successfully.')->success();
+            flash('Companion deleted successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
@@ -390,11 +390,11 @@ class PetController extends Controller {
         }
 
         if ($drops->update(['parameters' => $request['parameters'], 'drops_available' => $request['drops_available']])) {
-            flash('Pet drops updated successfully.')->success();
+            flash('Companion drops updated successfully.')->success();
 
             return redirect()->to($this->user_pet->pageUrl(Auth::user()->id));
         } else {
-            flash('Failed to update pet drops.')->error();
+            flash('Failed to update companion drops.')->error();
         }
 
         return redirect()->back()->withInput();
@@ -464,9 +464,9 @@ class PetController extends Controller {
             'rewardable_type', 'rewardable_id', 'min_quantity', 'max_quantity', 'override',
         ]);
         if ($pet_id && $service->updatePetDrop(Pet::find($pet_id)->dropData, $data, Auth::user())) {
-            flash('Pet drop updated successfully.')->success();
+            flash('Companion drop updated successfully.')->success();
         } elseif (!$pet_id && $drop = $service->createPetDrop($data, Auth::user())) {
-            flash('Pet drop created successfully.')->success();
+            flash('Companion drop created successfully.')->success();
 
             return redirect()->to('admin/data/pets/drops/edit/'.$drop->pet_id);
         } else {
@@ -575,9 +575,9 @@ class PetController extends Controller {
         $pet = Pet::findOrFail($pet_id);
 
         if ($variant_id && $service->editPetVariantDrop($variant->dropData, $data)) {
-            flash('Pet variant drop edited successfully.')->success();
+            flash('Companion variant drop edited successfully.')->success();
         } elseif (!$variant_id && $drop = $service->createPetVariantDrop($data)) {
-            flash('Pet variant drop created successfully.')->success();
+            flash('Companion variant drop created successfully.')->success();
 
             return redirect()->to('admin/data/pets/drops/edit/'.$pet->id);
         } else {
@@ -614,7 +614,7 @@ class PetController extends Controller {
     public function postDeleteVariantDrop(Request $request, PetDropService $service, $pet_id, $variant_id) {
         $variant = PetVariant::findOrFail($variant_id);
         if ($variant_id && $service->deletePetVariantDrop($variant->dropData)) {
-            flash('Pet variant drop deleted successfully.')->success();
+            flash('Companion variant drop deleted successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
@@ -674,9 +674,9 @@ class PetController extends Controller {
             'name', 'level', 'bonding_required', 'rewardable_id', 'rewardable_type', 'quantity',
         ]);
         if ($id && $service->updatePetLevel(PetLevel::find($id), $data, Auth::user())) {
-            flash('Pet level updated successfully.')->success();
+            flash('Companion level updated successfully.')->success();
         } elseif (!$id && $level = $service->createPetLevel($data, Auth::user())) {
-            flash('Pet level created successfully.')->success();
+            flash('Companion level created successfully.')->success();
 
             return redirect()->to('admin/data/pets/levels/edit/'.$level->id);
         } else {
@@ -708,7 +708,7 @@ class PetController extends Controller {
      */
     public function postDeleteLevel(Request $request, PetService $service, $id) {
         if ($id && $service->deletePetLevel(PetLevel::find($id))) {
-            flash('Pet level deleted successfully.')->success();
+            flash('Companion level deleted successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
@@ -759,7 +759,7 @@ class PetController extends Controller {
      */
     public function postAddPetToLevel(Request $request, PetService $service, $id) {
         if ($service->addPetsToLevel($request->input('pet_ids'), PetLevel::find($id))) {
-            flash('Pet(s) added to level successfully.')->success();
+            flash('Companion(s) added to level successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
@@ -779,7 +779,7 @@ class PetController extends Controller {
             'rewardable_id', 'rewardable_type', 'quantity',
         ]);
         if ($service->editPetLevelPetRewards(PetLevelPet::find($id), $data)) {
-            flash('Pet level rewards updated successfully.')->success();
+            flash('Companion level rewards updated successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();

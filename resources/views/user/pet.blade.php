@@ -8,8 +8,8 @@
 @section($namespace ? 'content' : 'profile-content')
 
     {!! $namespace
-        ? breadcrumbs(['Pets' => 'pets', $pet->pet_name ? $pet->pet_name . ' (' . $pet->pet->name . ')' : $user->name . "'s " . $pet->pet->name => $pet->url])
-        : breadcrumbs(['Users' => 'users', $user->name => $user->url, 'Pets' => $user->url . '/pets', $pet->pet_name ? $pet->pet_name . ' (' . $pet->pet->name . ')' : $user->name . "'s " . $pet->pet->name => $pet->url]) !!}
+        ? breadcrumbs(['Companions' => 'pets', $pet->pet_name ? $pet->pet_name . ' (' . $pet->pet->name . ')' : $user->name . "'s " . $pet->pet->name => $pet->url])
+        : breadcrumbs(['Users' => 'users', $user->name => $user->url, 'Companions' => $user->url . '/pets', $pet->pet_name ? $pet->pet_name . ' (' . $pet->pet->name . ')' : $user->name . "'s " . $pet->pet->name => $pet->url]) !!}
 
     <h1>
         {!! $pet->pet_name
@@ -20,14 +20,14 @@
     @if (!$namespace)
         <div class="container justify-content-right text-right my-3">
             <a href="{{ $user->url . '/pets' }}">
-                <div class="btn btn-primary">Return to Pets</div>
+                <div class="btn btn-primary">Return to Companions</div>
             </a>
         </div>
     @endif
 
     @if (Auth::check() && ($pet->user_id !== Auth::user()->id && Auth::user()->hasPower('edit_inventories')))
         <div class="alert alert-warning">
-            You are editing this pet as a staff member.
+            You are editing this companion as a staff member.
         </div>
     @endif
 
@@ -36,7 +36,7 @@
             <img class="img-fluid rounded mb-2" src="{{ $pet->pet->VariantImage($pet->id) }}" data-toggle="tooltip" title="{{ $pet->pet_name ?? $pet->pet->name }}" alt="{{ $pet->pet_name ?? $pet->pet->name }}" />
             <div class="mb-2 mb-md-0">
                 <h5 class="mb-0">
-                    Level {{ $pet->level->levelName ?? 0 }}
+                    Level {{ $pet->level->levelName ?? 1 }}
                 </h5>
                 <div class="small">
                     Will level up {!! pretty_date($pet->level->levelsAt) !!}.
@@ -74,7 +74,7 @@
         @if ($pet->has_image)
             <div>
                 <p class="alert alert-info">
-                    This pet is displaying custom art!
+                    This companion is displaying custom art!
                     @if (isset($pet->petArtist) && $pet->petArtist)
                         <b>Artist:</b> {!! $pet->petArtist !!}
                     @else

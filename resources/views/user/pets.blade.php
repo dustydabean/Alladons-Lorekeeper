@@ -1,14 +1,14 @@
 @extends('user.layout')
 
 @section('profile-title')
-    {{ $user->name }}'s Pets
+    {{ $user->name }}'s Companions
 @endsection
 
 @section('profile-content')
-    {!! breadcrumbs(['Users' => 'users', $user->name => $user->url, 'Pets' => $user->url . '/pets']) !!}
+    {!! breadcrumbs(['Users' => 'users', $user->name => $user->url, 'Companions' => $user->url . '/pets']) !!}
 
     <h1>
-        Pets
+        Companions
     </h1>
 
     @foreach ($pets as $categoryId => $categoryPets)
@@ -34,13 +34,13 @@
                                     <a href="#" class="inventory-stack inventory-stack-name">
                                         {{ $pet->pivot->evolution_id ? $pet->evolutions->where('id', $pet->pivot->evolution_id)->first()->evolution_name : $pet->name }}
                                         @if ($pet->pivot->has_image)
-                                            <i class="fas fa-brush ml-1" data-toggle="tooltip" title="This pet has custom art."></i>
+                                            <i class="fas fa-brush ml-1" data-toggle="tooltip" title="This companion has custom art."></i>
                                         @endif
                                         @if ($pet->pivot->character_id)
                                             <span data-toggle="tooltip" title="Attached to a character."><i class="fas fa-link ml-1"></i></span>
                                         @endif
                                         @if ($pet->pivot->evolution_id)
-                                            <span data-toggle="tooltip" title="This pet has evolved. Stage
+                                            <span data-toggle="tooltip" title="This companion has evolved. Stage
                                             {{ $pet->evolutions->where('id', $pet->pivot->evolution_id)->first()->evolution_stage }}."><i
                                                     class="fas fa-angle-double-up ml-1"></i>
                                             </span>
@@ -68,7 +68,7 @@
         <thead>
             <th>Sender</th>
             <th>Recipient</th>
-            <!--<th>Pet</th>-->
+            <!--<th>Companion</th>-->
             <th>Log</th>
             <th>Date</th>
         </thead>

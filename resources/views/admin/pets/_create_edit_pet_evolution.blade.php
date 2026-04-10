@@ -4,8 +4,8 @@
     {!! Form::text('evolution_name', $evolution->id ? $evolution->evolution_name : null, ['class' => 'form-control mr-2 feature-select', 'placeholder' => 'Evolution Name (Required)']) !!}
 </div>
 
-<p>The base pet is considered stage 0. All stages after that are considered evolutions.
-    <br>When evolving the pet will automatically evolve into the next highest stage.
+<p>The base companion is considered stage 0. All stages after that are considered evolutions.
+    <br>When evolving the companion will automatically evolve into the next highest stage.
 </p>
 <div class="form-group">
     {!! Form::label('Evolution Stage (Required)') !!}

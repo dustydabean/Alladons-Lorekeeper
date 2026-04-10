@@ -245,7 +245,7 @@
 
                 <!--<div class="mb-1">
                     <div>
-                        <h5>Pets</h5>
+                        <h5>Companions</h5>
                     </div>
                     <div class="row justify-content-center text-center">
                         {{-- get one random pet --}}

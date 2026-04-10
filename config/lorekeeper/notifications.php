@@ -365,26 +365,26 @@ return [
     ],
     // PET_REMOVAL
     241 => [
-        'name'    => 'Pet Removal',
-        'message' => '{pet_name} (×{pet_quantity}) was removed from your inventory by <a href="{sender_url}">{sender_name}</a>. (<a href="{url}">View Pets</a>)',
+        'name'    => 'Companion Removal',
+        'message' => '{pet_name} (×{pet_quantity}) was removed from your inventory by <a href="{sender_url}">{sender_name}</a>. (<a href="{url}">View Companions</a>)',
         'url'     => 'pets',
     ],
     // PET_TRANSFER
     242 => [
-        'name'    => 'Pet Transfer',
-        'message' => 'You have received {pet_name} (×{pet_quantity}) from <a href="{sender_url}">{sender_name}</a>. (<a href="{url}">View Pets</a>)',
+        'name'    => 'Companion Transfer',
+        'message' => 'You have received {pet_name} (×{pet_quantity}) from <a href="{sender_url}">{sender_name}</a>. (<a href="{url}">View Companions</a>)',
         'url'     => 'pets',
     ],
     // FORCED_PET_TRANSFER
     243 => [
-        'name'    => 'Forced Pet Transfer',
-        'message' => '{pet_name} (×{pet_quantity}) was transferred out of your inventory by <a href="{sender_url}">{sender_name}</a>. (<a href="{url}">View Pets</a>)',
+        'name'    => 'Forced Companion Transfer',
+        'message' => '{pet_name} (×{pet_quantity}) was transferred out of your inventory by <a href="{sender_url}">{sender_name}</a>. (<a href="{url}">View Companions</a>)',
         'url'     => 'pets',
     ],
     // PET_GRANT
     244 => [
-        'name'    => 'Pet Grant',
-        'message' => 'You have received a staff grant of {pet_name} (×{pet_quantity}) from <a href="{sender_url}">{sender_name}</a>. (<a href="{url}">View Pets</a>)',
+        'name'    => 'Companion Grant',
+        'message' => 'You have received a staff grant of {pet_name} (×{pet_quantity}) from <a href="{sender_url}">{sender_name}</a>. (<a href="{url}">View Companions</a>)',
         'url'     => 'pets',
     ],
     // CHARACTER_ITEM_GRANT

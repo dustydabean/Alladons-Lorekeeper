@@ -1,23 +1,23 @@
 @extends('admin.layout')
 
 @section('admin-title')
-    Pet Categories
+    Companion Categories
 @endsection
 
 @section('admin-content')
-    {!! breadcrumbs(['Admin Panel' => 'admin', 'Pets' => 'admin/data/pets', 'Pet Categories' => 'admin/data/pet-categories']) !!}
+    {!! breadcrumbs(['Admin Panel' => 'admin', 'Companions' => 'admin/data/pets', 'Companion Categories' => 'admin/data/pet-categories']) !!}
 
-    <h1>Pet Categories</h1>
+    <h1>Companion Categories</h1>
 
-    <p>This is a list of pet categories that will be used to sort pets in the inventory. Creating pet categories is entirely optional, but recommended if you have a lot of pets in the game.</p>
-    <p>The sorting order reflects the order in which the pet categories will be displayed in the inventory, as well as on the world pages.</p>
+    <p>This is a list of companion categories that will be used to sort companions in the inventory. Creating companion categories is entirely optional, but recommended if you have a lot of companions in the game.</p>
+    <p>The sorting order reflects the order in which the companion categories will be displayed in the inventory, as well as on the world pages.</p>
 
     <div class="text-right mb-3">
-        <a class="btn btn-secondary" href="{{ url('admin/data/pets') }}"><i class="fas fa-undo-alt mr-1"></i> Return to Pets</a>
-        <a class="btn btn-primary" href="{{ url('admin/data/pet-categories/create') }}"><i class="fas fa-plus mr-1"></i> Create New Pet Category</a>
+        <a class="btn btn-secondary" href="{{ url('admin/data/pets') }}"><i class="fas fa-undo-alt mr-1"></i> Return to Companions</a>
+        <a class="btn btn-primary" href="{{ url('admin/data/pet-categories/create') }}"><i class="fas fa-plus mr-1"></i> Create New Companion Category</a>
     </div>
     @if (!count($categories))
-        <p>No pet categories found.</p>
+        <p>No companion categories found.</p>
     @else
         <table class="table table-sm category-table">
             <tbody id="sortable" class="sortable">

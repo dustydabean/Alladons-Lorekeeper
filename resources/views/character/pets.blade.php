@@ -1,7 +1,7 @@
 @extends('character.layout', ['isMyo' => $character->is_myo_slot])
 
 @section('profile-title')
-    {{ $character->fullName }}'s Pets
+    {{ $character->fullName }}'s Companions
 @endsection
 
 @section('meta-img')
@@ -10,23 +10,23 @@
 
 @section('profile-content')
     @if ($character->is_myo_slot)
-        {!! breadcrumbs(['MYO Slot Masterlist' => 'myos', $character->fullName => $character->url, 'Pets' => $character->url . '/pets']) !!}
+        {!! breadcrumbs(['MYO Slot Masterlist' => 'myos', $character->fullName => $character->url, 'Companions' => $character->url . '/pets']) !!}
     @else
         {!! breadcrumbs([
             $character->category->masterlist_sub_id ? $character->category->sublist->name . ' Masterlist' : 'Character masterlist' => $character->category->masterlist_sub_id ? 'sublist/' . $character->category->sublist->key : 'masterlist',
             $character->fullName => $character->url,
-            'Pets' => $character->url . '/pets',
+            'Companions' => $character->url . '/pets',
         ]) !!}
     @endif
 
     @include('character._header', ['character' => $character])
 
-    <h1>Pets</h1>
+    <h1>Companions</h1>
 
     @if(Auth::check() && (Auth::user()->id == $character->user_id || Auth::user()->hasPower('manage_characters')))
         <p>
-            Currently {{ config('lorekeeper.pets.display_pet_count') }} pet{{ config('lorekeeper.pets.display_pet_count') != 1 ? 's' : '' }} are displayed on the character's page.
-            <br />You can determine which pets are displayed by dragging and dropping them in the order you want.
+            Currently {{ config('lorekeeper.pets.display_pet_count') }} companion{{ config('lorekeeper.pets.display_pet_count') != 1 ? 's' : '' }} are displayed on the character's page.
+            <br />You can determine which companions are displayed by dragging and dropping them in the order you want.
         </p>
         {!! Form::open(['url' => 'characters/' . $character->slug . '/pets/sort', 'class' => 'text-right']) !!}
         {!! Form::hidden('sort', null, ['id' => 'sortableOrder']) !!}

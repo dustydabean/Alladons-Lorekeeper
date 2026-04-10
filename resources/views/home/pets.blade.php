@@ -1,21 +1,21 @@
 @extends('home.layout')
 
 @section('home-title')
-    Pets
+    Companions
 @endsection
 
 @section('home-content')
-    {!! breadcrumbs(['Pets' => 'pets']) !!}
+    {!! breadcrumbs(['Companions' => 'pets']) !!}
 
     <h1>
-        Pets
+        Companions
     </h1>
 
-    <p>These are your pets. Click on a pet to view more details and actions you can perform on it.</p>
+    <p>These are your companions. Click on a companion to view more details and actions you can perform on it.</p>
 
     <div class="text-right">
         {!! Form::open(['url' => 'pets/collect-all']) !!}
-        {!! Form::submit('Collect All Pet Drops', ['class' => 'btn btn-success my-3']) !!}
+        {!! Form::submit('Collect All Companion Drops', ['class' => 'btn btn-success my-3']) !!}
         {!! Form::close() !!}
     </div>
 
@@ -36,13 +36,13 @@
                                     <a href="{{ url('pets/view/' . $pet->pivot->id) }}" class="{{ $pet->pivot->pet_name ? 'btn-dark' : 'btn-primary' }} btn btn-sm my-1">
                                         {!! $pet->pivot->pet_name ?? ($pet->pivot->evolution_id ? $pet->evolutions->where('id', $pet->pivot->evolution_id)->first()->evolution_name : $pet->name) !!}
                                         @if ($pet->pivot->has_image)
-                                            <i class="fas fa-brush ml-1" data-toggle="tooltip" title="This pet has custom art."></i>
+                                            <i class="fas fa-brush ml-1" data-toggle="tooltip" title="This companion has custom art."></i>
                                         @endif
                                         @if ($pet->pivot->character_id)
                                             <span data-toggle="tooltip" title="Attached to a character."><i class="fas fa-link ml-1"></i></span>
                                         @endif
                                         @if ($pet->pivot->evolution_id)
-                                            <span data-toggle="tooltip" title="This pet has evolved. Stage
+                                            <span data-toggle="tooltip" title="This companion has evolved. Stage
                                             {{ $pet->evolutions->where('id', $pet->pivot->evolution_id)->first()->evolution_stage }}."><i
                                                     class="fas fa-angle-double-up ml-1"></i>
                                             </span>

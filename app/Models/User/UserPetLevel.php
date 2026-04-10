@@ -62,7 +62,7 @@ class UserPetLevel extends Model {
      * Returns the level name of the pet.
      */
     public function getLevelNameAttribute() {
-        return $this->bonding_level ?? 0;
+        return $this->bonding_level ?? 1;
     }
 
     /**

@@ -2,7 +2,7 @@
     <i class="fas fa-info-circle"></i> Drops every {{ $pet->dropData->interval }}.
 </div>
 @if (!$pet->dropData->override)
-    <h2 class="h4">Base Pet Drops</h2>
+    <h2 class="h4">Base Companion Drops</h2>
     <div class="card p-3 mb-3">
         @foreach ($pet->dropData->parameters as $label => $group)
             @if (isset($pet->dropData->rewards(true)[strtolower($label)]))

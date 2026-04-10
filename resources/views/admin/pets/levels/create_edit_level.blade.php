@@ -1,11 +1,11 @@
 @extends('admin.layout')
 
 @section('admin-title')
-    {{ $level->id ? 'Edit' : 'Create' }} Pet Level
+    {{ $level->id ? 'Edit' : 'Create' }} Companion Level
 @endsection
 
 @section('admin-content')
-    {!! breadcrumbs(['Admin Panel' => 'admin', 'Pets' => 'admin/data/pets', 'Pet Levels' => 'admin/data/pets/levels', ($level->id ? 'Edit' : 'Create') . ' Level' => 'admin/data/pets/levels/' . ($level->id ? 'edit/' . $level->id : 'create')]) !!}
+    {!! breadcrumbs(['Admin Panel' => 'admin', 'Companions' => 'admin/data/pets', 'Companion Levels' => 'admin/data/pets/levels', ($level->id ? 'Edit' : 'Create') . ' Level' => 'admin/data/pets/levels/' . ($level->id ? 'edit/' . $level->id : 'create')]) !!}
 
     <h1>
         {{ $level->id ? 'Edit' : 'Create' }} Level
@@ -18,7 +18,7 @@
 
     @if (!$level->id)
         <p class="alert alert-info">
-            You can add pets to a level once it has been created.
+            You can add companions to a level once it has been created.
         <p>
     @endif
 
@@ -27,7 +27,7 @@
     <div class="row">
         <div class="col-md-6">
             <div class="form-group">
-                {!! Form::label('Name') !!} {!! add_help('The name of the level, this should describe how the pet feels about the character at this level. For example, "Hates", "Indifferent", "Likes", "Loves".') !!}
+                {!! Form::label('Name') !!} {!! add_help('The name of the level, this should describe how the companion feels about the character at this level. For example, "Hates", "Indifferent", "Likes", "Loves".') !!}
                 {!! Form::text('name', $level->name, ['class' => 'form-control', 'placeholder' => 'Name']) !!}
             </div>
         </div>
@@ -46,14 +46,14 @@
 
     @if ($level->id)
         <h2>General Rewards</h2>
-        <p>These rewards are given to the owner of a pet when they reach this level, regardless of what pet it is.</p>
+        <p>These rewards are given to the owner of a companion when they reach this level, regardless of what companion it is.</p>
         @include('widgets._loot_select', ['loots' => $level->rewards, 'showLootTables' => true, 'showRaffles' => true])
 
-        <h2>Pet Specific Rewards</h2>
-        <p>These rewards are given <i>in addition</i> to the general rewards when a pet reaches this level.</p>
+        <h2>Companion Specific Rewards</h2>
+        <p>These rewards are given <i>in addition</i> to the general rewards when a companion reaches this level.</p>
 
         <div class="text-right mb-2">
-            <a href="#" class="btn btn-primary add-pet">Add Pet</a>
+            <a href="#" class="btn btn-primary add-pet">Add Companion</a>
         </div>
         <div class="row">
             @foreach($level->pets as $pet)
@@ -83,7 +83,7 @@
                                     </tbody>
                                 </table>
                             @else
-                                <p>This pet has no specific rewards for this level.</p>
+                                <p>This companion has no specific rewards for this level.</p>
                             @endif
                             <div class="float-right">
                                 <a href="{{ url('admin/data/pets/levels/edit/'.$level->id.'/pets/edit/'.$pet->id) }}" class="btn btn-primary">Edit</a>
@@ -112,11 +112,11 @@
         $(document).ready(function() {
             $('.delete-level-button').on('click', function(e) {
                 e.preventDefault();
-                loadModal("{{ url('admin/data/pets/levels/delete') }}/{{ $level->id }}", 'Delete Pet Level');
+                loadModal("{{ url('admin/data/pets/levels/delete') }}/{{ $level->id }}", 'Delete Companion Level');
             });
             $('.add-pet').on('click', function(e) {
                 e.preventDefault();
-                loadModal("{{ url('admin/data/pets/levels/edit/'.$level->id.'/pets/add') }}", 'Add Pet to Level');
+                loadModal("{{ url('admin/data/pets/levels/edit/'.$level->id.'/pets/add') }}", 'Add Companion to Level');
             });
         });
     </script>

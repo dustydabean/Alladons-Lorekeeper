@@ -14,7 +14,7 @@
     @endif
 
     <h4>Dropped Items</h4>
-    <p>Select an item for each group of this pet to drop. Choose "Reward: None" to disable drops for the group.</p>
+    <p>Select an item for each group of this companion to drop. Choose "Reward: None" to disable drops for the group.</p>
     <div class="card card-body my-2 mb-4">
         @foreach ($pet->dropData->parameters as $label => $weight)
             <div class="mb-2">

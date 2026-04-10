@@ -72,7 +72,7 @@ class PetManager extends Service {
             // Process pet
             $pets = Pet::find($data['pet_ids']);
             if (!count($pets)) {
-                throw new \Exception('No valid pets found.');
+                throw new \Exception('No valid companions found.');
             }
 
             foreach ($users as $user) {
@@ -85,7 +85,7 @@ class PetManager extends Service {
                             'sender_name'  => $staff->name,
                         ]);
                     } else {
-                        throw new \Exception('Failed to credit pets to '.$user->name.'.');
+                        throw new \Exception('Failed to credit companions to '.$user->name.'.');
                     }
                 }
             }
@@ -115,25 +115,25 @@ class PetManager extends Service {
                 throw new \Exception('Your deviantART account must be verified before you can perform this action.');
             }
             if (!$stack) {
-                throw new \Exception('Invalid pet selected.');
+                throw new \Exception('Invalid companion selected.');
             }
             if ($stack->user_id != $sender->id && !$sender->hasPower('edit_inventories')) {
-                throw new \Exception('You do not own this pet.');
+                throw new \Exception('You do not own this companion.');
             }
             if ($stack->user_id == $recipient->id) {
-                throw new \Exception("Cannot send an pet to the pet's owner.");
+                throw new \Exception("Cannot send a companion to the companion's owner.");
             }
             if (!$recipient) {
                 throw new \Exception('Invalid recipient selected.');
             }
             if (!$recipient->hasAlias) {
-                throw new \Exception('Cannot transfer pets to a non-verified member.');
+                throw new \Exception('Cannot transfer companions to a non-verified member.');
             }
             if ($recipient->is_banned) {
-                throw new \Exception('Cannot transfer pets to a banned member.');
+                throw new \Exception('Cannot transfer companions to a banned member.');
             }
             if ((!$stack->pet->allow_transfer || isset($stack->data['disallow_transfer'])) && !$sender->hasPower('edit_inventories')) {
-                throw new \Exception('This pet cannot be transferred.');
+                throw new \Exception('This companion cannot be transferred.');
             }
 
             $oldUser = $stack->user;
@@ -178,10 +178,10 @@ class PetManager extends Service {
                 throw new \Exception('Your deviantART account must be verified before you can perform this action.');
             }
             if (!$stack) {
-                throw new \Exception('Invalid pet selected.');
+                throw new \Exception('Invalid companion selected.');
             }
             if ($stack->user_id != $user->id && !$user->hasPower('edit_inventories')) {
-                throw new \Exception('You do not own this pet.');
+                throw new \Exception('You do not own this companion.');
             }
 
             $oldUser = $stack->user;
@@ -223,10 +223,10 @@ class PetManager extends Service {
                 throw new \Exception('Your deviantART account must be verified before you can perform this action.');
             }
             if (!$pet) {
-                throw new \Exception('An invalid pet was selected.');
+                throw new \Exception('An invalid companion was selected.');
             }
             if ($pet->user_id != $user->id && !$user->hasPower('edit_inventories')) {
-                throw new \Exception('You do not own this pet.');
+                throw new \Exception('You do not own this companion.');
             }
 
             $pet['pet_name'] = $name;
@@ -256,13 +256,13 @@ class PetManager extends Service {
             $user = Auth::user();
             // Next, why bother checking everything else if the pet isn't even attachable? Also determine if the user is the owner of the pet/has permission to attach.
             if (!$pet) {
-                throw new \Exception('An invalid pet was selected.');
+                throw new \Exception('An invalid companion was selected.');
             }
             if ($pet->pet->category && !$pet->pet->category->allow_attach) {
-                throw new \Exception('This pet is in a category that cannot be attached to a character.');
+                throw new \Exception('This companion is in a category that cannot be attached to a character.');
             }
             if ($pet->user_id != $user->id && !$user->hasPower('edit_inventories')) {
-                throw new \Exception('You do not own this pet.');
+                throw new \Exception('You do not own this companion.');
             }
 
             // Next, check if the character the pet is being attached to is valid and the user has permission to attach the pet to that character.
@@ -289,7 +289,7 @@ class PetManager extends Service {
                     }
                 }
                 if ($categoryLimit && $categoryCount >= $categoryLimit) {
-                    throw new \Exception('This character has reached the limit of pets in this category.');
+                    throw new \Exception('This character has reached the limit of companions in this category.');
                 }
             }
             if ($pet->pet->limit) {
@@ -301,7 +301,7 @@ class PetManager extends Service {
                     }
                 }
                 if ($petLimit && $petCount >= $petLimit) {
-                    throw new \Exception('This character has reached the limit of this pet.');
+                    throw new \Exception('This character has reached the limit of this companion.');
                 }
             }
             $logType = 'Companion Attached';
@@ -345,10 +345,10 @@ class PetManager extends Service {
                 throw new \Exception('Your deviantART account must be verified before you can perform this action.');
             }
             if (!$pet) {
-                throw new \Exception('An invalid pet was selected.');
+                throw new \Exception('An invalid companion was selected.');
             }
             if ($pet->user_id != $user->id && !$user->hasPower('edit_inventories')) {
-                throw new \Exception('You do not own this pet.');
+                throw new \Exception('You do not own this companion.');
             }
             $logType = 'Companion Detached';
             $logData = 'Detached '.$pet->fullName.' from '.($pet->character->displayName ?? '???').' on '.Carbon::now()->format('M j, Y H:i');
@@ -379,15 +379,15 @@ class PetManager extends Service {
 
         try {
             if (!config('lorekeeper.pets.pet_bonding_enabled')) {
-                throw new \Exception('Pet bonding is not enabled.');
+                throw new \Exception('Companion bonding is not enabled.');
             }
 
             if ($user->id != $pet->user_id) {
-                throw new \Exception('You do not own this pet.');
+                throw new \Exception('You do not own this companion.');
             }
 
             if (!$pet->canBond()) {
-                throw new \Exception('You cannot bond with this pet again yet.');
+                throw new \Exception('You cannot bond with this companion again yet.');
             }
 
             $pet->bonded_at = Carbon::now();
@@ -434,7 +434,7 @@ class PetManager extends Service {
                 $pet->level->bonding = 0;
                 $pet->level->save();
 
-                flash('Your pet has leveled up! They are now level '.$pet->level->level->level.'.')->success();
+                flash('Your companion has leveled up! They are now level '.$pet->level->level->level.'.')->success();
             } else {
                 $pet->level->bonding = $bonding;
                 $pet->level->save();
@@ -770,7 +770,7 @@ class PetManager extends Service {
                 throw new \Exception('You do not have permission to adjust pet experience.');
             }
             if (!$pet) {
-                throw new \Exception('An invalid pet was selected.');
+                throw new \Exception('An invalid companion was selected.');
             }
             if (!$amount) {
                 throw new \Exception('Invalid value for experience inputted.');

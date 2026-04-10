@@ -13,7 +13,7 @@
 @endsection
 
 @section('content')
-    {!! breadcrumbs(['World' => 'world', 'Pets' => 'world/pets', $pet->name => 'world/pets/' . $pet->id]) !!}
+    {!! breadcrumbs(['World' => 'world', 'Companions' => 'world/pets', $pet->name => 'world/pets/' . $pet->id]) !!}
     <h1>
         {{ $pet->name }} @if ($pet->category)
             <i class="h2"> ({!! $pet->category->displayName !!})</i>

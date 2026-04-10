@@ -1,13 +1,13 @@
 @extends('admin.layout')
 
 @section('admin-title')
-    Pet Categories
+    Companion Categories
 @endsection
 
 @section('admin-content')
     {!! breadcrumbs([
         'Admin Panel' => 'admin',
-        'Pet Categories' => 'admin/data/pet-categories',
+        'Companion Categories' => 'admin/data/pet-categories',
         ($category->id ? 'Edit' : 'Create') . ' Category' => $category->id ? 'admin/data/pet-categories/edit/' . $category->id : 'admin/data/pet-categories/create',
     ]) !!}
 
@@ -34,7 +34,7 @@
             </div>
             <div class="form-group row no-gutters align-items-center">
                 <div class="col-md col-form-label">
-                    {!! Form::label('limit', 'Hold Limit (Optional)', ['class' => 'mb-0']) !!} {!! add_help('This limit is per category and does not get overwritten by individual pet limits.') !!}
+                    {!! Form::label('limit', 'Hold Limit (Optional)', ['class' => 'mb-0']) !!} {!! add_help('This limit is per category and does not get overwritten by individual companion limits.') !!}
                 </div>
                 {!! Form::number('limit', $category->limit, ['class' => 'col-md-9 form-control px-2']) !!}
             </div>

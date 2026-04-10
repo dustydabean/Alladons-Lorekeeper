@@ -1,14 +1,14 @@
 @extends('admin.layout')
 
 @section('admin-title')
-    {{ $drop->id ? 'Edit' : 'Create' }} Pet Drop
+    {{ $drop->id ? 'Edit' : 'Create' }} Companion Drop
 @endsection
 
 @section('admin-content')
-    {!! breadcrumbs(['Admin Panel' => 'admin', 'Pet Drops' => 'admin/data/pets/drops', ($drop->id ? 'Edit' : 'Create') . ' Drop Data' => $drop->id ? 'admin/data/pets/drops/edit/' . $drop->pet_id : 'admin/data/pets/drops/create']) !!}
+    {!! breadcrumbs(['Admin Panel' => 'admin', 'Companion Drops' => 'admin/data/pets/drops', ($drop->id ? 'Edit' : 'Create') . ' Drop Data' => $drop->id ? 'admin/data/pets/drops/edit/' . $drop->pet_id : 'admin/data/pets/drops/create']) !!}
 
     <h1>
-        {!! $drop->id ? 'Edit ' . $drop->pet->displayName : 'Create' !!} Pet Drop
+        {!! $drop->id ? 'Edit ' . $drop->pet->displayName : 'Create' !!} Companion Drop
         @if ($drop->id)
             <a href="#" class="btn btn-outline-danger float-right delete-drop-button">Delete Drop</a>
         @endif
@@ -20,20 +20,20 @@
 
     @if (!$drop->id && !$drop->pet_id)
         <div class="form-group">
-            {!! Form::label('Pet') !!}
-            {!! Form::select('pet_id', $pets, $drop->pet_id, ['class' => 'form-control', 'placeholder' => 'Select Pet']) !!}
+            {!! Form::label('Companion') !!}
+            {!! Form::select('pet_id', $pets, $drop->pet_id, ['class' => 'form-control', 'placeholder' => 'Select Companion']) !!}
         </div>
     @endif
 
     <div class="form-group">
-        {!! Form::label('drop_name', 'Drop Name (Optional)', ['class' => 'form-label']) !!} {!! add_help('What drops are referred to on pet pages. Impacts variants as well. Should be singular.') !!}
+        {!! Form::label('drop_name', 'Drop Name (Optional)', ['class' => 'form-label']) !!} {!! add_help('What drops are referred to on companion pages. Impacts variants as well. Should be singular.') !!}
         {!! Form::text('drop_name', $drop->name ?? null, ['class' => 'form-control']) !!}
     </div>
 
     <h2>Groups</h2>
     <p>
-        Every pet of the above pet is sorted into a "group" - these groups are used for different item drops, which can be set in this form after the pet drop is initially created.
-        These groups can be either assigned at pet creation (either at random or manually after selecting an applicable pet) or may be assigned after pet creation in the pet's "Collect" page, accessed via the pet sidebar on applicable pets.
+        Every companion of the above companion is sorted into a "group" - these groups are used for different item drops, which can be set in this form after the companion drop is initially created.
+        These groups can be either assigned at companion creation (either at random or manually after selecting an applicable companion) or may be assigned after companion creation in the companion's "Collect" page, accessed via the companion sidebar on applicable companions.
     </p>
     <div class="float-right mb-3">
         <a href="#" class="btn btn-info" id="addLoot">Add Group</a>
@@ -42,8 +42,8 @@
         <thead>
             <tr>
                 <th width="25%">Group Label {!! add_help('This label will be shown to users.') !!}</th>
-                <th width="10%">Weight {!! add_help('A higher weight means a pet is more likely to be randomly assigned to this group upon creation. Weights have to be integers above 0 (round positive number, no decimals) and do not have to add up to be a particular number.') !!}</th>
-                <th width="20%">Chance {!! add_help('Calculated automatically based on the weights. A pet has this percentage of chance of being automatically sorted into this group.') !!}</th>
+                <th width="10%">Weight {!! add_help('A higher weight means a companion is more likely to be randomly assigned to this group upon creation. Weights have to be integers above 0 (round positive number, no decimals) and do not have to add up to be a particular number.') !!}</th>
+                <th width="20%">Chance {!! add_help('Calculated automatically based on the weights. A companion has this percentage of chance of being automatically sorted into this group.') !!}</th>
                 <th width="10%"></th>
             </tr>
         </thead>
@@ -76,7 +76,7 @@
         <div class="col-md-6">
             <div class="form-group">
                 {!! Form::checkbox('is_active', 1, $drop->id ? $drop->isActive : 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
-                {!! Form::label('is_active', 'Is Active', ['class' => 'form-check-label ml-3']) !!} {!! add_help('Whether or not drops for this pet are active. Impacts variants as well.') !!}
+                {!! Form::label('is_active', 'Is Active', ['class' => 'form-check-label ml-3']) !!} {!! add_help('Whether or not drops for this companion are active. Impacts variants as well.') !!}
             </div>
         </div>
         <div class="col-md-6">
@@ -89,7 +89,7 @@
 
     @if ($drop->id)
         <h2>Dropped Items</h2>
-        <p>Select an item for each group of this pet to drop. Leave the item field blank to disable drops for the group.</p>
+        <p>Select an item for each group of this companion to drop. Leave the item field blank to disable drops for the group.</p>
         <div class="card card-body my-2 mb-4" id="dropped">
             @include('admin.pets._drop_widget', ['drop' => $drop])
         </div>

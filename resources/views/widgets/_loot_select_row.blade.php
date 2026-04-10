@@ -34,7 +34,7 @@
         <tbody id="lootRow">
             <tr class="loot-row">
                 <td>
-                    {!! Form::select('rewardable_type[]', ['Item' => 'Item', 'Currency' => 'Currency', 'Pet' => 'Pet', 'PetVariant' => 'Pet Variant'] + ($showLootTables ? ['LootTable' => 'Loot Table'] : []) + ($showRaffles ? ['Raffle' => 'Raffle Ticket'] : []) + (isset($showThemes) && $showThemes ? ['Theme' => 'Theme'] : []) + ((isset($showRecipes) && $showRecipes) ? ['Recipe' => 'Recipe'] : []), null, ['class' => 'form-control reward-type', 'placeholder' => 'Select Reward Type']) !!}
+                    {!! Form::select('rewardable_type[]', ['Item' => 'Item', 'Currency' => 'Currency', 'Pet' => 'Companion', 'PetVariant' => 'Companion Variant'] + ($showLootTables ? ['LootTable' => 'Loot Table'] : []) + ($showRaffles ? ['Raffle' => 'Raffle Ticket'] : []) + (isset($showThemes) && $showThemes ? ['Theme' => 'Theme'] : []) + ((isset($showRecipes) && $showRecipes) ? ['Recipe' => 'Recipe'] : []), null, ['class' => 'form-control reward-type', 'placeholder' => 'Select Reward Type']) !!}
                 </td>
                 <td class="loot-row-select"></td>
                 <td>{!! Form::text('quantity[]', 1, ['class' => 'form-control']) !!}</td>
@@ -44,8 +44,8 @@
     </table>
     {!! Form::select('rewardable_id[]', $items, null, ['class' => 'form-control item-select', 'placeholder' => 'Select Item']) !!}
     {!! Form::select('rewardable_id[]', $currencies, null, ['class' => 'form-control currency-select', 'placeholder' => 'Select Currency']) !!}
-    {!! Form::select('rewardable_id[]', $pets, null, ['class' => 'form-control pet-select', 'placeholder' => 'Select Pet']) !!}
-    {!! Form::select('rewardable_id[]', $variants, null, ['class' => 'form-control pet-variant-select', 'placeholder' => 'Select Pet Variant']) !!}
+    {!! Form::select('rewardable_id[]', $pets, null, ['class' => 'form-control pet-select', 'placeholder' => 'Select Companion']) !!}
+    {!! Form::select('rewardable_id[]', $variants, null, ['class' => 'form-control pet-variant-select', 'placeholder' => 'Select Companion Variant']) !!}
     @if ($showLootTables)
         {!! Form::select('rewardable_id[]', $tables, null, ['class' => 'form-control table-select', 'placeholder' => 'Select Loot Table']) !!}
     @endif

@@ -61,7 +61,7 @@
             </div>
             @if ($pet->hasDrops)
                 <div class="alert alert-info mt-4">
-                    This pet has drops! <a href="{{ $pet->idUrl }}">Click here to view them</a>.
+                    This companion has drops! <a href="{{ $pet->idUrl }}">Click here to view them</a>.
                 </div>
             @endif
         </div>

@@ -1,13 +1,13 @@
 @extends('admin.layout')
 
 @section('admin-title')
-    Grant Pets
+    Grant Companions
 @endsection
 
 @section('admin-content')
-    {!! breadcrumbs(['Admin Panel' => 'admin', 'Grant Pets' => 'admin/grants/pets']) !!}
+    {!! breadcrumbs(['Admin Panel' => 'admin', 'Grant Companions' => 'admin/grants/pets']) !!}
 
-    <h1>Grant Pets</h1>
+    <h1>Grant Companions</h1>
 
     {!! Form::open(['url' => 'admin/grants/pets']) !!}
 
@@ -19,17 +19,17 @@
     </div>
 
     <div class="form-group">
-        {!! Form::label('Pet(s)') !!} {!! add_help('Must have at least 1 pet and Quantity must be at least 1.') !!}
+        {!! Form::label('Companion(s)') !!} {!! add_help('Must have at least 1 companion and Quantity must be at least 1.') !!}
         <div id="petList">
             <div class="d-flex mb-2">
-                {!! Form::select('pet_ids[]', $pets, null, ['class' => 'form-control mr-2 default pet-select', 'placeholder' => 'Select Pet']) !!}
+                {!! Form::select('pet_ids[]', $pets, null, ['class' => 'form-control mr-2 default pet-select', 'placeholder' => 'Select Companion']) !!}
                 {!! Form::text('quantities[]', 1, ['class' => 'form-control mr-2', 'placeholder' => 'Quantity']) !!}
                 {!! Form::select('variant[]', ['none' => 'No Variant', 'randomize' => 'Randomize Variant'], null, ['class' => 'form-control mr-2 variant-select']) !!}
                 {!! Form::select('evolution[]', ['none' => 'No Evolution', 'randomize' => 'Randomize Evolution'], null, ['class' => 'form-control mr-2 evolution-select']) !!}
                 <a href="#" class="remove-pet btn btn-danger mb-2 disabled">×</a>
             </div>
         </div>
-        <div><a href="#" class="btn btn-primary" id="add-pet">Add Pet</a></div>
+        <div><a href="#" class="btn btn-primary" id="add-pet">Add Companion</a></div>
     </div>
 
     <div class="form-group">
@@ -40,13 +40,13 @@
     <h3>Additional Data</h3>
 
     <div class="form-group">
-        {!! Form::label('notes', 'Notes (Optional)') !!} {!! add_help('Additional notes for the pet. This will appear in the pet\'s description, but not in the logs.') !!}
+        {!! Form::label('notes', 'Notes (Optional)') !!} {!! add_help('Additional notes for the companion. This will appear in the companion\'s description, but not in the logs.') !!}
         {!! Form::text('notes', null, ['class' => 'form-control', 'maxlength' => 400]) !!}
     </div>
 
     <div class="form-group">
         {!! Form::checkbox('disallow_transfer', 1, 0, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
-        {!! Form::label('disallow_transfer', 'Account-bound', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If this is on, the recipient(s) will not be able to transfer this pet to other users. Pets that disallow transfers by default will still not be transferrable.') !!}
+        {!! Form::label('disallow_transfer', 'Account-bound', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If this is on, the recipient(s) will not be able to transfer this companion to other users. Companions that disallow transfers by default will still not be transferrable.') !!}
     </div>
 
     <div class="text-right">
@@ -56,7 +56,7 @@
     {!! Form::close() !!}
 
     <div class="pet-row hide mb-2">
-        {!! Form::select('pet_ids[]', $pets, null, ['class' => 'form-control mr-2 pet-select', 'placeholder' => 'Select Pet']) !!}
+        {!! Form::select('pet_ids[]', $pets, null, ['class' => 'form-control mr-2 pet-select', 'placeholder' => 'Select Companion']) !!}
         {!! Form::text('quantities[]', 1, ['class' => 'form-control mr-2', 'placeholder' => 'Quantity']) !!}
         {!! Form::select('variant[]', ['none' => 'No Variant', 'randomize' => 'Randomize Variant'], null, ['class' => 'form-control mr-2 variant-select']) !!}
         <a href="#" class="remove-pet btn btn-danger mb-2">×</a>

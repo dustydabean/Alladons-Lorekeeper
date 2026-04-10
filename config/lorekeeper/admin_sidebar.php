@@ -117,7 +117,7 @@ return [
                 'url'  => 'admin/grants/items',
             ],
             [
-                'name' => 'Pet Grants',
+                'name' => 'Companion Grants',
                 'url'  => 'admin/grants/pets',
             ],
             [
@@ -232,7 +232,7 @@ return [
                 'url'  => 'admin/data/items',
             ],
             [
-                'name' => 'Pets',
+                'name' => 'Companions',
                 'url'  => 'admin/data/pets',
             ],
             [

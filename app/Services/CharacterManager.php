@@ -1622,7 +1622,7 @@ class CharacterManager extends Service {
             $pets = UserPet::whereIn('id', $ids)->where('user_id', $user->id)->orderBy(DB::raw('FIELD(id, '.implode(',', $ids).')'))->get();
 
             if (count($pets) != count($ids)) {
-                throw new \Exception('Invalid pet included in sorting order.');
+                throw new \Exception('Invalid companion included in sorting order.');
             }
 
             $count = 0;

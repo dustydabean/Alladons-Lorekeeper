@@ -130,7 +130,7 @@ class GrantController extends Controller {
     public function postPets(Request $request, PetManager $service) {
         $data = $request->only(['names', 'pet_ids', 'quantities', 'data', 'disallow_transfer', 'notes', 'variant', 'evolution']);
         if ($service->grantPets($data, Auth::user())) {
-            flash('Pets granted successfully.')->success();
+            flash('Companions granted successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();

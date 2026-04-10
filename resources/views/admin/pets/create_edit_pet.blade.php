@@ -1,16 +1,16 @@
 @extends('admin.layout')
 
 @section('admin-title')
-    Pets
+    Companions
 @endsection
 
 @section('admin-content')
-    {!! breadcrumbs(['Admin Panel' => 'admin', 'Pets' => 'admin/data/pets', ($pet->id ? 'Edit' : 'Create') . ' Pet' => $pet->id ? 'admin/data/pets/edit/' . $pet->id : 'admin/data/pets/create']) !!}
+    {!! breadcrumbs(['Admin Panel' => 'admin', 'Companions' => 'admin/data/pets', ($pet->id ? 'Edit' : 'Create') . ' Companion' => $pet->id ? 'admin/data/pets/edit/' . $pet->id : 'admin/data/pets/create']) !!}
 
     <h1>
-        {{ $pet->id ? 'Edit' : 'Create' }} Pet
+        {{ $pet->id ? 'Edit' : 'Create' }} Companion
         @if ($pet->id)
-            <a href="#" class="btn btn-outline-danger float-right delete-pet-button">Delete Pet</a>
+            <a href="#" class="btn btn-outline-danger float-right delete-pet-button">Delete Companion</a>
             @if ($pet->dropData)
                 <a href="{{ url('/admin/data/pets/drops/edit/') . '/' . $pet->id }}" class="btn btn-info float-right mr-2">Edit Drops</a>
             @else
@@ -22,7 +22,7 @@
     {!! Form::open(['url' => $pet->id ? 'admin/data/pets/edit/' . $pet->id : 'admin/data/pets/create', 'files' => true]) !!}
 
     @if (!$pet->id)
-        <p>You can create variants once the pet is made.
+        <p>You can create variants once the companion is made.
         <p>
     @endif
 
@@ -46,13 +46,13 @@
     </div>
 
     <div class="form-group row no-gutters align-items-center">
-        {!! Form::label('pet_category_id', 'Pet Category (Optional)', ['class' => 'col-md mb-0']) !!}
+        {!! Form::label('pet_category_id', 'Companion Category (Optional)', ['class' => 'col-md mb-0']) !!}
         {!! Form::select('pet_category_id', $categories, $pet->pet_category_id, ['class' => 'col-md-9 form-control']) !!}
     </div>
 
     <div class="form-group row no-gutters align-items-center">
         <div class="col-md col-form-label">
-            {!! Form::label('limit', 'Character Hold Limit (Optional)', ['class' => 'mb-0']) !!} {!! add_help('This limit is per pet and holds lower priority than category limits, if set. If there is a category set, it is only applicable if that category can be attached.') !!}
+            {!! Form::label('limit', 'Character Hold Limit (Optional)', ['class' => 'mb-0']) !!} {!! add_help('This limit is per companion and holds lower priority than category limits, if set. If there is a category set, it is only applicable if that category can be attached.') !!}
         </div>
         {!! Form::number('limit', $pet->limit, ['class' => 'col-md-9 form-control px-2']) !!}
     </div>
@@ -63,7 +63,7 @@
     </div>
 
     {!! Form::checkbox('allow_transfer', 1, $pet->id ? $pet->allow_transfer : 1, ['class' => 'form-check-input', 'data-toggle' => 'toggle']) !!}
-    {!! Form::label('allow_transfer', 'Allow User → User Transfer', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If this is off, users will not be able to transfer this pet to other users. Non-account-bound pets can be account-bound when granted to users directly.') !!}
+    {!! Form::label('allow_transfer', 'Allow User → User Transfer', ['class' => 'form-check-label ml-3']) !!} {!! add_help('If this is off, users will not be able to transfer this companion to other users. Non-account-bound companions can be account-bound when granted to users directly.') !!}
 
     <div class="text-right">
         {!! Form::submit($pet->id ? 'Edit' : 'Create', ['class' => 'btn btn-primary']) !!}
@@ -75,7 +75,7 @@
         <hr />
         <div class="card mb-3 p-4">
             <h2>Variants</h2>
-            <p>Variants are different colourations, patterns, or other visual differences that a pet can have. They are not separate pets, but are instead variants of the same pet.</p>
+            <p>Variants are different colourations, patterns, or other visual differences that a companion can have. They are not separate companions, but are instead variants of the same companion.</p>
             <div class="card mb-3 border-0">
                 <div class="card-body">
                     <div class="mb-2 text-right">
@@ -117,8 +117,8 @@
 
         <div class="card mb-3 p-4">
             <h2>Evolutions</h2>
-            <p>If you would like your pet to "evolve" (similarly to Pokémon), you can set up evolutions here. Evolutions are not required, and you can have as many or as few as you like. If you do not set up any evolutions, the pet will not evolve.</p>
-            <p>Please note that variants will not be carried over to the evolved pet. If you would like to have a variant evolve into another variant, you will need to set up an evolution for each variant (after an evolution has been created).</p>
+            <p>If you would like your companion to "evolve" (similarly to Pokémon), you can set up evolutions here. Evolutions are not required, and you can have as many or as few as you like. If you do not set up any evolutions, the companion will not evolve.</p>
+            <p>Please note that variants will not be carried over to the evolved companion. If you would like to have a variant evolve into another variant, you will need to set up an evolution for each variant (after an evolution has been created).</p>
             <div class="card mb-3 border-0">
                 <div class="card-body">
                     <div class="mb-2 text-right">
@@ -172,7 +172,7 @@
         $(document).ready(function() {
             $('.delete-pet-button').on('click', function(e) {
                 e.preventDefault();
-                loadModal("{{ url('admin/data/pets/delete') }}/{{ $pet->id }}", 'Delete Pet');
+                loadModal("{{ url('admin/data/pets/delete') }}/{{ $pet->id }}", 'Delete Companion');
             });
 
             $('#add-variant').on('click', function(e) {

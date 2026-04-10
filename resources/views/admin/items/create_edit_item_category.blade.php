@@ -64,7 +64,7 @@
                 </div>
                 <div class="form-group">
                     {!! Form::checkbox('can_name', 1, $category->can_name, ['class' => 'form-check-input', 'data-toggle' => 'toggle', 'data-on' => 'Allow', 'data-off' => 'Disallow']) !!}
-                    {!! Form::label('can_name', 'Can be Named', ['class' => 'form-check-label ml-3']) !!} {!! add_help('This will set items in this category to be able to be named when in character inventories-- for instance, for pets. Works best in conjunction with a hold limit on the category.') !!}
+                    {!! Form::label('can_name', 'Can be Named', ['class' => 'form-check-label ml-3']) !!} {!! add_help('This will set items in this category to be able to be named when in character inventories-- for instance, for companions. Works best in conjunction with a hold limit on the category.') !!}
                 </div>
             </div>
         </div>

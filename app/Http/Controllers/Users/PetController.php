@@ -95,7 +95,7 @@ class PetController extends Controller {
      */
     public function postTransfer(Request $request, PetManager $service, $id) {
         if ($service->transferStack(Auth::user(), User::visible()->where('id', $request->get('user_id'))->first(), UserPet::where('id', $id)->first())) {
-            flash('Pet transferred successfully.')->success();
+            flash('Companion transferred successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
@@ -115,7 +115,7 @@ class PetController extends Controller {
      */
     public function postDelete(Request $request, PetManager $service, $id) {
         if ($service->deleteStack(Auth::user(), UserPet::where('id', $id)->first())) {
-            flash('Pet deleted successfully.')->success();
+            flash('Companion deleted successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
@@ -135,7 +135,7 @@ class PetController extends Controller {
      */
     public function postName(Request $request, PetManager $service, $id) {
         if ($service->nameStack(UserPet::find($id), $request->get('name'))) {
-            flash('Pet named successfully.')->success();
+            flash('Companion named successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
@@ -155,7 +155,7 @@ class PetController extends Controller {
      */
     public function postAttach(Request $request, PetManager $service, $id) {
         if ($service->attachStack(UserPet::find($id), $request->get('id'))) {
-            flash('Pet attached successfully.')->success();
+            flash('Companion attached successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
@@ -175,7 +175,7 @@ class PetController extends Controller {
      */
     public function postDetach(Request $request, PetManager $service, $id) {
         if ($service->detachStack(UserPet::find($id))) {
-            flash('Pet detached successfully.')->success();
+            flash('Companion detached successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
@@ -197,7 +197,7 @@ class PetController extends Controller {
     public function postVariant(Request $request, PetManager $service, $id, $isStaff = false) {
         $pet = UserPet::find($id);
         if ($service->editVariant($request->input('variant_id'), $pet, $request->input('stack_id'), $request->input('is_staff'))) {
-            flash('Pet variant changed successfully.')->success();
+            flash('Companion variant changed successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
@@ -219,7 +219,7 @@ class PetController extends Controller {
     public function postEvolution(Request $request, PetManager $service, $id, $isStaff = false) {
         $pet = UserPet::find($id);
         if ($service->editEvolution($request->input('evolution_id'), $pet, $request->input('stack_id'), $request->input('is_staff'))) {
-            flash('Pet evolution changed successfully.')->success();
+            flash('Companion evolution changed successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
@@ -351,7 +351,7 @@ class PetController extends Controller {
         }
 
         if ($service->editCustomImage($pet, $data)) {
-            flash('Pet image updated successfully.')->success();
+            flash('Companion image updated successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
@@ -370,7 +370,7 @@ class PetController extends Controller {
         $pet = UserPet::findOrFail($id);
 
         if ($service->editCustomImageDescription($pet, $request->only(['description']))) {
-            flash('Pet custom image description updated successfully.')->success();
+            flash('Companion custom image description updated successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
@@ -389,7 +389,7 @@ class PetController extends Controller {
         $pet = UserPet::findOrFail($id);
 
         if ($service->bondPet($pet, Auth::user())) {
-            flash('Pet bonded successfully.')->success();
+            flash('Companion bonded successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
@@ -414,7 +414,7 @@ class PetController extends Controller {
             'bonding_amount' => 'required',
         ]);
         if ($service->adjustBonding($pet, $request->get('bonding_amount'), Auth::user())) {
-            flash('Pet experience points adjusted successfully.')->success();
+            flash('Companion experience points adjusted successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();

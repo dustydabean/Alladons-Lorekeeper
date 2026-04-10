@@ -1,10 +1,10 @@
 @if (!$pet->drops->dropData->isActive)
-    <div class="alert alert-warning">This pet's drops are currently inactive. Because you are staff, you can see this area anyways.</div>
+    <div class="alert alert-warning">This companion's drops are currently inactive. Because you are staff, you can see this area anyways.</div>
 @endif
 
 <h4>
     Collect {{ isset($pet->drops->dropData->name) ? $pet->drops->dropData->name . 's' : 'Drops' }} ({{ $pet->drops->parameters }})
-    {!! add_help('Your pet\'s type is ' . $pet->drops->parameters . '.<br>You can view all pet drops on the ' . $pet->pet->name . ' pet page.') !!}
+    {!! add_help('Your companion\'s type is ' . $pet->drops->parameters . '.<br>You can view all companion drops on the ' . $pet->pet->name . ' companion page.') !!}
     @if (Auth::check() && Auth::user()->hasPower('edit_inventories'))
         <a href="#" class="float-right btn btn-outline-info btn-sm" id="paramsButton" data-toggle="modal" data-target="#paramsModal"><i class="fas fa-cog"></i> Admin</a>
     @endif
@@ -18,7 +18,7 @@
 
 <div class="card card-body mb-4 collapse" id="drops">
     @if ($pet->availableDrops)
-        <p>This pet produces these {{ isset($pet->drops->dropData->name) ? strtolower($pet->drops->dropData->name) . 's' : 'drops' }}, based on their type of pet and/or variant:</p>
+        <p>This companion produces these {{ isset($pet->drops->dropData->name) ? strtolower($pet->drops->dropData->name) . 's' : 'drops' }}, based on their type of companion and/or variant:</p>
         <table class="table table-sm category-table">
             <thead>
                 <tr>
@@ -43,29 +43,29 @@
                         @endforeach
                     @else
                         <tr>
-                            <td>No drops available for this pet.</td>
+                            <td>No drops available for this companion.</td>
                         </tr>
                     @endif
                 @endforeach
             </tbody>
         </table>
     @else
-        <p>This pet {{ isset($pet->drops->dropData->name) ? 'doesn\'t produce any ' . strtolower($pet->drops->dropData->name) . 's' : 'isn\'t eligible for any drops' }}.</p>
+        <p>This companion {{ isset($pet->drops->dropData->name) ? 'doesn\'t produce any ' . strtolower($pet->drops->dropData->name) . 's' : 'isn\'t eligible for any drops' }}.</p>
     @endif
 
     @if ($pet->availableDrops)
         <div class="text-center">
             <p>
-                This pet has {{ $drops->drops_available }} batch{{ $drops->drops_available == 1 ? '' : 'es' }} of {{ isset($pet->drops->dropData->name) ? strtolower($pet->drops->dropData->name) : 'drop' }}s available.<br />
+                This companion has {{ $drops->drops_available }} batch{{ $drops->drops_available == 1 ? '' : 'es' }} of {{ isset($pet->drops->dropData->name) ? strtolower($pet->drops->dropData->name) : 'drop' }}s available.<br />
                 @if (isset($drops->dropData->cap) && $drops->dropData->cap > 0)
-                    This pet can manage a maximum of {{ $drops->dropData->cap }} batch{{ $drops->dropData->cap == 1 ? '' : 'es' }} of {{ isset($pet->drops->dropData->name) ? strtolower($pet->drops->dropData->name) : 'drop' }}s at once!
+                    This companion can manage a maximum of {{ $drops->dropData->cap }} batch{{ $drops->dropData->cap == 1 ? '' : 'es' }} of {{ isset($pet->drops->dropData->name) ? strtolower($pet->drops->dropData->name) : 'drop' }}s at once!
                     @if ($drops->drops_available >= $drops->dropData->cap)
-                        Until these {{ isset($pet->drops->dropData->name) ? strtolower($pet->drops->dropData->name) : 'drop' }}s are collected, this pet won't produce any more.
+                        Until these {{ isset($pet->drops->dropData->name) ? strtolower($pet->drops->dropData->name) : 'drop' }}s are collected, this companion won't produce any more.
                     @else
-                        This pet's next {{ isset($pet->drops->dropData->name) ? strtolower($pet->drops->dropData->name) : 'drop' }}(s) will be available to collect {!! pretty_date($drops->next_day) !!}.
+                        This companion's next {{ isset($pet->drops->dropData->name) ? strtolower($pet->drops->dropData->name) : 'drop' }}(s) will be available to collect {!! pretty_date($drops->next_day) !!}.
                     @endif
                 @else
-                    This pet's next {{ isset($pet->drops->dropData->name) ? strtolower($pet->drops->dropData->name) : 'drop' }}(s) will be available to collect {!! pretty_date($drops->next_day) !!}.
+                    This companion's next {{ isset($pet->drops->dropData->name) ? strtolower($pet->drops->dropData->name) : 'drop' }}(s) will be available to collect {!! pretty_date($drops->next_day) !!}.
                 @endif
             </p>
         </div>
