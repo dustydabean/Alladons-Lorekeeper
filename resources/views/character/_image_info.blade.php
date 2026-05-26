@@ -253,15 +253,17 @@
                             $pets = $image->character->pets()->orderBy('sort', 'DESC')->limit(config('lorekeeper.pets.display_pet_count'))->get();
                         @endphp
                         @foreach ($pets as $pet)
-                            @if (config('lorekeeper.pets.pet_bonding_enabled'))
-                                @include('character._pet_bonding_info', ['pet' => $pet])
-                            @else
-                                <div class="ml-2 mr-3">
-                                    <img src="{{ $pet->pet->variantImage($pet->id) }}" style="max-width: 75px;" />
-                                    <br>
-                                    <span class="text-light badge badge-dark" style="font-size:95%;">{!! $pet->pet_name !!}</span>
-                                </div>
-                            @endif
+                            <div class="col-6 mb-2">
+                                @if (config('lorekeeper.pets.pet_bonding_enabled'))
+                                    @include('character._pet_bonding_info', ['pet' => $pet])
+                                @else
+                                    <div class="ml-2 mr-3">
+                                        <img src="{{ $pet->pet->image($pet->id) }}" />
+                                        <br>
+                                        <span class="text-light badge badge-dark" style="font-size:95%;">{!! $pet->pet_name !!}</span>
+                                    </div>
+                                @endif
+                            </div>
                         @endforeach
                         <div class="ml-auto float-right mr-3">
                             <a href="{{ $character->url . '/pets' }}" class="btn btn-outline-info btn-sm">View All</a>

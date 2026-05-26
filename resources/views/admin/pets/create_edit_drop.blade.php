@@ -41,17 +41,17 @@
     <table class="table table-sm" id="lootTable">
         <thead>
             <tr>
-                <th width="25%">Group Label {!! add_help('This label will be shown to users.') !!}</th>
+                <th width="25%">Group Label {!! add_help('This label will be shown to users. <b>Spaces are automatically replaces with underscores.</b>') !!}</th>
                 <th width="10%">Weight {!! add_help('A higher weight means a companion is more likely to be randomly assigned to this group upon creation. Weights have to be integers above 0 (round positive number, no decimals) and do not have to add up to be a particular number.') !!}</th>
                 <th width="20%">Chance {!! add_help('Calculated automatically based on the weights. A companion has this percentage of chance of being automatically sorted into this group.') !!}</th>
                 <th width="10%"></th>
             </tr>
         </thead>
         <tbody id="lootTableBody">
-            @if ($drop->id)
+            @if ($drop->id && $drop->parameters)
                 @foreach ($drop->parameters as $label => $weight)
                     <tr class="drop-row">
-                        <td class="drop-row-select">{!! Form::text('label[]', $label, ['class' => 'form-control']) !!}</td>
+                        <td class="drop-row-select">{!! Form::text('label[]', strtolower(str_replace(' ', '_', $label)), ['class' => 'form-control']) !!}</td>
                         <td class="drop-row-weight">{!! Form::number('weight[]', $weight, ['class' => 'form-control drop-weight']) !!}</td>
                         <td class="drop-row-chance"></td>
                         <td class="text-right"><a href="#" class="btn btn-danger remove-drop-button">Remove</a></td>
@@ -64,12 +64,12 @@
     <h2>Drop Frequency</h2>
     Select how often drops should occur.
     <div class="d-flex my-2">
-        {!! Form::number('drop_frequency', $drop->id ? $drop->frequency : null, ['class' => 'form-control mr-2', 'placeholder' => 'Drop Frequency']) !!}
+        {!! Form::number('drop_frequency', $drop->id ? $drop->frequency : 1, ['class' => 'form-control mr-2', 'placeholder' => 'Drop Frequency']) !!}
         {!! Form::select('drop_interval', ['hour' => 'Hour', 'day' => 'Day', 'month' => 'Month', 'year' => 'Year'], $drop->id ? $drop->interval : null, ['class' => 'form-control mr-2 default item-select', 'placeholder' => 'Drop Interval']) !!}
     </div>
     <div class="form-group">
         {!! Form::label('cap', 'Drop Cap (Optional)', ['class' => 'form-label ml-3']) !!} {!! add_help('How many batches of drops are allowed to accumulate. Either set to 0 or unset to allow unlimited accumulation.') !!}
-        {!! Form::number('cap', $drop->id ?? null, ['class' => 'form-control mr-2', 'placeholder' => 'Drop Cap']) !!}
+        {!! Form::number('cap', $drop->id ? $drop->cap : null, ['class' => 'form-control mr-2', 'placeholder' => 'Drop Cap']) !!}
     </div>
 
     <div class="row">
@@ -98,17 +98,12 @@
     <div class="text-right">
         {!! Form::submit($drop->id ? 'Edit' : 'Create', ['class' => 'btn btn-primary']) !!}
     </div>
-
     {!! Form::close() !!}
 
     @if ($drop->id)
-        <hr />
         @if ($drop->pet->variants->count())
+            <hr />
             <h3 class="h4">Variant Drops</h3>
-            <p>Variant drops are dropped <b>in addition</b> to the above drops by default, unless set otherwise above via the "Override" checkbox.</p>
-            <a href="#" id="create-variant" class="btn btn-primary">
-                Create Variant Drop
-            </a>
             @if ($drop->pet->variants()->has('dropData')->get()->count())
                 <div class="card card-body my-2 mb-4">
                     <table class="table table-sm">
@@ -122,19 +117,16 @@
                         <tbody>
                             @foreach ($drop->pet->variants()->has('dropData')->get() as $variant)
                                 <tr id="variant-{{ $variant->id }}">
-                                    <td>{{ $variant->variant_name }}</td>
+                                    <td>{{ $variant->name }}</td>
                                     <td>
                                         @if ($variant->dropData->rewards())
-                                            @foreach ($variant->dropData->rewardString() as $label => $string)
-                                                {!! '<b>' . $label . ':</b> ' . implode(', ', $string) . ($loop->last ? '' : '<br />') !!}
-                                            @endforeach
+                                            {!! $variant->dropData->rewardString()!!}
                                         @else
                                             <i>No rewards set.</i>
                                         @endif
                                     </td>
-                                    <td class="row">
-                                        <a href="#" class="btn btn-primary edit-variant" data-id="{{ $variant->id }}">Edit</a>
-                                        <a href="#" class="btn btn-outline-danger ml-2 delete-variant" data-id="{{ $variant->id }}">Delete</a>
+                                    <td class="text-right">
+                                        <a href="{{ $variant->dropData->url }}" class="btn btn-primary">Edit</a>
                                     </td>
                                 </tr>
                             @endforeach
@@ -169,19 +161,6 @@
     @include('js._pet_loot_js')
     <script>
         $(document).ready(function() {
-            $('#create-variant').on('click', function(e) {
-                e.preventDefault();
-                loadModal("{{ url('admin/data/pets/drops/edit/' . $drop->pet_id . '/variants/create') }}", 'Create Variant Drop');
-            });
-            $('.edit-variant').on('click', function(e) {
-                e.preventDefault();
-                loadModal("{{ url('admin/data/pets/drops/edit/' . $drop->pet_id . '/variants/edit') }}/" + $(this).data('id'), 'Edit Variant Drop');
-            });
-            $('.delete-variant').on('click', function(e) {
-                e.preventDefault();
-                loadModal("{{ url('admin/data/pets/drops/edit/' . $drop->pet_id . '/variants/delete') }}/" + $(this).data('id'), 'Delete Variant Drop');
-            });
-
             $('.delete-drop-button').on('click', function(e) {
                 e.preventDefault();
                 loadModal("{{ url('admin/data/pets/drops/delete') }}/{{ $drop->id }}", 'Delete Drop');

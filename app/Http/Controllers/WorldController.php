@@ -20,6 +20,7 @@ use App\Models\Pet\PetCategory;
 use App\Models\Rarity;
 use App\Models\Recipe\Recipe;
 use App\Models\Shop\Shop;
+use App\Models\Shop\ShopStock;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
 use App\Models\User\User;
@@ -676,6 +677,13 @@ class WorldController extends Controller {
             'imageUrl'    => $item->imageUrl,
             'name'        => $item->displayName,
             'description' => $item->parsed_description,
+            'shops'       => Shop::where(function ($shops) {
+                if (Auth::check() && Auth::user()->isStaff) {
+                    return $shops;
+                }
+
+                return $shops->where('is_staff', 0);
+            })->whereIn('id', ShopStock::where('item_id', $item->id)->pluck('shop_id')->unique()->toArray())->orderBy('sort', 'DESC')->get(),
         ]);
     }
 
@@ -721,6 +729,17 @@ class WorldController extends Controller {
      */
     public function getPets(Request $request) {
         $query = Pet::with('category');
+        // only show pets with no parent_id if config is set
+        if (!config('lorekeeper.pets.include_variants')) {
+            $query->whereNull('parent_id');
+        }
+
+        $categoryVisibleCheck = PetCategory::visible(Auth::check() ? Auth::user() : null)->pluck('id', 'name')->toArray();
+        // query where category is visible, or, no category and visible
+        $query->where(function ($query) use ($categoryVisibleCheck) {
+            $query->whereIn('pet_category_id', $categoryVisibleCheck)->orWhereNull('pet_category_id');
+        });
+
         $data = $request->only(['pet_category_id', 'name', 'sort']);
         if (isset($data['pet_category_id']) && $data['pet_category_id'] != 'none') {
             $query->where('pet_category_id', $data['pet_category_id']);

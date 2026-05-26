@@ -72,7 +72,7 @@ class ShopController extends Controller {
         return view('admin.shops.create_edit_shop', [
             'shop'       => $shop,
             'items'      => Item::orderBy('name')->pluck('name', 'id'),
-            'pets'       => Pet::orderBy('name')->pluck('name', 'id'),
+            'pets'       => Pet::orderBy('name')->get()->pluck('fullName', 'id'),
             'currencies' => Currency::orderBy('name')->pluck('name', 'id'),
             'coupons'    => $coupons,
         ]);
@@ -147,7 +147,9 @@ class ShopController extends Controller {
                 return [$category->id.'-category' => $category->name];
             });
             $items = [
-                $type            => $model::orderBy('name')->pluck('name', 'id')->toArray() + ['random' => 'Random '.$type],
+                $type            => strtolower($type) == 'pet'
+                    ? $model::orderBy('name')->get()->pluck('fullName', 'id')->toArray() + ['random' => 'Random '.$type]
+                    : $model::orderBy('name')->pluck('name', 'id')->toArray() + ['random' => 'Random '.$type],
                 $type.'Category' => $categories->toArray(),
             ];
         } else {
@@ -185,7 +187,9 @@ class ShopController extends Controller {
                 return [$category->id.'-category' => $category->name];
             });
             $items = [
-                $type            => $model::orderBy('name')->pluck('name', 'id')->toArray() + ['random' => 'Random '.$type],
+                $type            => strtolower($type) == 'pet'
+                    ? $model::orderBy('name')->get()->pluck('fullName', 'id')->toArray() + ['random' => 'Random '.$type]
+                    : $model::orderBy('name')->pluck('name', 'id')->toArray() + ['random' => 'Random '.$type],
                 $type.'Category' => $categories->toArray(),
             ];
         } else {

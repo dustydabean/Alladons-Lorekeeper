@@ -4,17 +4,23 @@
     <div class="text-center">
         <div class="mb-1">
             <a href="{{ $stack->pet->url }}">
-                <img class="img-fluid" src="{{ $stack->pet->variantImage($stack->id) }}" />
+                <img class="img-fluid" src="{{ $stack->pet->image($stack->id) }}" />
             </a>
         </div>
-        <div>
+        <div class="mb-1">
             <a href="{{ $stack->pet->url }}">
-                {{ $stack->pet->name }}
+                {{ $stack->pet->fullName }}
             </a>
         </div>
         <div class="mb-1">
             <span class="badge badge-primary">ID #{{ $stack->id }}</span>
         </div>
+
+        @if (isset($stack->pet->description) && $stack->pet->description)
+            <div class="card inventory-stack-description p-3 my-2">
+                {!! $stack->pet->parsed_description !!}
+            </div>
+        @endif
     </div>
 
     @if (isset($stack->data['notes']) || isset($stack->data['data']))
@@ -113,35 +119,45 @@
                         <a class="card-title h5">You cannot currently attach / detach this companion! It is under cooldown.</a>
                     @endif
                 </li>
-                @if ($user && count($splices) && $user->id == $stack->user_id)
+                @if ($user && isset($splices) && count($splices) && $user->id == $stack->user_id)
                     <li class="list-group-item">
                         <a class="card-title h5 collapse-title" data-toggle="collapse" href="#userVariantForm">Change Companion Variant</a>
                         {!! Form::open(['url' => 'pets/variant/' . $stack->id, 'id' => 'userVariantForm', 'class' => 'collapse']) !!}
                         <p>
                             This will use a splice item!
-                            @if ($stack->variant_id)
-                                <br><b>Current variant:</b> {{ $stack->variant->variant_name }}
+                            @if ($stack->pet->isVariant)
+                                <br>Current Variant: {{ $stack->pet->name }}
                             @endif
                         </p>
                         <div class="form-group">
-                            {!! Form::select('stack_id', $splices, null, ['class' => 'form-control', 'placeholder' => 'Select Item']) !!}
+                            {!! Form::select('stack_id', $splices, null, ['class' => 'form-control splice-item-select', 'placeholder' => 'Select Splice Item']) !!}
                         </div>
-                        <div class="form-group">
-                            @php
-                                $variants =
-                                    ['0' => 'Default'] +
-                                    $stack->pet
-                                        ->variants()
-                                        ->pluck('variant_name', 'id')
-                                        ->toArray();
-                            @endphp
-                            {!! Form::select('variant_id', $variants, $stack->variant_id, ['class' => 'form-control']) !!}
+                        <div class="form-group splice-item-dropdown">
+                            {!! Form::select('variant_id', [], null, ['class' => 'form-control', 'placeholder' => 'Select a splice item first...', 'disabled']) !!}
                         </div>
                         <div class="text-right">
                             {!! Form::submit('Change Variant', ['class' => 'btn btn-primary']) !!}
                         </div>
                         {!! Form::close() !!}
                     </li>
+
+                    <script>
+                        $(".splice-item-select").change(function() {
+                            var $itemStack = $('.splice-item-select').val();
+
+                            if ($itemStack.length) {
+                                $.ajax({
+                                    type: "GET",
+                                    url: "{{ url('pets/variant-check') }}/" + $itemStack + "/" + {{ $stack->id }},
+                                    dataType: "text"
+                                }).done(function(res) {
+                                    $(".splice-item-dropdown").html(res);
+                                }).fail(function(jqXHR, textStatus, errorThrown) {
+                                    alert("AJAX call failed: " + textStatus + ", " + errorThrown);
+                                });
+                            }
+                        });
+                    </script>
                 @endif
                 @if ($user->hasPower('edit_inventories'))
                     {{-- variant --}}
@@ -150,20 +166,25 @@
                         {!! Form::open(['url' => 'pets/variant/' . $stack->id, 'id' => 'variantForm', 'class' => 'collapse']) !!}
                         {!! Form::hidden('is_staff', 1) !!}
                         <p>
-                            @if ($stack->variant_id)
-                                <br><b>Current variant:</b> {{ $stack->variant->variant_name }}
+                            @if ($stack->pet->isVariant)
+                                <br><b>Current variant:</b> {{ $stack->pet->fullName }}
                             @endif
                         </p>
                         <div class="form-group">
                             @php
                                 $variants =
                                     ['0' => 'Default'] +
-                                    $stack->pet
-                                        ->variants()
-                                        ->pluck('variant_name', 'id')
-                                        ->toArray();
+                                    ($stack->pet->isVariant
+                                        ? $stack->pet->parent
+                                            ->variants()
+                                            ->pluck('name', 'id')
+                                            ->toArray()
+                                        : $stack->pet
+                                            ->variants()
+                                            ->pluck('name', 'id')
+                                            ->toArray());
                             @endphp
-                            {!! Form::select('variant_id', $variants, $stack->variant_id, ['class' => 'form-control mt-2']) !!}
+                            {!! Form::select('variant_id', $variants, $stack->pet->isVariant ? $stack->pet_id : 0, ['class' => 'form-control mt-2']) !!}
                         </div>
                         <div class="text-right">
                             {!! Form::submit('Change Variant', ['class' => 'btn btn-primary']) !!}
@@ -175,11 +196,6 @@
                         <a class="card-title h5 collapse-title" data-toggle="collapse" href="#evolutionForm">[ADMIN] Change Companion Evolution</a>
                         {!! Form::open(['url' => 'pets/evolution/' . $stack->id, 'id' => 'evolutionForm', 'class' => 'collapse']) !!}
                         {!! Form::hidden('is_staff', 1) !!}
-                        <p>
-                            @if ($stack->evolution_id)
-                                <br><b>Current evolution:</b> {{ $stack->evolution->evolution_name }} (Stage {{ $stack->evolution->evolution_stage }})
-                            @endif
-                        </p>
                         <div class="form-group">
                             @php
                                 $evolutions =
@@ -261,7 +277,7 @@
                         </li>
                     @else
                         <li class="list-group-item bg-light">
-                            <h5 class="card-title mb-0 text-muted"><i class="fas fa-lock mr-2"></i> Currently attached to a character</h5>
+                            <h5 class="card-title mb-0 text-muted"><i class="fas fa-lock mr-2"></i> Currently attached to {!! $stack->character->displayName !!}</h5>
                         </li>
                     @endif
                 @else

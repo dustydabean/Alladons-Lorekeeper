@@ -86,29 +86,39 @@
         {!! Form::open(['url' => 'pets/variant/' . $pet->id, 'id' => 'userVariantForm', 'class' => 'collapse']) !!}
         <p>
             This will use a splice item!
-            @if ($pet->variant_id)
-                <br>Current Variant: {{ $pet->variant->variant_name }}
+            @if ($pet->pet->isVariant)
+                <br>Current Variant: {{ $pet->pet->name }}
             @endif
         </p>
         <div class="form-group">
-            {!! Form::select('stack_id', $splices, null, ['class' => 'form-control', 'placeholder' => 'Select Item']) !!}
+            {!! Form::select('stack_id', $splices, null, ['class' => 'form-control splice-item-select', 'placeholder' => 'Select Splice Item']) !!}
         </div>
-        <div class="form-group">
-            @php
-                $variants =
-                    ['0' => 'Default'] +
-                    $pet->pet
-                        ->variants()
-                        ->pluck('variant_name', 'id')
-                        ->toArray();
-            @endphp
-            {!! Form::select('variant_id', $variants, $pet->variant_id, ['class' => 'form-control']) !!}
+        <div class="form-group splice-item-dropdown">
+            {!! Form::select('variant_id', [], null, ['class' => 'form-control', 'placeholder' => 'Select a splice item first...', 'disabled']) !!}
         </div>
         <div class="text-right">
             {!! Form::submit('Change Variant', ['class' => 'btn btn-primary']) !!}
         </div>
         {!! Form::close() !!}
     </li>
+
+    <script>
+        $(".splice-item-select").change(function() {
+            var $stack = $('.splice-item-select').val();
+
+            if ($stack.length) {
+                $.ajax({
+                    type: "GET",
+                    url: "{{ url('pets/variant-check') }}/" + $stack + "/" + {{ $pet->id }},
+                    dataType: "text"
+                }).done(function(res) {
+                    $(".splice-item-dropdown").html(res);
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    alert("AJAX call failed: " + textStatus + ", " + errorThrown);
+                });
+            }
+        });
+    </script>
 @endif
 
 @if ($user->hasPower('edit_inventories'))
@@ -121,12 +131,17 @@
             @php
                 $variants =
                     ['0' => 'Default'] +
-                    $pet->pet
-                        ->variants()
-                        ->pluck('variant_name', 'id')
-                        ->toArray();
+                    ($pet->pet->isVariant
+                        ? $pet->pet->parent
+                            ->variants()
+                            ->pluck('name', 'id')
+                            ->toArray()
+                        : $pet->pet
+                            ->variants()
+                            ->pluck('name', 'id')
+                            ->toArray());
             @endphp
-            {!! Form::select('variant_id', $variants, $pet->variant_id, ['class' => 'form-control mt-2']) !!}
+            {!! Form::select('variant_id', $variants, $pet->pet->isVariant ? $pet->pet_id : 0, ['class' => 'form-control mt-2']) !!}
         </div>
         <div class="text-right">
             {!! Form::submit('Change Variant', ['class' => 'btn btn-primary']) !!}

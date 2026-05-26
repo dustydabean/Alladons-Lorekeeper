@@ -924,4 +924,5 @@ class CharacterController extends Controller {
 
         return redirect()->back();
     }
+
 }

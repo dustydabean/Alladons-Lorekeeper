@@ -3,14 +3,14 @@
     if ($isAdmin) {
         $userPets = \App\Models\User\UserPet::where('user_id', $submission->user_id)
             ->whereNull('deleted_at')
-            ->with(['pet', 'pet.category', 'variant', 'evolution'])
+            ->with(['pet', 'pet.category', 'evolution'])
             ->orderBy('sort', 'DESC')
             ->get();
         $selectedPetIds = $submission->submissionPetIds;
     } else {
         $userPets = \App\Models\User\UserPet::where('user_id', Auth::user()->id)
             ->whereNull('deleted_at')
-            ->with(['pet', 'pet.category', 'variant', 'evolution'])
+            ->with(['pet', 'pet.category', 'evolution'])
             ->orderBy('sort', 'DESC')
             ->get();
         $selectedPetIds = isset($selectedPets) ? $selectedPets : [];
@@ -41,7 +41,7 @@
                     data-id="{{ $userPet->id }}" data-category="{{ $userPet->pet->pet_category_id ?: 0 }}"
                     data-search="{{ strtolower($userPet->id . ' ' . ($userPet->pet_name ?? '') . ' ' . ($userPet->pet->name ?? '')) }}">
                     <div class="companion-box text-center p-1 rounded border {{ $isSelected ? 'border-primary companion-selected' : '' }}" style="cursor:pointer;">
-                        <img src="{{ $userPet->pet->VariantImage($userPet->id) }}" class="img-fluid rounded" style="max-height: 60px; max-width: 60px;" alt="{{ $userPet->pet->name }}" />
+                        <img src="{{ $userPet->pet->image($userPet->id) }}" class="img-fluid rounded" style="max-height: 60px; max-width: 60px;" alt="{{ $userPet->pet->name }}" />
                         <div class="small text-truncate" title="{{ $userPet->selectName }}">
                             {{ $userPet->selectName }}
                         </div>

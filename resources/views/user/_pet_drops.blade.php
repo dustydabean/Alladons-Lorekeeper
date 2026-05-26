@@ -3,7 +3,7 @@
 @endif
 
 <h4>
-    Collect {{ isset($pet->drops->dropData->name) ? $pet->drops->dropData->name . 's' : 'Drops' }} ({{ $pet->drops->parameters }})
+    Collect {{ isset($pet->drops->dropData->name) ? $pet->drops->dropData->name . 's' : 'Drops' }} ({{ ucwords(str_replace('_', ' ', $pet->drops->parameters)) }})
     {!! add_help('Your companion\'s type is ' . $pet->drops->parameters . '.<br>You can view all companion drops on the ' . $pet->pet->name . ' companion page.') !!}
     @if (Auth::check() && Auth::user()->hasPower('edit_inventories'))
         <a href="#" class="float-right btn btn-outline-info btn-sm" id="paramsButton" data-toggle="modal" data-target="#paramsModal"><i class="fas fa-cog"></i> Admin</a>
@@ -27,26 +27,24 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($pet->availableDrops as $available_drops)
-                    @if (isset($available_drops->rewards(true)[strtolower($pet->drops->parameters)]))
-                        @foreach ($available_drops->rewards(true)[strtolower($pet->drops->parameters)] as $reward)
-                            <tr>
-                                @php $reward_object = $reward->rewardable_type::find($reward->rewardable_id); @endphp
-                                <td>
-                                    @if ($reward_object->has_image)
-                                        <img class="img-fluid" style="max-height: 10em;" src="{{ $reward_object->imageUrl }}"><br />
-                                    @endif
-                                    {!! $reward_object->displayName !!}
-                                </td>
-                                <td>Between {{ $reward->min_quantity . ' and ' . $reward->max_quantity }}</td>
-                            </tr>
-                        @endforeach
-                    @else
+                @if (isset($pet->availableDrops->rewards(true)[strtolower(str_replace(' ', '_', $pet->drops->parameters))]))
+                    @foreach ($pet->availabledrops->rewards(true)[strtolower(str_replace(' ', '_', $pet->drops->parameters))] as $reward)
                         <tr>
-                            <td>No drops available for this companion.</td>
+                            @php $reward_object = $reward->rewardable_type::find($reward->rewardable_id); @endphp
+                            <td>
+                                @if ($reward_object->has_image)
+                                    <img class="img-fluid" style="max-height: 10em;" src="{{ $reward_object->imageUrl }}"><br />
+                                @endif
+                                {!! $reward_object->displayName !!}
+                            </td>
+                            <td>Between {{ $reward->min_quantity . ' and ' . $reward->max_quantity }}</td>
                         </tr>
-                    @endif
-                @endforeach
+                    @endforeach
+                @else
+                    <tr>
+                        <td>No drops available for this pet.</td>
+                    </tr>
+                @endif
             </tbody>
         </table>
     @else

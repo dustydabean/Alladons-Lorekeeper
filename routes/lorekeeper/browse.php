@@ -113,6 +113,8 @@ Route::group(['prefix' => 'character', 'namespace' => 'Characters'], function ()
     Route::get('{slug}/change-log', 'CharacterController@getCharacterLogs');
     Route::get('{slug}/breeding-slots-log', 'CharacterController@getCharacterSlotsLogs');
     Route::get('{slug}/submissions', 'CharacterController@getCharacterSubmissions');
+
+    Route::get('{slug}/pets', 'CharacterController@getCharacterPets');
     Route::get('{slug}/gallery', 'CharacterController@getCharacterGallery');
 
     // lineage
@@ -190,6 +192,11 @@ Route::group(['prefix' => __('dailies.dailies')], function () {
 Route::group(['prefix' => 'event-tracking'], function () {
     Route::get('/', 'EventController@getEventTracking');
 });
+
+/**************************************************************************************************
+    Pet Drops
+**************************************************************************************************/
+Route::get('pets/pet/{id}', 'Users\PetController@getPetDrops');
 
 /**************************************************************************************************
     Site Pages

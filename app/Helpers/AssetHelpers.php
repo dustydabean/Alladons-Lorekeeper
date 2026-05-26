@@ -60,13 +60,6 @@ function getAssetModelString($type, $namespaced = true) {
                 return 'Pet';
             }
             break;
-        case 'pet_variants': case 'pet_variant':
-            if ($namespaced) {
-                return '\App\Models\Pet\PetVariant';
-            } else {
-                return 'PetVariant';
-            }
-            break;
         case 'raffle_tickets':
             if ($namespaced) {
                 return '\App\Models\Raffle\Raffle';
@@ -75,7 +68,7 @@ function getAssetModelString($type, $namespaced = true) {
             }
             break;
 
-        case 'loot_tables':
+        case 'loot_tables': case 'loottable':
             if ($namespaced) {
                 return '\App\Models\Loot\LootTable';
             } else {

@@ -17,6 +17,7 @@ use App\Models\Submission\SubmissionCharacter;
 use App\Models\Trade;
 use App\Models\User\User;
 use App\Models\User\UserCharacterLog;
+use App\Models\User\UserPet;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -194,8 +195,11 @@ class Character extends Model {
         return $this->belongsTo(Rarity::class, 'rarity_id');
     }
 
+    /**
+     * Gets the character's pets.
+     */
     public function pets() {
-        return $this->hasMany('App\Models\User\UserPet', 'character_id');
+        return $this->hasMany(UserPet::class, 'character_id');
     }
 
     /**

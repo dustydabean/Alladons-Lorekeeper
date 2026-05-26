@@ -199,7 +199,7 @@
                 @foreach ($submissionPets as $userPet)
                     <div class="col-xl-1 col-lg-2 col-md-2 col-sm-3 col-4 mb-2 text-center">
                         <a href="{{ $userPet->pageUrl() }}">
-                            <img src="{{ $userPet->pet->VariantImage($userPet->id) }}" class="img-fluid rounded" style="max-height:60px;" alt="{{ $userPet->pet->name }}" />
+                            <img src="{{ $userPet->pet->image($userPet->id) }}" class="img-fluid rounded" style="max-height:60px;" alt="{{ $userPet->pet->name }}" />
                         </a>
                         <div class="small text-truncate">
                             <a href="{{ $userPet->pageUrl() }}">{{ $userPet->selectName }}</a>

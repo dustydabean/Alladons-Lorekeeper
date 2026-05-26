@@ -3,11 +3,11 @@
 namespace App\Models\User;
 
 use App\Models\Character\Character;
+use App\Models\Loot\Loot;
 use App\Models\Model;
 use App\Models\Pet\Pet;
 use App\Models\Pet\PetDrop;
 use App\Models\Pet\PetEvolution;
-use App\Models\Pet\PetVariant;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -21,7 +21,7 @@ class UserPet extends Model {
      */
     protected $fillable = [
         'data', 'pet_id', 'user_id', 'attached_at', 'pet_name', 'has_image', 'artist_url', 'artist_id', 'description',
-        'evolution_id', 'variant_id', 'sort', 'bonded_at',
+        'evolution_id', 'sort', 'bonded_at',
     ];
 
     /**
@@ -32,20 +32,22 @@ class UserPet extends Model {
     protected $table = 'user_pets';
 
     /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'bonded_at' => 'datetime',
-    ];
-
-    /**
      * Whether the model contains timestamps to be saved and updated.
      *
      * @var string
      */
     public $timestamps = true;
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'bonded_at'   => 'datetime',
+        'attached_at' => 'datetime',
+        'data'        => 'array',
+    ];
 
     /**********************************************************************************************
 
@@ -75,13 +77,6 @@ class UserPet extends Model {
     }
 
     /**
-     * Get the variant associated with this pet stack.
-     */
-    public function variant() {
-        return $this->belongsTo(PetVariant::class, 'variant_id');
-    }
-
-    /**
      * Get the evolution associated with this pet stack.
      */
     public function evolution() {
@@ -92,8 +87,8 @@ class UserPet extends Model {
      * Get the pet's pet drop data.
      */
     public function drops() {
-        if (!$this->pet->dropData) {
-            return $this->belongsTo('App\Models\Loot\Loot', 'rewardable_id', 'loot_table_id')->whereNull('loot_table_id');
+        if (!isset($this->pet->dropData)) {
+            return $this->belongsTo(Loot::class, 'rewardable_id', 'loot_table_id')->whereNull('loot_table_id');
         }
         if (!PetDrop::where('user_pet_id', $this->id)->first()) {
             PetDrop::create([
@@ -261,15 +256,15 @@ class UserPet extends Model {
 
     /**
      * Gets the pet's name and species along with its ID.
-     * 
+     *
      * @return string
      */
     public function getFullNameAttribute() {
         if (!$this->pet_name) {
-            return ($this->pet->name ?? '(Unknown Pet)').' (#'.$this->id.')';
+            return ($this->pet->name ?? '(Unknown Companion)').' (#'.$this->id.')';
         }
         $string = $this->pet_name.' the ';
-        $string .= $this->pet->name ?? '(Unknown Pet)';
+        $string .= $this->pet->name ?? '(Unknown Companion)';
         $string .= ' (#'.$this->id.')';
 
         return $string;
@@ -281,30 +276,20 @@ class UserPet extends Model {
      * @return string
      */
     public function getSelectNameAttribute() {
-        $name = $this->pet_name ?: ($this->pet->name ?? '(Unknown Pet)');
+        $name = $this->pet_name ?: ($this->pet->name ?? '(Unknown Companion)');
 
         return '[#'.$this->id.'] '.$name;
     }
 
     /**
-     * gets all drops this pet is eligible for.
+     * Gets all drops this pet is eligible for.
      */
     public function getAvailableDropsAttribute() {
-        if (!$this->pet->dropData) {
+        if (!isset($this->pet->dropData) || !$this->drops) {
             return null;
         }
-        $rewards = [];
-        // otherwise return base rewards + variant rewards
-        if ($this->variant_id) {
-            if ($this->variant->dropData) {
-                $rewards[] = $this->variant->dropData;
-            }
-        }
-        if (!$this->pet->dropData->override) {
-            $rewards[] = $this->pet->dropData;
-        }
 
-        return $rewards;
+        return $this->pet->dropData;
     }
 
     /**
@@ -327,12 +312,12 @@ class UserPet extends Model {
         if ($this->bonded_at) {
             // check if its the next day
             if ($this->bonded_at->isToday()) {
-                return $reason ? 'You have already bonded with this pet today.' : false;
+                return $reason ? 'You have already bonded with this companion today.' : false;
             }
         }
         $maxLevel = \App\Facades\Settings::get('max_pet_level');
         if ($maxLevel && $this->level->bonding_level >= $maxLevel) {
-            return $reason ? 'This pet is already at its maximum level.' : false;
+            return $reason ? 'This companion is already at its maximum level.' : false;
         }
 
         return true;

@@ -12,8 +12,8 @@
 
     <h1 class="mb-0">
         {!! $pet->pet_name
-            ? $pet->pet_name . ' (' . $user->displayName . "'s " . ($pet->variant_id ? $pet->variant->variant_name . ' ' : '') . $pet->pet->displayName . ')'
-            : $user->name . "'s " . ($pet->variant_id ? $pet->variant->variant_name . ' ' : '') . $pet->pet->displayName !!}
+            ? $pet->pet_name . ' (' . $user->displayName . "'s " . $pet->pet->displayName . ')'
+            : $user->name . "'s " . $pet->pet->displayName !!}
     </h1>
     <div>
         <span class="badge badge-primary">ID #{{ $pet->id }}</span>
@@ -35,17 +35,17 @@
 
     <div class="row world-entry align-items-center">
         <div class="col-md-3 world-entry-image">
-            <img class="img-fluid mb-2" src="{{ $pet->pet->VariantImage($pet->id) }}" data-toggle="tooltip" title="{{ $pet->pet_name ?? $pet->pet->name }}" alt="{{ $pet->pet_name ?? $pet->pet->name }}" />
+            <img class="img-fluid rounded mb-2" src="{{ $pet->pet->image($pet->id) }}" data-toggle="tooltip" title="{{ $pet->pet_name ?? $pet->pet->name }}" alt="{{ $pet->pet_name ?? $pet->pet->name }}" />
             <div class="mb-2 mb-md-0">
                 <h5 class="mb-0">
                     Level {{ $pet->level->levelName ?? 1 }}
                 </h5>
-                @if ($pet->level && ($pet->level->levelName < Settings::get('max_pet_level')))
+                @if ($pet->level && $pet->level->levelName < Settings::get('max_pet_level'))
                     <div class="small">
                         Will level up {!! pretty_date($pet->level->levelsAt) !!}.
                     </div>
                     <div class="small" style="opacity: 0.65;">
-                        (<b>{{ $pet->level->bonding }} EXP</b>, minus {{ ($pet->level->bonding > 0) ? ($pet->level->bonding * 7) : 0 }} days)
+                        (<b>{{ $pet->level->bonding }} EXP</b>, minus {{ $pet->level->bonding > 0 ? $pet->level->bonding * 7 : 0 }} days)
                     </div>
                 @else
                     <div class="small" style="opacity: 0.65;">
@@ -62,6 +62,17 @@
                         <a href="{{ $pet->character->url }}">
                             <img src="{{ $pet->character->image->thumbnailUrl }}" class="rounded img-thumbnail mb-2" alt="Thumbnail for {{ $pet->character->fullName }}" />
                         </a>
+                        @if ($namespace)
+                            @if (Auth::check() && Auth::user()->id == $pet->character->user_id && $pet->canBond())
+                                <div class="form-group mb-0">
+                                    {!! Form::open(['url' => 'pets/bond/' . $pet->id]) !!}
+                                    {!! Form::submit('Bond', ['class' => 'btn btn-primary']) !!}
+                                    {!! Form::close() !!}
+                                </div>
+                            @else
+                                <div class="alert alert-warning mb-0">{{ $pet->canBond(true) }}</div>
+                            @endif
+                        @endif
                     @endif
                     @if ($pet->evolution)
                         <h2 class="h5">Evolved</h2>

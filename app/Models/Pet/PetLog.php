@@ -55,6 +55,6 @@ class PetLog extends Model {
      * Get the pet that is the target of the action.
      */
     public function pet() {
-        return $this->belongsTo(Pet::class);
+        return $this->belongsTo(Pet::class, 'pet_id');
     }
 }

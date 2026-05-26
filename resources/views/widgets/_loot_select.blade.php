@@ -4,11 +4,7 @@
     // doing so this way enables better compatibility across disparate extensions
     $characterCurrencies = \App\Models\Currency\Currency::where('is_character_owned', 1)->orderBy('sort_character', 'DESC')->pluck('name', 'id');
     $items = \App\Models\Item\Item::orderBy('name')->pluck('name', 'id');
-    $pets = \App\Models\Pet\Pet::orderBy('name')->pluck('name', 'id');
-    $variants = \App\Models\Pet\PetVariant::orderBy('variant_name')->pluck('variant_name', 'id')->map(function ($variant, $key) {
-        $pet = \App\Models\Pet\PetVariant::find($key)->pet;
-        return $variant . ' (' . $pet->name . ' variant)';
-    });
+    $pets = \App\Models\Pet\Pet::orderBy('name')->get()->pluck('fullName', 'id');
     $currencies = \App\Models\Currency\Currency::where('is_user_owned', 1)
         ->orderBy('name')
         ->pluck('name', 'id');
@@ -46,7 +42,7 @@
                 <tr class="loot-row">
                     <td>
                         {!! Form::select('rewardable_type[]',
-                        ['Item' => 'Item', 'Currency' => 'Currency', 'Pet' => 'Companion', 'PetVariant' => 'Companion Variant'] + ($showLootTables ? ['LootTable' => 'Loot Table'] : []) + ($showRaffles ? ['Raffle' => 'Raffle Ticket'] : []) + (isset($showThemes) && $showThemes ? ['Theme' => 'Theme'] : []) + ((isset($showRecipes) && $showRecipes) ? ['Recipe' => 'Recipe'] : []), $loot->rewardable_type,
+                        ['Item' => 'Item', 'Currency' => 'Currency', 'Pet' => 'Companion'] + ($showLootTables ? ['LootTable' => 'Loot Table'] : []) + ($showRaffles ? ['Raffle' => 'Raffle Ticket'] : []) + (isset($showThemes) && $showThemes ? ['Theme' => 'Theme'] : []) + ((isset($showRecipes) && $showRecipes) ? ['Recipe' => 'Recipe'] : []), $loot->rewardable_type,
                         ['class' => 'form-control reward-type', 'placeholder' => 'Select Reward Type']) !!}
                     </td>
 
@@ -57,8 +53,6 @@
                             {!! Form::select('rewardable_id[]', $currencies, $loot->rewardable_id, ['class' => 'form-control currency-select selectize', 'placeholder' => 'Select Currency']) !!}
                         @elseif($loot->rewardable_type == 'Pet')
                             {!! Form::select('rewardable_id[]', $pets, $loot->rewardable_id, ['class' => 'form-control pet-select selectize', 'placeholder' => 'Select Companion']) !!}
-                        @elseif($loot->rewardable_type == 'PetVariant')
-                            {!! Form::select('rewardable_id[]', $variants, $loot->rewardable_id, ['class' => 'form-control pet-variant-select selectize', 'placeholder' => 'Select Companion Variant']) !!}
                         @elseif($showLootTables && $loot->rewardable_type == 'LootTable')
                             {!! Form::select('rewardable_id[]', $tables, $loot->rewardable_id, ['class' => 'form-control table-select selectize', 'placeholder' => 'Select Loot Table']) !!}
                         @elseif($showRaffles && $loot->rewardable_type == 'Raffle')

@@ -23,11 +23,15 @@
 
     <h1>Companions</h1>
 
-    @if(Auth::check() && (Auth::user()->id == $character->user_id || Auth::user()->hasPower('manage_characters')))
+    @if (Auth::check() && (Auth::user()->id == $character->user_id || Auth::user()->hasPower('manage_characters')))
         <p>
             Currently {{ config('lorekeeper.pets.display_pet_count') }} companion{{ config('lorekeeper.pets.display_pet_count') != 1 ? 's' : '' }} are displayed on the character's page.
+            @if (config('lorekeeper.pets.max_pets') && config('lorekeeper.pets.max_pets') > 0)
+                A maximum of {{ config('lorekeeper.pets.max_pets') }} companion{{ config('lorekeeper.pets.max_pets') != 1 ? 's' : '' }} can be attached.
+            @endif
             <br />You can determine which companions are displayed by dragging and dropping them in the order you want.
         </p>
+
         {!! Form::open(['url' => 'characters/' . $character->slug . '/pets/sort', 'class' => 'text-right']) !!}
         {!! Form::hidden('sort', null, ['id' => 'sortableOrder']) !!}
         {!! Form::submit('Save Order', ['class' => 'btn btn-primary']) !!}
@@ -35,13 +39,13 @@
     @endif
 
     <div id="sortable" class="row sortable justify-content-center">
-        @foreach($character->pets()->orderBy('sort', 'DESC')->get() as $pet)
-            <div class="col-md-3 col-6" data-id="{{ $pet->id }}">
-                <div class="card mb-3 inventory-category h-100" data-id="{{ $pet->id }}">
+        @foreach ($character->pets()->orderBy('sort', 'DESC')->get() as $pet)
+            <div class="col-md-3 col-6 mb-3" data-id="{{ $pet->id }}">
+                <div class="card inventory-category h-100" data-id="{{ $pet->id }}">
                     <div class="card-body inventory-body text-center">
                         <div class="mb-1">
                             <a href="{{ $pet->pageUrl() }}" class="inventory-stack">
-                                <img src="{{ $pet->pet->variantImage($pet->id) }}" class="rounded img-fluid" />
+                                <img src="{{ $pet->pet->image($pet->id) }}" class="rounded img-fluid" />
                             </a>
                         </div>
                         <div>
@@ -62,7 +66,7 @@
                                 Will level up {!! pretty_date($pet->level->levelsAt) !!}.
                             </div>
                             <div class="small" style="opacity: 0.65;">
-                                (<b>{{ $pet->level->bonding }} EXP</b>, minus {{ ($pet->level->bonding > 0) ? ($pet->level->bonding * 7) : 0 }} days)
+                                (<b>{{ $pet->level->bonding }} EXP</b>, minus {{ $pet->level->bonding > 0 ? $pet->level->bonding * 7 : 0 }} days)
                             </div>
                         </div>
                     </div>
@@ -102,4 +106,3 @@
         });
     </script>
 @endsection
-    

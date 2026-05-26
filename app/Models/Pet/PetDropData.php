@@ -11,7 +11,7 @@ class PetDropData extends Model {
      * @var array
      */
     protected $fillable = [
-        'pet_id', 'parameters', 'data', 'is_active', 'name', 'cap', 'frequency', 'interval', 'variant_data', 'override',
+        'pet_id', 'parameters', 'data', 'is_active', 'name', 'cap', 'frequency', 'interval', 'override',
     ];
 
     /**
@@ -40,6 +40,16 @@ class PetDropData extends Model {
     public static $updateRules = [
         'drop_frequency' => 'required',
         'drop_interval'  => 'required',
+    ];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'parameters' => 'array',
+        'data' => 'array',
     ];
 
     /**********************************************************************************************
@@ -85,26 +95,13 @@ class PetDropData extends Model {
     }
 
     /**
-     * Get the parameter attribute as an associative array.
-     *
-     * @return array
-     */
-    public function getParametersAttribute() {
-        if (isset($this->attributes['parameters'])) {
-            return json_decode($this->attributes['parameters'], true);
-        } else {
-            return null;
-        }
-    }
-
-    /**
      * Get the parameter attribute as an array with the keys and values the same.
      *
      * @return array
      */
     public function getParameterArrayAttribute() {
-        foreach ($this->parameters as $parameter=>$weight) {
-            $paramArray[$parameter] = $parameter;
+        foreach ($this->parameters as $parameter => $weight) {
+            $paramArray[strtolower(str_replace(' ', '_', $parameter))] = ucwords(str_replace('_', ' ', $parameter));
         }
 
         return $paramArray;
@@ -138,7 +135,7 @@ class PetDropData extends Model {
      * @return array
      */
     public function getCapAttribute() {
-        return $this->data['cap'] ?? null;
+        return $this->attributes['cap'] ?? null;
     }
 
     /**********************************************************************************************
@@ -182,13 +179,13 @@ class PetDropData extends Model {
     }
 
     /**
-     * Get the rewards for the submission/claim.
+     * Get the rewards for the pet drop.
      *
      * @param mixed $namespace
      *
      * @return array
      */
-    public function Rewards($namespace = false) {
+    public function rewards($namespace = false) {
         if ($this->data && isset($this->data['assets'])) {
             $assets = parseDropAssetData($this->data['assets']);
             $rewards = [];
@@ -210,5 +207,28 @@ class PetDropData extends Model {
         }
 
         return null;
+    }
+
+    /**
+     * Gets the rewards as a comma-seperated string.
+     */
+    public function rewardString() {
+        $string = [];
+        foreach ($this->rewards(true) as $label => $reward_values) {
+            foreach ($reward_values as $reward) {
+                $reward_object = $reward->rewardable_type::find($reward->rewardable_id);
+                if ($reward->min_quantity == $reward->max_quantity) {
+                    $string[$label][] = $reward_object->displayname . ' (' . $reward->min_quantity . ')';
+                } else {
+                    $string[$label][] = $reward_object->displayname . ' (' . $reward->min_quantity . '-' . $reward->max_quantity . ')';
+                }
+            }
+        }
+
+        $result = [];
+        foreach ($string as $label => $items) {
+            $result[] = '<div><b>' . $label . ':</b> ' . implode(', ', $items) . '</div>';
+        }
+        return implode('', $result);
     }
 }

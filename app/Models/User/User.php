@@ -21,6 +21,7 @@ use App\Models\Item\Item;
 use App\Models\Item\ItemLog;
 use App\Models\Limit\UserUnlockedLimit;
 use App\Models\Notification;
+use App\Models\Pet\Pet;
 use App\Models\Pet\PetLog;
 use App\Models\Rank\Rank;
 use App\Models\Rank\RankPower;
@@ -217,7 +218,7 @@ class User extends Authenticatable implements MustVerifyEmail {
      * Get the user's pets.
      */
     public function pets() {
-        return $this->belongsToMany('App\Models\Pet\Pet', 'user_pets')->withPivot('data', 'updated_at', 'id', 'variant_id', 'character_id', 'pet_name', 'has_image', 'evolution_id')->whereNull('user_pets.deleted_at');
+        return $this->belongsToMany(Pet::class, 'user_pets')->withPivot('data', 'updated_at', 'id', 'character_id', 'pet_name', 'has_image', 'evolution_id')->whereNull('user_pets.deleted_at');
     }
 
     /**

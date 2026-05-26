@@ -9,9 +9,11 @@ class AddPetsToSubmissionsTable extends Migration {
      * Run the migrations.
      */
     public function up() {
-        Schema::table('submissions', function (Blueprint $table) {
-            $table->json('pets')->nullable()->default(null)->after('data');
-        });
+        if (!Schema::hasColumn('submissions', 'pets')) {
+            Schema::table('submissions', function (Blueprint $table) {
+                $table->json('pets')->nullable()->default(null)->after('data');
+            });
+        }
     }
 
     /**
