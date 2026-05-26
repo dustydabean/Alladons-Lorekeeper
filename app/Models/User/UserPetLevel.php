@@ -66,15 +66,11 @@ class UserPetLevel extends Model {
     }
 
     /**
-     * Gets the next level for the pet.
+     * Gets the next level date for the pet, defaulting to a year from now 
+     * for anything that doesn't have a proper next_level_at value.
      */
     public function getNextLevelAttribute() {
-        if (!isset($this->next_level_at)) {
-            $this->next_level_at = Carbon::now()->addYear()->startOfDay();
-            $this->save();
-        }
-
-        return $this->next_level_at ?? null;
+        return $this->next_level_at ?? Carbon::now()->addYear()->startOfDay();
     }
     
     /**

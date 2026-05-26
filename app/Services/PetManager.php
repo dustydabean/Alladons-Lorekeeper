@@ -7,7 +7,6 @@ use App\Facades\Settings;
 use App\Models\Character\Character;
 use App\Models\Pet\Pet;
 use App\Models\Pet\PetDrop;
-use App\Models\Pet\PetLog;
 use App\Models\User\User;
 use App\Models\User\UserItem;
 use App\Models\User\UserPet;
@@ -75,13 +74,6 @@ class PetManager extends Service {
                 }
             });
 
-            $keyed_evolution = [];
-            array_walk($data['pet_ids'], function ($id, $key) use (&$keyed_evolution, $data) {
-                if ($id != null && !in_array($id, array_keys($keyed_evolution), true)) {
-                    $keyed_evolution[$id] = $data['evolution'][$key];
-                }
-            });
-
             // Process pet
             $pets = Pet::find($data['pet_ids']);
             if (!count($pets)) {
@@ -90,7 +82,7 @@ class PetManager extends Service {
 
             foreach ($users as $user) {
                 foreach ($pets as $pet) {
-                    if ($this->creditPet($staff, $user, 'Staff Grant', Arr::only($data, ['data', 'disallow_transfer', 'notes']), $pet, $keyed_quantities[$pet->id], $keyed_variant[$pet->id] ?? null, $keyed_evolution[$pet->id] ?? null)) {
+                    if ($this->creditPet($staff, $user, 'Staff Grant', Arr::only($data, ['data', 'disallow_transfer', 'notes']), $pet, $keyed_quantities[$pet->id] ?? 1, $keyed_variant[$pet->id] ?? null, $keyed_evolution[$pet->id] ?? null)) {
                         Notifications::create('PET_GRANT', $user, [
                             'pet_name'     => $pet->name,
                             'pet_quantity' => $keyed_quantities[$pet->id],
@@ -337,20 +329,7 @@ class PetManager extends Service {
                 throw new \Exception('Failed to create companion attachment log.');
             }
 
-            if (!$pet->level) {
-                $pet->level()->create([
-                    'bonding_level'   => 1,
-                    'bonding'         => 0,
-                    'next_level_at' => Carbon::now()->addYear()->startOfDay(),
-                ]);
-            }
-
-            if (!$pet->level && config('lorekeeper.pet_bonding_enabled')) {
-                $pet->level()->create([
-                    'bonding_level'   => 0,
-                    'bonding' => 0,
-                ]);
-            }
+            $pet->ensureLevel();
 
             return $this->commitReturn(true);
         } catch (\Exception $e) {
@@ -425,14 +404,7 @@ class PetManager extends Service {
             $pet->bonded_at = Carbon::now();
             $pet->save();
 
-            if (!$pet->level) {
-                $pet->level()->create([
-                    'bonding_level' => 1,
-                    'bonding'       => 0,
-                    'next_level_at' => Carbon::now()->addYear()->startOfDay(),
-                ]);
-                $pet = $pet->fresh();
-            }
+            $pet->ensureLevel();
 
             $pet->level->bonding += 1;
             $pet->level->save();
@@ -492,13 +464,16 @@ class PetManager extends Service {
                 $this->logAdminAction($pet->user, 'Pet Variant Changed', json_encode(['pet' => $pet->id, 'variant' => $id]));
             }
 
-            if ($id == 'default' || $id === 0 || $id === '0') {
+            if ($id == 'default' || $id == 0 || $id == '0') {
                 // Revert to the base species: parent pet if currently a variant, otherwise keep as-is.
                 $pet->pet_id = $pet->pet->isVariant ? $pet->pet->parent_id : $pet->pet_id;
             } else {
                 $pet->pet_id = $id;
             }
             $pet->save();
+
+            $pet->load('pet');
+            $pet->ensureDrop();
 
             return $this->commitReturn(true);
         } catch (\Exception $e) {
@@ -671,11 +646,7 @@ class PetManager extends Service {
                 ]);
 
                 if ($user_pet) {
-                    $user_pet->level()->create([
-                        'bonding_level' => 1,
-                        'bonding'       => 0,
-                        'next_level_at' => Carbon::now()->addYear()->startOfDay(),
-                    ]);
+                    $user_pet->ensureLevel();
                 }
 
                 // Create drop information for the pet, if relevant
@@ -795,23 +766,17 @@ class PetManager extends Service {
                 throw new \Exception('Invalid value for experience inputted.');
             }
 
-            // Create level if needed
-            if (!$pet->level) {
-                $pet->level()->create([
-                    'bonding_level' => 1,
-                    'bonding'       => 0,
-                    'next_level_at' => Carbon::now()->addYear()->startOfDay(),
-                ]);
-                $pet->refresh();
-            }
+            $pet->ensureLevel();
 
             $oldBonding = $pet->level->bonding;
-            $newBonding = $oldBonding + $amount;
+            // prevent exp from going below 0
+            $newBonding = max(0, $oldBonding + $amount);
             $pet->level->bonding = $newBonding;
             $pet->level->save();
 
+            $delta = $newBonding - $oldBonding;
             $logType = 'Pet EXP Edit';
-            $logData = '[Staff] Adjusted the experience value of '.$pet->fullName.' ('.($newBonding > $oldBonding ? '+' : '-').$amount.' EXP, now at '.$pet->level->bonding.' EXP)';
+            $logData = '[Staff] Adjusted the experience value of '.$pet->fullName.' ('.($delta >= 0 ? '+' : '').$delta.' EXP, now at '.$pet->level->bonding.' EXP)';
 
             if (!$this->createLog($staff->id, $pet->user->id ?? null, $pet->id, $logType, $logData, $pet->pet->id ?? null, 1)) {
                 throw new \Exception('Failed to create pet experience edit log.');
@@ -828,7 +793,7 @@ class PetManager extends Service {
     }
 
     /**
-     * Processes any level-up or level-down for a pet based on its current bonding and time.
+     * Processes any level-ups for a pet based on its current bonding and time.
      *
      * @param mixed $pet
      */
@@ -836,12 +801,11 @@ class PetManager extends Service {
         if (!$pet->level) {
             return;
         }
-
         $maxLevel = Settings::get('max_pet_level');
         $today = Carbon::now();
 
-        while ($pet->level->levelsAt < $today && (!$maxLevel || $pet->level->bonding_level < $maxLevel)) {
-            $daysUntilLevel = Carbon::now()->diffInDays($pet->level->next_level_at, false);
+        while (($pet->level->levelsAt < $today) && (!$maxLevel || $pet->level->bonding_level < $maxLevel)) {
+            $daysUntilLevel = Carbon::now()->diffInDays($pet->level->nextLevel, false);
             $weeksConsumed = $daysUntilLevel > 0 ? (int) ceil($daysUntilLevel / 7) : 0;
 
             $pet->level->bonding_level++;
@@ -849,43 +813,16 @@ class PetManager extends Service {
             $pet->level->next_level_at = Carbon::now()->addYear()->startOfDay();
             $pet->level->save();
 
-            $logType = 'Level Up';
-            $logData = 'Pet '.$pet->fullName.' levelled up! It is now level '.$pet->level->bonding_level;
-            PetLog::create([
-                'sender_id'    => $pet->user_id ?? null,
-                'recipient_id' => $pet->user_id ?? null,
-                'stack_id'     => $pet->id,
-                'log'          => $logType.' ('.$logData.')',
-                'log_type'     => $logType,
-                'data'         => $logData,
-                'pet_id'       => $pet->pet_id ?? null,
-                'quantity'     => 1,
-                'created_at'   => Carbon::now(),
-                'updated_at'   => Carbon::now(),
-            ]);
+            $this->logLevelChange($pet, 'Level Up', 'levelled up');
         }
+    }
 
-        while ($pet->level->bonding_level > 1 && $pet->level->bonding <= -53) {
-            $pet->level->bonding_level--;
-            $pet->level->bonding += 53;
-            $pet->level->next_level_at = Carbon::now()->addYear()->startOfDay();
-            $pet->level->save();
-
-            $logType = 'Level Down';
-            $logData = 'Pet '.$pet->fullName.' lost a level. It is now level '.$pet->level->bonding_level;
-            PetLog::create([
-                'sender_id'    => $pet->user_id ?? null,
-                'recipient_id' => $pet->user_id ?? null,
-                'stack_id'     => $pet->id,
-                'log'          => $logType.' ('.$logData.')',
-                'log_type'     => $logType,
-                'data'         => $logData,
-                'pet_id'       => $pet->pet_id ?? null,
-                'quantity'     => 1,
-                'created_at'   => Carbon::now(),
-                'updated_at'   => Carbon::now(),
-            ]);
-        }
+    /**
+     * Writes a level up/down log entry for a pet.
+     */
+    private function logLevelChange($pet, string $logType, string $verb): void {
+        $logData = 'Pet '.$pet->fullName.' '.$verb.'. It is now level '.$pet->level->bonding_level;
+        $this->createLog($pet->user_id ?? null, $pet->user_id ?? null, $pet->id, $logType, $logData, $pet->pet_id ?? null, 1);
     }
 
     /**

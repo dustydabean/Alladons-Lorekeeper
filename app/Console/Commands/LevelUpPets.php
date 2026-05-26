@@ -3,10 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Facades\Settings;
-use App\Models\User\UserPetLevel;
-use App\Models\Pet\PetLog;
+use App\Models\User\UserPet;
+use App\Services\PetManager;
 use Illuminate\Console\Command;
-use Carbon\Carbon;
 
 class LevelUpPets extends Command {
     /**
@@ -21,7 +20,7 @@ class LevelUpPets extends Command {
      *
      * @var string
      */
-    protected $description = 'Levels up any eligible pets.';
+    protected $description = 'Processes scheduled level-ups (and level-downs) for any pets whose bonding has crossed a threshold.';
 
     /**
      * Create a new command instance.
@@ -36,39 +35,18 @@ class LevelUpPets extends Command {
      * @return mixed
      */
     public function handle() {
-        $today = Carbon::now();
-        $userPets = UserPetLevel::has('pet')->where('bonding_level', '<', Settings::get('max_pet_level'))->get()->filter(function ($pet) use ($today) {
-            if ($pet->next_level_at && ($pet->levelsAt < $today)) {
-                return true;
+        $petManager = new PetManager;
+        $maxLevel = Settings::get('max_pet_level');
+
+        $userPets = UserPet::whereHas('level', function ($query) use ($maxLevel) {
+            $query->whereNotNull('next_level_at');
+            if ($maxLevel) {
+                $query->where('bonding_level', '<', $maxLevel);
             }
-            return false;
-        });
+        })->with('level', 'pet')->get();
 
-        if ($userPets->count()) {
-            $logType = 'Level Up';
-
-            foreach ($userPets as $uPet) {
-                $uPet->bonding_level++;
-                $uPet->bonding = 0;
-                $uPet->next_level_at = Carbon::now()->addYear()->startOfDay();
-                $uPet->save();
-
-                $petData = $uPet->pet;
-                $logData = 'Pet '.$petData->fullName.' levelled up! It is now level '.$uPet->bonding_level;
-                $log = PetLog::create([
-                    'sender_id'    => $petData->user_id ?? null,
-                    'recipient_id' => $petData->user_id ?? null,
-                    'stack_id'     => $uPet->id,
-                    'log'          => $logType.($logData ? ' ('.$logData.')' : ''),
-                    'log_type'     => $logType,
-                    'data'         => $logData,
-                    'pet_id'       => $petData->pet_id ?? null,
-                    'quantity'     => 1,
-                    'created_at'   => Carbon::now(),
-                    'updated_at'   => Carbon::now(),
-                ]);
-            }
+        foreach ($userPets as $userPet) {
+            $petManager->processLevelChange($userPet);
         }
-
     }
 }

@@ -292,13 +292,7 @@ class Pet extends Model {
         // custom image takes prescendence over all other images
         if ($userpet->has_image) {
             return $userpet->imageUrl;
-        }
-        // check if there is an evolution and variant
-        elseif ($userpet->evolution_id && $this->parent_id) {
-            return $userpet->evolution->imageUrl($userpet->pet);
-        }
-        // evolution > variant
-        elseif ($userpet->evolution_id) {
+        } elseif ($userpet->evolution_id && $userpet->evolution) {
             return $userpet->evolution->imageUrl;
         }
 

@@ -360,7 +360,7 @@ class PetController extends Controller {
         return view('user.pet', [
             'user'        => $user,
             'pet'         => $stack,
-            'drops'       => $stack->drops,
+            'drops'       => $stack->ensureDrop(),
             'userOptions' => User::where('id', '!=', $user->id)->orderBy('name')->pluck('name', 'id')->toArray(),
             'logs'        => $user->getPetLogs(),
             'splices'     => $splices,
@@ -382,7 +382,7 @@ class PetController extends Controller {
         if (!Auth::check() || $pet->user_id != Auth::user()->id) {
             abort(404);
         }
-        if (!$pet->drops) {
+        if (!$pet->ensureDrop()) {
             abort(404);
         }
         if ($service->claimPetDrops($pet)) {

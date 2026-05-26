@@ -566,14 +566,7 @@ class SubmissionManager extends Service {
                     $petsWithExp[] = ['id' => $pet->id, 'exp' => $exp];
 
                     if ($exp > 0) {
-                        if (!$pet->level) {
-                            $pet->level()->create([
-                                'bonding_level' => 1,
-                                'bonding'       => 0,
-                                'next_level_at' => Carbon::now()->addYear()->startOfDay(),
-                            ]);
-                            $pet->refresh();
-                        }
+                        $pet->ensureLevel();
 
                         $pet->level->bonding += $exp;
                         $pet->level->save();

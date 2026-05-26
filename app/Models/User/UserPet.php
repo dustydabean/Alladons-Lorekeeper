@@ -3,7 +3,6 @@
 namespace App\Models\User;
 
 use App\Models\Character\Character;
-use App\Models\Loot\Loot;
 use App\Models\Model;
 use App\Models\Pet\Pet;
 use App\Models\Pet\PetDrop;
@@ -87,34 +86,43 @@ class UserPet extends Model {
      * Get the pet's pet drop data.
      */
     public function drops() {
+        return $this->hasOne(PetDrop::class, 'user_pet_id');
+    }
+
+    /**
+     * Ensures a PetDrop row exists and matches the pet's current dropData.
+     */
+    public function ensureDrop() {
         if (!isset($this->pet->dropData)) {
-            return $this->belongsTo(Loot::class, 'rewardable_id', 'loot_table_id')->whereNull('loot_table_id');
-        }
-        if (!PetDrop::where('user_pet_id', $this->id)->first()) {
-            PetDrop::create([
-                'drop_id'         => $this->pet->dropData->id,
-                'user_pet_id'     => $this->id,
-                'parameters'      => $this->pet->dropData->rollParameters(),
-                'drops_available' => 0,
-                'next_day'        => Carbon::now()
-                    ->add($this->pet->dropData->frequency, $this->pet->dropData->interval)
-                    ->startOf($this->pet->dropData->interval),
-            ]);
-            // if we delete old drop data, populate with new
-        } elseif (!PetDrop::where('user_pet_id', $this->id)->where('drop_id', $this->pet->dropData->id)->first()) {
-            PetDrop::where('user_pet_id', $this->id)->delete();
-            PetDrop::create([
-                'drop_id'         => $this->pet->dropData->id,
-                'user_pet_id'     => $this->id,
-                'parameters'      => $this->pet->dropData->rollParameters(),
-                'drops_available' => 0,
-                'next_day'        => Carbon::now()
-                    ->add($this->pet->dropData->frequency, $this->pet->dropData->interval)
-                    ->startOf($this->pet->dropData->interval),
-            ]);
+            // Clean up any drop data left over from a prior pet/variant.
+            if ($this->drops()->exists()) {
+                $this->drops()->delete();
+                $this->setRelation('drops', null);
+            }
+
+            return null;
         }
 
-        return $this->hasOne(PetDrop::class, 'user_pet_id');
+        $existing = $this->drops()->first();
+        if ($existing && ($existing->drop_id == $this->pet->dropData->id)) {
+            return $existing;
+        } elseif ($existing) {
+            $existing->delete();
+        }
+
+        $drop = PetDrop::create([
+            'drop_id'         => $this->pet->dropData->id,
+            'user_pet_id'     => $this->id,
+            'parameters'      => $this->pet->dropData->rollParameters(),
+            'drops_available' => 0,
+            'next_day'        => Carbon::now()
+                ->add($this->pet->dropData->frequency, $this->pet->dropData->interval)
+                ->startOf($this->pet->dropData->interval),
+        ]);
+
+        $this->setRelation('drops', $drop);
+
+        return $drop;
     }
 
     /**
@@ -131,20 +139,27 @@ class UserPet extends Model {
         return $this->hasOne(UserPetLevel::class, 'user_pet_id');
     }
 
+    /**
+     * Returns this pet's level row, creating the default starting level if missing.
+     */
+    public function ensureLevel() {
+        if (!$this->level) {
+            $this->level()->create([
+                'bonding_level' => 1,
+                'bonding'       => 0,
+                'next_level_at' => Carbon::now()->addYear()->startOfDay(),
+            ]);
+            $this->refresh();
+        }
+
+        return $this->level;
+    }
+
     /**********************************************************************************************
 
         ACCESSORS
 
     **********************************************************************************************/
-
-    /**
-     * Get the data attribute as an associative array.
-     *
-     * @return array
-     */
-    public function getDataAttribute() {
-        return json_decode($this->attributes['data'], true);
-    }
 
     /**
      * Checks if the stack is transferrable.
@@ -298,16 +313,7 @@ class UserPet extends Model {
      * @param mixed $reason
      */
     public function canBond($reason = false) {
-        // create level if needed
-        if (!$this->level) {
-            $this->level()->create([
-                'bonding_level' => 1,
-                'bonding'       => 0,
-                'next_level_at' => Carbon::now()->addYear()->startOfDay(),
-            ]);
-            $this->refresh();
-            $this->level->refresh();
-        }
+        $this->ensureLevel();
 
         if ($this->bonded_at) {
             // check if its the next day

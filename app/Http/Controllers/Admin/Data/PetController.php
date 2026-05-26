@@ -341,7 +341,10 @@ class PetController extends Controller {
         if (!$this->user_pet) {
             abort(404);
         }
-        $drops = $this->user_pet->drops;
+        $drops = $this->user_pet->ensureDrop();
+        if (!$drops) {
+            abort(404);
+        }
         if (!$request['drops_available']) {
             $request['drops_available'] = 0;
         }

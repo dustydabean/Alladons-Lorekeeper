@@ -182,14 +182,12 @@
                             <a href="{{ url($user->url . '/pets') }}" class="inventory-stack">
                                 <img class="img-fluid" src="{{ $pet->image($pet->pivot->id) }}" data-toggle="tooltip" title="{{ $pet->pivot->pet_name ? $pet->pivot->pet_name . ' (' . $pet->name . ')' : $pet->name }}"
                                     alt="{{ $pet->pivot->pet_name ? $pet->pivot->pet_name . ' (' . $pet->name . ')' : $pet->name }}" />
-                                @else
                                     <p>
                                         @if (!$pet->is_visible)
                                             <i class="fas fa-eye-slash mr-1"></i>
                                         @endif
                                         {{ $pet->name }}
                                     </p>
-                                @endif
                             </div>
                         </div>
                     @endforeach
