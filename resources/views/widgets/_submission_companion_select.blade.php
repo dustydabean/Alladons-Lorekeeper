@@ -1,8 +1,7 @@
 @php
     $isAdmin = isset($isAdmin) && $isAdmin;
     if ($isAdmin) {
-        $submitter = $submission->user;
-        $userPets = \App\Models\User\UserPet::where('user_id', $submitter->id)
+        $userPets = \App\Models\User\UserPet::where('user_id', $submission->user_id)
             ->whereNull('deleted_at')
             ->with(['pet', 'pet.category', 'variant', 'evolution'])
             ->orderBy('sort', 'DESC')
@@ -22,7 +21,7 @@
 <div id="companionSelectSection">
     @if($userPets->count())
         <div class="d-flex justify-content-between align-items-center mb-2">
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center flex-wrap">
                 <select class="form-control form-control-sm d-inline-block w-auto mr-2" id="companionCategoryFilter">
                     <option value="all">All Categories</option>
                     @foreach ($petCategories as $category)
@@ -31,7 +30,7 @@
                 </select>
                 {!! Form::text(null, null, ['class' => 'form-control form-control-sm', 'id' => 'companionSearch', 'placeholder' => 'Search by name, species, or ID...', 'style' => 'width:220px;']) !!}
             </div>
-            <div>
+            <div class="pl-1">
                 <strong id="companionCount">{{ count($selectedPetIds) }}/10 selected</strong>
             </div>
         </div>
@@ -58,6 +57,6 @@
             @endforeach
         </div>
     @else
-        <p class="text-muted">{{ $isAdmin ? 'This user does not own any companions.' : "You don't own any companions." }}</p>
+        <p class="text-muted">{{ $isAdmin ? 'This user does not own any companions.' : 'You don\'t own any companions.' }}</p>
     @endif
 </div>

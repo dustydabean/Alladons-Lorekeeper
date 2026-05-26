@@ -316,8 +316,9 @@ class UserPet extends Model {
         // create level if needed
         if (!$this->level) {
             $this->level()->create([
-                'bonding_level'       => 0,
-                'bonding'             => 0,
+                'bonding_level' => 1,
+                'bonding'       => 0,
+                'next_level_at' => Carbon::now()->addYear()->startOfDay(),
             ]);
             $this->refresh();
             $this->level->refresh();
@@ -329,7 +330,8 @@ class UserPet extends Model {
                 return $reason ? 'You have already bonded with this pet today.' : false;
             }
         }
-        if (!$this->level->nextLevel) {
+        $maxLevel = \App\Facades\Settings::get('max_pet_level');
+        if ($maxLevel && $this->level->bonding_level >= $maxLevel) {
             return $reason ? 'This pet is already at its maximum level.' : false;
         }
 

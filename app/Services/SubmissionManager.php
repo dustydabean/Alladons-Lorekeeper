@@ -556,9 +556,8 @@ class SubmissionManager extends Service {
 
             // Update companion attachments and grant EXP
             $petIds = $this->parsePetIds($data);
-            $submissionPets = $petIds ? $this->validatePetOwnership($petIds, $submission->user_id) : collect();
+            $submissionPets = $petIds ? $this->filterValidPets($petIds, $submission->user_id) : collect();
             if ($submissionPets->count()) {
-
                 $petExpData = $data['pet_exp'] ?? [];
                 $petManager = new PetManager;
                 $petsWithExp = [];
@@ -569,8 +568,9 @@ class SubmissionManager extends Service {
                     if ($exp > 0) {
                         if (!$pet->level) {
                             $pet->level()->create([
-                                'bonding_level' => 0,
+                                'bonding_level' => 1,
                                 'bonding'       => 0,
+                                'next_level_at' => Carbon::now()->addYear()->startOfDay(),
                             ]);
                             $pet->refresh();
                         }
@@ -580,9 +580,13 @@ class SubmissionManager extends Service {
 
                         $logData = 'Received '.$exp.' EXP from '.($submission->prompt_id ? 'submission' : 'claim').' (<a href="'.$submission->viewUrl.'">#'.$submission->id.'</a>)';
                         $petManager->createLog($user->id, $submission->user_id, $pet->id, 'Pet EXP Grant', $logData, $pet->pet->id, 1);
+
+                        $petManager->processLevelChange($pet);
                     }
                 }
                 $petIds = $petsWithExp;
+            } else {
+                $petIds = [];
             }
 
             // Finally, set:
@@ -602,7 +606,6 @@ class SubmissionManager extends Service {
                     'rewards'               => getDataReadyAssets($rewards),
                     'criterion'             => $data['criterion'] ?? null,
                     'gallery_submission_id' => $submission->data['gallery_submission_id'] ?? null,
-                    'criterion'             => $data['criterion'] ?? null,
                 ], // list of rewards
             ]);
 
@@ -1006,6 +1009,7 @@ class SubmissionManager extends Service {
 
     /**
      * Validates that the given pet IDs belong to the specified user.
+     * Throws if any ID does not match.
      *
      * @param array $petIds
      * @param int   $userId
@@ -1019,6 +1023,24 @@ class SubmissionManager extends Service {
         }
 
         return $userPets;
+    }
+
+    /**
+     * Returns the subset of pet IDs still owned by the user, without throwing.
+     * Used during approval so that submissions are not blocked when a companion
+     * has been transferred or deleted since the submission was made.
+     *
+     * @param array $petIds
+     * @param int   $userId
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    private function filterValidPets($petIds, $userId) {
+        return UserPet::with('level')
+            ->where('user_id', $userId)
+            ->whereNull('deleted_at')
+            ->whereIn('id', $petIds)
+            ->get();
     }
 
     /**

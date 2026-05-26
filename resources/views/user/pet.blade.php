@@ -35,17 +35,23 @@
 
     <div class="row world-entry align-items-center">
         <div class="col-md-3 world-entry-image">
-            <img class="img-fluid rounded mb-2" src="{{ $pet->pet->VariantImage($pet->id) }}" data-toggle="tooltip" title="{{ $pet->pet_name ?? $pet->pet->name }}" alt="{{ $pet->pet_name ?? $pet->pet->name }}" />
+            <img class="img-fluid mb-2" src="{{ $pet->pet->VariantImage($pet->id) }}" data-toggle="tooltip" title="{{ $pet->pet_name ?? $pet->pet->name }}" alt="{{ $pet->pet_name ?? $pet->pet->name }}" />
             <div class="mb-2 mb-md-0">
                 <h5 class="mb-0">
                     Level {{ $pet->level->levelName ?? 1 }}
                 </h5>
-                <div class="small">
-                    Will level up {!! pretty_date($pet->level->levelsAt) !!}.
-                </div>
-                <div class="small" style="opacity: 0.65;">
-                    (<b>{{ $pet->level->bonding }} EXP</b>, minus {{ ($pet->level->bonding > 0) ? ($pet->level->bonding * 7) : 0 }} days)
-                </div>
+                @if ($pet->level && ($pet->level->levelName < Settings::get('max_pet_level')))
+                    <div class="small">
+                        Will level up {!! pretty_date($pet->level->levelsAt) !!}.
+                    </div>
+                    <div class="small" style="opacity: 0.65;">
+                        (<b>{{ $pet->level->bonding }} EXP</b>, minus {{ ($pet->level->bonding > 0) ? ($pet->level->bonding * 7) : 0 }} days)
+                    </div>
+                @else
+                    <div class="small" style="opacity: 0.65;">
+                        (Max Level)
+                    </div>
+                @endif
             </div>
         </div>
         <div class="col-md-9">

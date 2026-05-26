@@ -45,7 +45,7 @@ class AddPetLevels extends Command {
                 continue;
             }
             $userPet->level()->create([
-                'bonding_level' => 0,
+                'bonding_level' => 1,
                 'bonding'       => 0,
             ]);
 

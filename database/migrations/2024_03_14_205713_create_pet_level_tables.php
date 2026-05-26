@@ -38,7 +38,7 @@ class CreatePetLevelTables extends Migration {
         Schema::create('user_pet_levels', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('user_pet_id');
-            $table->unsignedInteger('bonding_level')->nullable()->default(null);
+            $table->unsignedInteger('bonding_level')->nullable()->default(1);
             $table->unsignedInteger('bonding')->default(0);
         });
     }
