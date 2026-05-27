@@ -2,6 +2,7 @@
 
 namespace App\Models\User;
 
+use App\Facades\Settings;
 use App\Models\Character\Character;
 use App\Models\Model;
 use App\Models\Pet\Pet;
@@ -20,7 +21,7 @@ class UserPet extends Model {
      */
     protected $fillable = [
         'data', 'pet_id', 'user_id', 'attached_at', 'pet_name', 'has_image', 'artist_url', 'artist_id', 'description',
-        'evolution_id', 'sort', 'bonded_at',
+        'evolution_id', 'sort', 'bonded_at', 'transferred_at',
     ];
 
     /**
@@ -38,6 +39,7 @@ class UserPet extends Model {
     protected $casts = [
         'bonded_at'   => 'datetime',
         'attached_at' => 'datetime',
+        'transferred_at' => 'datetime',
         'data'        => 'array',
     ];
 
@@ -308,6 +310,24 @@ class UserPet extends Model {
     }
 
     /**
+     * Checks if this pet is on user transfer cooldown or not.
+     */
+    public function getOffCooldownAttribute() {
+        $cooldown = Settings::get('pet_transfer_cooldown');
+        $lastTransfer = $this->transferred_at ? Carbon::parse($this->transferred_at) : null;
+        if (!$cooldown || !$lastTransfer) {
+            return true;
+        }
+
+        $now = Carbon::now();
+        if ($lastTransfer->diffInDays($now) >= $cooldown) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Determines if the user can bond with the pet.
      *
      * @param mixed $reason
@@ -321,7 +341,7 @@ class UserPet extends Model {
                 return $reason ? 'You have already bonded with this companion today.' : false;
             }
         }
-        $maxLevel = \App\Facades\Settings::get('max_pet_level');
+        $maxLevel = Settings::get('max_pet_level');
         if ($maxLevel && $this->level->bonding_level >= $maxLevel) {
             return $reason ? 'This companion is already at its maximum level.' : false;
         }

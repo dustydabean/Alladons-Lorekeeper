@@ -701,6 +701,11 @@ class PetManager extends Service {
         DB::beginTransaction();
 
         try {
+            $cooldown = Settings::get('pet_transfer_cooldown');
+            if (!$stack->offCooldown) {
+                throw new \Exception('This companion is on transfer cooldown! Companions have a '.$cooldown.' day cooldown period between user transfers.');
+            }
+            
             $stack->user_id = $recipient->id;
             $stack->save();
 
