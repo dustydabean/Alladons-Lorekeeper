@@ -147,7 +147,7 @@
 
 <div class="card-deck mb-4 profile-assets" style="clear:both;">
     <div class="card profile-inventory profile-assets-card">
-    <div class="card-body text-center">
+        <div class="card-body text-center">
             <h5 class="card-title">Completed Collections</h5>
             <div class="profile-assets-content">
                 @if(count($collections))
@@ -168,37 +168,40 @@
             </div>
             <div class="text-right"><a href="{{ $user->url.'/collection-logs' }}">View all...</a></div>
         </div>
-        </div>
-        </div>
+    </div>
+</div>
 
-<!--<div class="card mb-3">
+{{-- <div class="card mb-3">
     <div class="card-body text-center">
         <h5 class="card-title">Companions</h5>
         <div class="card-body">
             @if (count($pets))
-                <div class="row justify-content-center">
+                <div class="row no-gutters justify-content-center">
                     @foreach ($pets as $pet)
-                        <div class="col-md-2 profile-inventory-item">
+                        <div class="col-md-3 p-1 profile-inventory-item">
                             <a href="{{ url($user->url . '/pets') }}" class="inventory-stack">
-                                <img class="img-fluid" src="{{ $pet->image($pet->pivot->id) }}" data-toggle="tooltip" title="{{ $pet->pivot->pet_name ? $pet->pivot->pet_name . ' (' . $pet->name . ')' : $pet->name }}"
-                                    alt="{{ $pet->pivot->pet_name ? $pet->pivot->pet_name . ' (' . $pet->name . ')' : $pet->name }}" />
-                                    <p>
-                                        @if (!$pet->is_visible)
-                                            <i class="fas fa-eye-slash mr-1"></i>
-                                        @endif
-                                        {{ $pet->name }}
-                                    </p>
+                                <img class="img-fluid" src="{{ $pet->image($pet->pivot->id) }}" data-toggle="tooltip" title="{{ $pet->pivot->pet_name ? $pet->pivot->pet_name . ' (' . $pet->name . ')' : $pet->name }}" alt="{{ $pet->pivot->pet_name ? $pet->pivot->pet_name . ' (' . $pet->name . ')' : $pet->name }}" />
+                            </a>
+                            <div>
+                                @if (!$pet->is_visible)
+                                    <i class="fas fa-eye-slash mr-1"></i>
+                                @endif
+                                {{ $pet->pivot->pet_name ?? $pet->name }}
                             </div>
                         </div>
                     @endforeach
                 </div>
             @else
-                <div>No companions owned.</div>
+                <div>
+                    No companions owned.
+                </div>
             @endif
         </div>
-        <div class="text-right"><a href="{{ $user->url . '/pets' }}">View all...</a></div>
+        <div class="text-right">
+            <a href="{{ $user->url . '/pets' }}">View all...</a>
+        </div>
     </div>
-</div>-->
+</div> --}}
 
 <h2>
     <a href="{{ $user->url . '/characters' }}">Characters</a>
