@@ -61,7 +61,7 @@ class CollectionManager extends Service {
                 }
 
                 // Debit the ingredients
-                //$service = new InventoryManager();
+                // $service = new InventoryManager();
                 // foreach($plucked as $id => $quantity) {
                 // $stack = UserItem::find($id);
                 // if(!$service->debitStack($user, 'Collection', ['data' => 'Used in '.$collection->name.' Collection'], $stack, $quantity)) throw new \Exception('Items could not be removed.');
@@ -76,7 +76,7 @@ class CollectionManager extends Service {
             // Debit the currency
             // $service = new CurrencyManager();
             // foreach($currency_ingredients as $ingredient) {
-            //if(!$service->debitCurrency($user, null, 'Collection', 'Used in '.$collection->name.' Collection', Currency::find($ingredient->data[0]), $ingredient->quantity)) throw new \Exception('Currency could not be debited.');
+            // if(!$service->debitCurrency($user, null, 'Collection', 'Used in '.$collection->name.' Collection', Currency::find($ingredient->data[0]), $ingredient->quantity)) throw new \Exception('Currency could not be debited.');
             // }
 
             // Credit rewards

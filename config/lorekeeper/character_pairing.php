@@ -17,11 +17,11 @@ return [
     // 1: rarity is chosen by highest rarity of inherited traits (vanilla) (recommended)
     'rarity_inheritance' => 1,
 
-    /////////////////////////////////////
+    // ///////////////////////////////////
     //  COLOURS
     //
     //  Recommended to leave these settings alone unless you know what you're doing
-    /////////////////////////////////////
+    // ///////////////////////////////////
 
     // 0: Disabled, 1: Enabled
     'colours' => 0,

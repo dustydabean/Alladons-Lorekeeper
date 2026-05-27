@@ -10,7 +10,7 @@ class AddSpeciesIdToImages extends Migration {
      */
     public function up() {
         Schema::table('characters', function (Blueprint $table) {
-            //$table->dropForeign('characters_rarity_id_foreign');
+            // $table->dropForeign('characters_rarity_id_foreign');
 
             // Moving this onto images as it can change
             $table->dropColumn('rarity_id');

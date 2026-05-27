@@ -325,6 +325,8 @@ class Prompt extends Model {
      * Checks and returns the cooldown time
      * for a limited prompt.
      *
+     * @param mixed $user
+     *
      * @return string
      */
     public function checkLimitCooldown($user) {

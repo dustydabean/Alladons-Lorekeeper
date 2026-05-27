@@ -247,7 +247,7 @@ class CriterionController extends Controller {
         return redirect()->to('admin/data/criteria/'.$step->criterion_id.'/step/'.$step->id);
     }
 
-    //defaults
+    // defaults
 
     /**
      * Shows the index for creating Criteria.

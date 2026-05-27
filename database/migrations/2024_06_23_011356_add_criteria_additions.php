@@ -10,19 +10,19 @@ class AddCriteriaAdditions extends Migration {
      */
     public function up() {
         Schema::table('prompt_criteria', function (Blueprint $table) {
-            //gonna set this to nullable to not break anything
-            //will default to the criteria's original currency if not set
+            // gonna set this to nullable to not break anything
+            // will default to the criteria's original currency if not set
             $table->integer('criterion_currency_id')->unsigned()->nullable()->default(null);
         });
 
         Schema::table('gallery_criteria', function (Blueprint $table) {
-            //gonna set this to nullable to not break anything
-            //will default to the criteria's original currency if not set
+            // gonna set this to nullable to not break anything
+            // will default to the criteria's original currency if not set
             $table->integer('criterion_currency_id')->unsigned()->nullable()->default(null);
         });
 
-        //i had a better idea before going to set this up-- make criteria groups for admins to click to toggle different criteria groups
-        //this isn't because i want something more flexible like this-- nope, definitely not
+        // i had a better idea before going to set this up-- make criteria groups for admins to click to toggle different criteria groups
+        // this isn't because i want something more flexible like this-- nope, definitely not
         Schema::create('criteria_defaults', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
@@ -37,8 +37,8 @@ class AddCriteriaAdditions extends Migration {
             $table->integer('criterion_id')->unsigned();
             $table->integer('criteriondefault_id')->unsigned();
             $table->text('min_requirements')->nullable()->default(null);
-            //gonna set this to nullable to not break anything
-            //will default to the criteria's original currency if not set
+            // gonna set this to nullable to not break anything
+            // will default to the criteria's original currency if not set
             $table->integer('criterion_currency_id')->unsigned()->nullable()->default(null);
         });
     }

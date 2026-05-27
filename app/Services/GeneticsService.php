@@ -142,7 +142,7 @@ class GeneticsService extends Service {
                 if (isset($data['allele_sort'])) {
                     $sort = explode(',', $data['allele_sort']);
                     foreach ($sort as $index => $s) {
-                        $key = $index; //count($sort)-$index-1;
+                        $key = $index; // count($sort)-$index-1;
                         $allele = LociAllele::where('id', $s)->first();
                         if (!$allele) {
                             throw new \Exception('Trying to edit an allele that does not exist.');

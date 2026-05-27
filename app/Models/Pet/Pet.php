@@ -183,7 +183,7 @@ class Pet extends Model {
      */
     public function getFullNameAttribute() {
         if ($this->parent_id) {
-            return $this->name . ' (' . $this->parent->name . ' Variant)';
+            return $this->name.' ('.$this->parent->name.' Variant)';
         }
 
         return $this->name;
@@ -296,7 +296,7 @@ class Pet extends Model {
             return $userpet->evolution->imageUrl;
         }
 
-        //default
+        // default
         return $this->imageUrl;
     }
 

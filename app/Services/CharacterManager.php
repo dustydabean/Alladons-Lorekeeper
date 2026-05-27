@@ -1022,9 +1022,9 @@ class CharacterManager extends Service {
     /**
      * Updates a character's breeding slot.
      *
-     * @param array          $data
+     * @param array                 $data
      * @param CharacterBreedingSlot $slot
-     * @param User           $user
+     * @param User                  $user
      *
      * @return bool
      */
@@ -1124,7 +1124,6 @@ class CharacterManager extends Service {
 
         return $this->rollbackReturn(false);
     }
-
 
     /**
      * Updates image data.
@@ -1269,7 +1268,7 @@ class CharacterManager extends Service {
         try {
             if (!$this->logAdminAction($user, 'Reuploaded Image', 'Reuploaded character image <a href="'.$image->character->url.'">#'.$image->id.'</a>')) {
                 throw new \Exception('Failed to log admin action.');
-                //Clear out longest side measurement since it might not be accurate anymore
+                // Clear out longest side measurement since it might not be accurate anymore
                 $image->longest_side = null; // this will get saved via either side of the if check here
             }
 
@@ -1779,7 +1778,7 @@ class CharacterManager extends Service {
             // It might be strange to allow transferral of breeding permissions back
             // to the character's original owner, but it also might come in handy.
             // The following line would disallow this; it is preserved here, albeit commented out, for convenience.
-            //if($recipient->id == $character->user_id) throw new \Exception('Cannot transfer breeding permission; the selected recipient is the character\'s owner.');
+            // if($recipient->id == $character->user_id) throw new \Exception('Cannot transfer breeding permission; the selected recipient is the character\'s owner.');
 
             // Record the pre-existing recipient
             $oldRecipient = $permission->recipient;

@@ -172,8 +172,8 @@ class CharacterImageController extends Controller {
         }
 
         return view('character.admin._edit_breeding_slots_modal', [
-            'slot'           => $slot,
-            'users' => User::query()->orderBy('name')->pluck('name', 'id')->toArray(),
+            'slot'             => $slot,
+            'users'            => User::query()->orderBy('name')->pluck('name', 'id')->toArray(),
             'characterOptions' => Character::visible()->myo(0)->orderBy('slug')->get()->pluck('fullName', 'id')->toArray(),
         ]);
     }

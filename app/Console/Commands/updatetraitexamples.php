@@ -37,7 +37,7 @@ class updatetraitexamples extends Command {
      * @return int
      */
     public function handle() {
-        //this is probably messy and not optimal :')
+        // this is probably messy and not optimal :')
 
         if (Schema::hasTable('feature_example_images')) {
             $this->info('Already migrated new tables. Moving and renaming images instead. ');
@@ -53,16 +53,16 @@ class updatetraitexamples extends Command {
         }
 
         if (Schema::hasColumn('features', 'has_example_image')) {
-            //convert all the examples
+            // convert all the examples
             $features = Feature::where('has_example_image', 1)->get();
 
             if ($features->count()) {
                 foreach ($features as $feature) {
                     $old_image = $feature->imageDirectory.'/'.$feature->exampleImageFileName;
 
-                    //move the image
+                    // move the image
                     if (File::exists(public_path($old_image))) {
-                        //make the new example
+                        // make the new example
                         $example = FeatureExample::create([
                             'summary'    => $feature->example_summary,
                             'hash'       => $feature->example_hash,

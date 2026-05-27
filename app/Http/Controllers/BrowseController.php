@@ -204,7 +204,7 @@ class BrowseController extends Controller {
             'sublists'        => Sublist::orderBy('sort', 'DESC')->get(),
             'userOptions'     => User::query()->orderBy('name')->pluck('name', 'id')->toArray(),
             'contentWarnings' => $contentWarnings,
-            'generations' => CharacterGeneration::orderBy('name', 'ASC')->pluck('name', 'id')->toArray(),
+            'generations'     => CharacterGeneration::orderBy('name', 'ASC')->pluck('name', 'id')->toArray(),
         ]);
     }
 
@@ -288,7 +288,7 @@ class BrowseController extends Controller {
             'sublists'        => Sublist::orderBy('sort', 'DESC')->get(),
             'userOptions'     => User::query()->orderBy('name')->pluck('name', 'id')->toArray(),
             'contentWarnings' => $contentWarnings,
-            'generations' => CharacterGeneration::orderBy('name', 'ASC')->pluck('name', 'id')->toArray(),
+            'generations'     => CharacterGeneration::orderBy('name', 'ASC')->pluck('name', 'id')->toArray(),
         ]);
     }
 
@@ -440,7 +440,6 @@ class BrowseController extends Controller {
         if ($request->get('gender') && ($request->get('gender') != 'Any')) {
             $imageQuery->where('sex', $request->get('gender'));
         }
-
 
         // Searching on image properties
         if ($request->get('species_id')) {

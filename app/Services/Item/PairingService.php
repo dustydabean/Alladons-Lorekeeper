@@ -54,7 +54,7 @@ class PairingService extends Service {
      * @return bool
      */
     public function updateData($tag, $data) {
-        //put inputs into an array to transfer to the DB
+        // put inputs into an array to transfer to the DB
         if (isset($data['feature_id']) && isset($data['species_id'])) {
             throw new \Exception('You can only set either trait or species.');
         }
@@ -113,7 +113,7 @@ class PairingService extends Service {
         DB::beginTransaction();
 
         try {
-            //get pairingData array and put it into the 'data' column of the DB for this tag
+            // get pairingData array and put it into the 'data' column of the DB for this tag
             $tag->update(['data' => $pairingData]);
 
             return $this->commitReturn(true);

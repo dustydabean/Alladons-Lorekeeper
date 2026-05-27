@@ -2,19 +2,17 @@
 
 namespace App\Models\Foraging;
 
-use Config;
 use App\Models\Model;
 use Carbon\Carbon;
 
-class Forage extends Model
-{
+class Forage extends Model {
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'display_name', 'is_active', 'has_image', 'active_until', 'stamina_cost', 'has_cost', 'currency_id', 'currency_quantity'
+        'name', 'display_name', 'is_active', 'has_image', 'active_until', 'stamina_cost', 'has_cost', 'currency_id', 'currency_quantity',
     ];
 
     /**
@@ -23,29 +21,29 @@ class Forage extends Model
      * @var string
      */
     protected $table = 'forages';
-    
+
     /**
      * Validation rules for creation.
      *
      * @var array
      */
     public static $createRules = [
-        'name' => 'required',
+        'name'         => 'required',
         'display_name' => 'required',
     ];
-    
+
     /**
      * Validation rules for updating.
      *
      * @var array
      */
     public static $updateRules = [
-        'name' => 'required',
+        'name'         => 'required',
         'display_name' => 'required',
     ];
 
     /**********************************************************************************************
-    
+
         RELATIONS
 
     **********************************************************************************************/
@@ -53,16 +51,14 @@ class Forage extends Model
     /**
      * Get the loot data for this forage table.
      */
-    public function loot() 
-    {
+    public function loot() {
         return $this->hasMany('App\Models\Foraging\ForageReward');
     }
 
     /**
      * Get the currency for this forage table.
      */
-    public function currency()
-    {
+    public function currency() {
         return $this->belongsTo('App\Models\Currency\Currency', 'currency_id');
     }
 
@@ -73,19 +69,24 @@ class Forage extends Model
     **********************************************************************************************/
 
     /**
-     * scopes all active forages that are within the active_until timestamp, unless a user is staff
+     * scopes all active forages that are within the active_until timestamp, unless a user is staff.
+     *
+     * @param mixed $query
+     * @param mixed $isStaff
      */
-    public function scopeVisible($query, $isStaff = false)
-    {
-        if ($isStaff) return $query;
-        else return $query->where('is_active', 1)
-        ->where(function($query) {
-            $query->whereNull('active_until')->orWhere('active_until', '>', Carbon::now());
-        });
+    public function scopeVisible($query, $isStaff = false) {
+        if ($isStaff) {
+            return $query;
+        } else {
+            return $query->where('is_active', 1)
+                ->where(function ($query) {
+                    $query->whereNull('active_until')->orWhere('active_until', '>', Carbon::now());
+                });
+        }
     }
 
     /**********************************************************************************************
-    
+
         ACCESSORS
 
     **********************************************************************************************/
@@ -95,8 +96,7 @@ class Forage extends Model
      *
      * @return string
      */
-    public function getImageDirectoryAttribute()
-    {
+    public function getImageDirectoryAttribute() {
         return 'images/data/foraging';
     }
 
@@ -105,9 +105,8 @@ class Forage extends Model
      *
      * @return string
      */
-    public function getImageFileNameAttribute()
-    {
-        return $this->id . '-forage.png';
+    public function getImageFileNameAttribute() {
+        return $this->id.'-forage.png';
     }
 
     /**
@@ -115,8 +114,7 @@ class Forage extends Model
      *
      * @return string
      */
-    public function getImagePathAttribute()
-    {
+    public function getImagePathAttribute() {
         return public_path($this->imageDirectory);
     }
 
@@ -125,19 +123,20 @@ class Forage extends Model
      *
      * @return string
      */
-    public function getImageUrlAttribute()
-    {
-        if (!$this->has_image) return null;
-        return asset($this->imageDirectory . '/' . $this->imageFileName);
+    public function getImageUrlAttribute() {
+        if (!$this->has_image) {
+            return null;
+        }
+
+        return asset($this->imageDirectory.'/'.$this->imageFileName);
     }
-    
+
     /**
      * Displays the model's name, linked to its encyclopedia page.
      *
      * @return string
      */
-    public function getFancyDisplayNameAttribute()
-    {
+    public function getFancyDisplayNameAttribute() {
         return '<span class="display-loot">'.$this->attributes['display_name'].'</span> ';
     }
 
@@ -146,36 +145,39 @@ class Forage extends Model
      *
      * @return string
      */
-    public function getAssetTypeAttribute()
-    {
+    public function getAssetTypeAttribute() {
         return 'loot_tables';
     }
 
     /**
-     * returns if the table is visible or not (bool)
+     * returns if the table is visible or not (bool).
      */
-    public function getIsVisibleAttribute()
-    {
-        if (!$this->is_active) return false;
+    public function getIsVisibleAttribute() {
+        if (!$this->is_active) {
+            return false;
+        }
         // check if active_until is passed
-        if ($this->active_until && $this->active_until < Carbon::now()) return false;
+        if ($this->active_until && $this->active_until < Carbon::now()) {
+            return false;
+        }
+
         return true;
     }
 
     /**********************************************************************************************
-    
+
         OTHER FUNCTIONS
 
     **********************************************************************************************/
-    
+
     /**
      * Rolls on the loot table and consolidates the rewards.
      *
-     * @param  int  $quantity
+     * @param int $quantity
+     *
      * @return \Illuminate\Support\Collection
      */
-    public function roll($quantity = 1) 
-    {
+    public function roll($quantity = 1) {
         return rollRewards($this->loot, $quantity);
     }
 }

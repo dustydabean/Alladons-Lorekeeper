@@ -2,8 +2,8 @@
 
 namespace App\Models\Character;
 
-use App\Models\User\User;
 use App\Models\Model;
+use App\Models\User\User;
 
 class CharacterBreedingSlot extends Model {
     /**

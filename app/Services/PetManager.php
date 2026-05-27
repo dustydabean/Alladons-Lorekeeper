@@ -103,7 +103,6 @@ class PetManager extends Service {
         return $this->rollbackReturn(false);
     }
 
-
     /**
      * Transfers an pet stack between users.
      *
@@ -818,30 +817,6 @@ class PetManager extends Service {
     }
 
     /**
-     * Writes a level up/down log entry for a pet.
-     */
-    private function logLevelChange($pet, string $logType, string $verb): void {
-        $logData = 'Pet '.$pet->fullName.' '.$verb.'. It is now level '.$pet->level->bonding_level;
-        $this->createLog($pet->user_id ?? null, $pet->user_id ?? null, $pet->id, $logType, $logData, $pet->pet_id ?? null, 1);
-    }
-
-    /**
-     * Checks if a pet is on attach/detach cooldown.
-     *
-     * @param mixed $pet
-     * @param mixed $user
-     */
-    private function checkCooldown($pet, $user) {
-        $cooldownDays = Settings::get('claymore_cooldown');
-        if ($cooldownDays && $pet->attached_at && !$user->hasPower('edit_inventories')) {
-            $cooldownExpires = Carbon::parse($pet->attached_at)->addDays($cooldownDays);
-            if ($cooldownExpires->isFuture()) {
-                throw new \Exception('This companion is on cooldown until '.$cooldownExpires->format('M j, Y H:i').'.');
-            }
-        }
-    }
-
-    /**
      * Creates an inventory log.
      *
      * @param int    $senderId
@@ -869,5 +844,31 @@ class PetManager extends Service {
                 'updated_at'   => Carbon::now(),
             ]
         );
+    }
+
+    /**
+     * Writes a level up/down log entry for a pet.
+     *
+     * @param mixed $pet
+     */
+    private function logLevelChange($pet, string $logType, string $verb): void {
+        $logData = 'Pet '.$pet->fullName.' '.$verb.'. It is now level '.$pet->level->bonding_level;
+        $this->createLog($pet->user_id ?? null, $pet->user_id ?? null, $pet->id, $logType, $logData, $pet->pet_id ?? null, 1);
+    }
+
+    /**
+     * Checks if a pet is on attach/detach cooldown.
+     *
+     * @param mixed $pet
+     * @param mixed $user
+     */
+    private function checkCooldown($pet, $user) {
+        $cooldownDays = Settings::get('claymore_cooldown');
+        if ($cooldownDays && $pet->attached_at && !$user->hasPower('edit_inventories')) {
+            $cooldownExpires = Carbon::parse($pet->attached_at)->addDays($cooldownDays);
+            if ($cooldownExpires->isFuture()) {
+                throw new \Exception('This companion is on cooldown until '.$cooldownExpires->format('M j, Y H:i').'.');
+            }
+        }
     }
 }

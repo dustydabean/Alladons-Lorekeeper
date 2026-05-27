@@ -2,12 +2,11 @@
 
 namespace App\Console\Commands;
 
+use App\Models\User\UserForaging;
 use Illuminate\Console\Command;
 use Settings;
-use App\Models\User\UserForaging;
 
-class ResetForaging extends Command
-{
+class ResetForaging extends Command {
     /**
      * The name and signature of the console command.
      *
@@ -24,11 +23,8 @@ class ResetForaging extends Command
 
     /**
      * Create a new command instance.
-     *
-     * @return void
      */
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
     }
 
@@ -37,11 +33,10 @@ class ResetForaging extends Command
      *
      * @return mixed
      */
-    public function handle()
-    {
+    public function handle() {
         //
         // update all user models with foraging stamina
-        UserForaging::all()->each(function($userForaging) {
+        UserForaging::all()->each(function ($userForaging) {
             $userForaging->stamina = Settings::get('foraging_stamina');
             $userForaging->save();
         });

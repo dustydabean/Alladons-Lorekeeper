@@ -40,7 +40,7 @@ class SitePage extends Model {
         'title'      => 'required|between:3,100',
         'text'       => 'nullable',
         'admin_only' => 'boolean',
-        'image' => 'mimes:png',
+        'image'      => 'mimes:png',
     ];
 
     /**
@@ -53,7 +53,7 @@ class SitePage extends Model {
         'title'      => 'required|between:3,100',
         'text'       => 'nullable',
         'admin_only' => 'boolean',
-        'image' => 'mimes:png',
+        'image'      => 'mimes:png',
     ];
 
     /**********************************************************************************************

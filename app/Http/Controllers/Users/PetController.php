@@ -7,8 +7,8 @@ use App\Models\Character\Character;
 use App\Models\Item\ItemTag;
 use App\Models\Pet\Pet;
 use App\Models\Pet\PetCategory;
-use App\Models\Pet\PetEvolution;
 use App\Models\Pet\PetDrop;
+use App\Models\Pet\PetEvolution;
 use App\Models\User\User;
 use App\Models\User\UserItem;
 use App\Models\User\UserPet;
@@ -36,17 +36,17 @@ class PetController extends Controller {
         $categories = PetCategory::orderBy('sort', 'DESC')->get();
         $pets = count($categories) ?
             Auth::user()
-            ->pets()
-            ->orderByRaw('ISNULL(pet_category_id), pet_category_id ASC')
-            ->orderByRaw('FIELD(pet_category_id,'.implode(',', $categories->pluck('id')->toArray()).')')
-            ->orderBy('pet_name')
-            ->get()
-            ->groupBy('pet_category_id') :
+                ->pets()
+                ->orderByRaw('ISNULL(pet_category_id), pet_category_id ASC')
+                ->orderByRaw('FIELD(pet_category_id,'.implode(',', $categories->pluck('id')->toArray()).')')
+                ->orderBy('pet_name')
+                ->get()
+                ->groupBy('pet_category_id') :
             Auth::user()
-            ->pets()
-            ->orderBy('pet_name')
-            ->get()
-            ->groupBy('pet_category_id');
+                ->pets()
+                ->orderBy('pet_name')
+                ->get()
+                ->groupBy('pet_category_id');
 
         return view('home.pets', [
             'categories'        => $categories->keyBy('id'),
@@ -514,5 +514,4 @@ class PetController extends Controller {
 
         return redirect()->back();
     }
-
 }

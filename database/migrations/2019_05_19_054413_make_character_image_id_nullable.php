@@ -14,7 +14,7 @@ class MakeCharacterImageIdNullable extends Migration {
         // Also, since characters can now be credited to users who don't have an
         // account, make this column nullable.
         Schema::table('characters', function (Blueprint $table) {
-            //$table->dropForeign('characters_user_id_foreign');
+            // $table->dropForeign('characters_user_id_foreign');
 
             $table->dropColumn('character_image_id');
             $table->dropColumn('user_id');

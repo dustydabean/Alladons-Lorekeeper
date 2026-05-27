@@ -2,19 +2,16 @@
 
 namespace App\Models\User;
 
-use Carbon\Carbon;
-use Config;
 use App\Models\Model;
 
-class UserForaging extends Model
-{
+class UserForaging extends Model {
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-     protected $fillable = [
-        'user_id', 'forage_id', 'foraged_at', 'character_id', 'distribute_at'
+    protected $fillable = [
+        'user_id', 'forage_id', 'foraged_at', 'character_id', 'distribute_at',
     ];
 
     /**
@@ -30,12 +27,12 @@ class UserForaging extends Model
      * @var array
      */
     protected $casts = [
-        'foraged_at' => 'datetime',
+        'foraged_at'    => 'datetime',
         'distribute_at' => 'datetime',
     ];
 
     /**********************************************************************************************
-    
+
         RELATIONS
 
     **********************************************************************************************/
@@ -43,24 +40,21 @@ class UserForaging extends Model
     /**
      * Get the user this set of settings belongs to.
      */
-     public function user() 
-     {
+    public function user() {
         return $this->belongsTo('App\Models\User\User');
-     }
+    }
 
-     /**
-      * Get current forage 
-      */
-    public function forage() 
-    {
+    /**
+     * Get current forage.
+     */
+    public function forage() {
         return $this->belongsTo('App\Models\Foraging\Forage');
     }
 
     /**
      * Get the selected character for this foraging session.
      */
-    public function character()
-    {
+    public function character() {
         return $this->belongsTo('App\Models\Character\Character');
     }
 }

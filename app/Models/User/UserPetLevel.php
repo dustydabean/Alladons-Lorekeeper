@@ -31,7 +31,7 @@ class UserPetLevel extends Model {
     protected $casts = [
         'next_level_at' => 'datetime',
     ];
-    
+
     /**********************************************************************************************
 
         RELATIONS
@@ -66,13 +66,13 @@ class UserPetLevel extends Model {
     }
 
     /**
-     * Gets the next level date for the pet, defaulting to a year from now 
+     * Gets the next level date for the pet, defaulting to a year from now
      * for anything that doesn't have a proper next_level_at value.
      */
     public function getNextLevelAttribute() {
         return $this->next_level_at ?? Carbon::now()->addYear()->startOfDay();
     }
-    
+
     /**
      * Get when the next level will be reached.
      */

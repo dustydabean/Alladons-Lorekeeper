@@ -39,7 +39,7 @@ class DailyService extends Service {
             if (Daily::where('name', $data['name'])->exists()) {
                 throw new \Exception('The name has already been taken.');
             }
-            $data['is_loop'] = 1; //we like looping dailies
+            $data['is_loop'] = 1; // we like looping dailies
             $data = $this->populateDailyData($data);
 
             $daily = Daily::create($data);
@@ -182,7 +182,7 @@ class DailyService extends Service {
             $data['fee'] = 0;
         }
 
-        //set progressable automatically
+        // set progressable automatically
         if (isset($data['step'])) {
             $steps = array_unique($data['step']);
             if (count($steps) > 1) {
@@ -195,7 +195,7 @@ class DailyService extends Service {
             $data['is_progressable'] = 0;
         }
 
-        //handle image removal
+        // handle image removal
         if (isset($data['remove_image'])) {
             if ($daily && $daily->has_image && $data['remove_image']) {
                 $data['has_image'] = 0;
@@ -246,7 +246,7 @@ class DailyService extends Service {
      */
     private function populateSegmentStyle($data) {
         $styleObject = [];
-        //set segment style if it applies
+        // set segment style if it applies
         if (isset($data['segment_style'])) {
             for ($i = 0; $i < $data['segment_number']; $i++) {
                 $styleObject[] = [

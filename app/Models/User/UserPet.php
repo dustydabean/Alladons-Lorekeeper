@@ -31,13 +31,6 @@ class UserPet extends Model {
     protected $table = 'user_pets';
 
     /**
-     * Whether the model contains timestamps to be saved and updated.
-     *
-     * @var string
-     */
-    public $timestamps = true;
-
-    /**
      * The attributes that should be cast to native types.
      *
      * @var array
@@ -47,6 +40,13 @@ class UserPet extends Model {
         'attached_at' => 'datetime',
         'data'        => 'array',
     ];
+
+    /**
+     * Whether the model contains timestamps to be saved and updated.
+     *
+     * @var string
+     */
+    public $timestamps = true;
 
     /**********************************************************************************************
 

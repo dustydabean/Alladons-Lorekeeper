@@ -59,14 +59,14 @@ class DailyReward extends Model {
                 break;
             case 'Currency':
                 return $this->belongsTo('App\Models\Currency\Currency', 'rewardable_id');
-                //uncomment if you use awards, may still have to edit the loot select blade files
+                // uncomment if you use awards, may still have to edit the loot select blade files
                 /**case 'Award':
                     return $this->belongsTo('App\Models\Award\Award', 'rewardable_id');
                     break;**/
             case 'LootTable':
                 return $this->belongsTo('App\Models\Loot\LootTable', 'rewardable_id');
                 break;
-                //uncomment if you use pets, may still have to edit the loot select blade files
+                // uncomment if you use pets, may still have to edit the loot select blade files
                 /**case 'Pet':
                     return $this->belongsTo('App\Models\Pet\Pet', 'rewardable_id');**/
                 break;
@@ -88,14 +88,14 @@ class DailyReward extends Model {
                 break;
             case 'Currency':
                 return (isset($this->reward()->first()->currencyImageUrl)) ? $this->reward()->first()->currencyImageUrl : '/images/currency.png';
-                //uncomment if you use awards, may still have to edit the loot select blade files
+                // uncomment if you use awards, may still have to edit the loot select blade files
                 /**case 'Award':
                     return $this->belongsTo('App\Models\Award\Award', 'rewardable_id');
                     break;**/
             case 'LootTable':
                 return '/images/loot.png';
                 break;
-                //uncomment if you use pets, may still have to edit the loot select blade files
+                // uncomment if you use pets, may still have to edit the loot select blade files
                 /**case 'Pet':
                     return $this->belongsTo('App\Models\Pet\Pet', 'rewardable_id');**/
                 break;

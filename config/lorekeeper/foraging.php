@@ -15,7 +15,7 @@ return [
     'npcs' => [
         'enabled'            => false,
         'category_or_rarity' => 'category',
-        'code' => 'npc',
+        'code'               => 'npc',
         // if this is set to true, the ids array will be used instead of the category or rarity
         'use_ids' => true,
         // array of character ids that can be used as NPCs if your site does not define NPCs as a category or rarity
@@ -25,6 +25,6 @@ return [
     ],
 
     'use_foraging_stamina' => 1, // if this is set to 1, by default the stamina column on
-                                // user_foraging is used, otherwise it will use whatever you preset
-                                // search for USER_STAMINA_DECREMENT comment in ForageService.php to edit
+    // user_foraging is used, otherwise it will use whatever you preset
+    // search for USER_STAMINA_DECREMENT comment in ForageService.php to edit
 ];

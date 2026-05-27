@@ -9,7 +9,7 @@ return new class extends Migration {
      * Run the migrations.
      */
     public function up(): void {
-        //Create the Main Index Table
+        // Create the Main Index Table
         Schema::create('site_index', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->integer('id');
@@ -19,7 +19,7 @@ return new class extends Migration {
             $table->string('description', 1024)->nullable();
         });
 
-        //Create the Temp Index Table
+        // Create the Temp Index Table
         Schema::create('site_temp_index', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->integer('id');
@@ -34,7 +34,7 @@ return new class extends Migration {
      * Reverse the migrations.
      */
     public function down(): void {
-        //Remove if down
+        // Remove if down
         Schema::dropIfExists('site_index');
         Schema::dropIfExists('site_temp_index');
     }

@@ -52,14 +52,14 @@ class PairingManager extends Service {
         DB::beginTransaction();
 
         try {
-            //check that an item is attached
+            // check that an item is attached
             if (!isset($data['stack_id'])) {
                 throw new \Exception('Please attach a pairing item.');
             }
 
             $user_items = UserItem::whereIn('id', $data['stack_id'])->where('count', '>', 0)->get();
             $pairing_item = Item::whereRelation('tags', 'tag', 'pairing')->whereIn('id', $user_items->pluck('item_id'))->get();
-            //check that exactly one valid pairing item is attached
+            // check that exactly one valid pairing item is attached
             if ($pairing_item->count() != 1) {
                 throw new \Exception('Pairing item not set correctly. Make sure to pick exactly one pairing item.');
             }
@@ -83,7 +83,7 @@ class PairingManager extends Service {
                 }
             }
 
-            //do further checks
+            // do further checks
             if (!$this->validatePairingBasics($data['character_codes'], $pairing_item->first())) {
                 throw new \Exception('Pairing failed validation.');
             }
@@ -117,7 +117,7 @@ class PairingManager extends Service {
                 }
             }
 
-            //create pairing
+            // create pairing
             $pairing = Pairing::create([
                 'user_id'              => $user->id,
                 'character_1_id'       => $character_1->id,
@@ -207,8 +207,8 @@ class PairingManager extends Service {
             $species_1 = $character_1->image->species;
             $species_2 = $character_2->image->species;
 
-            //check if the pairing type matches the character input
-            //pairing type 0 = species, 1 = subtype
+            // check if the pairing type matches the character input
+            // pairing type 0 = species, 1 = subtype
             $pairing_type = $tag->getData()['pairing_type'] ?? null;
             if (isset($pairing_type)) {
                 if ($pairing_type && $character_1->image->subtype_id != $character_2->image->subtype_id) {
@@ -263,7 +263,7 @@ class PairingManager extends Service {
                 throw new \Exception('Invalid Character(s) set.');
             }
 
-            //check sex if set to do so. If one char has no sex it always works IF force_sex is not set.
+            // check sex if set to do so. If one char has no sex it always works IF force_sex is not set.
             if (config('lorekeeper.character_pairing.sex_restriction')) {
                 if (isset($character_1->image->sex) && isset($character_2->image->sex)) {
                     if ($character_1->image->sex == $character_2->image->sex) {
@@ -472,7 +472,7 @@ class PairingManager extends Service {
                 throw new \Exception('Error happened while trying to approve pairing.');
             }
 
-            //set approval
+            // set approval
             $pairing->character_1_approved = 1;
             $pairing->character_2_approved = 1;
             $pairing->status = 'APPROVED';
@@ -595,7 +595,7 @@ class PairingManager extends Service {
             $species = [$pairing->character_1->image->species, $pairing->character_2->image->species];
             $myoAmount = random_int($tag->getData()['min'], $tag->getData()['max']);
 
-            //loop over for each myo
+            // loop over for each myo
             for ($i = 0; $i < $myoAmount; $i++) {
                 $sex = $this->getSex($boosts);
                 $inherit_traits_from_both = $this->getInheritTraitsFromBoth($boosts);
@@ -608,7 +608,7 @@ class PairingManager extends Service {
                 $rarity_id = $this->getRarityId($boosts, $chosen_features_ids);
                 $palette = $this->createColourPalettes([$pairing->character_1->slug, $pairing->character_2->slug], $user, true);
 
-                //create MYO
+                // create MYO
                 if (!$myo = $this->saveMyo(
                     $user,
                     $sex,
@@ -651,7 +651,7 @@ class PairingManager extends Service {
                 }
             }
 
-            //update status
+            // update status
             $pairing->status = 'COMPLETE';
             $pairing->save();
 
@@ -680,7 +680,7 @@ class PairingManager extends Service {
     public function rollTestMyos($data, $user) {
         try {
             $items = Item::whereRelation('tags', 'tag', 'pairing')->where('id', $data['pairing_item_id'])->get();
-            //check that exactly one valid pairing item is attached
+            // check that exactly one valid pairing item is attached
             if ($items->count() != 1) {
                 throw new \Exception('Pairing item not set correctly. Make sure to pick exactly one pairing item.');
             }
@@ -709,7 +709,7 @@ class PairingManager extends Service {
                 $species = [$character_1->image->species, $character_2->image->species];
                 $myo_count = random_int($tag->getData()['min'], $tag->getData()['max']);
 
-                //loop over for each myo
+                // loop over for each myo
                 for ($i = 0; $i < $myo_count; $i++) {
                     $sex = $this->getSex($boosts);
                     $inherit_traits_from_both = $this->getInheritTraitsFromBoth($boosts);
@@ -770,12 +770,12 @@ class PairingManager extends Service {
             }
         }
 
-        //sex is disabled in site settings
+        // sex is disabled in site settings
         if (!$male_percentage && !$female_percentage) {
             return null;
         }
 
-        //prioritize boosts
+        // prioritize boosts
         // can only have one boost of either type
         if (isset($male_boost)) {
             return (random_int(0, 100) <= $male_boost) ? 'Male' : 'Female';
@@ -784,7 +784,7 @@ class PairingManager extends Service {
             return (random_int(0, 100) <= $female_boost) ? 'Female' : 'Male';
         }
 
-        //otherwise use settings
+        // otherwise use settings
         if ($male_percentage + $female_percentage == 100) {
             return (random_int(0, 100) <= $female_percentage) ? 'Female' : 'Male';
         } else {
@@ -881,7 +881,7 @@ class PairingManager extends Service {
             }
         }
 
-        //sort features by category
+        // sort features by category
         $features_by_category = $feature_pool->groupBy('feature_category_id');
         // check if there are any guaranteed categories and add them to the features_by_category array keys
         $guaranteed_feature_categories = $tag->getData()['guaranteed_feature_categories'] ?? null;
@@ -895,7 +895,7 @@ class PairingManager extends Service {
         }
         $chosen_features = [];
         foreach ($features_by_category as $categoryId=>$features) {
-            //if no category is set, make min inheritable 0 and max inheritable 100 (basically, unlimited)
+            // if no category is set, make min inheritable 0 and max inheritable 100 (basically, unlimited)
             $min_inheritable = $features->first()->category->min_inheritable ?? 0;
             $max_inheritable = $features->first()->category->max_inheritable ?? 100;
 
@@ -918,11 +918,11 @@ class PairingManager extends Service {
             $i = 0;
             // shuffle features to randomize order so that the first features are not always chosen
             $features->shuffle();
-            //loop over features until min amount is chosen but never more than max amount
+            // loop over features until min amount is chosen but never more than max amount
             while (($features_calculated < count($features) && $features_chosen < $max_inheritable) || ($features_chosen < $min_inheritable)) {
                 $feature = $features[$i];
                 $inherit_chance = $boosted_chance_by_rarity[$feature->rarity->id] ?? $feature->rarity->inherit_chance;
-                //calc inheritance chance
+                // calc inheritance chance
                 $does_get_this_feature = (random_int(0, 100) <= $inherit_chance);
                 if ($does_get_this_feature) {
                     $chosen_features[$feature->id] = $feature;
@@ -959,7 +959,7 @@ class PairingManager extends Service {
     private function getFeatureData($tag, $characters, $species, $chosen_features, $species_id, $subtype_id) {
         $pairing_feature_data = null;
         if ($species[0]->id == $species[1]->id) {
-            //parents with the same species - subtype is 50:50 between parents
+            // parents with the same species - subtype is 50:50 between parents
             if ($characters[0]->image->subtype_id && $characters[0]->image->subtype_id != $subtype_id) {
                 $pairing_feature_data = $characters[0]->image->subtype?->name;
             }
@@ -967,13 +967,13 @@ class PairingManager extends Service {
                 $pairing_feature_data = $characters[1]->image->subtype?->name;
             }
         } else {
-            //subtype is the type of the parent whose species was chosen
+            // subtype is the type of the parent whose species was chosen
             if ($characters[0]->image->species->id == $species_id) {
                 $pairing_feature_data = $characters[1]->image->species->name;
             } elseif ($characters[1]->image->species->id == $species_id) {
                 $pairing_feature_data = $characters[1]->image->species->name;
             } else {
-                //if a species was chosen in the item tag, set feature data to nothing.
+                // if a species was chosen in the item tag, set feature data to nothing.
                 $pairing_feature_data = null;
             }
         }
@@ -1042,14 +1042,14 @@ class PairingManager extends Service {
      * @return int
      */
     private function getSubtypeId($tag, $species, $characters, $species_id) {
-        //if subtype was set it should be returned - unless the chosen species does not match it.
+        // if subtype was set it should be returned - unless the chosen species does not match it.
 
         $guaranteed_subtype = (isset($tag->getData()['subtype_id'])) ? Subtype::find($tag->getData()['subtype_id']) : null;
         if ($guaranteed_subtype && $guaranteed_subtype->species_id == $species_id) {
             return $guaranteed_subtype->id;
         }
 
-        //in case a species was set for inheritance, or via default species, set subtype as null/open for choice.
+        // in case a species was set for inheritance, or via default species, set subtype as null/open for choice.
         if ($species_id != $species[0]->id && $species_id != $species[1]->id) {
             return null;
         }
@@ -1061,7 +1061,7 @@ class PairingManager extends Service {
 
         if ($species[0]->id == $species[1]->id) {
             if (count($valid_subtypes) > 1) {
-                //more than one valid subtype go by inherit chance
+                // more than one valid subtype go by inherit chance
                 $inherit_chance = $characters[0]->image->subtype?->inherit_chance + $characters[1]->image->subtype?->inherit_chance;
 
                 return (random_int(0, $inherit_chance) <= $characters[0]->image->subtype->inherit_chance) ? $valid_subtypes[0]->id : $valid_subtypes[1]->id;
@@ -1072,7 +1072,7 @@ class PairingManager extends Service {
                     ? array_values($valid_subtypes)[0]->id : $default_subtype_id;
             }
         } else {
-            //different specieses - subtype is the type of the parent whose species was chosen
+            // different specieses - subtype is the type of the parent whose species was chosen
             return Subtype::whereIn('id', $valid_subtype_ids)->where('species_id', $species_id)->first()->id ?? $default_subtype_id;
         }
 
@@ -1089,13 +1089,13 @@ class PairingManager extends Service {
     private function getRarityId($boosts, $chosen_features) {
         if (config('lorekeeper.character_pairing.rarity_inheritance')) {
             $rarity_sorts = [];
-            //add all chosen features to rarity ids
+            // add all chosen features to rarity ids
             foreach ($chosen_features as $feature) {
                 $rarity = $feature->rarity;
                 $rarity_sorts[] = $rarity->sort;
             }
 
-            //WARNING this assumes the highest rarity has the highest sort number and sort 0 is the lowest
+            // WARNING this assumes the highest rarity has the highest sort number and sort 0 is the lowest
             $rarity_sort = count($rarity_sorts) > 0 ? max($rarity_sorts) : 0;
         } else {
             $features = Feature::whereIn('id', array_keys($chosen_features))->get();
@@ -1148,16 +1148,16 @@ class PairingManager extends Service {
         DB::beginTransaction();
 
         try {
-            //set user who the slot belongs to
+            // set user who the slot belongs to
             $characterData['user_id'] = $user->id;
-            //other vital data that is default
+            // other vital data that is default
             $characterData['name'] = 'Pairing Slot';
             $characterData['transferrable_at'] = null;
             $characterData['is_myo_slot'] = 1;
             $characterData['description'] = 'A MYO slot created from a pairing of: '.$characters[0]->displayName.' and '.$characters[1]->displayName.'.';
 
-            //this uses your default MYO slot image from the CharacterManager
-            //see wiki page for documentation on adding a default image switch
+            // this uses your default MYO slot image from the CharacterManager
+            // see wiki page for documentation on adding a default image switch
             $characterData['use_cropper'] = 0;
             $characterData['x0'] = null;
             $characterData['x1'] = null;

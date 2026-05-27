@@ -139,9 +139,9 @@ return [
         'links' => [
             [
                 'name' => 'Forages',
-                'url' => 'admin/data/forages'
+                'url'  => 'admin/data/forages',
             ],
-        ]
+        ],
     ],
     'Masterlist' => [
         'power' => 'manage_characters',

@@ -506,7 +506,6 @@ class PetService extends Service {
 
         try {
             throw new \Exception('This feature is not in use.');
-
             // make sure no pets are using this level
             if (UserPetLevel::where('bonding_level', $level->level)->exists()) {
                 throw new \Exception('At least one user pet is currently using this level. Please remove the pet(s) before deleting it.');
@@ -655,5 +654,4 @@ class PetService extends Service {
 
         return $data;
     }
-
 }

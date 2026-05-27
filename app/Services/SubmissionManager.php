@@ -15,8 +15,8 @@ use App\Models\Recipe\Recipe;
 use App\Models\Submission\Submission;
 use App\Models\Submission\SubmissionCharacter;
 use App\Models\User\User;
-use App\Models\User\UserPet;
 use App\Models\User\UserItem;
+use App\Models\User\UserPet;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -71,10 +71,10 @@ class SubmissionManager extends Service {
                 if (!$prompt) {
                     throw new \Exception('Invalid prompt selected.');
                 }
-                //check that the prompt limit hasn't been hit
+                // check that the prompt limit hasn't been hit
                 if ($prompt->limit) {
-                    //check that the user hasn't hit the prompt submission limit
-                    //filter the submissions by hour/day/week/etc and count
+                    // check that the user hasn't hit the prompt submission limit
+                    // filter the submissions by hour/day/week/etc and count
                     $count['all'] = Submission::submitted($prompt->id, $user->id)->count();
                     $count['Hour'] = Submission::submitted($prompt->id, $user->id)->where('created_at', '>=', now()->startOfHour())->count();
                     $count['Day'] = Submission::submitted($prompt->id, $user->id)->where('created_at', '>=', now()->startOfDay())->count();
@@ -82,13 +82,13 @@ class SubmissionManager extends Service {
                     $count['Month'] = Submission::submitted($prompt->id, $user->id)->where('created_at', '>=', now()->startOfMonth())->count();
                     $count['Year'] = Submission::submitted($prompt->id, $user->id)->where('created_at', '>=', now()->startOfYear())->count();
 
-                    //if limit by character is on... multiply by # of chars. otherwise, don't
+                    // if limit by character is on... multiply by # of chars. otherwise, don't
                     if ($prompt->limit_character) {
                         $limit = $prompt->limit * Character::visible()->where('is_myo_slot', 0)->where('user_id', $user->id)->count();
                     } else {
                         $limit = $prompt->limit;
                     }
-                    //if limit by time period is on
+                    // if limit by time period is on
                     if ($prompt->limit_period) {
                         if ($count[$prompt->limit_period] >= $limit) {
                             throw new \Exception('You have already submitted to this prompt the maximum number of times.');
