@@ -13,11 +13,11 @@
 
     <p>These are your companions. Click on a companion to view more details and actions you can perform on it.</p>
 
-    <div class="text-right">
+    {{-- <div class="text-right">
         {!! Form::open(['url' => 'pets/collect-all']) !!}
         {!! Form::submit('Collect All Companion Drops', ['class' => 'btn btn-success my-3']) !!}
         {!! Form::close() !!}
-    </div>
+    </div> --}}
 
     @foreach ($pets as $categoryId => $categoryPets)
         <div class="card mb-3 inventory-category">
