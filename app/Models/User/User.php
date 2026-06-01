@@ -21,6 +21,7 @@ use App\Models\Item\Item;
 use App\Models\Item\ItemLog;
 use App\Models\Limit\UserUnlockedLimit;
 use App\Models\Notification;
+use App\Models\Pet\Pet;
 use App\Models\Pet\PetLog;
 use App\Models\Rank\Rank;
 use App\Models\Rank\RankPower;
@@ -217,7 +218,7 @@ class User extends Authenticatable implements MustVerifyEmail {
      * Get the user's pets.
      */
     public function pets() {
-        return $this->belongsToMany('App\Models\Pet\Pet', 'user_pets')->withPivot('data', 'updated_at', 'id', 'variant_id', 'character_id', 'pet_name', 'has_image', 'evolution_id')->whereNull('user_pets.deleted_at');
+        return $this->belongsToMany(Pet::class, 'user_pets')->withPivot('data', 'updated_at', 'id', 'character_id', 'pet_name', 'has_image', 'evolution_id')->whereNull('user_pets.deleted_at');
     }
 
     /**
@@ -239,10 +240,9 @@ class User extends Authenticatable implements MustVerifyEmail {
     }
 
     /**
-     * Returns user's foraging stats
+     * Returns user's foraging stats.
      */
-    public function foraging()
-    {
+    public function foraging() {
         return $this->hasOne('App\Models\User\UserForaging');
     }
 
@@ -946,16 +946,16 @@ class User extends Authenticatable implements MustVerifyEmail {
      */
     public function hasAdminNotification($user) {
         $count = [];
-        $count[] = $this->hasPower('manage_submissions') ? Submission::where('status', 'Pending')->whereNotNull('prompt_id')->count() : 0; //submissionCount
-        $count[] = $this->hasPower('manage_submissions') ? Submission::where('status', 'Pending')->whereNull('prompt_id')->count() : 0; //claimCount
-        $count[] = $this->hasPower('manage_characters') ? CharacterDesignUpdate::characters()->where('status', 'Pending')->count() : 0; //designCount
-        $count[] = $this->hasPower('manage_characters') ? CharacterDesignUpdate::myos()->where('status', 'Pending')->count() : 0; //myoCount
-        $count[] = $this->hasPower('manage_characters') ? CharacterTransfer::active()->where('is_approved', 0)->count() : 0; //transferCount
-        $count[] = $this->hasPower('manage_characters') ? Trade::where('status', 'Pending')->count() : 0; //tradeCount
-        $count[] = $this->hasPower('manage_characters') ? Trade::where('status', 'Pending')->count() : 0; //tradeCount
-        $count[] = $this->hasPower('manage_submissions') ? GallerySubmission::pending()->collaboratorApproved()->count() : 0; //galleryCount
-        $count[] = $this->hasPower('manage_reports') ? Report::where('status', 'Pending')->count() : 0; //reportCount
-        $count[] = $this->hasPower('manage_reports') ? Report::assignedToMe($this)->count() : 0; //assignedReportCount
+        $count[] = $this->hasPower('manage_submissions') ? Submission::where('status', 'Pending')->whereNotNull('prompt_id')->count() : 0; // submissionCount
+        $count[] = $this->hasPower('manage_submissions') ? Submission::where('status', 'Pending')->whereNull('prompt_id')->count() : 0; // claimCount
+        $count[] = $this->hasPower('manage_characters') ? CharacterDesignUpdate::characters()->where('status', 'Pending')->count() : 0; // designCount
+        $count[] = $this->hasPower('manage_characters') ? CharacterDesignUpdate::myos()->where('status', 'Pending')->count() : 0; // myoCount
+        $count[] = $this->hasPower('manage_characters') ? CharacterTransfer::active()->where('is_approved', 0)->count() : 0; // transferCount
+        $count[] = $this->hasPower('manage_characters') ? Trade::where('status', 'Pending')->count() : 0; // tradeCount
+        $count[] = $this->hasPower('manage_characters') ? Trade::where('status', 'Pending')->count() : 0; // tradeCount
+        $count[] = $this->hasPower('manage_submissions') ? GallerySubmission::pending()->collaboratorApproved()->count() : 0; // galleryCount
+        $count[] = $this->hasPower('manage_reports') ? Report::where('status', 'Pending')->count() : 0; // reportCount
+        $count[] = $this->hasPower('manage_reports') ? Report::assignedToMe($this)->count() : 0; // assignedReportCount
 
         // If Adoption Center is installed:
         // $count[] = $this->hasPower('manage_submissions') && $this->hasPower('manage_characters') ? Surrender::where('status', 'Pending')->count() : 0; //surrenderCount

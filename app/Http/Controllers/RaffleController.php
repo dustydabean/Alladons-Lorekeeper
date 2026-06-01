@@ -23,7 +23,7 @@ class RaffleController extends Controller {
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getRaffleIndex() {
-        //check notif
+        // check notif
         if (Auth::check() && Auth::user()->is_raffles_unread) {
             Auth::user()->update(['is_raffles_unread' => 0]);
         }

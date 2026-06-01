@@ -55,8 +55,8 @@
                     <li class="list-group-item"><a href="{{ url('world/item-categories') }}">Item Categories</a></li>
                     <li class="list-group-item"><a href="{{ url('world/items') }}">All Items</a></li>
                     <li class="list-group-item"><a href="{{ url('world/currencies') }}">Currencies</a></li>
-                    <!--<li class="list-group-item"><a href="{{ url('world/pet-categories') }}">Pet Categories</a></li>
-                    <li class="list-group-item"><a href="{{ url('world/pets') }}">All Pets</a></li>-->
+                    <li class="list-group-item"><a href="{{ url('world/pet-categories') }}">Companion Categories</a></li>
+                    <li class="list-group-item"><a href="{{ url('world/pets') }}">All Companions</a></li>
                     <li class="list-group-item"><a href="{{ url('world/collections') }}">Collections</a></li>
                     <li class="list-group-item"><a href="{{ url('world/recipes') }}">All Recipes</a></li>
                 </ul>

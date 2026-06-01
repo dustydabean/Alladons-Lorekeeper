@@ -47,7 +47,7 @@ class DailyManager extends Service {
                 throw new \Exception('You have already received your reward.');
             }
 
-            //get daily timer now that we know we can roll. if none exists, create one.
+            // get daily timer now that we know we can roll. if none exists, create one.
             $dailyTimer = DailyTimer::where('daily_id', $daily->id)->where('user_id', $user->id)->first();
             if (!$dailyTimer) {
                 $dailyTimer = DailyTimer::create([
@@ -60,7 +60,7 @@ class DailyManager extends Service {
                 $dailyTimer->step = $this->getNextStep($daily, $dailyTimer);
                 $dailyTimer->rolled_at = Carbon::now();
             }
-            //save the updated or new timer once the rewards were successfully distributed
+            // save the updated or new timer once the rewards were successfully distributed
             $dailyTimer->save();
             $this->commitReturn($dailyTimer);
         } catch (\Exception $e) {
@@ -82,14 +82,14 @@ class DailyManager extends Service {
                 }
             }
 
-            //build reward data to the correct format used for grants, make sure to only grant the current step
+            // build reward data to the correct format used for grants, make sure to only grant the current step
             if ($daily->type == 'Wheel') { // wheel actually always gets the step calculated by the
                 $dailyRewards = $daily->rewards()->where('step', $wheelSegment)->get();
-            } else { //other dailies just grab whatever step they are at!
+            } else { // other dailies just grab whatever step they are at!
                 $dailyRewards = $daily->rewards()->where('step', $dailyTimer->step)->get();
             }
 
-            //if there is no reward, check if step 0 rewards (Default) are set and pick that instead
+            // if there is no reward, check if step 0 rewards (Default) are set and pick that instead
             if ($dailyRewards->count() <= 0) {
                 $dailyRewards = $daily->rewards()->where('step', 0)->get();
             }
@@ -173,7 +173,7 @@ class DailyManager extends Service {
         $step = $dailyTimer->step;
         $maxStep = $daily->maxStep;
 
-        //if streak daily, check if a day was missed and if so, set dailytimer step to 1
+        // if streak daily, check if a day was missed and if so, set dailytimer step to 1
         if ($daily->type == 'Wheel') {
             return 0;
         }
@@ -238,7 +238,7 @@ class DailyManager extends Service {
                     case 'Raffle':
                         $reward = Raffle::find($data['rewardable_id'][$key]);
                         break;
-                        //uncomment if you use pets or awards, may still have to fix/add in other places
+                        // uncomment if you use pets or awards, may still have to fix/add in other places
                         /**case 'Pet':
                         $reward = Pet::find($data['rewardable_id'][$key]);
                         break;

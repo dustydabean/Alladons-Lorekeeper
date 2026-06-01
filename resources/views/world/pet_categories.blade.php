@@ -1,13 +1,13 @@
 @extends('world.layout')
 
 @section('title')
-    Pet Categories
+    Companion Categories
 @endsection
 
 @section('content')
-    {!! breadcrumbs(['World' => 'world', 'Pet Categories' => 'world/pet-categories']) !!}
+    {!! breadcrumbs(['World' => 'world', 'Companion Categories' => 'world/pet-categories']) !!}
     <h1>
-        Pet Categories</h1>
+        Companion Categories</h1>
 
     <div>
         {!! Form::open(['method' => 'GET', 'class' => 'form-inline justify-content-end']) !!}
@@ -27,7 +27,7 @@
                 @include('world._entry', ['imageUrl' => $category->categoryImageUrl, 'name' => $category->displayName, 'description' => $category->parsed_description, 'searchUrl' => $category->searchUrl])
                 @if ($category->allow_attach && (!isset($category->limit) || $category->limit > 0))
                     <div class="alert alert-info mb-0 mt-2">Can be attached to characters @isset($category->limit)
-                            <b>— up to {{ $category->limit }} per pet</b>
+                            <b>— up to {{ $category->limit }} per companion</b>
                         @endisset
                     </div>
                 @endif

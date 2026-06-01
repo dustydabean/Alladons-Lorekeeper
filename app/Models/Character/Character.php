@@ -10,13 +10,14 @@ use App\Models\Gallery\GalleryCharacter;
 use App\Models\Item\Item;
 use App\Models\Item\ItemLog;
 use App\Models\Model;
-use App\Models\Species\Subtype;
 use App\Models\Rarity;
+use App\Models\Species\Subtype;
 use App\Models\Submission\Submission;
 use App\Models\Submission\SubmissionCharacter;
 use App\Models\Trade;
 use App\Models\User\User;
 use App\Models\User\UserCharacterLog;
+use App\Models\User\UserPet;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -194,8 +195,11 @@ class Character extends Model {
         return $this->belongsTo(Rarity::class, 'rarity_id');
     }
 
+    /**
+     * Gets the character's pets.
+     */
     public function pets() {
-        return $this->hasMany('App\Models\User\UserPet', 'character_id');
+        return $this->hasMany(UserPet::class, 'character_id');
     }
 
     /**
@@ -275,7 +279,7 @@ class Character extends Model {
     public function breedingSlots() {
         $subtypes = Subtype::whereNotNull('breeding_slot_amount')->where('breeding_slot_amount', '>', 0)->pluck('id')->toArray();
         if (!$this->image->subtypes() || !$this->image->subtypes()->whereIn('subtype_id', $subtypes)->first()) {
-            return $this->belongsTo('App\Models\Loot\Loot', 'rewardable_id', 'loot_table_id')->whereNull('loot_table_id');;
+            return $this->belongsTo('App\Models\Loot\Loot', 'rewardable_id', 'loot_table_id')->whereNull('loot_table_id');
         }
         if (!CharacterBreedingSlot::where('character_id', $this->id)->first()) {
             $selectedSubtype = $this->image->subtypes()->whereIn('subtype_id', $subtypes)->first();
@@ -391,7 +395,7 @@ class Character extends Model {
             return $this->user->displayName;
         } else {
             if (!filter_var($this->owner_url, FILTER_VALIDATE_URL)) {
-                return '<i class="fas fa-external-link-alt mx-1" data-toggle="tooltip" title="This character is owned by an off-site user."></i>' . $this->owner_url;
+                return '<i class="fas fa-external-link-alt mx-1" data-toggle="tooltip" title="This character is owned by an off-site user."></i>'.$this->owner_url;
             }
 
             return prettyProfileLink($this->owner_url);

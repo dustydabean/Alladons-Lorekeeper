@@ -1,32 +1,32 @@
 @extends('admin.layout')
 
 @section('admin-title')
-    Pet Levels
+    Companion Levels
 @endsection
 
 @section('admin-content')
-    {!! breadcrumbs(['Admin Panel' => 'admin', 'Pets' => 'admin/data/pets', 'Pet Levels' => 'admin/data/pets/levels']) !!}
+    {!! breadcrumbs(['Admin Panel' => 'admin', 'Companions' => 'admin/data/pets', 'Companion Levels' => 'admin/data/pets/levels']) !!}
 
-    <h1>Pet Levels</h1>
+    <h1>Companion Levels</h1>
 
     <p>
-        These levels represent how much a character can "bond" with specified pets, and the benefits / rewards that come with that bond.
-        <br />Pets only gain "level" information after being attached to a character, and the level is determined by the character's actions and interactions with the pet.
+        These levels represent how much a character can "bond" with specified companions, and the benefits / rewards that come with that bond.
+        <br />Companions only gain "level" information after being attached to a character, and the level is determined by the character's actions and interactions with the companion.
     </p>
 
     <div class="text-right mb-3">
-        <a class="btn btn-primary" href="{{ url('admin/data/pets') }}"><i class="fas fa-arrow-left mr-1"></i> Back to Pets</a>
+        <a class="btn btn-primary" href="{{ url('admin/data/pets') }}"><i class="fas fa-arrow-left mr-1"></i> Back to Companions</a>
         <a class="btn btn-primary" href="{{ url('admin/data/pets/levels/create') }}"><i class="fas fa-plus mr-1"></i> Create New Level</a>
     </div>
 
     @if (!config('lorekeeper.pets.pet_bonding_enabled'))
         <p class="alert alert-info">
-            <strong>NOTE:</strong> Pet bonding is currently disabled. You can enable it in site config.
+            <strong>NOTE:</strong> Companion bonding is currently disabled. You can enable it in site config.
         </p>
     @endif
 
     @if (!count($levels))
-        <p>No pet levels found.</p>
+        <p>No companion levels found.</p>
     @else
         {!! $levels->render() !!}
         <div class="row ml-md-2">

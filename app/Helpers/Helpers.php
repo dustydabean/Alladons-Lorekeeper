@@ -550,3 +550,13 @@ function faVersion() {
 
     return asset($directory.'/'.$version.'.min.css');
 }
+
+/**
+ * Gets the displayName attribute from a given model.
+ *
+ * @param mixed $model
+ * @param mixed $id
+ */
+function getDisplayName($model, $id) {
+    return $model::find($id)?->displayName;
+}

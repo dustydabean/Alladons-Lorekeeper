@@ -2,12 +2,12 @@
 
 namespace App\Models\User;
 
+use App\Facades\Settings;
 use App\Models\Character\Character;
 use App\Models\Model;
 use App\Models\Pet\Pet;
 use App\Models\Pet\PetDrop;
 use App\Models\Pet\PetEvolution;
-use App\Models\Pet\PetVariant;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -21,7 +21,7 @@ class UserPet extends Model {
      */
     protected $fillable = [
         'data', 'pet_id', 'user_id', 'attached_at', 'pet_name', 'has_image', 'artist_url', 'artist_id', 'description',
-        'evolution_id', 'variant_id', 'sort', 'bonded_at',
+        'evolution_id', 'sort', 'bonded_at', 'transferred_at',
     ];
 
     /**
@@ -37,7 +37,10 @@ class UserPet extends Model {
      * @var array
      */
     protected $casts = [
-        'bonded_at' => 'datetime',
+        'bonded_at'   => 'datetime',
+        'attached_at' => 'datetime',
+        'transferred_at' => 'datetime',
+        'data'        => 'array',
     ];
 
     /**
@@ -75,13 +78,6 @@ class UserPet extends Model {
     }
 
     /**
-     * Get the variant associated with this pet stack.
-     */
-    public function variant() {
-        return $this->belongsTo(PetVariant::class, 'variant_id');
-    }
-
-    /**
      * Get the evolution associated with this pet stack.
      */
     public function evolution() {
@@ -92,34 +88,43 @@ class UserPet extends Model {
      * Get the pet's pet drop data.
      */
     public function drops() {
-        if (!$this->pet->dropData) {
-            return $this->belongsTo('App\Models\Loot\Loot', 'rewardable_id', 'loot_table_id')->whereNull('loot_table_id');
-        }
-        if (!PetDrop::where('user_pet_id', $this->id)->first()) {
-            PetDrop::create([
-                'drop_id'         => $this->pet->dropData->id,
-                'user_pet_id'     => $this->id,
-                'parameters'      => $this->pet->dropData->rollParameters(),
-                'drops_available' => 0,
-                'next_day'        => Carbon::now()
-                    ->add($this->pet->dropData->frequency, $this->pet->dropData->interval)
-                    ->startOf($this->pet->dropData->interval),
-            ]);
-            // if we delete old drop data, populate with new
-        } elseif (!PetDrop::where('user_pet_id', $this->id)->where('drop_id', $this->pet->dropData->id)->first()) {
-            PetDrop::where('user_pet_id', $this->id)->delete();
-            PetDrop::create([
-                'drop_id'         => $this->pet->dropData->id,
-                'user_pet_id'     => $this->id,
-                'parameters'      => $this->pet->dropData->rollParameters(),
-                'drops_available' => 0,
-                'next_day'        => Carbon::now()
-                    ->add($this->pet->dropData->frequency, $this->pet->dropData->interval)
-                    ->startOf($this->pet->dropData->interval),
-            ]);
+        return $this->hasOne(PetDrop::class, 'user_pet_id');
+    }
+
+    /**
+     * Ensures a PetDrop row exists and matches the pet's current dropData.
+     */
+    public function ensureDrop() {
+        if (!isset($this->pet->dropData)) {
+            // Clean up any drop data left over from a prior pet/variant.
+            if ($this->drops()->exists()) {
+                $this->drops()->delete();
+                $this->setRelation('drops', null);
+            }
+
+            return null;
         }
 
-        return $this->hasOne(PetDrop::class, 'user_pet_id');
+        $existing = $this->drops()->first();
+        if ($existing && ($existing->drop_id == $this->pet->dropData->id)) {
+            return $existing;
+        } elseif ($existing) {
+            $existing->delete();
+        }
+
+        $drop = PetDrop::create([
+            'drop_id'         => $this->pet->dropData->id,
+            'user_pet_id'     => $this->id,
+            'parameters'      => $this->pet->dropData->rollParameters(),
+            'drops_available' => 0,
+            'next_day'        => Carbon::now()
+                ->add($this->pet->dropData->frequency, $this->pet->dropData->interval)
+                ->startOf($this->pet->dropData->interval),
+        ]);
+
+        $this->setRelation('drops', $drop);
+
+        return $drop;
     }
 
     /**
@@ -136,20 +141,27 @@ class UserPet extends Model {
         return $this->hasOne(UserPetLevel::class, 'user_pet_id');
     }
 
+    /**
+     * Returns this pet's level row, creating the default starting level if missing.
+     */
+    public function ensureLevel() {
+        if (!$this->level) {
+            $this->level()->create([
+                'bonding_level' => 1,
+                'bonding'       => 0,
+                'next_level_at' => Carbon::now()->addYear()->startOfDay(),
+            ]);
+            $this->refresh();
+        }
+
+        return $this->level;
+    }
+
     /**********************************************************************************************
 
         ACCESSORS
 
     **********************************************************************************************/
-
-    /**
-     * Get the data attribute as an associative array.
-     *
-     * @return array
-     */
-    public function getDataAttribute() {
-        return json_decode($this->attributes['data'], true);
-    }
 
     /**
      * Checks if the stack is transferrable.
@@ -260,24 +272,59 @@ class UserPet extends Model {
     }
 
     /**
-     * gets all drops this pet is eligible for.
+     * Gets the pet's name and species along with its ID.
+     *
+     * @return string
+     */
+    public function getFullNameAttribute() {
+        if (!$this->pet_name) {
+            return ($this->pet->name ?? '(Unknown Companion)').' (#'.$this->id.')';
+        }
+        $string = $this->pet_name.' the ';
+        $string .= $this->pet->name ?? '(Unknown Companion)';
+        $string .= ' (#'.$this->id.')';
+
+        return $string;
+    }
+
+    /**
+     * Gets the pet's display name with ID prefix for select widgets.
+     *
+     * @return string
+     */
+    public function getSelectNameAttribute() {
+        $name = $this->pet_name ?: ($this->pet->name ?? '(Unknown Companion)');
+
+        return '[#'.$this->id.'] '.$name;
+    }
+
+    /**
+     * Gets all drops this pet is eligible for.
      */
     public function getAvailableDropsAttribute() {
-        if (!$this->pet->dropData) {
+        if (!isset($this->pet->dropData) || !$this->drops) {
             return null;
         }
-        $rewards = [];
-        // otherwise return base rewards + variant rewards
-        if ($this->variant_id) {
-            if ($this->variant->dropData) {
-                $rewards[] = $this->variant->dropData;
-            }
-        }
-        if (!$this->pet->dropData->override) {
-            $rewards[] = $this->pet->dropData;
+
+        return $this->pet->dropData;
+    }
+
+    /**
+     * Checks if this pet is on user transfer cooldown or not.
+     */
+    public function getOffCooldownAttribute() {
+        $cooldown = Settings::get('pet_transfer_cooldown');
+        $lastTransfer = $this->transferred_at ? Carbon::parse($this->transferred_at) : null;
+        if (!$cooldown || !$lastTransfer) {
+            return true;
         }
 
-        return $rewards;
+        $now = Carbon::now();
+        if ($lastTransfer->diffInDays($now) >= $cooldown) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -286,24 +333,17 @@ class UserPet extends Model {
      * @param mixed $reason
      */
     public function canBond($reason = false) {
-        // create level if needed
-        if (!$this->level) {
-            $this->level()->create([
-                'bonding_level'       => 0,
-                'bonding'             => 0,
-            ]);
-            $this->refresh();
-            $this->level->refresh();
-        }
+        $this->ensureLevel();
 
         if ($this->bonded_at) {
             // check if its the next day
             if ($this->bonded_at->isToday()) {
-                return $reason ? 'You have already bonded with this pet today.' : false;
+                return $reason ? 'You have already bonded with this companion today.' : false;
             }
         }
-        if (!$this->level->nextLevel) {
-            return $reason ? 'This pet is already at its maximum level.' : false;
+        $maxLevel = Settings::get('max_pet_level');
+        if ($maxLevel && $this->level->bonding_level >= $maxLevel) {
+            return $reason ? 'This companion is already at its maximum level.' : false;
         }
 
         return true;

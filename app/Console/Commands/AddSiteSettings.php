@@ -45,6 +45,8 @@ class AddSiteSettings extends Command {
 
         $this->addSiteSetting('transfer_cooldown', 0, 'Number of days to add to the cooldown timer when a character is transferred.');
 
+        $this->addSiteSetting('pet_transfer_cooldown', 0, 'Number of days of cooldown between when a pet can be transferred between users.');
+
         $this->addSiteSetting('open_transfers_queue', 0, '0: Character transfers do not need mod approval, 1: Transfers must be approved by a mod.');
 
         $this->addSiteSetting('is_prompts_open', 1, '0: New prompt submissions cannot be made (mods can work on the queue still), 1: Prompts are submittable.');
@@ -112,6 +114,8 @@ class AddSiteSettings extends Command {
         $this->addSiteSetting('comment_dislikes_enabled', 0, '0: Dislikes disabled, 1: Dislikes enabled.');
 
         $this->addSiteSetting('shop_type', 0, '0: Default, 1: Collapsible.');
+
+        $this->addSiteSetting('max_pet_level', 3, 'The default maximum level that pets are able to level up to.');
 
         $this->addSiteSetting('coupon_settings', 0, '0: Percentage is taken from total (e.g 20% from 2 items costing a total of 100 = 80), 1: Percentage is taken from item (e.g 20% from 2 items costing a total of 100 = 90)');
 

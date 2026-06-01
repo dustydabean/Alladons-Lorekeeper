@@ -13,7 +13,7 @@ class Pet extends Model {
      * @var array
      */
     protected $fillable = [
-        'pet_category_id', 'name', 'has_image', 'description', 'parsed_description', 'allow_transfer', 'limit', 'evolution_stage',
+        'pet_category_id', 'name', 'has_image', 'description', 'parsed_description', 'allow_transfer', 'limit', 'parent_id', 'is_visible',
     ];
 
     /**
@@ -61,14 +61,21 @@ class Pet extends Model {
     }
 
     /**
-     * get all the pet variants.
+     * Get all the pet's variants.
      */
     public function variants() {
-        return $this->hasMany(PetVariant::class, 'pet_id');
+        return $this->hasMany(self::class, 'parent_id');
     }
 
     /**
-     * get the pets evolutions.
+     * Get the parent pet of this variant.
+     */
+    public function parent() {
+        return $this->belongsTo(self::class, 'parent_id');
+    }
+
+    /**
+     * Get the pet's evolutions.
      */
     public function evolutions() {
         return $this->hasMany(PetEvolution::class, 'pet_id');
@@ -78,7 +85,7 @@ class Pet extends Model {
      * Get the drop data associated with this species.
      */
     public function dropData() {
-        return $this->hasOne(PetDropData::class);
+        return $this->hasOne(PetDropData::class, 'pet_id');
     }
 
     /**********************************************************************************************
@@ -86,6 +93,22 @@ class Pet extends Model {
         SCOPES
 
     **********************************************************************************************/
+
+    /**
+     * Scope a query to show only visible pets.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param mixed|null                            $user
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeVisible($query, $user = null) {
+        if ($user && $user->hasPower('edit_data')) {
+            return $query;
+        }
+
+        return $query->where('is_visible', 1);
+    }
 
     /**
      * Scope a query to sort pets in alphabetical order.
@@ -146,7 +169,24 @@ class Pet extends Model {
      * @return string
      */
     public function getDisplayNameAttribute() {
+        if ($this->parent_id) {
+            return '<a href="'.$this->idUrl.'" class="display-item">'.$this->name.' - Variant of '.$this->parent->name.'</a>';
+        }
+
         return '<a href="'.$this->idUrl.'" class="display-item">'.$this->name.'</a>';
+    }
+
+    /**
+     * Gets the pet's name and, if it is a variant, the parent's name.
+     *
+     * @return string
+     */
+    public function getFullNameAttribute() {
+        if ($this->parent_id) {
+            return $this->name.' ('.$this->parent->name.' Variant)';
+        }
+
+        return $this->name;
     }
 
     /**
@@ -217,11 +257,29 @@ class Pet extends Model {
     }
 
     /**
-     * returns the variant image for the pet.
+     * Gets the admin edit URL.
      *
-     * @param mixed|null $id
+     * @return string
      */
-    public function VariantImage($id = null) {
+    public function getAdminUrlAttribute() {
+        return url('admin/data/pets/edit/'.$this->id);
+    }
+
+    /**
+     * Gets the power required to edit this model.
+     *
+     * @return string
+     */
+    public function getAdminPowerAttribute() {
+        return 'edit_data';
+    }
+
+    /**
+     * Returns the image for the user pet.
+     *
+     * @param int $id
+     */
+    public function image($id = null) {
         if (!$id) {
             return $this->imageUrl;
         }
@@ -232,30 +290,14 @@ class Pet extends Model {
         }
 
         // custom image takes prescendence over all other images
-        elseif ($userpet->has_image) {
+        if ($userpet->has_image) {
             return $userpet->imageUrl;
-        }
-        // check if there is an evolution and variant
-        elseif ($userpet->evolution_id && $userpet->variant_id) {
-            return $userpet->evolution->variantImageUrl($userpet->variant_id);
-        }
-        // evolution > variant
-        elseif ($userpet->evolution_id) {
+        } elseif ($userpet->evolution_id && $userpet->evolution) {
             return $userpet->evolution->imageUrl;
-        } elseif ($userpet->variant_id) {
-            return $userpet->variant->imageUrl;
         }
 
-        //default
+        // default
         return $this->imageUrl;
-    }
-
-    public function VariantName($id = null) {
-        if (!$id || !$this->variants()) {
-            return '';
-        } else {
-            return $this->variants()->where('id', $id)->first()->variant_name;
-        }
     }
 
     /**
@@ -264,10 +306,17 @@ class Pet extends Model {
      * @return string
      */
     public function getHasDropsAttribute() {
-        if ($this->dropData) {
+        if (isset($this->dropData) && $this->dropData) {
             return 1;
         } else {
             return 0;
         }
+    }
+
+    /**
+     * Returns if this pet is a variant.
+     */
+    public function getIsVariantAttribute() {
+        return $this->parent_id ? true : false;
     }
 }

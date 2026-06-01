@@ -51,13 +51,13 @@ class SendInitialGiftAlerts extends Command {
             $characterOwnerId = Character::where('id', $submissionCharacter)->pluck('user_id');
             $notificationData = DB::table('notifications')->where('user_id', $characterOwnerId)->where('notification_type_id', 1004)->pluck('data');
 
-            //get the character each notif is for
+            // get the character each notif is for
             $notificationCharacter = [];
             foreach ($notificationData as $data) {
                 $notificationCharacter[] = json_decode($data)->character_id;
             }
 
-            //get only gift submissions
+            // get only gift submissions
             $submissionIds = SubmissionCharacter::where('character_id', $submissionCharacter)->pluck('submission_id');
             $giftSubmissionCount = 0;
             foreach ($submissionIds as $id) {
@@ -67,7 +67,7 @@ class SendInitialGiftAlerts extends Command {
 
             $excludesSubmissionCharacter = !in_array($submissionCharacter, $notificationCharacter);
 
-            //create or skip notification
+            // create or skip notification
             if ($excludesSubmissionCharacter && $giftSubmissionCount != 0) {
                 $characterDetails = Character::where('id', $submissionCharacter)->first();
                 $characterOwnerData = User::where('id', $characterOwnerId)->first();

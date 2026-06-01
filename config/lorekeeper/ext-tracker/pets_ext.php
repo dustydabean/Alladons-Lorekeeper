@@ -2,7 +2,7 @@
 
 return [
     'key'      => 'pets',
-    'wiki_key' => 'Pets',
+    'wiki_key' => 'Companions',
     'creators' => json_encode([
         'Newt'      => 'https://github.com/ne-wt/',
         'Mercury'   => 'https://github.com/itinerare/',

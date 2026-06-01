@@ -2,18 +2,16 @@
 
 namespace App\Models\Foraging;
 
-use Config;
 use App\Models\Model;
 
-class ForageReward extends Model
-{
+class ForageReward extends Model {
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'forage_id', 'rewardable_type', 'rewardable_id', 'quantity', 'weight'
+        'forage_id', 'rewardable_type', 'rewardable_id', 'quantity', 'weight',
     ];
 
     /**
@@ -22,7 +20,7 @@ class ForageReward extends Model
      * @var string
      */
     protected $table = 'forage_rewards';
-    
+
     /**
      * Validation rules for creation.
      *
@@ -30,11 +28,11 @@ class ForageReward extends Model
      */
     public static $createRules = [
         'rewardable_type' => 'required',
-        'rewardable_id' => 'required',
-        'quantity' => 'required|integer|min:1',
-        'weight' => 'required|integer|min:1',
+        'rewardable_id'   => 'required',
+        'quantity'        => 'required|integer|min:1',
+        'weight'          => 'required|integer|min:1',
     ];
-    
+
     /**
      * Validation rules for updating.
      *
@@ -42,24 +40,22 @@ class ForageReward extends Model
      */
     public static $updateRules = [
         'rewardable_type' => 'required',
-        'rewardable_id' => 'required',
-        'quantity' => 'required|integer|min:1',
-        'weight' => 'required|integer|min:1',
+        'rewardable_id'   => 'required',
+        'quantity'        => 'required|integer|min:1',
+        'weight'          => 'required|integer|min:1',
     ];
 
     /**********************************************************************************************
-    
+
         RELATIONS
 
     **********************************************************************************************/
-    
+
     /**
      * Get the reward attached to the loot entry.
      */
-    public function reward() 
-    {
-        switch ($this->rewardable_type)
-        {
+    public function reward() {
+        switch ($this->rewardable_type) {
             case 'Item':
                 return $this->belongsTo('App\Models\Item\Item', 'rewardable_id');
             case 'Currency':
@@ -70,6 +66,7 @@ class ForageReward extends Model
                 // Laravel requires a relationship instance to be returned (cannot return null), so returning one that doesn't exist here.
                 return $this->belongsTo('App\Models\Loot\Loot', 'rewardable_id', 'loot_table_id')->whereNull('loot_table_id');
         }
+
         return null;
     }
 }

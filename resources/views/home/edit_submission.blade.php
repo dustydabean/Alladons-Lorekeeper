@@ -103,6 +103,7 @@
             @include('js._loot_js', ['showLootTables' => false, 'showRaffles' => false])
         @endif
         @include('js._character_select_js')
+        @include('widgets._submission_companion_select_js')
         @include('widgets._inventory_select_js')
         @include('widgets._bank_select_row', ['owners' => [Auth::user()]])
         @include('widgets._bank_select_js', [])

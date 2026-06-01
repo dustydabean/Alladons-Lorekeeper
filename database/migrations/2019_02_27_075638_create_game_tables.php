@@ -183,7 +183,7 @@ class CreateGameTables extends Migration {
             $table->timestamps();
             $table->softDeletes();
 
-            //$table->foreign('character_id')->references('id')->on('characters');
+            // $table->foreign('character_id')->references('id')->on('characters');
             $table->foreign('user_id')->references('id')->on('users');
         });
 

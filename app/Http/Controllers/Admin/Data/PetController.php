@@ -10,8 +10,6 @@ use App\Models\Pet\PetDropData;
 use App\Models\Pet\PetEvolution;
 use App\Models\Pet\PetLevel;
 use App\Models\Pet\PetLevelPet;
-use App\Models\Pet\PetVariant;
-use App\Models\Pet\PetVariantDropData;
 use App\Models\User\UserPet;
 use App\Services\PetDropService;
 use App\Services\PetService;
@@ -85,7 +83,7 @@ class PetController extends Controller {
     public function postCreateEditPetCategory(Request $request, PetService $service, $id = null) {
         $id ? $request->validate(PetCategory::$updateRules) : $request->validate(PetCategory::$createRules);
         $data = $request->only([
-            'name', 'description', 'image', 'remove_image', 'allow_attach', 'limit',
+            'name', 'description', 'image', 'remove_image', 'allow_attach', 'limit', 'is_visible',
         ]);
         if ($id && $service->updatePetCategory(PetCategory::find($id), $data, Auth::user())) {
             flash('Category updated successfully.')->success();
@@ -191,6 +189,7 @@ class PetController extends Controller {
     public function getCreatePet() {
         return view('admin.pets.create_edit_pet', [
             'pet'        => new Pet,
+            'pets'       => Pet::orderBy('name', 'DESC')->whereNull('parent_id')->pluck('name', 'id')->toArray(),
             'categories' => ['none' => 'No category'] + PetCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
         ]);
     }
@@ -210,6 +209,7 @@ class PetController extends Controller {
 
         return view('admin.pets.create_edit_pet', [
             'pet'        => $pet,
+            'pets'       => Pet::orderBy('name', 'DESC')->whereNull('parent_id')->where('id', '!=', $id)->pluck('name', 'id')->toArray(),
             'categories' => ['none' => 'No category'] + PetCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
         ]);
     }
@@ -225,12 +225,12 @@ class PetController extends Controller {
     public function postCreateEditPet(Request $request, PetService $service, $id = null) {
         $id ? $request->validate(Pet::$updateRules) : $request->validate(Pet::$createRules);
         $data = $request->only([
-            'name', 'allow_transfer', 'pet_category_id', 'description', 'image', 'remove_image', 'limit',
+            'name', 'allow_transfer', 'pet_category_id', 'description', 'image', 'remove_image', 'limit', 'is_visible', 'parent_id',
         ]);
         if ($id && $service->updatePet(Pet::find($id), $data, Auth::user())) {
-            flash('Pet updated successfully.')->success();
+            flash('Companion updated successfully.')->success();
         } elseif (!$id && $pet = $service->createPet($data, Auth::user())) {
-            flash('Pet created successfully.')->success();
+            flash('Companion created successfully.')->success();
 
             return redirect()->to('admin/data/pets/edit/'.$pet->id);
         } else {
@@ -267,7 +267,7 @@ class PetController extends Controller {
      */
     public function postDeletePet(Request $request, PetService $service, $id) {
         if ($id && $service->deletePet(Pet::find($id))) {
-            flash('Pet deleted successfully.')->success();
+            flash('Companion deleted successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
@@ -275,49 +275,6 @@ class PetController extends Controller {
         }
 
         return redirect()->to('admin/data/pets');
-    }
-
-    /**********************************************************************************************
-
-        VARIANTS
-
-    **********************************************************************************************/
-
-    /**
-     * Gets the create / edit pet variant page.
-     *
-     * @param mixed      $pet_id
-     * @param mixed|null $id
-     */
-    public function getCreateEditVariant($pet_id, $id = null) {
-        return view('admin.pets._create_edit_pet_variant', [
-            'pet'     => Pet::find($pet_id),
-            'variant' => $id ? PetVariant::find($id) : new PetVariant,
-        ]);
-    }
-
-    /**
-     * Edits pet variants.
-     *
-     * @param App\Services\PetService $service
-     * @param int                     $id
-     * @param mixed                   $pet_id
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function postCreateEditVariant(Request $request, PetService $service, $pet_id, $id = null) {
-        $data = $request->only(['variant_name', 'variant_image', 'remove_image', 'delete', 'description']);
-        if ($id && $service->editVariant(PetVariant::findOrFail($id), $data)) {
-            // we dont flash in case we are deleting the variant
-        } elseif (!$id && $service->createVariant(Pet::find($pet_id), $data)) {
-            flash('Variant created successfully.')->success();
-        } else {
-            foreach ($service->errors()->getMessages()['error'] as $error) {
-                flash($error)->error();
-            }
-        }
-
-        return redirect()->back();
     }
 
     /**********************************************************************************************
@@ -349,7 +306,7 @@ class PetController extends Controller {
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postCreateEditEvolution(Request $request, PetService $service, $pet_id, $id = null) {
-        $data = $request->only(['evolution_name', 'evolution_image', 'evolution_stage', 'delete', 'variant_id', 'variant_image']);
+        $data = $request->only(['evolution_name', 'evolution_image', 'evolution_stage', 'delete']);
         if ($id && $service->editEvolution(PetEvolution::findOrFail($id), $data)) {
             // we dont flash in case we are deleting the evolution
         } elseif (!$id && $service->createEvolution(Pet::find($pet_id), $data)) {
@@ -384,17 +341,20 @@ class PetController extends Controller {
         if (!$this->user_pet) {
             abort(404);
         }
-        $drops = $this->user_pet->drops;
+        $drops = $this->user_pet->ensureDrop();
+        if (!$drops) {
+            abort(404);
+        }
         if (!$request['drops_available']) {
             $request['drops_available'] = 0;
         }
 
         if ($drops->update(['parameters' => $request['parameters'], 'drops_available' => $request['drops_available']])) {
-            flash('Pet drops updated successfully.')->success();
+            flash('Companion drops updated successfully.')->success();
 
             return redirect()->to($this->user_pet->pageUrl(Auth::user()->id));
         } else {
-            flash('Failed to update pet drops.')->error();
+            flash('Failed to update companion drops.')->error();
         }
 
         return redirect()->back()->withInput();
@@ -423,7 +383,6 @@ class PetController extends Controller {
         return view('admin.pets.create_edit_drop', [
             'drop'      => new PetDropData,
             'pets'      => $pets,
-            'variants'  => PetVariant::orderBy('variant_name', 'DESC')->pluck('variant_name', 'id')->toArray(),
         ]);
     }
 
@@ -444,7 +403,6 @@ class PetController extends Controller {
         return view('admin.pets.create_edit_drop', [
             'drop'      => $petDrop,
             'pets'      => Pet::orderBy('name', 'DESC')->pluck('name', 'id')->toArray(),
-            'variants'  => PetVariant::orderBy('variant_name', 'DESC')->pluck('variant_name', 'id')->toArray(),
             'items'     => Item::orderBy('name')->pluck('name', 'id'),
         ]);
     }
@@ -464,9 +422,9 @@ class PetController extends Controller {
             'rewardable_type', 'rewardable_id', 'min_quantity', 'max_quantity', 'override',
         ]);
         if ($pet_id && $service->updatePetDrop(Pet::find($pet_id)->dropData, $data, Auth::user())) {
-            flash('Pet drop updated successfully.')->success();
+            flash('Companion drop updated successfully.')->success();
         } elseif (!$pet_id && $drop = $service->createPetDrop($data, Auth::user())) {
-            flash('Pet drop created successfully.')->success();
+            flash('Companion drop created successfully.')->success();
 
             return redirect()->to('admin/data/pets/drops/edit/'.$drop->pet_id);
         } else {
@@ -488,7 +446,7 @@ class PetController extends Controller {
     public function getDeleteDrop($id) {
         $drop = PetDropData::find($id);
 
-        return view('admin.pets._delete_drop', [
+        return view('admin.pets._delete_pet_drop', [
             'drop' => $drop,
         ]);
     }
@@ -496,13 +454,13 @@ class PetController extends Controller {
     /**
      * Deletes a drop.
      *
-     * @param App\Services\SpeciesService $service
+     * @param App\Services\PetDropService $service
      * @param int                         $id
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postDeleteDrop(Request $request, SpeciesService $service, $id) {
-        if ($id && $service->deleteDropData(PetDropData::find($id))) {
+    public function postDeleteDrop(Request $request, PetDropService $service, $id) {
+        if ($id && $service->deletePetDrop(PetDropData::find($id))) {
             flash('Drop data deleted successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
@@ -522,106 +480,6 @@ class PetController extends Controller {
         return view('admin.pets._drop_widget', [
             'drop' => PetDropData::find($id),
         ]);
-    }
-
-    /**********************************************************************************************
-
-        PET DROP VARIANTS
-
-    **********************************************************************************************/
-
-    /**
-     * Gets the pet drop variant creation modal.
-     *
-     * @param mixed $pet_id
-     */
-    public function getCreateVariantDrop($pet_id) {
-        return view('admin.pets._create_edit_pet_variant_drop', [
-            'pet'           => Pet::findOrFail($pet_id),
-            'variants'      => PetVariant::where('pet_id', $pet_id)->orderBy('variant_name', 'DESC')->pluck('variant_name', 'id')->toArray(),
-            'variant_drop'  => new PetVariantDropData,
-        ]);
-    }
-
-    /**
-     * Gets the pet drop variant edit modal.
-     *
-     * @param mixed $pet_id
-     * @param mixed $variant_id
-     */
-    public function getEditVariantDrop($pet_id, $variant_id) {
-        $variant = PetVariant::findOrFail($variant_id);
-
-        return view('admin.pets._create_edit_pet_variant_drop', [
-            'pet'           => Pet::findOrFail($pet_id),
-            'variants'      => PetVariant::where('pet_id', $pet_id)->orderBy('variant_name', 'DESC')->pluck('variant_name', 'id')->toArray(),
-            'variant'       => $variant,
-            'variant_drop'  => $variant->dropData,
-        ]);
-    }
-
-    /**
-     * Creates or edits a pet drop variant.
-     *
-     * @param mixed      $pet_id
-     * @param mixed|null $variant_id
-     */
-    public function postCreateEditVariantDrop(Request $request, PetDropService $service, $pet_id, $variant_id = null) {
-        $data = $request->only([
-            'variant_id', 'rewardable_type', 'rewardable_id', 'min_quantity', 'max_quantity',
-        ]);
-
-        $variant = PetVariant::find($variant_id);
-        $pet = Pet::findOrFail($pet_id);
-
-        if ($variant_id && $service->editPetVariantDrop($variant->dropData, $data)) {
-            flash('Pet variant drop edited successfully.')->success();
-        } elseif (!$variant_id && $drop = $service->createPetVariantDrop($data)) {
-            flash('Pet variant drop created successfully.')->success();
-
-            return redirect()->to('admin/data/pets/drops/edit/'.$pet->id);
-        } else {
-            foreach ($service->errors()->getMessages()['error'] as $error) {
-                flash($error)->error();
-            }
-        }
-
-        return redirect()->to('admin/data/pets/drops/edit/'.$pet->id);
-    }
-
-    /**
-     * Gets the pet drop variant deletion modal.
-     *
-     * @param mixed $pet_id
-     * @param mixed $variant_id
-     */
-    public function getDeleteVariantDrop($pet_id, $variant_id) {
-        $variant = PetVariant::findOrFail($variant_id);
-
-        return view('admin.pets._delete_pet_variant_drop', [
-            'pet'       => Pet::findOrFail($pet_id),
-            'variant'   => $variant,
-            'drop'      => $variant->dropData,
-        ]);
-    }
-
-    /**
-     * Deletes a pet drop variant.
-     *
-     * @param mixed $pet_id
-     * @param mixed $variant_id
-     */
-    public function postDeleteVariantDrop(Request $request, PetDropService $service, $pet_id, $variant_id) {
-        $variant = PetVariant::findOrFail($variant_id);
-        if ($variant_id && $service->deletePetVariantDrop($variant->dropData)) {
-            flash('Pet variant drop deleted successfully.')->success();
-        } else {
-            foreach ($service->errors()->getMessages()['error'] as $error) {
-                flash($error)->error();
-            }
-        }
-
-        return redirect()->to('admin/data/pets/drops/edit/'.$pet_id);
     }
 
     /**********************************************************************************************
@@ -674,9 +532,9 @@ class PetController extends Controller {
             'name', 'level', 'bonding_required', 'rewardable_id', 'rewardable_type', 'quantity',
         ]);
         if ($id && $service->updatePetLevel(PetLevel::find($id), $data, Auth::user())) {
-            flash('Pet level updated successfully.')->success();
+            flash('Companion level updated successfully.')->success();
         } elseif (!$id && $level = $service->createPetLevel($data, Auth::user())) {
-            flash('Pet level created successfully.')->success();
+            flash('Companion level created successfully.')->success();
 
             return redirect()->to('admin/data/pets/levels/edit/'.$level->id);
         } else {
@@ -708,7 +566,7 @@ class PetController extends Controller {
      */
     public function postDeleteLevel(Request $request, PetService $service, $id) {
         if ($id && $service->deletePetLevel(PetLevel::find($id))) {
-            flash('Pet level deleted successfully.')->success();
+            flash('Companion level deleted successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
@@ -721,10 +579,10 @@ class PetController extends Controller {
     /**
      * Loads the add pet to level modal.
      *
-     * @param mixed $id
+     * @param mixed $level_id
      */
-    public function getAddPetToLevel($id) {
-        $level = PetLevel::find($id);
+    public function getAddPetToLevel($level_id) {
+        $level = PetLevel::find($level_id);
         if (!$level) {
             abort(404);
         }
@@ -739,8 +597,9 @@ class PetController extends Controller {
      * Shows the edit pet on level page.
      *
      * @param mixed $id
+     * @param mixed $level_id
      */
-    public function getEditPetLevel($id) {
+    public function getEditPetLevel($level_id, $id) {
         $petLevel = PetLevelPet::find($id);
         if (!$petLevel) {
             abort(404);
@@ -755,11 +614,11 @@ class PetController extends Controller {
     /**
      * Adds pet(s) to a level.
      *
-     * @param mixed $id
+     * @param mixed $level_id
      */
-    public function postAddPetToLevel(Request $request, PetService $service, $id) {
-        if ($service->addPetsToLevel($request->input('pet_ids'), PetLevel::find($id))) {
-            flash('Pet(s) added to level successfully.')->success();
+    public function postAddPetToLevel(Request $request, PetService $service, $level_id) {
+        if ($service->addPetsToLevel($request->input('pet_ids'), PetLevel::find($level_id))) {
+            flash('Companion(s) added to level successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
@@ -773,13 +632,14 @@ class PetController extends Controller {
      * Edits the rewards for a specific pet on a level.
      *
      * @param mixed $id
+     * @param mixed $level_id
      */
-    public function postEditPetLevel(Request $request, PetService $service, $id) {
+    public function postEditPetLevel(Request $request, PetService $service, $level_id, $id) {
         $data = $request->only([
             'rewardable_id', 'rewardable_type', 'quantity',
         ]);
         if ($service->editPetLevelPetRewards(PetLevelPet::find($id), $data)) {
-            flash('Pet level rewards updated successfully.')->success();
+            flash('Companion level rewards updated successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();

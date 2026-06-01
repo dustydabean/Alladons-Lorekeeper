@@ -6,34 +6,53 @@
 @endsection
 
 @section($namespace ? 'content' : 'profile-content')
-
     {!! $namespace
-        ? breadcrumbs(['Pets' => 'pets', $pet->pet_name ? $pet->pet_name . ' (' . $pet->pet->name . ')' : $user->name . "'s " . $pet->pet->name => $pet->url])
-        : breadcrumbs(['Users' => 'users', $user->name => $user->url, 'Pets' => $user->url . '/pets', $pet->pet_name ? $pet->pet_name . ' (' . $pet->pet->name . ')' : $user->name . "'s " . $pet->pet->name => $pet->url]) !!}
+        ? breadcrumbs(['Companions' => 'pets', $pet->pet_name ? $pet->pet_name . ' (' . $pet->pet->name . ')' : $user->name . "'s " . $pet->pet->name => $pet->url])
+        : breadcrumbs(['Users' => 'users', $user->name => $user->url, 'Companions' => $user->url . '/pets', $pet->pet_name ? $pet->pet_name . ' (' . $pet->pet->name . ')' : $user->name . "'s " . $pet->pet->name => $pet->url]) !!}
 
-    <h1>
+    <h1 class="mb-0">
         {!! $pet->pet_name
-            ? $pet->pet_name . ' (' . $user->displayName . "'s " . ($pet->variant_id ? $pet->variant->variant_name . ' ' : '') . $pet->pet->displayName . ')'
-            : $user->name . "'s " . ($pet->variant_id ? $pet->variant->variant_name . ' ' : '') . $pet->pet->displayName !!}
+            ? $pet->pet_name . ' (' . $user->displayName . "'s " . $pet->pet->displayName . ')'
+            : $user->name . "'s " . $pet->pet->displayName !!}
     </h1>
+    <div>
+        <span class="badge badge-primary">ID #{{ $pet->id }}</span>
+    </div>
 
     @if (!$namespace)
         <div class="container justify-content-right text-right my-3">
             <a href="{{ $user->url . '/pets' }}">
-                <div class="btn btn-primary">Return to Pets</div>
+                <div class="btn btn-primary">Return to Companions</div>
             </a>
         </div>
     @endif
 
     @if (Auth::check() && ($pet->user_id !== Auth::user()->id && Auth::user()->hasPower('edit_inventories')))
         <div class="alert alert-warning">
-            You are editing this pet as a staff member.
+            You are editing this companion as a staff member.
         </div>
     @endif
 
-    <div class="row world-entry">
+    <div class="row world-entry align-items-center">
         <div class="col-md-3 world-entry-image">
-            <img class="img-fluid rounded mb-2" src="{{ $pet->pet->VariantImage($pet->id) }}" data-toggle="tooltip" title="{{ $pet->pet_name ?? $pet->pet->name }}" alt="{{ $pet->pet_name ?? $pet->pet->name }}" />
+            <img class="img-fluid rounded mb-2" src="{{ $pet->pet->image($pet->id) }}" data-toggle="tooltip" title="{{ $pet->pet_name ?? $pet->pet->name }}" alt="{{ $pet->pet_name ?? $pet->pet->name }}" />
+            <div class="mb-2 mb-md-0">
+                <h5 class="mb-0">
+                    Level {{ $pet->level->levelName ?? 1 }}
+                </h5>
+                @if ($pet->level && $pet->level->levelName < Settings::get('max_pet_level'))
+                    <div class="small">
+                        Will level up {!! pretty_date($pet->level->levelsAt) !!}.
+                    </div>
+                    <div class="small" style="opacity: 0.65;">
+                        (<b>{{ $pet->level->bonding }} EXP</b>, minus {{ $pet->level->bonding > 0 ? $pet->level->bonding * 7 : 0 }} days)
+                    </div>
+                @else
+                    <div class="small" style="opacity: 0.65;">
+                        (Max Level)
+                    </div>
+                @endif
+            </div>
         </div>
         <div class="col-md-9">
             <div class="row col-12 world-entry-text">
@@ -74,7 +93,7 @@
         @if ($pet->has_image)
             <div>
                 <p class="alert alert-info">
-                    This pet is displaying custom art!
+                    This companion is displaying custom art!
                     @if (isset($pet->petArtist) && $pet->petArtist)
                         <b>Artist:</b> {!! $pet->petArtist !!}
                     @else
@@ -97,6 +116,36 @@
             <ul class="list-group list-group-flush">
                 @include('home._pet_form', ['pet' => $pet, 'user' => Auth::user()])
             </ul>
+        </div>
+    @endif
+
+    @php
+        $logs = \App\Models\Pet\PetLog::where('stack_id', $pet->id)
+            ->orderBy('created_at', 'DESC')
+            ->take(10)
+            ->get();
+    @endphp
+    @if ($logs->count())
+        <div class="card mt-3">
+            <div class="card-header h5 mb-0">Recent Activity</div>
+            <div class="card-body p-0">
+                <table class="table table-sm mb-0">
+                    <thead>
+                        <tr>
+                            <th>Log</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($logs as $log)
+                            <tr>
+                                <td>{!! $log->log !!}</td>
+                                <td>{!! format_date($log->created_at) !!}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
     @endif
 @endsection

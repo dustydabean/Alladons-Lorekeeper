@@ -4,15 +4,11 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddResetToForaging extends Migration
-{
+class AddResetToForaging extends Migration {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
-    {
+    public function up() {
         Schema::table('user_foraging', function (Blueprint $table) {
             //
             $table->dropColumn('foraged');
@@ -22,11 +18,8 @@ class AddResetToForaging extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
-    {
+    public function down() {
         Schema::table('user_foraging', function (Blueprint $table) {
             //
             $table->dropColumn('reset_at');

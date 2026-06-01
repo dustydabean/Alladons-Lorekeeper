@@ -1,18 +1,14 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-class AddForagingTable extends Migration
-{
+class AddForagingTable extends Migration {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
-    {
+    public function up() {
         //
         Schema::create('user_foraging', function (Blueprint $table) {
             $table->increments('id');
@@ -36,21 +32,18 @@ class AddForagingTable extends Migration
             $table->integer('forage_id')->unsigned();
             $table->string('rewardable_type');
             $table->integer('rewardable_id')->unsigned();
-            
+
             $table->integer('quantity')->unsigned();
             $table->integer('weight')->unsigned();
-            
+
             $table->foreign('forage_id')->references('id')->on('forages');
         });
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
-    {
+    public function down() {
         //
         Schema::dropIfExists('user_foraging');
         Schema::dropIfExists('forage_rewards');

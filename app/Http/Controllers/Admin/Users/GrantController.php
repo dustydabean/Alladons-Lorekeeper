@@ -94,7 +94,7 @@ class GrantController extends Controller {
     public function getPets() {
         return view('admin.grants.pets', [
             'users' => User::orderBy('id')->pluck('name', 'id'),
-            'pets'  => Pet::orderBy('name')->pluck('name', 'id'),
+            'pets'  => Pet::whereNull('parent_id')->orderBy('name')->pluck('name', 'id'),
         ]);
     }
 
@@ -106,11 +106,11 @@ class GrantController extends Controller {
     public function getPetVariants($id) {
         $pet = Pet::find($id);
 
-        return $pet->variants->pluck('variant_name', 'id')->toArray();
+        return $pet->variants->pluck('name', 'id')->toArray();
     }
 
     /**
-     * Gets all evlutions of a pet.
+     * Gets all evolutions of a pet.
      *
      * @param mixed $id
      */
@@ -130,7 +130,7 @@ class GrantController extends Controller {
     public function postPets(Request $request, PetManager $service) {
         $data = $request->only(['names', 'pet_ids', 'quantities', 'data', 'disallow_transfer', 'notes', 'variant', 'evolution']);
         if ($service->grantPets($data, Auth::user())) {
-            flash('Pets granted successfully.')->success();
+            flash('Companions granted successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();

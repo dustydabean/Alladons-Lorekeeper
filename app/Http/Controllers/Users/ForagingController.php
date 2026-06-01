@@ -2,30 +2,23 @@
 
 namespace App\Http\Controllers\Users;
 
+use App\Http\Controllers\Controller;
+use App\Models\Character\Character;
+use App\Models\Foraging\Forage;
+use App\Models\User\UserForaging;
+use App\Services\ForageService;
 use Auth;
 use DB;
-use Config;
-use Carbon\Carbon;
-
 use Illuminate\Http\Request;
 
-use App\Models\Character\Character;
-use App\Models\User\UserForaging;
-use App\Models\Foraging\Forage;
-
-use App\Services\ForageService;
-use App\Http\Controllers\Controller;
-
-class ForagingController extends Controller
-{
+class ForagingController extends Controller {
     /**
-     * gets index
+     * gets index.
      */
-    public function getIndex()
-    {
-        $userForage = DB::table('user_foraging')->where('user_id', Auth::user()->id )->first();
+    public function getIndex() {
+        $userForage = DB::table('user_foraging')->where('user_id', Auth::user()->id)->first();
 
-        if(!$userForage) {
+        if (!$userForage) {
             $userForage = UserForaging::create([
                 'user_id' => Auth::user()->id,
             ]);
@@ -54,48 +47,46 @@ class ForagingController extends Controller
         }
 
         return view('foraging.index', [
-            'user' => Auth::user(),
-            'tables' => Forage::visible(Auth::check() && Auth::user()->isStaff)->orderBy('name')->get(),
-            'characters' => $characters
+            'user'       => Auth::user(),
+            'tables'     => Forage::visible(Auth::check() && Auth::user()->isStaff)->orderBy('name')->get(),
+            'characters' => $characters,
         ]);
     }
 
     /**
-     * adds data to userforage table to start the timer
-     */
-    public function postForage($id, ForageService $service)
-    {
-        if($service->initForage($id, Auth::user()))
-        {
-            flash('You have begun to forage!')->info();
-        }
-        else {
-            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
-        }
-
-        return redirect()->back();
-
-    }
-
-    /**
-     * when the time is up and the user can claim
-     */
-    public function postClaim(ForageService $service)
-    {
-        if($service->claimReward(Auth::user()))
-        {
-            flash('Forage successful!')->success();
-        }
-        else {
-            foreach($service->errors()->getMessages()['error'] as $error) flash($error)->error();
-        }
-
-        return redirect()->back();
-    }
-
-    /**
-     * edits the selected character for foraging
+     * adds data to userforage table to start the timer.
      *
+     * @param mixed $id
+     */
+    public function postForage($id, ForageService $service) {
+        if ($service->initForage($id, Auth::user())) {
+            flash('You have begun to forage!')->info();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
+    }
+
+    /**
+     * when the time is up and the user can claim.
+     */
+    public function postClaim(ForageService $service) {
+        if ($service->claimReward(Auth::user())) {
+            flash('Forage successful!')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
+    }
+
+    /**
+     * edits the selected character for foraging.
      */
     public function postEditCharacter(Request $request, ForageService $service) {
         $id = $request->input('character_id');

@@ -176,6 +176,18 @@
 
 <div class="card mb-3">
     <div class="card-header h2">
+        Companions
+    </div>
+    <div class="card-body">
+        <p>Select up to 10 companions to attach to this {{ $isClaim ? 'claim' : 'submission' }}. This is optional.</p>
+        @include('widgets._submission_companion_select', [
+            'selectedPets' => $submission->id ? $submission->submissionPetIds : (old('pet_id') ?? []),
+        ])
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header h2">
         Add-Ons
     </div>
     <div class="card-body">

@@ -1,11 +1,11 @@
 {!! Form::open(['url' => 'admin/data/pets/levels/edit/'.$level->id.'/pets/add']) !!}
 
 <div class="alert alert-info mt-0">
-    You can add rewards to a pet once it has been added.
+    You can add rewards to a companion once it has been added.
 </div>
 
 <div class="btn btn-primary add-pet mb-2">
-    <i class="fas fa-plus"></i> Add Another Pet
+    <i class="fas fa-plus"></i> Add Another Companion
 </div>
 
 @foreach($level->pets as $pet)
@@ -18,13 +18,13 @@
 </div>
 
 <div class="text-right">
-    {!! Form::submit('Add Pets', ['class' => 'btn btn-primary']) !!}
+    {!! Form::submit('Add Companions', ['class' => 'btn btn-primary']) !!}
 </div>
 
 {!! Form::close() !!}
 
 <div class="form-group pet-row hide">
-    {!! Form::select('pet_ids[]', $pets, null, ['class' => 'form-control', 'placeholder' => 'Select Pet']) !!}
+    {!! Form::select('pet_ids[]', $pets, null, ['class' => 'form-control', 'placeholder' => 'Select Companion']) !!}
 </div>
 
 <script>

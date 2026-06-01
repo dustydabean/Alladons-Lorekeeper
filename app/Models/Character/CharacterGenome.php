@@ -40,21 +40,21 @@ class CharacterGenome extends Model {
      * Get the image associated with this record.
      */
     public function genes() {
-        return $this->hasMany('App\Models\Character\CharacterGenomeGene'); //->groupBy('loci_id');
+        return $this->hasMany('App\Models\Character\CharacterGenomeGene'); // ->groupBy('loci_id');
     }
 
     /**
      * Get the image associated with this record.
      */
     public function gradients() {
-        return $this->hasMany('App\Models\Character\CharacterGenomeGradient'); //->groupBy('loci_id');
+        return $this->hasMany('App\Models\Character\CharacterGenomeGradient'); // ->groupBy('loci_id');
     }
 
     /**
      * Get the image associated with this record.
      */
     public function numerics() {
-        return $this->hasMany('App\Models\Character\CharacterGenomeNumeric'); //->groupBy('loci_id');
+        return $this->hasMany('App\Models\Character\CharacterGenomeNumeric'); // ->groupBy('loci_id');
     }
 
     /**

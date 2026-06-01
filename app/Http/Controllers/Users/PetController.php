@@ -8,7 +8,7 @@ use App\Models\Item\ItemTag;
 use App\Models\Pet\Pet;
 use App\Models\Pet\PetCategory;
 use App\Models\Pet\PetDrop;
-use App\Models\Pet\PetVariant;
+use App\Models\Pet\PetEvolution;
 use App\Models\User\User;
 use App\Models\User\UserItem;
 use App\Models\User\UserPet;
@@ -34,7 +34,19 @@ class PetController extends Controller {
      */
     public function getIndex() {
         $categories = PetCategory::orderBy('sort', 'DESC')->get();
-        $pets = count($categories) ? Auth::user()->pets()->orderByRaw('FIELD(pet_category_id,'.implode(',', $categories->pluck('id')->toArray()).')')->orderBy('pet_name')->get()->groupBy('pet_category_id') : Auth::user()->pets()->orderBy('pet_name')->get()->groupBy('pet_category_id');
+        $pets = count($categories) ?
+            Auth::user()
+                ->pets()
+                ->orderByRaw('ISNULL(pet_category_id), pet_category_id ASC')
+                ->orderByRaw('FIELD(pet_category_id,'.implode(',', $categories->pluck('id')->toArray()).')')
+                ->orderBy('pet_name')
+                ->get()
+                ->groupBy('pet_category_id') :
+            Auth::user()
+                ->pets()
+                ->orderBy('pet_name')
+                ->get()
+                ->groupBy('pet_category_id');
 
         return view('home.pets', [
             'categories'        => $categories->keyBy('id'),
@@ -61,14 +73,16 @@ class PetController extends Controller {
         // if the tag has data['variant_ids'], only show if the userpet->pet has a variant that matches
         $tags = ItemTag::where('tag', 'splice')->where('is_active', 1)->get();
         $tags = $tags->filter(function ($tag) use ($stack) {
-            if (isset($tag->data['variant_ids'])) {
+            if ((isset($tag->data['splice_type']) && $tag->data['splice_type'] == 'by_variants') && isset($tag->data['variant_ids'])) {
                 // if "default" is an option, then it's always available
                 if (in_array('default', $tag->data['variant_ids'])) {
                     return true;
                 }
 
-                return PetVariant::whereIn('id', $tag->data['variant_ids'])->where('pet_id', $stack->pet_id)->exists();
-            } else {
+                return Pet::whereIn('id', $tag->data['variant_ids'])->where('parent_id', $stack->pet->isVariant ? $stack->pet->parent_id : $stack->pet_id)->exists();
+            } elseif ((isset($tag->data['splice_type']) && $tag->data['splice_type'] == 'by_species') && isset($tag->data['parent_ids'])) {
+                return Pet::whereIn('id', $tag->data['parent_ids'])->where('id', $stack->pet->isVariant ? $stack->pet->parent_id : $stack->pet_id)->exists();
+            } elseif (isset($tag->data['splice_type']) && $tag->data['splice_type'] == 'all') {
                 return true;
             }
         })->pluck('item_id');
@@ -86,6 +100,57 @@ class PetController extends Controller {
     }
 
     /**
+     * Shows the eligible variant options for a splice.
+     *
+     * @param mixed $stack_id
+     * @param mixed $pet_id
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getVariantOptions(Request $request, $stack_id, $pet_id) {
+        $stack = UserItem::find($stack_id);
+        if (!$stack) {
+            abort(404);
+        }
+        $pet = UserPet::find($pet_id);
+        if (!$pet) {
+            abort(404);
+        }
+
+        if ($stack->item->hasTag('splice')) {
+            $tag = $stack->item->tag('splice');
+            if (Pet::where('parent_id', $pet->pet->isVariant ? $pet->pet->parent_id : $pet->pet_id)->count() > 0) {
+                if ($tag->data['splice_type'] == 'by_variants' && isset($tag->data['variant_ids'])) {
+                    if (in_array('default', $tag->data['variant_ids'])) {
+                        $addDefault = true;
+                    }
+                    if (Pet::where('parent_id', $pet->pet->isVariant ? $pet->pet->parent_id : $pet->pet_id)->whereIn('id', $tag->data['variant_ids'])->exists()) {
+                        $addDefault = true;
+                        $variants = Pet::whereNotNull('parent_id')->where('parent_id', $pet->pet->isVariant ? $pet->pet->parent_id : $pet->pet_id)->whereIn('id', $tag->data['variant_ids'])->pluck('name', 'id')->toArray();
+                    } else {
+                        $variants = [];
+                        $noVariants = true;
+                    }
+                } else {
+                    $variants = Pet::where('parent_id', $pet->pet->isVariant ? $pet->pet->parent_id : $pet->pet_id)->pluck('name', 'id')->toArray();
+                }
+            } else {
+                $variants = [];
+                $noVariants = true;
+            }
+        } else {
+            $variants = [];
+            $noVariants = true;
+        }
+
+        return view('home._pet_variant_select', [
+            'variants'   => $variants,
+            'noVariants' => $noVariants ?? null,
+            'addDefault' => $addDefault ?? false,
+        ]);
+    }
+
+    /**
      * Transfers an pet stack to another user.
      *
      * @param App\Services\PetManager $service
@@ -95,7 +160,7 @@ class PetController extends Controller {
      */
     public function postTransfer(Request $request, PetManager $service, $id) {
         if ($service->transferStack(Auth::user(), User::visible()->where('id', $request->get('user_id'))->first(), UserPet::where('id', $id)->first())) {
-            flash('Pet transferred successfully.')->success();
+            flash('Companion transferred successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
@@ -115,7 +180,7 @@ class PetController extends Controller {
      */
     public function postDelete(Request $request, PetManager $service, $id) {
         if ($service->deleteStack(Auth::user(), UserPet::where('id', $id)->first())) {
-            flash('Pet deleted successfully.')->success();
+            flash('Companion deleted successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
@@ -135,7 +200,7 @@ class PetController extends Controller {
      */
     public function postName(Request $request, PetManager $service, $id) {
         if ($service->nameStack(UserPet::find($id), $request->get('name'))) {
-            flash('Pet named successfully.')->success();
+            flash('Companion named successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
@@ -155,7 +220,7 @@ class PetController extends Controller {
      */
     public function postAttach(Request $request, PetManager $service, $id) {
         if ($service->attachStack(UserPet::find($id), $request->get('id'))) {
-            flash('Pet attached successfully.')->success();
+            flash('Companion attached successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
@@ -175,7 +240,7 @@ class PetController extends Controller {
      */
     public function postDetach(Request $request, PetManager $service, $id) {
         if ($service->detachStack(UserPet::find($id))) {
-            flash('Pet detached successfully.')->success();
+            flash('Companion detached successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
@@ -197,7 +262,7 @@ class PetController extends Controller {
     public function postVariant(Request $request, PetManager $service, $id, $isStaff = false) {
         $pet = UserPet::find($id);
         if ($service->editVariant($request->input('variant_id'), $pet, $request->input('stack_id'), $request->input('is_staff'))) {
-            flash('Pet variant changed successfully.')->success();
+            flash('Companion variant changed successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
@@ -219,7 +284,7 @@ class PetController extends Controller {
     public function postEvolution(Request $request, PetManager $service, $id, $isStaff = false) {
         $pet = UserPet::find($id);
         if ($service->editEvolution($request->input('evolution_id'), $pet, $request->input('stack_id'), $request->input('is_staff'))) {
-            flash('Pet evolution changed successfully.')->success();
+            flash('Companion evolution changed successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
@@ -250,31 +315,57 @@ class PetController extends Controller {
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getPetPage($id) {
-        $pet = UserPet::findOrFail($id);
-        $user = $pet->user;
+        $stack = UserPet::findOrFail($id);
+        $user = $stack->user;
 
         // if the tag has data['variant_ids'], only show if the userpet->pet has a variant that matches
         $tags = ItemTag::where('tag', 'splice')->where('is_active', 1)->get();
-        $tags = $tags->filter(function ($tag) use ($pet) {
+        $tags = $tags->filter(function ($tag) use ($stack) {
             if (isset($tag->data['variant_ids'])) {
                 if (in_array('default', $tag->data['variant_ids'])) {
                     return true;
                 }
 
-                return PetVariant::whereIn('id', $tag->data['variant_ids'])->where('pet_id', $pet->pet_id)->exists();
+                return Pet::whereIn('id', $tag->data['variant_ids'])->where('parent_id', $stack->pet->isVariant ? $stack->pet->parent_id : $stack->pet_id)->exists();
             } else {
                 return true;
             }
         })->pluck('item_id');
         $splices = UserItem::where('user_id', $user->id)->whereIn('item_id', $tags)->where('count', '>', 0)->with('item')->get()->pluck('item.name', 'id');
 
+        $evoTags = ItemTag::where('tag', 'rare_candy')->where('is_active', 1)->get();
+        $evoTags = $evoTags->filter(function ($tag) use ($stack) {
+            if ($tag->data['type'] == 'any') {
+                return true;
+            } elseif ($tag->data['type'] == 'choice') {
+                if (!isset($tag->data['pet_ids'])) {
+                    return false;
+                }
+
+                return Pet::whereIn('id', $tag->data['pet_ids'])->where('id', $stack->pet_id)->exists();
+            } else {
+                return true;
+            }
+        })->pluck('item_id');
+        $evolvers = UserItem::where('user_id', $user->id)->whereIn('item_id', $evoTags)->where('count', '>', 0)->with('item')->get()->pluck('item.name', 'id');
+        $currentStage = $stack->evolution_id ? $stack->evolution->evolution_stage : 0;
+        $currentStage++;
+        $nextStage = PetEvolution::where('pet_id', $stack->pet_id)->where('evolution_stage', $currentStage)->first();
+        if (!$nextStage) {
+            $hasEvolution = false;
+        } else {
+            $hasEvolution = true;
+        }
+
         return view('user.pet', [
             'user'        => $user,
-            'pet'         => $pet,
-            'drops'       => $pet->drops,
+            'pet'         => $stack,
+            'drops'       => $stack->ensureDrop(),
             'userOptions' => User::where('id', '!=', $user->id)->orderBy('name')->pluck('name', 'id')->toArray(),
             'logs'        => $user->getPetLogs(),
             'splices'     => $splices,
+            'evolvers'    => $evolvers,
+            'nextStage'   => $hasEvolution ? $nextStage : null,
         ]);
     }
 
@@ -291,7 +382,7 @@ class PetController extends Controller {
         if (!Auth::check() || $pet->user_id != Auth::user()->id) {
             abort(404);
         }
-        if (!$pet->drops) {
+        if (!$pet->ensureDrop()) {
             abort(404);
         }
         if ($service->claimPetDrops($pet)) {
@@ -351,7 +442,7 @@ class PetController extends Controller {
         }
 
         if ($service->editCustomImage($pet, $data)) {
-            flash('Pet image updated successfully.')->success();
+            flash('Companion image updated successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
@@ -370,7 +461,7 @@ class PetController extends Controller {
         $pet = UserPet::findOrFail($id);
 
         if ($service->editCustomImageDescription($pet, $request->only(['description']))) {
-            flash('Pet custom image description updated successfully.')->success();
+            flash('Companion custom image description updated successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
@@ -389,7 +480,32 @@ class PetController extends Controller {
         $pet = UserPet::findOrFail($id);
 
         if ($service->bondPet($pet, Auth::user())) {
-            flash('Pet bonded successfully.')->success();
+            flash('Companion bonded successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
+    }
+
+    /**
+     * Adjusts a pet's bonding value (staff only).
+     *
+     * @param mixed $id
+     */
+    public function postAdjustBonding($id, Request $request, PetManager $service) {
+        $pet = UserPet::findOrFail($id);
+        if (!Auth::user()->isStaff) {
+            abort(404);
+        }
+
+        $request->validate([
+            'bonding_amount' => 'required',
+        ]);
+        if ($service->adjustBonding($pet, $request->get('bonding_amount'), Auth::user())) {
+            flash('Companion experience points adjusted successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();

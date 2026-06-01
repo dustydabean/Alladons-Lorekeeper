@@ -3,7 +3,7 @@
         <h5>{{ $label }}</h5>
         <div class="form-group">
             @include('widgets._pet_drop_loot_select', [
-                'loots' => $drop->rewards()[strtolower($label)] ?? null,
+                'loots' => $drop->rewards()[strtolower(str_replace(' ', '_', $label))] ?? null,
                 'group' => strtolower(str_replace(' ', '_', $label)),
                 'label' => $label,
             ])

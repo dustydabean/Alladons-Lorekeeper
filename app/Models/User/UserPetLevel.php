@@ -4,6 +4,7 @@ namespace App\Models\User;
 
 use App\Models\Model;
 use App\Models\Pet\PetLevel;
+use Carbon\Carbon;
 
 class UserPetLevel extends Model {
     /**
@@ -12,7 +13,7 @@ class UserPetLevel extends Model {
      * @var array
      */
     protected $fillable = [
-        'user_pet_id', 'bonding_level', 'bonding',
+        'user_pet_id', 'bonding_level', 'bonding', 'next_level_at',
     ];
 
     /**
@@ -21,6 +22,15 @@ class UserPetLevel extends Model {
      * @var string
      */
     protected $table = 'user_pet_levels';
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'next_level_at' => 'datetime',
+    ];
 
     /**********************************************************************************************
 
@@ -52,13 +62,27 @@ class UserPetLevel extends Model {
      * Returns the level name of the pet.
      */
     public function getLevelNameAttribute() {
-        return $this->level ? $this->level->name : config('lorekeeper.pets.initial_level_name');
+        return $this->bonding_level ?? 1;
     }
 
     /**
-     * Gets the next level for the pet.
+     * Gets the next level date for the pet, defaulting to a year from now
+     * for anything that doesn't have a proper next_level_at value.
      */
     public function getNextLevelAttribute() {
-        return PetLevel::where('level', $this->bonding_level + 1)->first();
+        return $this->next_level_at ?? Carbon::now()->addYear()->startOfDay();
+    }
+
+    /**
+     * Get when the next level will be reached.
+     */
+    public function getLevelsAtAttribute() {
+        $nextLevelDate = $this->nextLevel;
+        if (isset($this->bonding) && ($this->bonding > 0)) {
+            $days = ($this->bonding * 7);
+            $nextLevelDate = $nextLevelDate->subDays($days ?? 0);
+        }
+
+        return $nextLevelDate;
     }
 }

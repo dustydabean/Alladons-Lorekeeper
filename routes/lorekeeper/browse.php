@@ -113,11 +113,12 @@ Route::group(['prefix' => 'character', 'namespace' => 'Characters'], function ()
     Route::get('{slug}/change-log', 'CharacterController@getCharacterLogs');
     Route::get('{slug}/breeding-slots-log', 'CharacterController@getCharacterSlotsLogs');
     Route::get('{slug}/submissions', 'CharacterController@getCharacterSubmissions');
+
+    Route::get('{slug}/pets', 'CharacterController@getCharacterPets');
     Route::get('{slug}/gallery', 'CharacterController@getCharacterGallery');
 
     // lineage
     Route::get('{slug}/lineage', 'CharacterLineageController@getCharacterLineage');
-    Route::get('{slug}/pets', 'CharacterController@getCharacterPets');
 
     Route::get('{slug}/breeding-permissions', 'CharacterController@getCharacterBreedingPermissions');
 });
@@ -192,6 +193,11 @@ Route::group(['prefix' => 'event-tracking'], function () {
 });
 
 /**************************************************************************************************
+    Pet Drops
+**************************************************************************************************/
+Route::get('pets/pet/{id}', 'Users\PetController@getPetDrops');
+
+/**************************************************************************************************
     Site Pages
 **************************************************************************************************/
 Route::get('credits', 'PageController@getCreditsPage');
@@ -258,7 +264,7 @@ Route::get('guide', 'GuideController@getguide');
 
 Route::get('guides', 'GuidesController@getguides');
 
-Route::get('time' , function() {
+Route::get('time', function () {
     return date('Y-m-d H:i:s');
 });
 

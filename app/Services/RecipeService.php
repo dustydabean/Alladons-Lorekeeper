@@ -87,7 +87,7 @@ class RecipeService extends Service {
 
             $recipe = Recipe::create($data);
             $this->populateIngredients($recipe, $data);
-            //limits
+            // limits
             $this->populateLimits($recipe, $data);
 
             $recipe->output = $this->populateRewards($data);

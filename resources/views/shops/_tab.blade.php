@@ -2,10 +2,17 @@
     <div class="card-header">
         <ul class="nav nav-tabs card-header-tabs">
             @foreach ($stock as $categoryId => $categoryItems)
+                @php
+                    $visible = '';
+                    // check if method exists
+                    if (isset($categoryItems->first()->category) && method_exists($categoryItems->first()->category, 'is_visible') && !$categoryItems->first()->category->is_visible) {
+                        $visible = '<i class="fas fa-eye-slash mr-1"></i>';
+                    }
+                @endphp
                 <li class="nav-item">
-                    <a class="nav-link {{ $loop->first ? 'active' : '' }}" id="categoryTab-{{ isset($categoryItems->first()->category) ? $categoryItems->first()->category->id : 'misc' }}" data-toggle="tab"
-                        href="#category-{{ isset($categoryItems->first()->category) ? $categoryItems->first()->category->id : 'misc' }}" role="tab">
-                        {!! isset($categoryItems->first()->category) ? $categoryItems->first()->category->name : 'Miscellaneous' !!}
+                    <a class="nav-link {{ $loop->first ? 'active' : '' }}" id="categoryTab-{{ $type }}-{{ isset($categoryItems->first()->category) ? $categoryItems->first()->category->id : 'misc' }}" data-toggle="tab"
+                        href="#category-{{ $type }}-{{ isset($categoryItems->first()->category) ? $categoryItems->first()->category->id : 'misc' }}" role="tab">
+                        {!! (isset($categoryItems->first()->category) && $categoryItems->first()->category) ? $visible . $categoryItems->first()->category->name : 'Miscellaneous' !!}
                     </a>
                 </li>
             @endforeach
@@ -13,7 +20,7 @@
     </div>
     <div class="card-body tab-content">
         @foreach ($stock as $categoryId => $categoryItems)
-            <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="category-{{ isset($categoryItems->first()->category) ? $categoryItems->first()->category->id : 'misc' }}">
+            <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="category-{{ $type }}-{{ isset($categoryItems->first()->category) ? $categoryItems->first()->category->id : 'misc' }}">
                 @foreach ($categoryItems->chunk(4) as $chunk)
                     <div class="row mb-3">
                         @foreach ($chunk as $item)

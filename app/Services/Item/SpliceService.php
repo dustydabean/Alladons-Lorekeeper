@@ -4,7 +4,6 @@ namespace App\Services\Item;
 
 use App\Models\Item\Item;
 use App\Models\Pet\Pet;
-use App\Models\Pet\PetVariant;
 use App\Services\Service;
 use Illuminate\Support\Facades\DB;
 
@@ -25,12 +24,16 @@ class SpliceService extends Service {
      */
     public function getEditData() {
         // group the variants by their $variant->pet name, and pluck the variant name and id
-        $variants = PetVariant::with('pet')->get()->groupBy('pet.name')->map(function ($item) {
-            return $item->pluck('variant_name', 'id');
+        $variants = Pet::whereNotNull('parent_id')->with('parent')->get()->groupBy('parent.name')->map(function ($item) {
+            return $item->pluck('name', 'id');
         })->toArray();
+
+        $variantParents = Pet::whereNotNull('parent_id')->get()->unique('parent_id')->pluck('parent_id')->toArray();
+        $parents = Pet::whereIn('id', $variantParents)->orderBy('name')->pluck('name', 'id')->toArray();
 
         return [
             'variants' => $variants,
+            'parents'  => $parents,
         ];
     }
 
@@ -43,21 +46,43 @@ class SpliceService extends Service {
      */
     public function getTagData($tag) {
         $displayVariants = [];
-        if (isset($tag->data['variant_ids']) && $tag->data['variant_ids']) {
-            foreach ($tag->data['variant_ids'] as $variantId) {
-                if ($variantId == 'default') {
-                    $displayVariants[] = 'Default';
-                } else {
-                    $variant = PetVariant::find($variantId);
-                    $displayVariants[] = '<a href="'.$variant->pet->url.'" target="_blank">'.$variant->variant_name.' ('.$variant->pet->name.')</a>';
+        $variants = [];
+        if (isset($tag->data['splice_type']) && $tag->data['splice_type'] == 'all') {
+            $displayVariants[] = 'Any companions and all variants allowed';
+        } elseif (isset($tag->data['splice_type']) && $tag->data['splice_type'] == 'by_species') {
+            if (isset($tag->data['parent_ids']) && $tag->data['parent_ids']) {
+                foreach ($tag->data['parent_ids'] as $parentId) {
+                    $parent = Pet::find($parentId);
+                    $displayVariants[] = 'All variants of <a href="'.$parent->url.'" target="_blank">'.$parent->name.'</a>';
+                }
+
+                $variants = Pet::visible()->whereNotNull('parent_id')->whereIn('parent_id', $tag->data['parent_ids'])->with('parent')->get()->groupBy('parent.name')->map(function ($item) {
+                    return $item->pluck('name', 'id');
+                })->toArray();
+            }
+        } elseif (isset($tag->data['splice_type']) && $tag->data['splice_type'] == 'by_variants') {
+            if (isset($tag->data['variant_ids']) && $tag->data['variant_ids']) {
+                foreach ($tag->data['variant_ids'] as $variantId) {
+                    if ($variantId == 'default') {
+                        $displayVariants[] = 'Default';
+                    } else {
+                        $variant = Pet::find($variantId);
+                        $displayVariants[] = '<a href="'.$variant->parent->url.'" target="_blank">'.$variant->name.' ('.$variant->parent->name.')</a>';
+                    }
+
+                    $variants = Pet::visible()->whereNotNull('parent_id')->whereIn('id', $tag->data['variant_ids'])->with('parent')->get()->groupBy('parent.name')->map(function ($item) {
+                        return $item->pluck('name', 'id');
+                    })->toArray();
                 }
             }
         }
 
         return [
             'variant_ids' => $tag->data['variant_ids'] ?? null,
-            'variants'    => isset($tag->data['variant_ids']) ? PetVariant::whereIn('id', $tag->data['variant_ids'])->get() : null,
+            'variants'    => $variants,
             'display'     => $displayVariants ? implode(', ', $displayVariants) : null,
+            'splice_type' => $tag->data['splice_type'] ?? null,
+            'parent_ids'  => $tag->data['parent_ids'] ?? null,
         ];
     }
 
@@ -73,7 +98,11 @@ class SpliceService extends Service {
         DB::beginTransaction();
 
         try {
-            $tag->data->update(['variant_ids' => $data['variant_ids'] ?? null]);
+            $tag->data = json_encode([
+                'splice_type' => $data['splice_type'] ?? null,
+                'parent_ids'  => $data['parent_ids'] ?? null,
+                'variant_ids' => $data['variant_ids'] ?? null,
+            ]);
 
             return $this->commitReturn(true);
         } catch (\Exception $e) {

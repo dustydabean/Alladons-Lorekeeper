@@ -16,6 +16,7 @@ use App\Models\Submission\Submission;
 use App\Models\Submission\SubmissionCharacter;
 use App\Models\User\User;
 use App\Models\User\UserItem;
+use App\Models\User\UserPet;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -70,10 +71,10 @@ class SubmissionManager extends Service {
                 if (!$prompt) {
                     throw new \Exception('Invalid prompt selected.');
                 }
-                //check that the prompt limit hasn't been hit
+                // check that the prompt limit hasn't been hit
                 if ($prompt->limit) {
-                    //check that the user hasn't hit the prompt submission limit
-                    //filter the submissions by hour/day/week/etc and count
+                    // check that the user hasn't hit the prompt submission limit
+                    // filter the submissions by hour/day/week/etc and count
                     $count['all'] = Submission::submitted($prompt->id, $user->id)->count();
                     $count['Hour'] = Submission::submitted($prompt->id, $user->id)->where('created_at', '>=', now()->startOfHour())->count();
                     $count['Day'] = Submission::submitted($prompt->id, $user->id)->where('created_at', '>=', now()->startOfDay())->count();
@@ -81,13 +82,13 @@ class SubmissionManager extends Service {
                     $count['Month'] = Submission::submitted($prompt->id, $user->id)->where('created_at', '>=', now()->startOfMonth())->count();
                     $count['Year'] = Submission::submitted($prompt->id, $user->id)->where('created_at', '>=', now()->startOfYear())->count();
 
-                    //if limit by character is on... multiply by # of chars. otherwise, don't
+                    // if limit by character is on... multiply by # of chars. otherwise, don't
                     if ($prompt->limit_character) {
                         $limit = $prompt->limit * Character::visible()->where('is_myo_slot', 0)->where('user_id', $user->id)->count();
                     } else {
                         $limit = $prompt->limit;
                     }
-                    //if limit by time period is on
+                    // if limit by time period is on
                     if ($prompt->limit_period) {
                         if ($count[$prompt->limit_period] >= $limit) {
                             throw new \Exception('You have already submitted to this prompt the maximum number of times.');
@@ -141,6 +142,9 @@ class SubmissionManager extends Service {
 
             // Set characters that have been attached.
             $this->createCharacterAttachments($submission, $data);
+
+            // Set companions that have been attached.
+            $this->createPetAttachments($submission, $data, $user);
 
             return $this->commitReturn($submission);
         } catch (\Exception $e) {
@@ -208,6 +212,7 @@ class SubmissionManager extends Service {
             $userAssets = $assets['userAssets'];
             $promptRewards = $assets['promptRewards'];
             $this->createCharacterAttachments($submission, $data);
+            $this->createPetAttachments($submission, $data, $user);
 
             // Modify submission
             $submission->update([
@@ -549,22 +554,51 @@ class SubmissionManager extends Service {
                 $data['parsed_staff_comments'] = null;
             }
 
+            // Update companion attachments and grant EXP
+            $petIds = $this->parsePetIds($data);
+            $submissionPets = $petIds ? $this->filterValidPets($petIds, $submission->user_id) : collect();
+            if ($submissionPets->count()) {
+                $petExpData = $data['pet_exp'] ?? [];
+                $petManager = new PetManager;
+                $petsWithExp = [];
+                foreach ($submissionPets as $pet) {
+                    $exp = isset($petExpData[$pet->id]) ? (int) $petExpData[$pet->id] : 0;
+                    $petsWithExp[] = ['id' => $pet->id, 'exp' => $exp];
+
+                    if ($exp > 0) {
+                        $pet->ensureLevel();
+
+                        $pet->level->bonding += $exp;
+                        $pet->level->save();
+
+                        $logData = 'Received '.$exp.' EXP from '.($submission->prompt_id ? 'submission' : 'claim').' (<a href="'.$submission->viewUrl.'">#'.$submission->id.'</a>)';
+                        $petManager->createLog($user->id, $submission->user_id, $pet->id, 'Pet EXP Grant', $logData, $pet->pet->id, 1);
+
+                        $petManager->processLevelChange($pet);
+                    }
+                }
+                $petIds = $petsWithExp;
+            } else {
+                $petIds = [];
+            }
+
             // Finally, set:
             // 1. staff comments
             // 2. staff ID
             // 3. status
             // 4. final rewards
+            // 5. final companion list
             $submission->update([
                 'staff_comments'        => $data['staff_comments'],
                 'parsed_staff_comments' => $data['parsed_staff_comments'],
                 'staff_id'              => $user->id,
                 'status'                => 'Approved',
+                'pets'                  => $petIds ?: null,
                 'data'                  => [
                     'user'                  => $addonData,
                     'rewards'               => getDataReadyAssets($rewards),
                     'criterion'             => $data['criterion'] ?? null,
                     'gallery_submission_id' => $submission->data['gallery_submission_id'] ?? null,
-                    'criterion'             => $data['criterion'] ?? null,
                 ], // list of rewards
             ]);
 
@@ -916,6 +950,90 @@ class SubmissionManager extends Service {
         }
 
         return true;
+    }
+
+    /**
+     * Attaches companions to a submission.
+     *
+     * @param mixed $submission
+     * @param mixed $data
+     * @param mixed $user
+     */
+    private function createPetAttachments($submission, $data, $user) {
+        $petIds = $this->parsePetIds($data);
+
+        if (!$petIds) {
+            $submission->update(['pets' => null]);
+
+            return true;
+        }
+
+        $this->validatePetOwnership($petIds, $user->id);
+
+        $petsData = array_map(function ($id) {
+            return ['id' => $id, 'exp' => 0];
+        }, array_values($petIds));
+
+        $submission->update(['pets' => $petsData]);
+
+        return true;
+    }
+
+    /**
+     * Parses and validates pet IDs from form data.
+     *
+     * @param array $data
+     *
+     * @return array
+     */
+    private function parsePetIds($data) {
+        if (!isset($data['pet_id']) || !$data['pet_id']) {
+            return [];
+        }
+
+        $petIds = array_unique(array_filter(array_map('intval', $data['pet_id'])));
+
+        if (count($petIds) > 10) {
+            throw new \Exception('You may attach a maximum of 10 companions.');
+        }
+
+        return $petIds;
+    }
+
+    /**
+     * Validates that the given pet IDs belong to the specified user.
+     * Throws if any ID does not match.
+     *
+     * @param array $petIds
+     * @param int   $userId
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    private function validatePetOwnership($petIds, $userId) {
+        $userPets = UserPet::where('user_id', $userId)->whereNull('deleted_at')->whereIn('id', $petIds)->get();
+        if ($userPets->count() != count($petIds)) {
+            throw new \Exception('One or more of the selected companions are invalid.');
+        }
+
+        return $userPets;
+    }
+
+    /**
+     * Returns the subset of pet IDs still owned by the user, without throwing.
+     * Used during approval so that submissions are not blocked when a companion
+     * has been transferred or deleted since the submission was made.
+     *
+     * @param array $petIds
+     * @param int   $userId
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    private function filterValidPets($petIds, $userId) {
+        return UserPet::with('level')
+            ->where('user_id', $userId)
+            ->whereNull('deleted_at')
+            ->whereIn('id', $petIds)
+            ->get();
     }
 
     /**

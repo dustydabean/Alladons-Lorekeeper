@@ -190,6 +190,30 @@
     </div>
 </div>
 
+@php $submissionPets = $submission->submissionPets; @endphp
+@if ($submissionPets->count())
+    <div class="card mb-3">
+        <div class="card-header h2">Companions</div>
+        <div class="card-body">
+            <div class="row">
+                @foreach ($submissionPets as $userPet)
+                    <div class="col-xl-1 col-lg-2 col-md-2 col-sm-3 col-4 mb-2 text-center">
+                        <a href="{{ $userPet->pageUrl() }}">
+                            <img src="{{ $userPet->pet->image($userPet->id) }}" class="img-fluid rounded" style="max-height:60px;" alt="{{ $userPet->pet->name }}" />
+                        </a>
+                        <div class="small text-truncate">
+                            <a href="{{ $userPet->pageUrl() }}">{{ $userPet->selectName }}</a>
+                        </div>
+                        @if ($userPet->submission_exp)
+                            <div class="small text-success">+{{ $userPet->submission_exp }} EXP</div>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+@endif
+
 @if (isset($inventory['user_items']) && array_filter($inventory['user_items']))
     <div class="card mb-3">
         <div class="card-header h2">Add-Ons</div>

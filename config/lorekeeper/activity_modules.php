@@ -25,6 +25,6 @@ return [] +
   // in-page craft between 1-6 selected recipes, highlighting them a little better compared to the overall crafting extension
   (class_exists('\App\Models\Recipe\Recipe') ? ['crafting' => 'Crafting'] : []);
 
-//********* Future Module Ideas ***********
+// ********* Future Module Ideas ***********
 // Turn in Currency / nothing, limited by time, to get randomized rewards
 // 'wishingWell => 'Wishing Well'

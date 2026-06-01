@@ -48,7 +48,7 @@ class LootTableController extends Controller {
         return view('admin.loot_tables.create_edit_loot_table', [
             'table'      => new LootTable,
             'items'      => Item::orderBy('name')->pluck('name', 'id'),
-            'pets'       => Pet::orderBy('name')->pluck('name', 'id'),
+            'pets'       => Pet::orderBy('name')->get()->pluck('fullName', 'id'),
             'categories' => ItemCategory::orderBy('sort', 'DESC')->pluck('name', 'id'),
             'currencies' => Currency::orderBy('name')->pluck('name', 'id'),
             'tables'     => LootTable::orderBy('name')->pluck('name', 'id'),
@@ -72,7 +72,7 @@ class LootTableController extends Controller {
         return view('admin.loot_tables.create_edit_loot_table', [
             'table'      => $table,
             'items'      => Item::orderBy('name')->pluck('name', 'id'),
-            'pets'       => Pet::orderBy('name')->pluck('name', 'id'),
+            'pets'       => Pet::orderBy('name')->get()->pluck('fullName', 'id'),
             'categories' => ItemCategory::orderBy('sort', 'DESC')->pluck('name', 'id'),
             'currencies' => Currency::orderBy('name')->pluck('name', 'id'),
             'tables'     => LootTable::orderBy('name')->pluck('name', 'id'),

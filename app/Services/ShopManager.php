@@ -353,11 +353,9 @@ class ShopManager extends Service {
     public function getUserOwned($stock, $user) {
         switch (strtolower($stock->stock_type)) {
             case 'item':
-                return $user->items()->where('item_id', $stock->item_id)->sum('count');
-                break;
+                return $user->items()->where('item_id', $stock->item_id)->where('count', '>', 0)->sum('count');
             case 'pet':
-                return $user->pets()->where('pet_id', $stock->item_id)->sum('count');
-                break;
+                return $user->pets()->where('pet_id', $stock->item_id)->where('count', '>', 0)->sum('count');
         }
     }
 }

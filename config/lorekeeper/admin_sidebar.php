@@ -117,12 +117,16 @@ return [
                 'url'  => 'admin/grants/items',
             ],
             [
-                'name' => 'Pet Grants',
+                'name' => 'Companion Grants',
                 'url'  => 'admin/grants/pets',
             ],
             [
                 'name' => 'Recipe Grants',
                 'url'  => 'admin/grants/recipes',
+            ],
+            [
+                'name' => 'Companion Grants',
+                'url'  => 'admin/grants/pets',
             ],
             [
                 'name' => 'Event Settings',
@@ -135,9 +139,9 @@ return [
         'links' => [
             [
                 'name' => 'Forages',
-                'url' => 'admin/data/forages'
+                'url'  => 'admin/data/forages',
             ],
-        ]
+        ],
     ],
     'Masterlist' => [
         'power' => 'manage_characters',
@@ -232,7 +236,7 @@ return [
                 'url'  => 'admin/data/items',
             ],
             [
-                'name' => 'Pets',
+                'name' => 'Companions',
                 'url'  => 'admin/data/pets',
             ],
             [
@@ -266,6 +270,10 @@ return [
             [
                 'name' => 'Dynamic Limits',
                 'url'  => 'admin/data/limits',
+            ],
+            [
+                'name' => 'Companions',
+                'url'  => 'admin/data/pets',
             ],
         ],
     ],

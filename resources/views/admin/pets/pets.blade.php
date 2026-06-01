@@ -1,22 +1,22 @@
 @extends('admin.layout')
 
 @section('admin-title')
-    Pets
+    Companions
 @endsection
 
 @section('admin-content')
-    {!! breadcrumbs(['Admin Panel' => 'admin', 'Pets' => 'admin/data/pets']) !!}
+    {!! breadcrumbs(['Admin Panel' => 'admin', 'Companions' => 'admin/data/pets']) !!}
 
-    <h1>Pets</h1>
+    <h1>Companions</h1>
 
-    <p>This is a list of pets in the game. Specific details about pets can be added when they are granted to users (e.g. reason for grant). By default, pets are merely collectibles and any additional functionality must be manually processed, or custom
-        coded in for the specific pet.</p>
+    <p>This is a list of companions in the game. Specific details about companions can be added when they are granted to users (e.g. reason for grant). By default, companions are merely collectibles and any additional functionality must be manually processed, or custom
+        coded in for the specific companion.</p>
 
     <div class="text-right mb-3">
-        <a class="btn btn-primary" href="{{ url('admin/data/pet-categories') }}"><i class="fas fa-folder mr-1"></i> Pet Categories</a>
-        <a class="btn btn-primary" href="{{ url('admin/data/pets/drops') }}"><i class="fas fa-egg mr-1"></i> Pet Drops</a>
-        <a class="btn btn-primary" href="{{ url('admin/data/pets/levels') }}"><i class="fas fa-level-up-alt mr-1"></i> Pet Levels</a>
-        <a class="btn btn-primary" href="{{ url('admin/data/pets/create') }}"><i class="fas fa-plus mr-1"></i> Create New Pet</a>
+        <a class="btn btn-primary" href="{{ url('admin/data/pet-categories') }}"><i class="fas fa-folder mr-1"></i> Companion Categories</a>
+        <a class="btn btn-primary" href="{{ url('admin/data/pets/drops') }}"><i class="fas fa-egg mr-1"></i> Companion Drops</a>
+        <a class="btn btn-primary" href="{{ url('admin/data/pets/levels') }}"><i class="fas fa-level-up-alt mr-1"></i> Companion Levels</a>
+        <a class="btn btn-primary" href="{{ url('admin/data/pets/create') }}"><i class="fas fa-plus mr-1"></i> Create New Companion</a>
     </div>
 
     <div>
@@ -34,7 +34,7 @@
     </div>
 
     @if (!count($pets))
-        <p>No pets found.</p>
+        <p>No companions found.</p>
     @else
         {!! $pets->render() !!}
         <div class="row ml-md-2">
@@ -44,7 +44,12 @@
             </div>
             @foreach ($pets as $pet)
                 <div class="d-flex row flex-wrap col-12 mt-1 pt-1 px-0 ubt-top">
-                    <div class="col-5 col-md-6"> {{ $pet->name }} </div>
+                    <div class="col-5 col-md-6">
+                        @if (!$pet->is_visible)
+                            <i class="fas fa-eye-slash mr-1"></i>
+                        @endif
+                        {{ $pet->name }}
+                    </div>
                     <div class="col-5 col-md-5"> {{ $pet->category ? $pet->category->name : '' }} </div>
                     <div class="col-2 col-md-1 text-right"> <a href="{{ url('admin/data/pets/edit/' . $pet->id) }}" class="btn btn-primary py-0">Edit</a> </div>
                 </div>

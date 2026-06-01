@@ -1,11 +1,11 @@
 @extends('admin.layout')
 
 @section('admin-title')
-    Edit Pet Level Rewards
+    Edit Companion Level Rewards
 @endsection
 
 @section('admin-content')
-    {!! breadcrumbs(['Admin Panel' => 'admin', 'Pets' => 'admin/data/pets', 'Pet Levels' => 'admin/data/pets/levels',
+    {!! breadcrumbs(['Admin Panel' => 'admin', 'Companions' => 'admin/data/pets', 'Companion Levels' => 'admin/data/pets/levels',
     'Edit Level' => 'admin/data/pets/levels/edit/' . $level->id, 'Edit Rewards' => 'admin/data/pets/levels/edit/' . $level->id . '/pets/edit'. $petLevel->id]) !!}
 
     <h1>

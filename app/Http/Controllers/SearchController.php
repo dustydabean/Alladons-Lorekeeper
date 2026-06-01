@@ -36,7 +36,7 @@ function findPageUrlStructure($type, $key) {
     $prompt = '/prompts/';
     $shop = '/shops/';
     $feature = '/world/traits?name=';
-    //Add additional variables here with structure for custom search types
+    // Add additional variables here with structure for custom search types
 
     $domain = $_SERVER['SERVER_NAME'];
 
