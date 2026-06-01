@@ -149,3 +149,8 @@
         </div>
     @endif
 @endsection
+
+@section('scripts')
+    @parent
+    @include('js._tinymce_wysiwyg')
+@endsection
