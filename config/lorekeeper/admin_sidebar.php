@@ -125,10 +125,6 @@ return [
                 'url'  => 'admin/grants/recipes',
             ],
             [
-                'name' => 'Companion Grants',
-                'url'  => 'admin/grants/pets',
-            ],
-            [
                 'name' => 'Event Settings',
                 'url'  => 'admin/event-settings',
             ],
@@ -270,10 +266,6 @@ return [
             [
                 'name' => 'Dynamic Limits',
                 'url'  => 'admin/data/limits',
-            ],
-            [
-                'name' => 'Companions',
-                'url'  => 'admin/data/pets',
             ],
         ],
     ],
