@@ -4,21 +4,23 @@
     {!! Form::text('evolution_name', $evolution->id ? $evolution->evolution_name : null, ['class' => 'form-control mr-2 feature-select', 'placeholder' => 'Evolution Name (Required)']) !!}
 </div>
 
-<p>The base companion is considered stage 0. All stages after that are considered evolutions.
-    <br>When evolving the companion will automatically evolve into the next highest stage.
+<p>
+    Enter the level at which this art is shown. When a companion reaches this <u>exact</u> level, its art automatically displays this evolution art. At any other level it shows the base companion art.
 </p>
+
 <div class="form-group">
-    {!! Form::label('Evolution Stage (Required)') !!}
-    {!! Form::number('evolution_stage', $evolution->id ? $evolution->evolution_stage : null, ['class' => 'form-control', 'placeholder' => 'Stage (Number)', 'min' => 1]) !!}
+    {!! Form::label('Level (Required)') !!}
+    {!! Form::number('evolution_stage', $evolution->id ? $evolution->evolution_stage : null, ['class' => 'form-control', 'placeholder' => 'Level (Number)', 'min' => 1]) !!}
 </div>
 
 <div class="form-group">
-    {!! Form::label('Image (Required)') !!}
+    {!! Form::label($evolution->id ? 'Image' : 'Image (Required)') !!}
     <div class="custom-file">
         {!! Form::label('evolution_image', 'Choose file...', ['class' => 'custom-file-label']) !!}
         {!! Form::file('evolution_image', ['class' => 'custom-file-input']) !!}
     </div>
     <div class="text-muted">Recommended size: 200px x 200px</div>
+
     @if ($evolution->has_image)
         <div class="form-check">
             {!! Form::checkbox('remove_image', 1, false, ['class' => 'form-check-input']) !!}
@@ -30,5 +32,4 @@
 <div class="text-right">
     {!! Form::submit($evolution->id ? 'Edit' : 'Create', ['class' => 'btn btn-primary']) !!}
 </div>
-
 {!! Form::close() !!}
