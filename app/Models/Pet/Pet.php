@@ -283,7 +283,6 @@ class Pet extends Model {
         if (!$id) {
             return $this->imageUrl;
         }
-
         $userpet = UserPet::find($id);
         if (!$userpet) {
             return $this->imageUrl;
@@ -292,8 +291,13 @@ class Pet extends Model {
         // custom image takes prescendence over all other images
         if ($userpet->has_image) {
             return $userpet->imageUrl;
-        } elseif ($userpet->evolution_id && $userpet->evolution) {
-            return $userpet->evolution->imageUrl;
+        }
+
+        // show the evolution art for pet's exact current level (if applicable)
+        $level = $userpet->level?->bonding_level ?? 1;
+        $evolution = $this->evolutions->firstWhere('evolution_stage', $level);
+        if ($evolution) {
+            return $evolution->imageUrl;
         }
 
         // default

@@ -325,6 +325,12 @@ class PetService extends Service {
             if (PetEvolution::where('evolution_name', $data['evolution_name'])->where('pet_id', $pet->id)->exists()) {
                 throw new \Exception('The name has already been taken.');
             }
+            if (!isset($data['evolution_stage']) || !$data['evolution_stage']) {
+                throw new \Exception('Please enter a valid level.');
+            }
+            if (PetEvolution::where('evolution_stage', $data['evolution_stage'])->where('pet_id', $pet->id)->exists()) {
+                throw new \Exception('An evolution already exists for that level.');
+            }
 
             $image = null;
             if (isset($data['evolution_image']) && $data['evolution_image']) {
@@ -370,7 +376,10 @@ class PetService extends Service {
                 throw new \Exception('The name has already been taken.');
             }
             if (!isset($data['evolution_stage']) || !$data['evolution_stage']) {
-                throw new \Exception('Please enter a valid evolution stage.');
+                throw new \Exception('Please enter a valid level.');
+            }
+            if (PetEvolution::where('evolution_stage', $data['evolution_stage'])->where('pet_id', $evolution->pet->id)->where('id', '!=', $evolution->id)->exists()) {
+                throw new \Exception('An evolution already exists for that level.');
             }
 
             $image = null;
@@ -389,9 +398,19 @@ class PetService extends Service {
             }
 
             if (isset($data['delete']) && $data['delete']) {
-                // check that no user pets exist with this evolution before deleting
-                if (UserPet::where('evolution_id', $evolution->id)->exists()) {
-                    throw new \Exception('At least one user pet currently is this evolution. Please remove the pet(s) before deleting it.');
+                // check that no companions are currently at this level (and so displaying this evolution) before deleting
+                $inUse = UserPet::where('pet_id', $evolution->pet_id)
+                    ->where(function ($query) use ($evolution) {
+                        $query->whereHas('level', function ($query) use ($evolution) {
+                            $query->where('bonding_level', $evolution->evolution_stage);
+                        });
+                        // companions without a level row display as level 1
+                        if ($evolution->evolution_stage == 1) {
+                            $query->orWhereDoesntHave('level');
+                        }
+                    })->exists();
+                if ($inUse) {
+                    throw new \Exception('At least one companion is currently at this level and displaying this evolution. Please change those companions before deleting it.');
                 }
                 // delete image
                 $this->deleteImage($evolution->imagePath, $evolution->imageFileName);
