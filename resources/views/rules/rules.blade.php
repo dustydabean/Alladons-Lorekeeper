@@ -169,6 +169,7 @@
                                                     <li>Companions can be used at the level of your choosing. If no level is specified, artists will use the highest level possible.</li><br/>
                                                     <li>Free slots can be posted in freebie studs, however they are only available for free use until the owner removes the post. Dons may be removed at any time. Slots cannot be claimed until opening. Free to use slots can be either for everyone or free to use owners. No other limitations may be imposed.</li><br/>
                                                     <li>Alladons cannot breed to their parents, grandparents, or full siblings.</li><br/>
+                                                    <li>Revoking Slots: Owners have the right to revoke slots as long as they can be refunded. This means for slot sales, the value paid for the slot must be refunded. For slot trades, the slots must be returned to the owners UNLESS one slot was used, then the remaining slot cannot be revoked. Art trades for slots, once the art has been completed, the slot cannot be revoked to avoid under/over valuing the art with a refund.</li><br/>
                                                 </ol></strong>
                                                 <h6>Please read more about Stud Rules in breeding slot channels: Studbook, Freebie Studs, The Blackmarket, Stud Raffles, and Stud Confirmations!</h6><br/>
                                             </p>
