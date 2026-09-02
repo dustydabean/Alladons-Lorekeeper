@@ -103,7 +103,7 @@
                                                 <a href="{{ $variant->idUrl }}">
                                                     @if ($variant->has_image)
                                                         <div style="max-height: 200px;">
-                                                            <img src="{{ $variant->imageUrl }}" style="max-height: 100%; width: auto;" alt="{{ $variant->name }}" data-toggle="tooltip" data-title="{{ $variant->name }}" />
+                                                            <img src="{{ $variant->imageUrl }}" style="max-height: 200px; width: auto;" alt="{{ $variant->name }}" data-toggle="tooltip" data-title="{{ $variant->name }}" />
                                                         </div>
                                                         <div class="badge badge-primary">
                                                             {{ $variant->name }}
