@@ -114,11 +114,11 @@
                                                         </div>
                                                     @endif
                                                 </a>
-                                                @if (isset($variant->description) && $variant->description)
+                                                <!---@if (isset($variant->description) && $variant->description)
                                                     <div class="card p-1 mt-1">
                                                         {!! $variant->description !!}
                                                     </div>
-                                                @endif
+                                                @endif--->
                                             </div>
                                         @endforeach
                                     </div>
