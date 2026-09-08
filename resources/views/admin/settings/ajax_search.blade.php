@@ -110,7 +110,7 @@
             </tr>
         </thead>
         <tbody class="repeater-wrapper">
-            <tr class="template{{ $custom_tables && count($custom_tables) > 0 ? ' delete' : '' }}" data-index="0">
+            <tr class="template{{ $custom_tables && count($custom_tables) > 0 ? ' delete' : '' }}" data-index="0" style="background-color: #292e33;">
                 <th>{{ Form::select('custom_tables[table_name][]', $tables, null, ['class' => 'form-control selectize parent']) }}</th>
                 <td>{{ Form::select('custom_tables[title][]', [], null, ['class' => 'form-control selectize-1']) }}</td>
                 <td>{{ Form::select('custom_tables[identifier][]', [], null, ['class' => 'form-control selectize-1']) }}</td>
