@@ -113,6 +113,10 @@ class AddSiteSettings extends Command {
 
         $this->addSiteSetting('comment_dislikes_enabled', 0, '0: Dislikes disabled, 1: Dislikes enabled.');
 
+        $this->addSiteSetting('ajax_search_core_tables', '', 'Auto-generated', false);
+
+        $this->addSiteSetting('ajax_search_custom_tables', '', 'Auto-generated', false);
+
         $this->addSiteSetting('shop_type', 0, '0: Default, 1: Collapsible.');
 
         $this->addSiteSetting('max_pet_level', 3, 'The default maximum level that pets are able to level up to.');
@@ -144,14 +148,16 @@ class AddSiteSettings extends Command {
      * @param string $key
      * @param int    $value
      * @param string $description
+     * @param mixed  $show_in_settings
      */
-    private function addSiteSetting($key, $value, $description) {
+    private function addSiteSetting($key, $value, $description, $show_in_settings = true) {
         if (!DB::table('site_settings')->where('key', $key)->exists()) {
             DB::table('site_settings')->insert([
                 [
-                    'key'         => $key,
-                    'value'       => $value,
-                    'description' => $description,
+                    'key'               => $key,
+                    'value'             => $value,
+                    'description'       => $description,
+                    'show_in_settings'  => $show_in_settings,
                 ],
             ]);
             $this->info('Added:   '.$key.' / Default: '.$value);

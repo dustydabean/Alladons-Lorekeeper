@@ -2,43 +2,42 @@
 
 namespace App\Http\Controllers;
 
-use DB;
+use App\Models\SiteIndex;
 use Illuminate\Http\Request;
 
 class SearchController extends Controller {
     public function siteSearch(Request $request) {
         $input = $request->input('s');
+        $type = ucwords($request->input('type'));
 
-        $result = DB::table('site_index')
-            ->where('title', 'like', '%'.$input.'%')
-            ->orWhere('description', 'like', '%'.$input.'%')
-            ->limit(25)
-            ->get();
+        $query = SiteIndex::query();
 
-        $result_list = [];
+        if ($type) {
+            $query->where('key', '=', $type);
+        }
 
-        foreach ($result as $r) {
-            $url = findPageUrlStructure($r->type, $r->identifier);
-            $row = '<div class="resultrow"><a href="'.$url.'"><div class="title"><span class="badge badge-secondary">'.$r->type.'</span>'.$r->title.'</div></a></div>';
-            echo $row;
+        $query->where(function ($query) use ($input) {
+            $query->where('title', 'like', '%'.$input.'%')
+                ->orWhere('description', 'like', '%'.$input.'%');
+        })
+            ->limit(25);
+
+        $result = $query->get();
+
+        if (count($result) > 0) {
+            foreach ($result as $r) {
+                $url = $r->url ?? null;
+                $image = $r->image_url ?? null;
+                $row = '<div class="resultrow">
+                            <a class="d-flex align-items-center justify-content-start" href="'.($url ?? $r->indexedModel->url).'">
+                                '.($image ? '<img src="'.$image.'" class="img-fluid img-thumb rounded border mr-2" />' : '').'
+                                <div class="title"><span class="badge badge-secondary">'.$r->typeLabel.'</span>'.$r->title.'</div>
+                                </a>
+                            </div>';
+                echo $row;
+            }
+        } else {
+            echo '<p class="text-muted mb-0">No results were found!</p>';
         }
     }
-}
-
-function findPageUrlStructure($type, $key) {
-    $search = strtolower($type);
-
-    $item = '/world/items?name=';
-    $character = '/character/';
-    $user = '/user/';
-    $page = '/info/';
-    $pet = '/world/pets/';
-    $prompt = '/prompts/';
-    $shop = '/shops/';
-    $feature = '/world/traits?name=';
-    // Add additional variables here with structure for custom search types
-
-    $domain = $_SERVER['SERVER_NAME'];
-
-    return ${$search}.$key;
 }

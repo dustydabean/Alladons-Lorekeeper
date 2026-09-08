@@ -606,6 +606,12 @@ Route::group(['prefix' => 'settings', 'middleware' => 'power:edit_site_settings'
     Route::post('{key}', 'SettingsController@postEditSetting');
 });
 
+// AJAX SEARCH SETTINGS
+Route::group(['prefix' => 'ajax-search', 'middleware' => 'power:edit_site_settings'], function () {
+    Route::get('/', 'SettingsController@getAjaxSearchSettings');
+    Route::post('edit', 'SettingsController@postEditAjaxSearchSettings');
+});
+
 // GRANTS
 Route::group(['prefix' => 'grants', 'namespace' => 'Users', 'middleware' => 'power:edit_inventories'], function () {
     Route::get('user-currency', 'GrantController@getUserCurrency');

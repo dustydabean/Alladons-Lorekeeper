@@ -227,10 +227,11 @@ main > .row {
 		margin-left: 1rem!important;
 		margin-right: 1rem!important;
 	}
-    .dark-input, .dark-input:focus, .dark-input.active {
+    .dark-input, .dark-input:focus, .dark-input.active, #ajaxsearch {
         min-width: 100%;
     }
     #searchResult {
+        min-width: 100%;
         width: 100%;
         max-height: 50vh;
     }
@@ -381,6 +382,19 @@ main > .row {
 }
 .dark-input:focus, .dark-input.active {
 	min-width: 250px;
+}
+.search-bar > .badge {
+    transition: 250ms all;
+    cursor: pointer;
+}
+.search-bar > .badge:hover {
+    background-color: var(--red);
+    color: var(--white);
+}
+.search-bar img {
+    max-width: 30px;
+    aspect-ratio: 1;
+    object-fit: cover;
 }
 /*Search Dropdown*/
 #searchResult {

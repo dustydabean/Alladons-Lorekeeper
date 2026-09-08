@@ -324,6 +324,10 @@ return [
                 'url'  => 'admin/themes',
             ],
             [
+                'name' => 'Ajax Search Settings',
+                'url'  => 'admin/ajax-search',
+            ],
+            [
                 'name' => 'Log Viewer',
                 'url'  => 'admin/logs',
             ],
