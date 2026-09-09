@@ -62,7 +62,7 @@
                                             </div>
 
                                             <div class="text-right m-2">
-                                                {!! Form::button('<i class="fas fa-cog"></i> Edit Info', ['class' => 'btn btn-outline-info btn-sm', 'type' => 'submit']) !!}
+                                                {!! Form::button('<i class="fas fa-cog"></i> Confirm', ['class' => 'btn btn-outline-info btn-sm', 'type' => 'submit']) !!}
                                             </div>
                                             {!! Form::close() !!}
                                         @else
